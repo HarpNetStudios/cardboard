@@ -1,0 +1,34 @@
+
+Readme for Cartel by cm|sheik (Fatality)
+
+
+
+This map is licensed under CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)
+
+
+For questions, concerns, or to simply give feedback please email me at sheik@inexor.org
+
+
+Cartel was created in March-May of 2014, and was reworked and expanded in December of 2014.
+
+
+Much thanks goes to:
+
+ Redon for much help with building and the layout.
+
+ Pyccna, who built most of the exterior and scenery of the map.
+
+ Footknight for inspiring me to build this map with his map "Adstradia".
+
+ Swatllama for constant feedback and help with placing of the items. 
+
+ Briggzy and Death14 for some help in the very beginning.
+
+ Everyone who commented on quadropolis.us and sauerworld.org.
+
+ Lee “eihrul” Salzman and Wouter “Aardappel” van Oortmerssen for the Cube2 Engine.
+
+ The Inexor team for including my maps :).
+
+
+Enjoy playing!
