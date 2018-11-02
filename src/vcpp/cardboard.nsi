@@ -22,7 +22,7 @@ Section "Project Crimson Alpha (required)"
 
   SetOutPath $INSTDIR
 
-  File /r /x home /x .vs /x bin_unix /x res "..\..\*.*"
+  File /r /x home /x .git /x .vs /x bin_unix /x res "..\..\*.*"
 
   WriteRegStr HKLM "SOFTWARE\CrimsonAlpha" "Install_Dir" "$INSTDIR"
 
