@@ -1,0 +1,27 @@
+These skycubes are made with Terragen.
+
+
+
+How to insert the skycubes in 3d Gamestudio
+
+
+copy this sript right after the "INCLUDES" in  the begining of your main-script:
+
+
+sky cube 
+{ 
+type=<day_sky+6.tga>;  //the filename of the sky. change according to the sky you want 
+layer=2; 
+z=20;               //change this if the skycube is displayed too high or too low
+material=mat_sky; 
+flags=cube,visible; 
+} 
+
+
+
+Alternatively there is a skybox-model included. Eventual you will need this if you use "spehre engine" or if you want fog to display on the sky.
+
+
+enjoy!
+
+Loopix

@@ -72,22 +72,25 @@ struct physent                                  // base entity type, can be affe
 
     int inwater;
     bool jumping;
+    int jumpstate;
+    bool candouble;								// For Double the Jumps :P
+	bool spacepack;
     char move, strafe;
 
     uchar physstate;                            // one of PHYS_* above
     uchar state, editstate;                     // one of CS_* above
     uchar type;                                 // one of ENT_* above
-    uchar collidetype;                          // one of COLLIDE_* above           
+    uchar collidetype;                          // one of COLLIDE_* above
 
     bool blocked;                               // used by physics to signal ai
 
-    physent() : o(0, 0, 0), deltapos(0, 0, 0), newpos(0, 0, 0), yaw(0), pitch(0), roll(0), maxspeed(100), 
+    physent() : o(0, 0, 0), deltapos(0, 0, 0), newpos(0, 0, 0), yaw(0), pitch(0), roll(0), maxspeed(100),
                radius(4.1f), eyeheight(14), aboveeye(1), xradius(4.1f), yradius(4.1f), zmargin(0),
                state(CS_ALIVE), editstate(CS_ALIVE), type(ENT_PLAYER),
                collidetype(COLLIDE_ELLIPSE),
                blocked(false)
                { reset(); }
-              
+
     void resetinterp()
     {
         newpos = o;
@@ -99,6 +102,9 @@ struct physent                                  // base entity type, can be affe
         inwater = 0;
         timeinair = 0;
         jumping = false;
+        candouble = false;
+		spacepack = false;
+		jumpstate = 0;
         strafe = move = 0;
         physstate = PHYS_FALL;
         vel = falling = vec(0, 0, 0);
@@ -108,7 +114,7 @@ struct physent                                  // base entity type, can be affe
     vec feetpos(float offset = 0) const { return vec(o).add(vec(0, 0, offset - eyeheight)); }
     vec headpos(float offset = 0) const { return vec(o).add(vec(0, 0, offset)); }
 
-    bool maymove() const { return timeinair || physstate < PHYS_FLOOR || vel.squaredlen() > 1e-4f || deltapos.squaredlen() > 1e-4f; } 
+    bool maymove() const { return timeinair || physstate < PHYS_FLOOR || vel.squaredlen() > 1e-4f || deltapos.squaredlen() > 1e-4f; }
 };
 
 enum
@@ -199,8 +205,8 @@ struct dynent : physent                         // animated characters, or chara
     int occluded, lastrendered;
 
     dynent() : ragdoll(NULL), query(NULL), occluded(0), lastrendered(0)
-    { 
-        reset(); 
+    {
+        reset();
     }
 
     ~dynent()
@@ -210,13 +216,13 @@ struct dynent : physent                         // animated characters, or chara
         if(ragdoll) cleanragdoll(this);
 #endif
     }
-               
+
     void stopmoving()
     {
         k_left = k_right = k_up = k_down = jumping = false;
         move = strafe = 0;
     }
-        
+
     void reset()
     {
         physent::reset();

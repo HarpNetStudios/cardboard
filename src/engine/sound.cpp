@@ -34,7 +34,7 @@ struct soundconfig
 
     bool hasslot(const soundslot *p, const vector<soundslot> &v) const
     {
-        return p >= v.getbuf() + slots && p < v.getbuf() + slots+numslots && slots+numslots < v.length(); 
+        return p >= v.getbuf() + slots && p < v.getbuf() + slots+numslots && slots+numslots < v.length();
     }
 
     int chooseslot() const
@@ -44,12 +44,12 @@ struct soundconfig
 };
 
 struct soundchannel
-{ 
+{
     int id;
     bool inuse;
-    vec loc; 
+    vec loc;
     soundslot *slot;
-    extentity *ent; 
+    extentity *ent;
     int radius, volume, pan, flags;
     bool dirty;
 
@@ -172,7 +172,7 @@ void initsound()
         conoutf(CON_ERROR, "sound init failed (SDL_mixer): %s", Mix_GetError());
         return;
     }
-	Mix_AllocateChannels(soundchans);	
+	Mix_AllocateChannels(soundchans);
     maxchannels = soundchans;
     nosound = false;
 }
@@ -199,7 +199,7 @@ Mix_Music *loadmusic(const char *name)
         if(!musicrw) DELETEP(musicstream);
     }
     if(musicrw) music = Mix_LoadMUSType_RW(musicrw, MUS_NONE, 0);
-    else music = Mix_LoadMUS(findfile(name, "rb")); 
+    else music = Mix_LoadMUS(findfile(name, "rb"));
     if(!music)
     {
         if(musicrw) { SDL_FreeRW(musicrw); musicrw = NULL; }
@@ -207,7 +207,7 @@ Mix_Music *loadmusic(const char *name)
     }
     return music;
 }
- 
+
 void startmusic(char *name, char *cmd)
 {
     if(nosound) return;
@@ -229,7 +229,7 @@ void startmusic(char *name, char *cmd)
         else
         {
             conoutf(CON_ERROR, "could not play music: %s", file);
-            intret(0); 
+            intret(0);
         }
     }
 }
@@ -254,23 +254,35 @@ static Mix_Chunk *loadwav(const char *name)
     return c;
 }
 
+//SVARP(soundpack, "default");
+SVARFP(soundpack, "default", {initsound();});
+
 bool soundsample::load(bool msg)
 {
     if(chunk) return true;
     if(!name[0]) return false;
 
-    static const char * const exts[] = { "", ".wav", ".ogg" };
+    static const char * const exts[] = { "", ".sgz", ".wav", ".ogg" };
     string filename;
     loopi(sizeof(exts)/sizeof(exts[0]))
     {
-        formatstring(filename, "packages/sounds/%s%s", name, exts[i]);
+        formatstring(filename, "packages/soundpacks/%s/%s%s", soundpack, name, exts[i]);
         if(msg && !i) renderprogress(0, filename);
         path(filename);
         chunk = loadwav(filename);
         if(chunk) return true;
     }
 
-    conoutf(CON_ERROR, "failed to load sample: packages/sounds/%s", name);
+    loopi(sizeof(exts)/sizeof(exts[0]))
+    {
+        formatstring(filename, "packages/soundpacks/default/%s%s", name, exts[i]);
+        if(msg && !i) renderprogress(0, filename);
+        path(filename);
+        chunk = loadwav(filename);
+        if(chunk) return true;
+    }
+
+    conoutf(CON_ERROR, "failed to load sample: packages/soundpacks/%s/%s", soundpack, name);
     return false;
 }
 
@@ -501,7 +513,7 @@ bool updatechannel(soundchannel &chan)
     chan.pan = pan;
     chan.dirty = true;
     return true;
-}  
+}
 
 void reclaimchannels()
 {
@@ -563,7 +575,7 @@ void preloadmapsounds()
         if(e.type==ET_SOUND) mapsounds.preloadsound(e.attr1);
     }
 }
- 
+
 int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int fade, int chanid, int radius, int expire)
 {
     if(nosound || !soundvol || minimized) return -1;
@@ -583,7 +595,7 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
                 Mix_HaltChannel(chanid);
                 freechannel(chanid);
             }
-            return -1;    
+            return -1;
         }
     }
 
@@ -618,7 +630,7 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     if(!slot.sample->chunk && !slot.sample->load()) return -1;
 
     if(dbgsound) conoutf("sound: %s", slot.sample->name);
- 
+
     chanid = -1;
     loopv(channels) if(!channels[i].inuse) { chanid = i; break; }
     if(chanid < 0 && channels.length() < maxchannels) chanid = channels.length();
@@ -628,13 +640,13 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     soundchannel &chan = newchannel(chanid, &slot, loc, ent, flags, radius);
     updatechannel(chan);
     int playing = -1;
-    if(fade) 
+    if(fade)
     {
         Mix_Volume(chanid, chan.volume);
         playing = expire >= 0 ? Mix_FadeInChannelTimed(chanid, slot.sample->chunk, loops, fade, expire) : Mix_FadeInChannel(chanid, slot.sample->chunk, loops, fade);
     }
     else playing = expire >= 0 ? Mix_PlayChannelTimed(chanid, slot.sample->chunk, loops, expire) : Mix_PlayChannel(chanid, slot.sample->chunk, loops);
-    if(playing >= 0) syncchannel(chan); 
+    if(playing >= 0) syncchannel(chan);
     else freechannel(chanid);
     return playing;
 }
@@ -660,8 +672,8 @@ bool stopsound(int n, int chanid, int fade)
     return true;
 }
 
-int playsoundname(const char *s, const vec *loc, int vol, int flags, int loops, int fade, int chanid, int radius, int expire) 
-{ 
+int playsoundname(const char *s, const vec *loc, int vol, int flags, int loops, int fade, int chanid, int radius, int expire)
+{
     if(!vol) vol = 100;
     int id = gamesounds.findsound(s, vol);
     if(id < 0) id = gamesounds.addsound(s, vol);
@@ -674,7 +686,7 @@ COMMAND(sound, "i");
 void resetsound()
 {
     clearchanges(CHANGE_SOUND);
-    if(!nosound) 
+    if(!nosound)
     {
         cleanupsamples();
         if(music)
@@ -742,7 +754,7 @@ static MumbleInfo *mumbleinfo = NULL;
 #define VALID_MUMBLELINK (mumblelink && mumbleinfo)
 #elif defined(_POSIX_SHARED_MEMORY_OBJECTS)
 static int mumblelink = -1;
-static MumbleInfo *mumbleinfo = (MumbleInfo *)-1; 
+static MumbleInfo *mumbleinfo = (MumbleInfo *)-1;
 #define VALID_MUMBLELINK (mumblelink >= 0 && mumbleinfo != (MumbleInfo *)-1)
 #endif
 
@@ -763,7 +775,7 @@ void initmumble()
         if(mumblelink)
         {
             mumbleinfo = (MumbleInfo *)MapViewOfFile(mumblelink, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(MumbleInfo));
-            if(mumbleinfo) wcsncpy(mumbleinfo->name, L"Sauerbraten", 256);
+            if(mumbleinfo) wcsncpy(mumbleinfo->name, L"Cardboard", 256);
         }
     #elif defined(_POSIX_SHARED_MEMORY_OBJECTS)
         defformatstring(shmname, "/MumbleLink.%d", getuid());
@@ -771,7 +783,7 @@ void initmumble()
         if(mumblelink >= 0)
         {
             mumbleinfo = (MumbleInfo *)mmap(NULL, sizeof(MumbleInfo), PROT_READ|PROT_WRITE, MAP_SHARED, mumblelink, 0);
-            if(mumbleinfo != (MumbleInfo *)-1) wcsncpy(mumbleinfo->name, L"Sauerbraten", 256);
+            if(mumbleinfo != (MumbleInfo *)-1) wcsncpy(mumbleinfo->name, L"Cardboard", 256);
         }
     #endif
     if(!VALID_MUMBLELINK) closemumble();
@@ -786,7 +798,7 @@ void closemumble()
     if(mumbleinfo) { UnmapViewOfFile(mumbleinfo); mumbleinfo = NULL; }
     if(mumblelink) { CloseHandle(mumblelink); mumblelink = NULL; }
 #elif defined(_POSIX_SHARED_MEMORY_OBJECTS)
-    if(mumbleinfo != (MumbleInfo *)-1) { munmap(mumbleinfo, sizeof(MumbleInfo)); mumbleinfo = (MumbleInfo *)-1; } 
+    if(mumbleinfo != (MumbleInfo *)-1) { munmap(mumbleinfo, sizeof(MumbleInfo)); mumbleinfo = (MumbleInfo *)-1; }
     if(mumblelink >= 0) { close(mumblelink); mumblelink = -1; }
 #endif
 }

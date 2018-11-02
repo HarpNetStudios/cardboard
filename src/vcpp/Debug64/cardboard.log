@@ -1,0 +1,24 @@
+﻿  pch.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(1540): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-hdBase>' when no variable is declared
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(3056): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-sfImage>' when no variable is declared
+  3dgui.cpp
+  main.cpp
+  movie.cpp
+  physics.cpp
+  pvs.cpp
+  sound.cpp
+  world.cpp
+  Generating Code...
+  ai.cpp
+  entities.cpp
+  fps.cpp
+  monster.cpp
+  movable.cpp
+  render.cpp
+  scoreboard.cpp
+  waypoint.cpp
+  weapon.cpp
+  Generating Code...
+  client.cpp
+  server.cpp
+  cardboard.vcxproj -> C:\Users\Zsolt\Git\Cardboard-rewrite\src\vcpp\..\..\bin64\cardboard_msvc.exe

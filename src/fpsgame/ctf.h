@@ -1,7 +1,7 @@
 #ifndef PARSEMESSAGES
 
-#define ctfteamflag(s) (!strcmp(s, "good") ? 1 : (!strcmp(s, "evil") ? 2 : 0))
-#define ctfflagteam(i) (i==1 ? "good" : (i==2 ? "evil" : NULL))
+#define ctfteamflag(s) (!strcmp(s, "red") ? 1 : (!strcmp(s, "blue") ? 2 : 0))
+#define ctfflagteam(i) (i==1 ? "red" : (i==2 ? "blue" : NULL))
 
 #ifdef SERVMODE
 VAR(ctftkpenalty, 0, 1, 1);
@@ -311,9 +311,9 @@ struct ctfclientmode : clientmode
         loopv(flags) if(flags[i].dropper == ci->clientnum) { flags[i].dropper = -1; flags[i].dropcount = 0; }
     }
 
-    bool canspawn(clientinfo *ci, bool connecting) 
-    { 
-        return m_efficiency || !m_protect ? connecting || !ci->state.lastdeath || gamemillis+curtime-ci->state.lastdeath >= RESPAWNSECS*1000 : true;
+    bool canspawn(clientinfo *ci, bool connecting)
+    {
+        return !m_protect ? connecting || !ci->state.lastdeath || gamemillis+curtime-ci->state.lastdeath >= RESPAWNSECS*1000 : true;
     }
 
     bool canchangeteam(clientinfo *ci, const char *oldteam, const char *newteam)
@@ -552,7 +552,7 @@ struct ctfclientmode : clientmode
             drawblip(d, x, y, s, i, true);
         }
         drawteammates(d, x, y, s);
-        if(d->state == CS_DEAD && (m_efficiency || !m_protect))
+        if(d->state == CS_DEAD && !m_protect)
         {
             int wait = respawnwait(d);
             if(wait>=0)
@@ -931,7 +931,7 @@ struct ctfclientmode : clientmode
 
     int respawnwait(fpsent *d)
     {
-        return m_efficiency || !m_protect ? max(0, RESPAWNSECS-(lastmillis-d->lastpain)/1000) : 0;
+        return !m_protect ? max(0, RESPAWNSECS-(lastmillis-d->lastpain)/1000) : 0;
     }
 
     bool pickholdspawn(fpsent *d)
@@ -1072,7 +1072,7 @@ struct ctfclientmode : clientmode
 						fpsent *t;
 						loopvk(targets) if((t = getclient(targets[k])))
 						{
-							if((t->ai && !t->hasammo(t->ai->weappref)) || (!t->ai && (t->gunselect == GUN_FIST || t->gunselect == GUN_PISTOL)))
+							if((t->ai && !t->hasammo(t->ai->weappref)) || (!t->ai && (t->gunselect == GUN_FIST || t->gunselect == GUN_SMG)))
 							{
 								guard = true;
 								break;

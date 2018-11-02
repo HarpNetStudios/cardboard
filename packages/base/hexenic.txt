@@ -1,0 +1,25 @@
+Author: Ognjen "7YearBitch" Robovich
+Date: 25.04.2018.
+
+About Map:
+- This map is totally inspired by my favorite game Hexen.
+- Theme is based on mixture of Spell+Tech textures.
+- It's 2-4 players FFA map. It will have bigger version soon.
+- Around 120+ working hours went into this map.
+
+Thanks to:
+- Ao1|Pointblank and Galaxy, my cH' clanmates for layout.
+- Redon and Doko for pointing out mistakes and helping for layout/style.
+- All players who tested it on cH' Clan Server...
+//It's unusual to see 12+ players in 1 moment, playing FFA on Coop-Edit in 2018.
+//More than 20 was on server during the night :3
+
+License: MIT
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+https://opensource.org/licenses/MIT
+
+Enjoy ;)

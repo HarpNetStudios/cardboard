@@ -41,7 +41,7 @@ struct captureclientmode : clientmode
 
         baseinfo() { reset(); }
 
-        bool valid() const { return ammotype>0 && ammotype<=I_CARTRIDGES-I_SHELLS+1; }
+        bool valid() const { return ammotype>0 && ammotype<=I_GRENADES-I_SMG+1; }
 
         void noenemy()
         {
@@ -265,17 +265,17 @@ struct captureclientmode : clientmode
         loopv(bases)
         {
             baseinfo &b = bases[i];
-            if(b.valid() && insidebase(b, player1->feetpos()) && player1->hasmaxammo(b.ammotype-1+I_SHELLS)) return;
+            if(b.valid() && insidebase(b, player1->feetpos()) && player1->hasmaxammo(b.ammotype-1+I_SMG)) return;
         }
         addmsg(N_REPAMMO, "rc", player1);
     }
 
     void receiveammo(fpsent *d, int type)
     {
-        type += I_SHELLS-1;
-        if(type<I_SHELLS || type>I_CARTRIDGES) return;
+        type += I_SMG-1;
+        if(type<I_SMG || type>I_GRENADES) return;
         entities::repammo(d, type, d==player1);
-        int icon = itemstats[type-I_SHELLS].icon;
+        int icon = itemstats[type-I_SMG].icon;
         if(icon >= 0) particle_icon(d->abovehead(), icon%4, icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
     }
 
@@ -290,7 +290,7 @@ struct captureclientmode : clientmode
             {
                 if(d->lastrepammo!=i)
                 {
-                    if(b.ammo > 0 && !player1->hasmaxammo(b.ammotype-1+I_SHELLS)) addmsg(N_REPAMMO, "rc", d);
+                    if(b.ammo > 0 && !player1->hasmaxammo(b.ammotype-1+I_SMG)) addmsg(N_REPAMMO, "rc", d);
                     d->lastrepammo = i;
                 }
                 return;
@@ -777,8 +777,8 @@ ICOMMAND(insidebases, "", (),
     }
     buf.add('\0');
     result(buf.getbuf());
-}); 
-    
+});
+
 #else
     bool notgotbases;
 
@@ -804,7 +804,7 @@ ICOMMAND(insidebases, "", (),
             entity &e = ments[i];
             if(e.type != BASE) continue;
             int ammotype = e.attr1;
-            addbase(ammotype, e.o); 
+            addbase(ammotype, e.o);
         }
         notgotbases = false;
         sendbases();
@@ -1071,7 +1071,7 @@ ICOMMAND(insidebases, "", (),
             vec o;
             loopk(3) o[k] = max(getint(p)/DMF, 0.0f);
             if(p.overread()) break;
-            if(commit && notgotbases) addbase(ammotype>=GUN_SG && ammotype<=GUN_PISTOL ? ammotype : min(ammotype, 0), o);
+            if(commit && notgotbases) addbase(ammotype>=GUN_SMG && ammotype<=GUN_GL ? ammotype : min(ammotype, 0), o);
         }
         if(commit && notgotbases)
         {
@@ -1127,7 +1127,7 @@ case N_BASEREGEN:
         regen->health = health;
         regen->armourtype = A_GREEN;
         regen->armour = armour;
-        if(ammotype>=GUN_SG && ammotype<=GUN_PISTOL) regen->ammo[ammotype] = ammo;
+        if(ammotype>=GUN_SMG && ammotype<=GUN_GL) regen->ammo[ammotype] = ammo;
     }
     break;
 }

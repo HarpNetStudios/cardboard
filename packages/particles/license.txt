@@ -3,10 +3,10 @@ blood.png
     "Feel free to edit, claim it's yours, use it in own projects"
 
 bullet.png
-    leileilol, GPL
+    Public domain.
 
 snow.png
-    Kevin "Hirato Kirata" Meyer (CC-BY-SA)
+    CC0.
 
 plasma.png
     Slawomir 'Q009' Blauciak (CC-BY-SA)

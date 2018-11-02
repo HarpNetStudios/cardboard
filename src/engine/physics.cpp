@@ -13,7 +13,7 @@ static int clipcacheversion = -2;
 static inline clipplanes &getclipplanes(const cube &c, const ivec &o, int size, bool collide = true, int offset = 0)
 {
     clipplanes &p = clipcache[int(&c - worldroot)&(MAXCLIPPLANES-1)];
-    if(p.owner != &c || p.version != clipcacheversion+offset) 
+    if(p.owner != &c || p.version != clipcacheversion+offset)
     {
         p.owner = &c;
         p.version = clipcacheversion+offset;
@@ -342,8 +342,8 @@ ShadowRayCache *newshadowraycache() { return new ShadowRayCache; }
 
 void freeshadowraycache(ShadowRayCache *&cache) { delete cache; cache = NULL; }
 
-void resetshadowraycache(ShadowRayCache *cache) 
-{ 
+void resetshadowraycache(ShadowRayCache *cache)
+{
     cache->version++;
     if(!cache->version)
     {
@@ -805,7 +805,7 @@ static inline bool clampcollide(const clipplanes &p, const E &entvol, const plan
     }
     return false;
 }
-    
+
 template<class E>
 static bool fuzzycollideplanes(physent *d, const vec &dir, float cutoff, const cube &c, const ivec &co, int size) // collide with deformed cube geometry
 {
@@ -1025,6 +1025,7 @@ bool collide(physent *d, const vec &dir, float cutoff, bool playercol, bool insi
 
 void recalcdir(physent *d, const vec &oldvel, vec &dir)
 {
+    // code that controls ground physics
     float speed = oldvel.magnitude();
     if(speed > 1e-6f)
     {
@@ -1088,7 +1089,7 @@ bool trystepup(physent *d, vec &dir, const vec &obstacle, float maxstep, const v
     if(cansmooth)
     {
         vec checkdir = stairdir;
-        checkdir.z += 1;
+        checkdir.z++;
         checkdir.mul(maxstep);
         d->o = old;
         d->o.add(checkdir);
@@ -1179,7 +1180,7 @@ bool trystepdown(physent *d, vec &dir, float step, float xy, float z, bool init 
             stepfloor.normalize();
             if(d->physstate >= PHYS_SLOPE && d->floor != stepfloor)
             {
-                // prevent alternating step-down/step-up states if player would keep bumping into the same floor 
+                // prevent alternating step-down/step-up states if player would keep bumping into the same floor
                 vec stepped(d->o);
                 d->o.z -= 0.5f;
                 d->zmargin = -0.5f;
@@ -1366,6 +1367,68 @@ bool move(physent *d, vec &dir)
     return !collided;
 }
 
+bool spacemove(physent *d, vec &dir)
+{
+    vec old(d->o);
+    bool collided = false, slidecollide = false;
+    vec obstacle;
+    d->o.add(dir);
+    if(collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_INANIMATE) && collide(d, vec(0, 0, 0), 0, false)))
+    {
+        obstacle = collidewall;
+        /* check to see if there is an obstacle that would prevent this one from being used as a floor (or ceiling bump) */
+        if(d->type==ENT_PLAYER && ((collidewall.z>=SLOPEZ && dir.z<0) || (collidewall.z<=-SLOPEZ && dir.z>0)) && (dir.x || dir.y) && collide(d, vec(dir.x, dir.y, 0)))
+        {
+            if(collidewall.dot(dir) >= 0) slidecollide = true;
+            obstacle = collidewall;
+        }
+        d->o = old;
+        d->o.z -= STAIRHEIGHT;
+        d->zmargin = -STAIRHEIGHT;
+        if(d->physstate == PHYS_SLOPE || d->physstate == PHYS_FLOOR || (collide(d, vec(0, 0, -1), SLOPEZ) && (d->physstate==PHYS_STEP_UP || d->physstate==PHYS_STEP_DOWN || collidewall.z>=FLOORZ)))
+        {
+            d->o = old;
+            d->zmargin = 0;
+            if(trystepup(d, dir, obstacle, STAIRHEIGHT, d->physstate == PHYS_SLOPE || d->physstate == PHYS_FLOOR ? d->floor : vec(collidewall))) return true;
+        }
+        else
+        {
+            d->o = old;
+            d->zmargin = 0;
+        }
+        /* can't step over the obstacle, so just slide against it */
+        collided = true;
+    }
+    else if(d->physstate == PHYS_STEP_UP)
+    {
+        if(collide(d, vec(0, 0, -1), SLOPEZ))
+        {
+            d->o = old;
+            if(trystepup(d, dir, vec(0, 0, 1), STAIRHEIGHT, vec(collidewall))) return true;
+            //d->o.add(dir);
+        }
+    }
+    else if(d->physstate == PHYS_STEP_DOWN && dir.dot(d->floor) <= 1e-6f)
+    {
+        vec moved(d->o);
+        d->o = old;
+        if(trystepdown(d, dir)) return true;
+        d->o = moved;
+    }
+    vec floor(0, 0, 0);
+    bool slide = collided,
+         found = findfloor(d, collided, obstacle, slide, floor);
+    if(slide || (!collided && floor.z > 0 && floor.z < WALLZ))
+    {
+        slideagainst(d, dir, slide ? obstacle : floor, found, slidecollide);
+        //if(d->type == ENT_AI || d->type == ENT_INANIMATE)
+        d->blocked = true;
+    }
+    if(found) landing(d, dir, floor, collided);
+    else falling(d, dir, floor);
+    return !collided;
+}
+
 bool bounce(physent *d, float secs, float elasticity, float waterfric, float grav)
 {
     // make sure bouncers don't start inside geometry
@@ -1459,14 +1522,14 @@ bool droptofloor(vec &o, float radius, float height)
 {
     static struct dropent : physent
     {
-        dropent() 
-        { 
-            type = ENT_BOUNCE; 
+        dropent()
+        {
+            type = ENT_BOUNCE;
             vel = vec(0, 0, -1);
         }
     } d;
     d.o = o;
-    if(!insideworld(d.o)) 
+    if(!insideworld(d.o))
     {
         if(d.o.z < worldsize) return false;
         d.o.z = worldsize - 1e-3f;
@@ -1556,6 +1619,10 @@ VAR(floatspeed, 1, 100, 10000);
 void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curtime)
 {
     bool allowmove = game::allowmove(pl);
+    if(pl->physstate != PHYS_FALL)
+    {
+        pl->jumpstate = false;
+    }
     if(floating)
     {
         if(pl->jumping && allowmove)
@@ -1564,6 +1631,21 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
             pl->vel.z = max(pl->vel.z, JUMPVEL);
         }
     }
+    if(pl->spacepack)
+    {
+        if(pl->jumping && allowmove)
+		{
+            pl->jumping = false;
+            if(pl->physstate != PHYS_FLOAT)
+            {
+				if (pl->physstate == PHYS_FLOOR) {
+					pl->vel.z = max(pl->vel.z, JUMPVEL);
+					game::physicstrigger(pl, local, 1, 0);
+				}
+            }
+		}
+    }
+
     else if(pl->physstate >= PHYS_SLOPE || water)
     {
         if(water && !pl->inwater) pl->vel.div(8);
@@ -1577,14 +1659,27 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
             game::physicstrigger(pl, local, 1, 0);
         }
     }
-    if(!floating && pl->physstate == PHYS_FALL) pl->timeinair += curtime;
+    else if(pl->jumpstate == 1 && pl->candouble)
+    {
+		pl->falling.z = 0; // set back gravity to 0, so you can jump again
+		pl->vel.z = max(pl->vel.z, pl->vel.z + (JUMPVEL/2)); // physics impulse upwards
+		if(water) { pl->vel.x /= 16.0f; pl->vel.y /= 16.0f; } // dampen velocity change even harder, gives correct water feel
+
+		pl->jumpstate++;
+
+		game::physicstrigger(pl, local, 1, 0);
+	}
+
+    if(!(floating || pl->spacepack) && pl->physstate == PHYS_FALL) {
+		pl->timeinair += curtime;
+	}
 
     vec m(0.0f, 0.0f, 0.0f);
     if((pl->move || pl->strafe) && allowmove)
     {
-        vecfromyawpitch(pl->yaw, floating || water || pl->type==ENT_CAMERA ? pl->pitch : 0, pl->move, pl->strafe, m);
+        vecfromyawpitch(pl->yaw, pl->spacepack || floating || water || pl->type==ENT_CAMERA ? pl->pitch : 0, pl->move, pl->strafe, m);
 
-        if(!floating && pl->physstate >= PHYS_SLOPE)
+        if((!floating || !pl->spacepack) && pl->physstate >= PHYS_SLOPE)
         {
             /* move up or down slopes in air
              * but only move up slopes in water
@@ -1606,12 +1701,12 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
         }
         else if(!water && allowmove) d.mul((pl->move && !pl->strafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
     }
-    float fric = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
-    pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f));
+  float fric = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
+  pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f));
 // old fps friction
-//    float friction = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
-//    float fpsfric = min(curtime/(20.0f*friction), 1.0f);
-//    pl->vel.lerp(pl->vel, d, fpsfric);
+    //float friction = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
+    //float fpsfric = min(curtime/(20.0f*friction), 1.0f);
+    //pl->vel.lerp(pl->vel, d, fpsfric);
 }
 
 void modifygravity(physent *pl, bool water, int curtime)
@@ -1626,18 +1721,22 @@ void modifygravity(physent *pl, bool water, int curtime)
         g.normalize();
         g.mul(GRAVITY*secs);
     }
-    if(!water || !game::allowmove(pl) || (!pl->move && !pl->strafe)) pl->falling.add(g);
+    if(!water || !game::allowmove(pl) || (!pl->move && !pl->strafe))
+    {
+        if (!pl->spacepack) pl->falling.add(g);
+    }
+
 
     if(water || pl->physstate >= PHYS_SLOPE)
     {
-        float fric = water ? 2.0f : 6.0f,
-              c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
-        pl->falling.mul(pow(1 - c/fric, curtime/20.0f));
+      float fric = water ? 2.0f : 6.0f,
+            c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
+      pl->falling.mul(pow(1 - c/fric, curtime/20.0f));
 // old fps friction
-//        float friction = water ? 2.0f : 6.0f,
-//              fpsfric = friction/curtime*20.0f,
-//              c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
-//        pl->falling.mul(1 - c/fpsfric);
+    //float friction = water ? 2.0f : 6.0f,
+    //    fpsfric = friction/curtime*20.0f,
+   //     c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
+   // pl->falling.mul(1 - c/fpsfric);
     }
 }
 
@@ -1650,15 +1749,16 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
     int material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (3*pl->aboveeye - pl->eyeheight)/4));
     bool water = isliquid(material&MATF_VOLUME);
     bool floating = pl->type==ENT_PLAYER && (pl->state==CS_EDITING || pl->state==CS_SPECTATOR);
+    bool ispack = pl->type==ENT_PLAYER && pl->spacepack;
     float secs = curtime/1000.f;
 
     // apply gravity
-    if(!floating) modifygravity(pl, water, curtime);
+    if(!floating || !ispack) modifygravity(pl, water, curtime);
     // apply any player generated changes in velocity
     modifyvelocity(pl, local, water, floating, curtime);
 
     vec d(pl->vel);
-    if(!floating && water) d.mul(0.5f);
+    if((!floating || !ispack) && water) d.mul(0.5f);
     d.add(pl->falling);
     d.mul(secs);
 
@@ -1673,6 +1773,20 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
             pl->falling = vec(0, 0, 0);
         }
         pl->o.add(d);
+    }
+    else if(ispack) //using spacepack
+    {
+		const float f = 1.0f / moveres;
+        int collisions = 0;
+
+        if(pl->physstate != PHYS_FLOAT)
+        {
+            pl->physstate = PHYS_FLOAT;
+            pl->timeinair = 0;
+            pl->falling = vec(0, 0, 0);
+        }
+		d.mul(f);
+        loopi(moveres) if(!spacemove(pl, d) && ++collisions<5) i--; // discrete steps collision detection & sliding
     }
     else                        // apply velocity with collision
     {
@@ -1706,7 +1820,7 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
     else if(pl->inwater && !water) game::physicstrigger(pl, local, 0, 1, pl->inwater);
     pl->inwater = water ? material&MATF_VOLUME : MAT_AIR;
 
-    if(pl->state==CS_ALIVE && (pl->o.z < 0 || material&MAT_DEATH)) game::suicide(pl);
+    if(pl->state==CS_ALIVE && (pl->o.z < 0 || material&MAT_DEATH)) game::suicide(pl); //DEATH kills you
 
     return true;
 }
@@ -1812,6 +1926,14 @@ void updatephysstate(physent *d)
             if(collide(d, vec(0, 0, -1)) && collidewall.z < SLOPEZ)
                 d->floor = collidewall;
             break;
+
+        case PHYS_FLOAT:
+            if(d->spacepack)
+            {
+                if(collide(d, vec(0, 0, -1)) && collidewall.z < SLOPEZ)
+                    d->floor = collidewall;
+                break;
+            }
     }
     if(d->physstate > PHYS_FALL && d->floor.z <= 0) d->floor = vec(0, 0, 1);
     d->o = old;
@@ -1983,7 +2105,14 @@ dir(forward,  move,    1, k_up,    k_down);
 dir(left,     strafe,  1, k_left,  k_right);
 dir(right,    strafe, -1, k_right, k_left);
 
-ICOMMAND(jump,   "D", (int *down), { if(!*down || game::canjump()) player->jumping = *down!=0; });
+ICOMMAND(jump,   "D", (int *down), {
+         if(!*down || game::canjump())
+         {
+             player->jumping = *down!=0;
+             if(*down != 0)
+                player->jumpstate++;
+         }
+         });
 ICOMMAND(attack, "D", (int *down), { game::doattack(*down!=0); });
 
 bool entinmap(dynent *d, bool avoidplayers)        // brute force but effective way to find a free spawn spot in the map

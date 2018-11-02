@@ -61,7 +61,7 @@ void fatal(const char *s, ...)    // failure exit
                 #endif
             }
             SDL_Quit();
-            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Cube 2: Sauerbraten fatal error", msg, NULL);
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Cardboard Engine fatal error", msg, NULL);
         }
     }
 
@@ -76,7 +76,7 @@ int initing = NOT_INITING;
 
 bool initwarning(const char *desc, int level, int type)
 {
-    if(initing < level) 
+    if(initing < level)
     {
         addchange(desc, type);
         return true;
@@ -175,7 +175,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
     if(!inbetweenframes && !force) return;
 
     if(!restore || force) stopsounds(); // stop sounds while loading
- 
+
     int w = screenw, h = screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
     getbackgroundres(w, h);
@@ -222,24 +222,17 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         bgquad(0, 0, w, h, 0, 0, bu, bv);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
-        settexture("data/background_detail.png", 0);
-        float du = w*0.8f/512.0f + detailu, dv = h*0.8f/512.0f + detailv;
-        bgquad(0, 0, w, h, 0, 0, du, dv);
-        settexture("data/background_decal.png", 3);
-        gle::begin(GL_QUADS);
-        loopj(numdecals)
-        {
-            float hsz = decals[j].size, hx = clamp(decals[j].x, hsz, w-hsz), hy = clamp(decals[j].y, hsz, h-hsz), side = decals[j].side;
-            gle::attribf(hx-hsz, hy-hsz); gle::attribf(side,   0);
-            gle::attribf(hx+hsz, hy-hsz); gle::attribf(1-side, 0);
-            gle::attribf(hx+hsz, hy+hsz); gle::attribf(1-side, 1);
-            gle::attribf(hx-hsz, hy+hsz); gle::attribf(side,   1);
-        }
-        gle::end();
         float lh = 0.5f*min(w, h), lw = lh*2,
               lx = 0.5f*(w - lw), ly = 0.5f*(h*0.5f - lh);
         settexture((maxtexsize ? min(maxtexsize, hwtexsize) : hwtexsize) >= 1024 && (screenw > 1280 || screenh > 800) ? "data/logo_1024.png" : "data/logo.png", 3);
         bgquad(lx, ly, lw, lh);
+        /*engine badge*/
+		float badgeh = 0.12f*min(w, h), badgew = badgeh*2.00,
+              badgex = 0.01f*(w - badgew), badgey = 2.3f*(h*0.5f - badgeh);
+
+		settexture("data/cube2badge.png", 3);
+
+		bgquad(badgex, badgey, badgew, badgeh);
         if(caption)
         {
             int tw = text_width(caption);
@@ -279,7 +272,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
                 draw_text("?", 0, 0);
                 pophudmatrix();
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            }        
+            }
             settexture("data/mapshot_frame.png", 3);
             bgquad(x, y, sz, sz);
             if(mapname)
@@ -331,7 +324,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
     }
 
     clientkeepalive();      // make sure our connection doesn't time out while loading maps etc.
-    
+
     #ifdef __APPLE__
     interceptkey(SDLK_UNKNOWN); // keep the event queue awake to avoid 'beachball' cursor
     #endif
@@ -355,7 +348,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
     gle::deftexcoord0();
 
     float fh = 0.075f*min(w, h), fw = fh*10,
-          fx = renderedframe ? w - fw - fh/4 : 0.5f*(w - fw), 
+          fx = renderedframe ? w - fw - fh/4 : 0.5f*(w - fw),
           fy = renderedframe ? fh/4 : h - fh*1.5f,
           fu1 = 0/512.0f, fu2 = 511/512.0f,
           fv1 = 0/64.0f, fv2 = 52/64.0f;
@@ -487,7 +480,7 @@ void inputgrab(bool on)
         }
     }
     shouldgrab = false;
-}   
+}
 
 bool initwindowpos = false;
 
@@ -524,11 +517,11 @@ void resetfullscreen()
 VARF(fullscreendesktop, 0, 0, 1, if(fullscreen) resetfullscreen());
 
 void screenres(int w, int h)
-{               
+{
     scr_w = clamp(w, SCR_MINW, SCR_MAXW);
     scr_h = clamp(h, SCR_MINH, SCR_MAXH);
     if(screen)
-    {           
+    {
         if(fullscreendesktop)
         {
             scr_w = min(scr_w, desktopw);
@@ -538,21 +531,21 @@ void screenres(int w, int h)
         {
             if(fullscreendesktop) gl_resize();
             else resetfullscreen();
-        } 
+        }
         else SDL_SetWindowSize(screen, scr_w, scr_h);
     }
     else
     {
         initwarning("screen resolution");
     }
-}       
+}
 
 ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
 
 static void setgamma(int val)
-{   
+{
     if(screen && SDL_SetWindowBrightness(screen, val/100.0f) < 0) conoutf(CON_ERROR, "Could not set gamma: %s", SDL_GetError());
-}   
+}
 
 static int curgamma = 100;
 VARFNP(gamma, reqgamma, 30, 100, 300,
@@ -563,7 +556,7 @@ VARFNP(gamma, reqgamma, 30, 100, 300,
 });
 
 void restoregamma()
-{       
+{
     if(initing || curgamma == 100) return;
     setgamma(curgamma);
 }
@@ -653,7 +646,7 @@ void setupscreen()
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&2 ? 1 : 0);
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&2 ? fsaa : 0);
         }
-        screen = SDL_CreateWindow("Cube 2: Sauerbraten", winx, winy, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
+        screen = SDL_CreateWindow("Cardboard Engine", winx, winy, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
         if(!screen) continue;
 
     #ifdef __APPLE__
@@ -722,7 +715,7 @@ void resetgl()
     cleanupdepthfx();
     cleanupshaders();
     cleanupgl();
-    
+
     setupscreen();
     inputgrab(grabinput);
     gl_init();
@@ -730,13 +723,12 @@ void resetgl()
     inbetweenframes = false;
     if(!reloadtexture(*notexture) ||
        !reloadtexture("data/logo.png") ||
-       !reloadtexture("data/logo_1024.png") || 
+       !reloadtexture("data/logo_1024.png") ||
        !reloadtexture("data/background.png") ||
-       !reloadtexture("data/background_detail.png") ||
-       !reloadtexture("data/background_decal.png") ||
        !reloadtexture("data/mapshot_frame.png") ||
        !reloadtexture("data/loading_frame.png") ||
-       !reloadtexture("data/loading_bar.png"))
+       !reloadtexture("data/loading_bar.png") ||
+       !reloadtexture("data/cube2badge.png"))
         fatal("failed to reload core texture");
     reloadfonts();
     inbetweenframes = true;
@@ -755,7 +747,7 @@ vector<SDL_Event> events;
 
 void pushevent(const SDL_Event &e)
 {
-    events.add(e); 
+    events.add(e);
 }
 
 static bool filterevent(const SDL_Event &event)
@@ -828,9 +820,9 @@ static void checkmousemotion(int &dx, int &dy)
     {
         SDL_Event &event = events[i];
         if(event.type != SDL_MOUSEMOTION)
-        { 
-            if(i > 0) events.remove(0, i); 
-            return; 
+        {
+            if(i > 0) events.remove(0, i);
+            return;
         }
         dx += event.motion.xrel;
         dy += event.motion.yrel;
@@ -853,7 +845,7 @@ void checkinput()
 {
     SDL_Event event;
     //int lasttype = 0, lastbut = 0;
-    bool mousemoved = false; 
+    bool mousemoved = false;
     while(events.length() || pollevent(event))
     {
         if(events.length()) event = events.remove(0);
@@ -965,7 +957,7 @@ void swapbuffers(bool overlay)
     gle::disable();
     SDL_GL_SwapWindow(screen);
 }
- 
+
 VAR(menufps, 0, 60, 1000);
 VARP(maxfps, 0, 200, 1000);
 
@@ -999,7 +991,7 @@ void stackdumper(unsigned int type, EXCEPTION_POINTERS *ep)
     EXCEPTION_RECORD *er = ep->ExceptionRecord;
     CONTEXT *context = ep->ContextRecord;
     char out[512];
-    formatstring(out, "Cube 2: Sauerbraten Win32 Exception: 0x%x [0x%x]\n\n", er->ExceptionCode, er->ExceptionCode==EXCEPTION_ACCESS_VIOLATION ? er->ExceptionInformation[1] : -1);
+    formatstring(out, "Cardboard Engine Win32 Exception: 0x%x [0x%x]\n\n", er->ExceptionCode, er->ExceptionCode==EXCEPTION_ACCESS_VIOLATION ? er->ExceptionInformation[1] : -1);
     SymInitialize(GetCurrentProcess(), NULL, TRUE);
 #ifdef _AMD64_
 	STACKFRAME64 sf = {{context->Rip, 0, AddrModeFlat}, {}, {context->Rbp, 0, AddrModeFlat}, {context->Rsp, 0, AddrModeFlat}, 0};
@@ -1149,13 +1141,13 @@ int main(int argc, char **argv)
             case 'v': /* compat, ignore */ break;
             case 't': fullscreen = atoi(&argv[i][2]); break;
             case 's': /* compat, ignore */ break;
-            case 'f': /* compat, ignore */ break; 
-            case 'l': 
+            case 'f': /* compat, ignore */ break;
+            case 'l':
             {
-                char pkgdir[] = "packages/"; 
-                load = strstr(path(&argv[i][2]), path(pkgdir)); 
-                if(load) load += sizeof(pkgdir)-1; 
-                else load = &argv[i][2]; 
+                char pkgdir[] = "packages/";
+                load = strstr(path(&argv[i][2]), path(pkgdir));
+                if(load) load += sizeof(pkgdir)-1;
+                else load = &argv[i][2];
                 break;
             }
             case 'x': initscript = &argv[i][2]; break;
@@ -1173,7 +1165,7 @@ int main(int argc, char **argv)
 
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
     }
-    
+
     logoutf("init: net");
     if(enet_initialize()<0) fatal("Unable to initialise network module");
     atexit(enet_deinitialize);
@@ -1226,10 +1218,10 @@ int main(int argc, char **argv)
     defformatstring(gamecfgname, "data/game_%s.cfg", game::gameident());
     execfile(gamecfgname);
     if(game::savedservers()) execfile(game::savedservers(), false);
-    
+
     identflags |= IDF_PERSIST;
-    
-    if(!execfile(game::savedconfig(), false)) 
+
+    if(!execfile(game::savedconfig(), false))
     {
         execfile(game::defaultconfig());
         writecfg(game::restoreconfig());
@@ -1286,7 +1278,7 @@ int main(int argc, char **argv)
 		lastmillis += curtime;
         totalmillis = millis;
         updatetime();
- 
+
         checkinput();
         menuprocess();
         tryedit();
@@ -1313,8 +1305,8 @@ int main(int argc, char **argv)
         swapbuffers();
         renderedframe = inbetweenframes = true;
     }
-    
-    ASSERT(0);   
+
+    ASSERT(0);
     return EXIT_FAILURE;
 
     #if defined(WIN32) && !defined(_DEBUG) && !defined(__GNUC__)

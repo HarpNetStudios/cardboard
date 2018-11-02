@@ -1,23 +1,26 @@
-action.jpg
-checkbox_off.jpg
-checkbox_on.jpg
-exit.jpg
-info.jpg
-menu.jpg
-ogro.jpg
-radio_off.jpg
-radio_on.jpg
+action.png
+arrow_bw.png
+arrow_fw.png
+checkbox_off.png
+checkbox_on.png
+exit.png
+info.png
+menu.png
+radio_off.png
+radio_on.png
 
-(c) 2006-2007 Markus "makkE" Bekel
-ALL RIGHTS RESERVED
+server.png
+serverfull.png
+serverlock.png
+serverpriv.png
+serverunk.png
 
-------------------------------------
+prototype.png
+prototype_blue.png
+prototype_red.png
 
-serverfull.jpg  
-server.jpg  
-serverlock.jpg  
-serverpriv.jpg  
-serverunk.jpg
+spectator.png (based on a CC BY-NC version by P.J. Onori, http://www.somerandomdude.com/)
 
-CC-BY-SA, Joshua "verbalshadow" Blocher
+(c) 2013 Alexander "pix" Willing
 
+License: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/

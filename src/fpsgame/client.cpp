@@ -65,14 +65,14 @@ namespace game
         if(!radarteammates) return;
         float scale = calcradarscale();
         int alive = 0, dead = 0;
-        loopv(players) 
+        loopv(players)
         {
             fpsent *o = players[i];
             if(o != d && o->state == CS_ALIVE && isteam(o->team, d->team))
             {
-                if(!alive++) 
+                if(!alive++)
                 {
-                    settexture(isteam(d->team, player1->team) ? "packages/hud/blip_blue_alive.png" : "packages/hud/blip_red_alive.png");
+                    settexture(strcmp(o->team, "red") ? "packages/hud/blip_blue_alive.png" : "packages/hud/blip_red_alive.png");
                     gle::defvertex(2);
                     gle::deftexcoord0();
                     gle::begin(GL_QUADS);
@@ -81,14 +81,14 @@ namespace game
             }
         }
         if(alive) gle::end();
-        loopv(players) 
+        loopv(players)
         {
             fpsent *o = players[i];
             if(o != d && o->state == CS_DEAD && isteam(o->team, d->team))
             {
-                if(!dead++) 
+                if(!dead++)
                 {
-                    settexture(isteam(d->team, player1->team) ? "packages/hud/blip_blue_dead.png" : "packages/hud/blip_red_dead.png");
+                    settexture(strcmp(o->team, "red") ? "packages/hud/blip_blue_dead.png" : "packages/hud/blip_red_dead.png");
                     gle::defvertex(2);
                     gle::deftexcoord0();
                     gle::begin(GL_QUADS);
@@ -98,7 +98,7 @@ namespace game
         }
         if(dead) gle::end();
     }
-        
+
     #include "capture.h"
     #include "ctf.h"
     #include "collect.h"
@@ -154,7 +154,12 @@ namespace game
     }
     ICOMMAND(team, "sN", (char *s, int *numargs),
     {
-        if(*numargs > 0) switchteam(s);
+        if(*numargs > 0)
+        {
+            if(!strcmp(s,"blue") || !strcmp(s,"red")){
+                switchteam(s);
+             }
+        }
         else if(!*numargs) printteam();
         else result(player1->team);
     });
@@ -295,7 +300,7 @@ namespace game
         fpsent *d = getclient(cn);
         if(!d || d->state==CS_SPECTATOR) return "spectator";
         const playermodelinfo &mdl = getplayermodelinfo(d);
-        return m_teammode ? (isteam(player1->team, d->team) ? mdl.blueicon : mdl.redicon) : mdl.ffaicon;
+        return m_teammode ? (strcmp(d->team, "red") ? mdl.blueicon : mdl.redicon) : mdl.ffaicon;
     }
     ICOMMAND(getclienticon, "i", (int *cn), result(getclienticon(*cn)));
 
@@ -402,7 +407,7 @@ namespace game
     {
         authkey *a = findauthkey(desc);
         int vn = parseplayer(victim);
-        if(a && vn>=0 && vn!=player1->clientnum) 
+        if(a && vn>=0 && vn!=player1->clientnum)
         {
             a->lastauth = lastmillis;
             addmsg(N_AUTHKICK, "rssis", a->desc, a->name, vn, reason);
@@ -433,7 +438,7 @@ namespace game
     bool isignored(int cn) { return ignores.find(cn) >= 0; }
 
     ICOMMAND(ignore, "s", (char *arg), ignore(parseplayer(arg)));
-    ICOMMAND(unignore, "s", (char *arg), unignore(parseplayer(arg))); 
+    ICOMMAND(unignore, "s", (char *arg), unignore(parseplayer(arg)));
     ICOMMAND(isignored, "s", (char *arg), intret(isignored(parseplayer(arg)) ? 1 : 0));
 
     void setteam(const char *arg1, const char *arg2)
@@ -463,7 +468,7 @@ namespace game
         }
         string hash = "";
         if(!arg[1] && isdigit(arg[0])) val = parseint(arg);
-        else 
+        else
         {
             if(cn != player1->clientnum) return;
             server::hashpassword(player1->clientnum, sessionid, arg, hash);
@@ -530,7 +535,7 @@ namespace game
     }
     ICOMMAND(mode, "i", (int *val), setmode(*val));
     ICOMMAND(getmode, "", (), intret(gamemode));
-    ICOMMAND(timeremaining, "i", (int *formatted), 
+    ICOMMAND(timeremaining, "i", (int *formatted),
     {
         int val = max(maplimit - lastmillis, 0)/1000;
         if(*formatted)
@@ -544,7 +549,6 @@ namespace game
     ICOMMANDS("m_noammo", "i", (int *mode), { int gamemode = *mode; intret(m_noammo); });
     ICOMMANDS("m_insta", "i", (int *mode), { int gamemode = *mode; intret(m_insta); });
     ICOMMANDS("m_tactics", "i", (int *mode), { int gamemode = *mode; intret(m_tactics); });
-    ICOMMANDS("m_efficiency", "i", (int *mode), { int gamemode = *mode; intret(m_efficiency); });
     ICOMMANDS("m_capture", "i", (int *mode), { int gamemode = *mode; intret(m_capture); });
     ICOMMANDS("m_regencapture", "i", (int *mode), { int gamemode = *mode; intret(m_regencapture); });
     ICOMMANDS("m_ctf", "i", (int *mode), { int gamemode = *mode; intret(m_ctf); });
@@ -558,6 +562,10 @@ namespace game
     ICOMMANDS("m_sp", "i", (int *mode), { int gamemode = *mode; intret(m_sp); });
     ICOMMANDS("m_dmsp", "i", (int *mode), { int gamemode = *mode; intret(m_dmsp); });
     ICOMMANDS("m_classicsp", "i", (int *mode), { int gamemode = *mode; intret(m_classicsp); });
+    ICOMMANDS("m_parkour", "i", (int *mode), { int gamemode = *mode; intret(m_parkour); });
+	ICOMMANDS("m_grenade", "i", (int *mode), { int gamemode = *mode; intret(m_grenade); });
+	ICOMMANDS("m_gun", "i", (int *mode), { int gamemode = *mode; intret(m_gun); });
+	ICOMMANDS("m_lms", "i", (int *mode), { int gamemode = *mode; intret(m_lms); });
 
     void changemap(const char *name, int mode) // request map change, server may ignore
     {
@@ -726,7 +734,7 @@ namespace game
                 int val = *id->storage.i;
                 string str;
                 if(val < 0)
-                    formatstring(str, "%d", val); 
+                    formatstring(str, "%d", val);
                 else if(id->flags&IDF_HEX && id->maxval==0xFFFFFF)
                     formatstring(str, "0x%.6X (%d, %d, %d)", val, (val>>16)&0xFF, (val>>8)&0xFF, val&0xFF);
                 else
@@ -772,10 +780,10 @@ namespace game
     }
     ICOMMAND(pausegame, "i", (int *val), pausegame(*val > 0));
     ICOMMAND(paused, "iN$", (int *val, int *numargs, ident *id),
-    { 
-        if(*numargs > 0) pausegame(clampvar(id, *val, 0, 1) > 0); 
+    {
+        if(*numargs > 0) pausegame(clampvar(id, *val, 0, 1) > 0);
         else if(*numargs < 0) intret(gamepaused ? 1 : 0);
-        else printvar(id, gamepaused ? 1 : 0); 
+        else printvar(id, gamepaused ? 1 : 0);
     });
 
     bool ispaused() { return gamepaused; }
@@ -1219,13 +1227,13 @@ namespace game
         if(resume && d==player1)
         {
             getint(p);
-            loopi(GUN_PISTOL-GUN_SG+1) getint(p);
+            loopi(GUN_GL-GUN_SMG+1) getint(p);
         }
         else
         {
             int gun = getint(p);
-            d->gunselect = clamp(gun, int(GUN_FIST), int(GUN_PISTOL));
-            loopi(GUN_PISTOL-GUN_SG+1) d->ammo[GUN_SG+i] = getint(p);
+            d->gunselect = clamp(gun, int(GUN_FIST), int(GUN_GL));
+            loopi(GUN_GL-GUN_SMG+1) d->ammo[GUN_SMG+i] = getint(p);
         }
     }
 
@@ -1276,7 +1284,7 @@ namespace game
                     gamepaused = val;
                     player1->attacking = false;
                 }
-                if(a) conoutf("%s %s the game", colorname(a), val ? "paused" : "resumed"); 
+                if(a) conoutf("%s %s the game", colorname(a), val ? "paused" : "resumed");
                 else conoutf("game is %s", val ? "paused" : "resumed");
                 break;
             }
@@ -1292,7 +1300,7 @@ namespace game
                 else conoutf("gamespeed is %d", val);
                 break;
             }
-                
+
             case N_CLIENT:
             {
                 int cn = getint(p), len = getuint(p);
@@ -1476,8 +1484,8 @@ namespace game
                 loopk(3) to[k] = getint(p)/DMF;
                 fpsent *s = getclient(scn);
                 if(!s) break;
-                if(gun>GUN_FIST && gun<=GUN_PISTOL && s->ammo[gun]) s->ammo[gun]--;
-                s->gunselect = clamp(gun, (int)GUN_FIST, (int)GUN_PISTOL);
+                if(gun>GUN_FIST && gun<=GUN_GL && s->ammo[gun]) s->ammo[gun]--;
+                s->gunselect = clamp(gun, (int)GUN_FIST, (int)GUN_GL);
                 s->gunwait = guns[s->gunselect].attackdelay;
                 int prevaction = s->lastaction;
                 s->lastaction = lastmillis;
@@ -1500,14 +1508,15 @@ namespace game
                     acn = getint(p),
                     damage = getint(p),
                     armour = getint(p),
-                    health = getint(p);
+                    health = getint(p),
+                    gun = getint(p);
                 fpsent *target = getclient(tcn),
                        *actor = getclient(acn);
                 if(!target || !actor) break;
                 target->armour = armour;
                 target->health = health;
                 if(target->state == CS_ALIVE && actor != player1) target->lastpain = lastmillis;
-                damaged(damage, target, actor, false);
+                damaged(damage, target, actor, gun, false);
                 break;
             }
 
@@ -1523,7 +1532,7 @@ namespace game
 
             case N_DIED:
             {
-                int vcn = getint(p), acn = getint(p), frags = getint(p), tfrags = getint(p);
+                int vcn = getint(p), acn = getint(p), frags = getint(p), tfrags = getint(p), gun = getint(p);
                 fpsent *victim = getclient(vcn),
                        *actor = getclient(acn);
                 if(!actor) break;
@@ -1535,7 +1544,7 @@ namespace game
                     particle_textcopy(actor->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
                 }
                 if(!victim) break;
-                killed(victim, actor);
+                killed(victim, actor, gun);
                 break;
             }
 
@@ -1554,7 +1563,7 @@ namespace game
             {
                 if(!d) return;
                 int gun = getint(p);
-                d->gunselect = clamp(gun, int(GUN_FIST), int(GUN_PISTOL));
+                d->gunselect = clamp(gun, int(GUN_FIST), int(GUN_GL));
                 playsound(S_WEAPLOAD, &d->o);
                 break;
             }
@@ -1874,7 +1883,7 @@ namespace game
             {
                 int t = getint(p);
                 if     (t==I_QUAD)  { playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);  conoutf(CON_GAMEINFO, "\f2quad damage will spawn in 10 seconds!"); }
-                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); conoutf(CON_GAMEINFO, "\f2+10 health will spawn in 10 seconds!"); }
+                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); conoutf(CON_GAMEINFO, "\f2+100 health will spawn in 10 seconds!"); }
                 break;
             }
 
@@ -1968,7 +1977,7 @@ namespace game
                 string oldname;
                 copystring(oldname, getclientmap());
                 defformatstring(mname, "getmap_%d", lastmillis);
-                defformatstring(fname, "packages/base/%s.ogz", mname);
+                defformatstring(fname, "packages/base/%s.cmr", mname);
                 stream *map = openrawfile(path(fname), "wb");
                 if(!map) return;
                 conoutf("received map");
@@ -2004,7 +2013,7 @@ namespace game
 
     void getmap()
     {
-        if(!m_edit) { conoutf(CON_ERROR, "\"getmap\" only works in coop edit mode"); return; }
+        if(!m_edit) { conoutf(CON_ERROR, "\"getmap\" only works in Multiplayer Edit mode"); return; }
         conoutf("getting map...");
         addmsg(N_GETMAP, "r");
     }
@@ -2052,11 +2061,11 @@ namespace game
 
     void sendmap()
     {
-        if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { conoutf(CON_ERROR, "\"sendmap\" only works in coop edit mode"); return; }
+        if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { conoutf(CON_ERROR, "\"sendmap\" only works in Multiplayer Edit mode"); return; }
         conoutf("sending map...");
         defformatstring(mname, "sendmap_%d", lastmillis);
         save_world(mname, true);
-        defformatstring(fname, "packages/base/%s.ogz", mname);
+        defformatstring(fname, "packages/base/%s.cmr", mname);
         stream *map = openrawfile(path(fname), "rb");
         if(map)
         {

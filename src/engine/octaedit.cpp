@@ -4,7 +4,7 @@ extern int outline;
 
 bool boxoutline = false;
 
-void boxs(int orient, vec o, const vec &s, float size) 
+void boxs(int orient, vec o, const vec &s, float size)
 {
     int d = dimension(orient), dc = dimcoord(orient);
     float f = boxoutline ? (dc>0 ? 0.2f : -0.2f) : 0;
@@ -186,7 +186,7 @@ void toggleedit(bool force)
 
 bool noedit(bool view, bool msg)
 {
-    if(!editmode) { if(msg) conoutf(CON_ERROR, "operation only allowed in edit mode"); return true; }
+    if(!editmode) { if(msg) conoutf(CON_ERROR, "This feature is exclusive to the Editor."); return true; }
     if(view || haveselent()) return false;
     float r = 1.0f;
     vec o(sel.o), s(sel.s);
@@ -265,7 +265,7 @@ void countselchild(cube *c, const ivec &cor, int size)
     {
         ivec o(i, cor, size);
         if(c[i].children) countselchild(c[i].children, o, size/2);
-        else 
+        else
         {
             selchildcount++;
             if(c[i].material != MAT_AIR && selchildmat != MAT_AIR)
@@ -460,7 +460,7 @@ void rendereditcursor()
             selchildcount = 0;
             selchildmat = -1;
             countselchild(worldroot, ivec(0, 0, 0), worldsize/2);
-            if(mag>=1 && selchildcount==1) 
+            if(mag>=1 && selchildcount==1)
             {
                 selchildmat = c->material;
                 if(mag>1) selchildcount = -mag;
@@ -952,7 +952,7 @@ static bool unpackblock(block3 *&b, B &buf)
 }
 
 struct vslotmap
-{   
+{
     int index;
     VSlot *vslot;
 
@@ -1328,7 +1328,7 @@ static void genprefabmesh(prefabmesh &r, cube &c, const ivec &co, int size)
     }
     else if(!isempty(c))
     {
-        int vis; 
+        int vis;
         loopi(6) if((vis = visibletris(c, i, co, size)))
         {
             ivec v[4];
@@ -2520,8 +2520,8 @@ void rotatecube(cube &c, int d)   // rotates cube clockwise. see pics in cvs for
 
 void mpflip(selinfo &sel, bool local)
 {
-    if(local) 
-    { 
+    if(local)
+    {
         game::edittrigger(sel, EDIT_FLIP);
         makeundo();
     }
@@ -2577,8 +2577,8 @@ COMMAND(flip, "");
 COMMAND(rotate, "i");
 
 enum { EDITMATF_EMPTY = 0x10000, EDITMATF_NOTEMPTY = 0x20000, EDITMATF_SOLID = 0x30000, EDITMATF_NOTSOLID = 0x40000 };
-static const struct { const char *name; int filter; } editmatfilters[] = 
-{ 
+static const struct { const char *name; int filter; } editmatfilters[] =
+{
     { "empty", EDITMATF_EMPTY },
     { "notempty", EDITMATF_NOTEMPTY },
     { "solid", EDITMATF_SOLID },
@@ -2645,8 +2645,8 @@ void editmat(char *name, char *filtername)
         if(filter < 0) filter = findmaterial(filtername);
         if(filter < 0)
         {
-            conoutf(CON_ERROR, "unknown material \"%s\"", filtername); 
-            return; 
+            conoutf(CON_ERROR, "unknown material \"%s\"", filtername);
+            return;
         }
     }
     int id = -1;
@@ -2753,7 +2753,7 @@ void g3d_texturemenu()
 
 void showtexgui(int *n)
 {
-    if(!editmode) { conoutf(CON_ERROR, "operation only allowed in edit mode"); return; }
+    if(!editmode) { conoutf(CON_ERROR, "This feature is exclusive to the Editor."); return; }
     gui.showtextures(*n==0 ? !gui.menuon : *n==1);
 }
 

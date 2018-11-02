@@ -1,14 +1,14 @@
 #include "game.h"
 
 namespace game
-{      
+{
     vector<fpsent *> bestplayers;
     vector<const char *> bestteams;
 
     VARP(ragdoll, 0, 1, 1);
     VARP(ragdollmillis, 0, 10000, 300000);
     VARP(ragdollfade, 0, 1000, 300000);
-    VARFP(playermodel, 0, 0, 4, changedplayermodel());
+    VARFP(playermodel, 0, 0, 0, changedplayermodel()); // new player
     VARP(forceplayermodels, 0, 0, 1);
     VARP(hidedead, 0, 0, 1);
 
@@ -24,7 +24,7 @@ namespace game
         r->attackchan = r->idlechan = -1;
         if(d==player1) r->playermodel = playermodel;
         ragdolls.add(r);
-        d->ragdoll = NULL;   
+        d->ragdoll = NULL;
     }
 
     void clearragdolls()
@@ -46,14 +46,9 @@ namespace game
         }
     }
 
-    static const playermodelinfo playermodels[5] =
+    static const playermodelinfo playermodels[1] = // new player
     {
-        { "mrfixit", "mrfixit/blue", "mrfixit/red", "mrfixit/hudguns", NULL, "mrfixit/horns", { "mrfixit/armor/blue", "mrfixit/armor/green", "mrfixit/armor/yellow" }, "mrfixit", "mrfixit_blue", "mrfixit_red", true },
-        { "snoutx10k", "snoutx10k/blue", "snoutx10k/red", "snoutx10k/hudguns", NULL, "snoutx10k/wings", { "snoutx10k/armor/blue", "snoutx10k/armor/green", "snoutx10k/armor/yellow" }, "snoutx10k", "snoutx10k_blue", "snoutx10k_red", true },
-        //{ "ogro/green", "ogro/blue", "ogro/red", "mrfixit/hudguns", "ogro/vwep", NULL, { NULL, NULL, NULL }, "ogro", "ogro_blue", "ogro_red", false },
-        { "ogro2", "ogro2/blue", "ogro2/red", "mrfixit/hudguns", NULL, "ogro2/quad", { "ogro2/armor/blue", "ogro2/armor/green", "ogro2/armor/yellow" }, "ogro", "ogro_blue", "ogro_red", true },
-        { "inky", "inky/blue", "inky/red", "inky/hudguns", NULL, "inky/quad", { "inky/armor/blue", "inky/armor/green", "inky/armor/yellow" }, "inky", "inky_blue", "inky_red", true },
-        { "captaincannon", "captaincannon/blue", "captaincannon/red", "captaincannon/hudguns", NULL, "captaincannon/quad", { "captaincannon/armor/blue", "captaincannon/armor/green", "captaincannon/armor/yellow" }, "captaincannon", "captaincannon_blue", "captaincannon_red", true }
+        { "prototype", "prototype/blue", "prototype/red", "prototype/hudguns", NULL, "prototype/quad", "prototype", "prototype_blue", "prototype_red", true },
     };
 
     int chooserandomplayermodel(int seed)
@@ -78,7 +73,7 @@ namespace game
     {
         if(player1->clientnum < 0) player1->playermodel = playermodel;
         if(player1->ragdoll) cleanragdoll(player1);
-        loopv(ragdolls) 
+        loopv(ragdolls)
         {
             fpsent *d = ragdolls[i];
             if(!d->ragdoll) continue;
@@ -117,17 +112,17 @@ namespace game
             else preloadmodel(mdl->ffa);
             if(mdl->vwep) preloadmodel(mdl->vwep);
             if(mdl->quad) preloadmodel(mdl->quad);
-            loopj(3) if(mdl->armour[j]) preloadmodel(mdl->armour[j]);
+            //loopj(3) if(mdl->armour[j]) preloadmodel(mdl->armour[j]);
         }
     }
-    
+
     VAR(testquad, 0, 0, 1);
     VAR(testarmour, 0, 0, 1);
     VAR(testteam, 0, 0, 3);
 
     void renderplayer(fpsent *d, const playermodelinfo &mdl, int team, float fade, bool mainpass)
     {
-        int lastaction = d->lastaction, hold = mdl.vwep || d->gunselect==GUN_PISTOL ? 0 : (ANIM_HOLD1+d->gunselect)|ANIM_LOOP, attack = ANIM_ATTACK1+d->gunselect, delay = mdl.vwep ? 300 : guns[d->gunselect].attackdelay+50;
+        int lastaction = d->lastaction, hold = mdl.vwep || d->gunselect==GUN_GL ? 0 : (ANIM_HOLD1+d->gunselect)|ANIM_LOOP, attack = ANIM_ATTACK1+d->gunselect, delay = mdl.vwep ? 300 : guns[d->gunselect].attackdelay+50;
         if(intermission && d->state!=CS_DEAD)
         {
             lastaction = 0;
@@ -142,9 +137,9 @@ namespace game
             delay = 1000;
         }
         modelattach a[5];
-        static const char * const vweps[] = {"vwep/fist", "vwep/shotg", "vwep/chaing", "vwep/rocket", "vwep/rifle", "vwep/gl", "vwep/pistol"};
+        static const char * const vweps[] = {"vwep/fist", "vwep/smg", "vwep/shotg", "vwep/rifle", "vwep/chaing", "vwep/rocket", "vwep/gl"};
         int ai = 0;
-        if((!mdl.vwep || d->gunselect!=GUN_FIST) && d->gunselect<=GUN_PISTOL)
+        if((!mdl.vwep || d->gunselect!=GUN_FIST) && d->gunselect<=GUN_GL)
         {
             int vanim = ANIM_VWEP_IDLE|ANIM_LOOP, vtime = 0;
             if(lastaction && d->lastattackgun==d->gunselect && lastmillis < lastaction + delay)
@@ -158,12 +153,12 @@ namespace game
         {
             if((testquad || d->quadmillis) && mdl.quad)
                 a[ai++] = modelattach("tag_powerup", mdl.quad, ANIM_POWERUP|ANIM_LOOP, 0);
-            if(testarmour || d->armour)
+            /* if(testarmour || d->armour)
             {
                 int type = clamp(d->armourtype, (int)A_BLUE, (int)A_YELLOW);
                 if(mdl.armour[type])
                     a[ai++] = modelattach("tag_shield", mdl.armour[type], ANIM_SHIELD|ANIM_LOOP, 0);
-            }
+            } */
         }
         if(mainpass)
         {
@@ -178,7 +173,7 @@ namespace game
         }
         renderclient(d, mdlname, a[0].tag ? a : NULL, hold, attack, delay, lastaction, intermission && d->state!=CS_DEAD ? 0 : d->lastpain, fade, ragdoll && mdl.ragdoll);
 #if 0
-        if(d->state!=CS_DEAD && d->quadmillis) 
+        if(d->state!=CS_DEAD && d->quadmillis)
         {
             entitylight light;
             rendermodel(&light, "quadrings", ANIM_MAPMODEL|ANIM_LOOP, vec(d->o).sub(vec(0, 0, d->eyeheight/2)), 360*lastmillis/1000.0f, 0, MDL_DYNSHADOW | MDL_CULL_VFC | MDL_CULL_DIST);
@@ -208,7 +203,7 @@ namespace game
             fpsent *d = players[i];
             if(d == player1 || d->state==CS_SPECTATOR || d->state==CS_SPAWNING || d->lifesequence < 0 || d == exclude || (d->state==CS_DEAD && hidedead)) continue;
             int team = 0;
-            if(teamskins || m_teammode) team = isteam(player1->team, d->team) ? 1 : 2;
+            if(teamskins || m_teammode) team = strcmp(d->team, "red") ? 1 : 2;
             renderplayer(d, getplayermodelinfo(d), team, 1, mainpass);
             copystring(d->info, colorname(d));
             if(d->maxhealth>100) { defformatstring(sn, " +%d", d->maxhealth-100); concatstring(d->info, sn); }
@@ -218,13 +213,16 @@ namespace game
         {
             fpsent *d = ragdolls[i];
             int team = 0;
-            if(teamskins || m_teammode) team = isteam(player1->team, d->team) ? 1 : 2;
+            if(teamskins || m_teammode) team = strcmp(d->team, "red") ? 1 : 2;
             float fade = 1.0f;
-            if(ragdollmillis && ragdollfade) 
+            if(ragdollmillis && ragdollfade)
                 fade -= clamp(float(lastmillis - (d->lastupdate + max(ragdollmillis - ragdollfade, 0)))/min(ragdollmillis, ragdollfade), 0.0f, 1.0f);
             renderplayer(d, getplayermodelinfo(d), team, fade, mainpass);
-        } 
-        if(isthirdperson() && !followingplayer() && (player1->state!=CS_DEAD || !hidedead)) renderplayer(player1, getplayermodelinfo(player1), teamskins || m_teammode ? 1 : 0, 1, mainpass);
+        }
+        if(isthirdperson() && !followingplayer() && (player1->state!=CS_DEAD || !hidedead))
+        {
+            renderplayer(player1, getplayermodelinfo(player1), teamskins || m_teammode ? (strcmp(player1->team, "red") ? 1 : 2) : 0, 1, mainpass);
+        }
         rendermonsters();
         rendermovables();
         entities::renderentities();
@@ -284,7 +282,7 @@ namespace game
 
     void drawhudmodel(fpsent *d, int anim, float speed = 0, int base = 0)
     {
-        if(d->gunselect>GUN_PISTOL) return;
+        if(d->gunselect>GUN_GL) return;
 
         vec sway;
         vecfromyawpitch(d->yaw, 0, 0, 1, sway);
@@ -304,7 +302,7 @@ namespace game
         const playermodelinfo &mdl = getplayermodelinfo(d);
         defformatstring(gunname, "%s/%s", hudgunsdir[0] ? hudgunsdir : mdl.hudguns, guns[d->gunselect].file);
         if((m_teammode || teamskins) && teamhudguns)
-            concatstring(gunname, d==player1 || isteam(d->team, player1->team) ? "/blue" : "/red");
+            concatstring(gunname, d==player1 || strcmp(d->team, "red") ? "/blue" : "/red");
         else if(testteam > 1)
             concatstring(gunname, testteam==2 ? "/blue" : "/red");
         modelattach a[2];
@@ -324,8 +322,8 @@ namespace game
     void drawhudgun()
     {
         fpsent *d = hudplayer();
-        if(d->state==CS_SPECTATOR || d->state==CS_EDITING || !hudgun || editmode) 
-        { 
+        if(d->state==CS_SPECTATOR || d->state==CS_EDITING || !hudgun || editmode)
+        {
             d->muzzle = player1->muzzle = vec(-1, -1, -1);
             return;
         }
@@ -354,13 +352,13 @@ namespace game
             previewent = new fpsent;
             previewent->light.color = vec(1, 1, 1);
             previewent->light.dir = vec(0, -1, 2).normalize();
-            loopi(GUN_PISTOL-GUN_FIST) previewent->ammo[GUN_FIST+1+i] = 1;
+            loopi(GUN_GL-GUN_FIST) previewent->ammo[GUN_FIST+1+i] = 1;
         }
         float height = previewent->eyeheight + previewent->aboveeye,
               zrad = height/2;
         vec2 xyrad = vec2(previewent->xradius, previewent->yradius).max(height/4);
         previewent->o = calcmodelpreviewpos(vec(xyrad, zrad), previewent->yaw).addz(previewent->eyeheight - zrad);
-        previewent->gunselect = clamp(weap, int(GUN_FIST), int(GUN_PISTOL));
+        previewent->gunselect = clamp(weap, int(GUN_FIST), int(GUN_GL));
         previewent->light.millis = -1;
         const playermodelinfo *mdlinfo = getplayermodelinfo(model);
         if(!mdlinfo) return;
@@ -421,7 +419,7 @@ namespace game
     void preloadsounds()
     {
         for(int i = S_JUMP; i <= S_SPLASH2; i++) preloadsound(i);
-        for(int i = S_JUMPPAD; i <= S_PISTOL; i++) preloadsound(i);
+        for(int i = S_JUMPPAD; i <= S_ARIFLE; i++) preloadsound(i);
         for(int i = S_V_BOOST; i <= S_V_QUAD10; i++) preloadsound(i);
         for(int i = S_BURN; i <= S_HIT; i++) preloadsound(i);
     }

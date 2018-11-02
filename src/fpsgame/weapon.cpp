@@ -25,6 +25,11 @@ namespace game
         {
             addmsg(N_GUNSELECT, "rci", d, gun);
             playsound(S_WEAPLOAD, d == player1 ? NULL : &d->o);
+            if(gun==GUN_FIST){
+                d->candouble = true;
+            } else {
+                d->candouble = false;
+            }
         }
         d->gunselect = gun;
     }
@@ -46,20 +51,32 @@ namespace game
 
     int getweapon(const char *name)
     {
-        const char *abbrevs[] = { "FI", "SG", "CG", "RL", "RI", "GL", "PI" };
+        const char *abbrevs[] = { "FI", "MG", "SG", "RI", "CG", "RL", "GL" };
         if(isdigit(name[0])) return parseint(name);
         else loopi(sizeof(abbrevs)/sizeof(abbrevs[0])) if(!strcasecmp(abbrevs[i], name)) return i;
         return -1;
     }
-
+    const char *getweaponname(int gun)
+    {
+        const char *gunname[] = { "melee", "rifle", "shotgun", "sniper", "chaingun", "rocket launcher", "grenade launcher" };
+        return gunname[gun];
+    }
     void setweapon(const char *name, bool force = false)
     {
         int gun = getweapon(name);
-        if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_PISTOL) return;
+        if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_GL) return;
         if(force || player1->ammo[gun]) gunselect(gun, player1);
         else playsound(S_NOAMMO);
     }
     ICOMMAND(setweapon, "si", (char *name, int *force), setweapon(name, *force!=0));
+
+    void dbgreload(const char *name)
+    {
+        int gun = getweapon(name);
+        if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_GL) return;
+        player1->ammo[gun] = itemstats[gun-GUN_SMG].add*2;
+    }
+    ICOMMAND(dbgreload, "si", (char *name), dbgreload(name));
 
     void cycleweapon(int numguns, int *guns, bool force = false)
     {
@@ -94,7 +111,7 @@ namespace game
         else if(s!=GUN_SG     && d->ammo[GUN_SG])     s = GUN_SG;
         else if(s!=GUN_RIFLE  && d->ammo[GUN_RIFLE])  s = GUN_RIFLE;
         else if(s!=GUN_GL     && d->ammo[GUN_GL])     s = GUN_GL;
-        else if(s!=GUN_PISTOL && d->ammo[GUN_PISTOL]) s = GUN_PISTOL;
+        else if(s!=GUN_SMG    && d->ammo[GUN_SMG])    s = GUN_SMG;
         else                                          s = GUN_FIST;
 
         gunselect(s, d);
@@ -109,7 +126,7 @@ namespace game
             if(name[0])
             {
                 int gun = getweapon(name);
-                if(gun >= GUN_FIST && gun <= GUN_PISTOL && gun != player1->gunselect && player1->ammo[gun]) { gunselect(gun, player1); return; }
+                if(gun >= GUN_FIST && gun <= GUN_GL && gun != player1->gunselect && player1->ammo[gun]) { gunselect(gun, player1); return; }
             } else { weaponswitch(player1); return; }
         }
         playsound(S_NOAMMO);
@@ -171,7 +188,7 @@ namespace game
             if(bouncetype == BNC_GRENADE && offsetmillis > 0 && offset.z < 0)
                 offsetheight = raycube(vec(o.x + offset.x, o.y + offset.y, o.z), vec(0, 0, -1), -offset.z);
             else offsetheight = -1;
-        } 
+        }
     };
 
     vector<bouncer *> bouncers;
@@ -219,15 +236,24 @@ namespace game
         bnc.resetinterp();
     }
 
+    VARP(blood, 0, 1, 1);
+    VARP(extrablood, 0, 0, 1);
+    VARP(bloodcolor, 0, 0x60FFFF, 0xFFFFFF);
+
     void bounced(physent *d, const vec &surface)
     {
         if(d->type != ENT_BOUNCE) return;
         bouncer *b = (bouncer *)d;
         if(b->bouncetype != BNC_GIBS || b->bounces >= 2) return;
         b->bounces++;
-        adddecal(DECAL_BLOOD, vec(b->o).sub(vec(surface).mul(b->radius)), surface, 2.96f/b->bounces, bvec(0x60, 0xFF, 0xFF), rnd(4));
+        unsigned int bloodin = bloodcolor,
+            bloodb = bloodin & 0xff,
+            bloodg = (bloodin >> 8) & 0xff,
+            bloodr = (bloodin >> 16) & 0xff;
+        // Thanks StackOverflow, yet again. -Y 04/2018
+        adddecal(DECAL_BLOOD, vec(b->o).sub(vec(surface).mul(b->radius)), surface, 2.96f/b->bounces, bvec(bloodr, bloodg, bloodb), rnd(4));
     }
-        
+
     void updatebouncers(int time)
     {
         loopv(bouncers)
@@ -319,13 +345,17 @@ namespace game
         loopi(len) if(projs[i].owner==owner) { projs.remove(i--); len--; }
     }
 
-    VARP(blood, 0, 1, 1);
-
     void damageeffect(int damage, fpsent *d, bool thirdperson)
     {
         vec p = d->o;
         p.z += 0.6f*(d->eyeheight + d->aboveeye) - d->eyeheight;
-        if(blood) particle_splash(PART_BLOOD, damage/10, 1000, p, 0x60FFFF, 2.96f);
+        int blddiv = 100;
+        if(extrablood) {
+            blddiv = 10;
+        } else {
+            blddiv = 100;
+        }
+        if(blood) particle_splash(PART_BLOOD, damage/blddiv, 1000, p, bloodcolor, 2.96f);
         if(thirdperson)
         {
             defformatstring(ds, "%d", damage);
@@ -336,7 +366,7 @@ namespace game
     void spawnbouncer(const vec &p, const vec &vel, fpsent *d, int type, entitylight *light = NULL)
     {
         vec to(rnd(100)-50, rnd(100)-50, rnd(100)-50);
-        if(to.iszero()) to.z += 1;
+        if(to.iszero()) to.z++;
         to.normalize();
         to.add(p);
         newbouncer(p, to, true, 0, d, type, rnd(1000)+1000, rnd(100)+20, light);
@@ -346,7 +376,13 @@ namespace game
     {
         if(!blood || damage <= 0) return;
         vec from = d->abovehead();
-        loopi(min(damage/25, 40)+1) spawnbouncer(from, vel, d, BNC_GIBS);
+        int gibdiv = 250;
+        if(extrablood) {
+            gibdiv = 25;
+        } else {
+            gibdiv = 250;
+        }
+        loopi(min(damage/gibdiv, 40)+1) spawnbouncer(from, vel, d, BNC_GIBS);
     }
 
     void hit(int damage, dynent *d, fpsent *at, const vec &vel, int gun, float info1, int info2 = 1)
@@ -354,7 +390,7 @@ namespace game
         if(at==player1 && d!=at)
         {
             extern int hitsound;
-            if(hitsound && lasthit != lastmillis) playsound(S_HIT);
+            if(hitsound && lasthit != lastmillis && !m_parkour) playsound(S_HIT);
             lasthit = lastmillis;
         }
 
@@ -372,7 +408,7 @@ namespace game
         if(f->type==ENT_AI || !m_mp(gamemode) || f==at) f->hitpush(damage, vel, at, gun);
 
         if(f->type==ENT_AI) hitmonster(damage, (monster *)f, at, vel, gun);
-        else if(!m_mp(gamemode)) damaged(damage, f, at);
+        else if(!m_mp(gamemode)) damaged(damage, f, at, gun);
         else
         {
             hitmsg &h = hits.add();
@@ -383,14 +419,16 @@ namespace game
             h.dir = f==at ? ivec(0, 0, 0) : ivec(vec(vel).mul(DNF));
             if(at==player1)
             {
-                damageeffect(damage, f);
-                if(f==player1)
+                if(!m_parkour)
                 {
-                    damageblend(damage);
-                    damagecompass(damage, at ? at->o : f->o);
-                    playsound(S_PAIN6);
+                    if(f!=player1) damageeffect(damage, f);
+                    if(f==player1 && f!=at)
+                    {
+                        damageblend(damage);
+                        damagecompass(damage, at ? at->o : f->o);
+                        playsound(S_PAIN6);
+                    }
                 }
-                else playsound(S_PAIN1+rnd(5), &f->o);
             }
         }
     }
@@ -418,7 +456,7 @@ namespace game
         if(dist<guns[gun].exprad)
         {
             int damage = (int)(qdam*(1-dist/EXP_DISTSCALE/guns[gun].exprad));
-            if(o==at) damage /= EXP_SELFDAMDIV;
+            //if(o==at) damage /= EXP_SELFDAMDIV;
             hit(damage, o, at, dir, gun, dist);
         }
     }
@@ -525,7 +563,7 @@ namespace game
             int qdam = guns[p.gun].damage*(p.owner->quadmillis ? 4 : 1);
             if(p.owner->type==ENT_AI) qdam /= MONSTERDAMAGEFACTOR;
             vec dv;
-            float dist = p.to.dist(p.o, dv); 
+            float dist = p.to.dist(p.o, dv);
             dv.mul(time/max(dist*1000/p.speed, float(time)));
             vec v = vec(p.o).add(dv);
             bool exploded = false;
@@ -585,6 +623,9 @@ namespace game
     VARP(muzzleflash, 0, 1, 1);
     VARP(muzzlelight, 0, 1, 1);
 
+    VARP(rifletrail, 0, 0x404040, 0xFFFFFF);
+    VARP(teamcolorrifle, 0, 1, 1);
+
     void shoteffects(int gun, const vec &from, const vec &to, fpsent *d, bool local, int id, int prevaction)     // create visual effect from a shot
     {
         int sound = guns[gun].sound, pspeed = 25;
@@ -610,7 +651,7 @@ namespace game
             }
 
             case GUN_CG:
-            case GUN_PISTOL:
+            case GUN_SMG:
             {
                 particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
                 particle_flare(hudgunorigin(gun, from, to, d), to, 600, PART_STREAK, 0xFFC864, 0.28f);
@@ -646,7 +687,16 @@ namespace game
 
             case GUN_RIFLE:
                 particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
-                particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, 0x404040, 0.6f, 20);
+                if(!teamcolorrifle)
+                {
+                    particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, rifletrail, 0.6f, 20); //0x404040
+                }
+                else
+                {
+                    int rcolor = strcmp(d->team, "red") ? 0x0000FF : 0xFF0000;
+                    if(!m_teammode) rcolor = rifletrail;
+                    particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, rcolor, 0.6f, 20);
+                }
                 if(muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, 150, PART_MUZZLE_FLASH3, 0xFFFFFF, 1.25f, d);
                 if(!local) adddecal(DECAL_BULLET, to, vec(from).sub(to).safenormalize(), 3.0f);
@@ -734,14 +784,14 @@ namespace game
     {
         int qdam = guns[d->gunselect].damage;
         if(d->quadmillis) qdam *= 4;
-        if(d->type==ENT_AI) qdam /= MONSTERDAMAGEFACTOR;
+        //if(d->type==ENT_AI) qdam /= MONSTERDAMAGEFACTOR;
         dynent *o;
         float dist;
         if(guns[d->gunselect].rays > 1)
         {
             dynent *hits[MAXRAYS];
             int maxrays = guns[d->gunselect].rays;
-            loopi(maxrays) 
+            loopi(maxrays)
             {
                 if((hits[i] = intersectclosest(from, rays[i], d, dist))) shorten(from, rays[i], dist);
                 else adddecal(DECAL_BULLET, rays[i], vec(from).sub(rays[i]).safenormalize(), 2.0f);
@@ -786,7 +836,13 @@ namespace game
             }
             return;
         }
-        if(d->gunselect) d->ammo[d->gunselect]--;
+        if(d->gunselect)
+        {
+            if(!(m_parkour || m_gun))
+            {
+                d->ammo[d->gunselect]--; //subtract ammo
+            }
+        }
 
         vec from = d->o, to = targ, dir = vec(to).sub(from).safenormalize();
         float dist = to.dist(from);
@@ -818,7 +874,7 @@ namespace game
         }
 
 		d->gunwait = guns[d->gunselect].attackdelay;
-		if(d->gunselect == GUN_PISTOL && d->ai) d->gunwait += int(d->gunwait*(((101-d->skill)+rnd(111-d->skill))/100.f));
+		if(d->gunselect == GUN_SMG && d->ai) d->gunwait += int(d->gunwait*(((101-d->skill)+rnd(111-d->skill))/100.f));
         d->totalshots += guns[d->gunselect].damage*(d->quadmillis ? 4 : 1)*guns[d->gunselect].rays;
     }
 
@@ -845,7 +901,7 @@ namespace game
     static const char * const gibnames[3] = { "gibs/gib01", "gibs/gib02", "gibs/gib03" };
     static const char * const debrisnames[4] = { "debris/debris01", "debris/debris02", "debris/debris03", "debris/debris04" };
     static const char * const barreldebrisnames[4] = { "barreldebris/debris01", "barreldebris/debris02", "barreldebris/debris03", "barreldebris/debris04" };
-         
+
     void preloadbouncers()
     {
         loopi(sizeof(projnames)/sizeof(projnames[0])) preloadmodel(projnames[i]);

@@ -31,7 +31,7 @@ namespace entities
             case BARREL:
             case PLATFORM:
             case ELEVATOR:
-                int yaw = (int(e.attr1)%360 + 360)%360 + 7; 
+                int yaw = (int(e.attr1)%360 + 360)%360 + 7;
                 e.attr1 = yaw - yaw%15;
                 break;
         }
@@ -64,7 +64,7 @@ namespace entities
         static const char * const entmdlnames[] =
         {
             NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-            "ammo/shells", "ammo/bullets", "ammo/rockets", "ammo/rrounds", "ammo/grenades", "ammo/cartridges",
+            "ammo/smg", "ammo/shells", "ammo/bullets", "ammo/rrounds", "ammo/rockets", "ammo/grenades",
             "health", "boost", "armor/green", "armor/yellow", "quad", "teleporter",
             NULL, NULL,
             "carrot",
@@ -93,7 +93,7 @@ namespace entities
         {
             switch(i)
             {
-                case I_SHELLS: case I_BULLETS: case I_ROCKETS: case I_ROUNDS: case I_GRENADES: case I_CARTRIDGES:
+                case I_SHELLS: case I_BULLETS: case I_ROCKETS: case I_ROUNDS: case I_GRENADES: case I_SMG:
                     if(m_noammo) continue;
                     break;
                 case I_HEALTH: case I_BOOST: case I_GREENARMOUR: case I_YELLOWARMOUR: case I_QUAD:
@@ -201,7 +201,7 @@ namespace entities
         if(ents.inrange(tp) && ents[tp]->type == TELEPORT)
         {
             extentity &e = *ents[tp];
-            if(e.attr4 >= 0) 
+            if(e.attr4 >= 0)
             {
                 int snd = S_TELEPORT, flags = 0;
                 if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
@@ -359,7 +359,7 @@ namespace entities
     void putitems(packetbuf &p)            // puts items in network stream and also spawns them locally
     {
         putint(p, N_ITEMLIST);
-        loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES))
+        loopv(ents) if(ents[i]->type>=I_SMG && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SMG || ents[i]->type>I_GRENADES))
         {
             putint(p, i);
             putint(p, ents[i]->type);
@@ -372,7 +372,7 @@ namespace entities
     void spawnitems(bool force)
     {
         if(m_noitems) return;
-        loopv(ents) if(ents[i]->type>=I_SHELLS && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SHELLS || ents[i]->type>I_CARTRIDGES))
+        loopv(ents) if(ents[i]->type>=I_SMG && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SMG || ents[i]->type>I_GRENADES))
         {
             ents[i]->setspawned(force || m_sp || !server::delayspawn(ents[i]->type));
         }
@@ -667,7 +667,7 @@ namespace entities
         static const char * const entnames[] =
         {
             "none?", "light", "mapmodel", "playerstart", "envmap", "particles", "sound", "spotlight",
-            "shells", "bullets", "rockets", "riflerounds", "grenades", "cartridges",
+            "smg", "shells", "riflerounds", "bullets", "rockets",  "grenades",
             "health", "healthboost", "greenarmour", "yellowarmour", "quaddamage",
             "teleport", "teledest",
             "monster", "carrot", "jumppad",

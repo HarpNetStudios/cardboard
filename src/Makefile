@@ -45,7 +45,7 @@ endif
 CLIENT_INCLUDES= $(INCLUDES) -Iinclude
 STD_LIBS= -static-libgcc -static-libstdc++
 CLIENT_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lSDL2 -lSDL2_image -lSDL2_mixer -lzlib1 -lopengl32 -lenet -lws2_32 -lwinmm
-else	
+else
 ifneq (,$(findstring DARWIN,$(PLATFORM)))
 ifneq (,$(findstring CROSS,$(PLATFORM)))
   TOOLCHAINTARGET= $(shell osxcross-conf | grep -m1 "TARGET=" | cut -b24-)
@@ -73,8 +73,8 @@ ifeq ($(PLATFORM),LINUX)
 CLIENT_LIBS+= -lrt
 else
 ifneq (,$(findstring GNU,$(PLATFORM)))
-CLIENT_LIBS+= -lrt 
-endif         
+CLIENT_LIBS+= -lrt
+endif
 endif
 CLIENT_OBJS= \
 	shared/crypto.o \
@@ -90,7 +90,6 @@ CLIENT_OBJS= \
 	engine/client.o	\
 	engine/command.o \
 	engine/console.o \
-	engine/cubeloader.o \
 	engine/decal.o \
 	engine/dynlight.o \
 	engine/glare.o \
@@ -198,7 +197,7 @@ $(SERVER_MASTER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 client: $(CLIENT_OBJS)
-	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff 
+	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff
 	$(CXX) $(CXXFLAGS) -o $(WINBIN)/sauerbraten.exe vcpp/mingw.res $(CLIENT_OBJS) $(CLIENT_LIBS)
 
 server: $(SERVER_OBJS)
@@ -214,10 +213,10 @@ client:	libenet $(CLIENT_OBJS)
 	$(CXX) $(CXXFLAGS) -o sauer_client $(CLIENT_OBJS) $(CLIENT_LIBS)
 
 server:	libenet $(SERVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o sauer_server $(SERVER_OBJS) $(SERVER_LIBS)  
-	
+	$(CXX) $(CXXFLAGS) -o sauer_server $(SERVER_OBJS) $(SERVER_LIBS)
+
 master: libenet $(MASTER_OBJS)
-	$(CXX) $(CXXFLAGS) -o sauer_master $(MASTER_OBJS) $(MASTER_LIBS)  
+	$(CXX) $(CXXFLAGS) -o sauer_master $(MASTER_OBJS) $(MASTER_LIBS)
 
 shared/cube2font.o: shared/cube2font.c
 	$(CXX) $(CXXFLAGS) -c -o $@ $< `freetype-config --cflags`
@@ -296,12 +295,6 @@ engine/console.o: shared/ents.h shared/command.h shared/glexts.h
 engine/console.o: shared/glemu.h shared/iengine.h shared/igame.h
 engine/console.o: engine/world.h engine/octa.h engine/lightmap.h engine/bih.h
 engine/console.o: engine/texture.h engine/model.h
-engine/cubeloader.o: engine/engine.h shared/cube.h shared/tools.h
-engine/cubeloader.o: shared/geom.h shared/ents.h shared/command.h
-engine/cubeloader.o: shared/glexts.h shared/glemu.h shared/iengine.h
-engine/cubeloader.o: shared/igame.h engine/world.h engine/octa.h
-engine/cubeloader.o: engine/lightmap.h engine/bih.h engine/texture.h
-engine/cubeloader.o: engine/model.h
 engine/decal.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/decal.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/decal.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
