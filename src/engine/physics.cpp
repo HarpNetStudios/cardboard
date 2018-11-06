@@ -1930,7 +1930,7 @@ void updatephysstate(physent *d)
         case PHYS_FLOAT:
             if(d->spacepack)
             {
-                if(collide(d, vec(0, 0, -1)) && collidewall.z < SLOPEZ)
+                if(collide(d, vec(0, 0, 0)) && collidewall.z == SLOPEZ)
                     d->floor = collidewall;
                 break;
             }

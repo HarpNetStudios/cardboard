@@ -415,13 +415,6 @@ namespace ai
                 break;
             case I_QUAD: score = 1e3f; break;
             case I_BOOST: score = 1e2f; break;
-            case I_GREENARMOUR: case I_YELLOWARMOUR:
-            {
-                int atype = A_GREEN + e.type - I_GREENARMOUR;
-                if(atype > d->armourtype) score = atype == A_YELLOW ? 1e2f : 1e1f;
-                else if(d->armour < 50) score = 1e1f;
-                break;
-            }
             default:
             {
                 if(e.type >= I_SMG && e.type <= I_GRENADES && !d->hasmaxammo(e.type))
@@ -496,7 +489,7 @@ namespace ai
             {
                 static vector<int> nearby;
                 nearby.setsize(0);
-                findents(I_SHELLS, I_QUAD, false, d->feetpos(), vec(32, 32, 24), nearby);
+                findents(I_SMG, I_QUAD, false, d->feetpos(), vec(32, 32, 24), nearby);
                 loopv(nearby)
                 {
                     int id = nearby[i];
@@ -595,7 +588,7 @@ namespace ai
 
     void itemspawned(int ent)
     {
-        if(entities::ents.inrange(ent) && entities::ents[ent]->type >= I_SHELLS && entities::ents[ent]->type <= I_QUAD)
+        if(entities::ents.inrange(ent) && entities::ents[ent]->type >= I_SMG && entities::ents[ent]->type <= I_QUAD)
         {
             loopv(players) if(players[i] && players[i]->ai && players[i]->aitype == AI_BOT && players[i]->canpickup(entities::ents[ent]->type))
             {
@@ -604,10 +597,10 @@ namespace ai
                 switch(entities::ents[ent]->type)
                 {
                     case I_BOOST: case I_HEALTH: wantsitem = badhealth(d); break;
-                    case I_GREENARMOUR: case I_YELLOWARMOUR: case I_QUAD: break;
+                    case I_QUAD: break;
                     default:
                     {
-                        itemstat &is = itemstats[entities::ents[ent]->type-I_SHELLS];
+                        itemstat &is = itemstats[entities::ents[ent]->type-I_SMG];
                         wantsitem = isgoodammo(is.info) && d->ammo[is.info] <= (d->ai->weappref == is.info ? is.add : is.add/2);
                         break;
                     }

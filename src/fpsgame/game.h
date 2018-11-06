@@ -32,7 +32,7 @@ enum                            // static entity types
     SPOTLIGHT = ET_SPOTLIGHT,
     I_SMG, I_SHELLS, I_ROUNDS, I_BULLETS, I_ROCKETS, I_GRENADES,
     I_HEALTH, I_BOOST,
-    I_GREENARMOUR, I_YELLOWARMOUR,
+    I_PLACEHOLDER1, I_PLACEHOLDER2, // REPLACE FIRST
     I_QUAD,
     TELEPORT,                   // attr1 = idx, attr2 = model, attr3 = tag
     TELEDEST,                   // attr1 = angle, attr2 = idx
@@ -66,7 +66,6 @@ struct fpsentity : extentity
 };
 
 enum { GUN_FIST = 0, GUN_SMG, GUN_SG, GUN_RIFLE, GUN_CG, GUN_RL, GUN_GL, GUN_FIREBALL, GUN_ICEBALL, GUN_SLIMEBALL, GUN_BITE, GUN_BARREL, NUMGUNS };
-enum { A_BLUE, A_GREEN, A_YELLOW };     // armour types... take 20/40/60 % off
 enum { M_NONE = 0, M_SEARCH, M_HOME, M_ATTACKING, M_PAIN, M_SLEEP, M_AIMING };  // monster states
 
 enum
@@ -95,6 +94,7 @@ enum
     M_GRENADE    = 1<<21,
     M_GUN        = 1<<22,
 	M_LMS        = 1<<23,
+	M_TEST       = 1<<24,
 };
 
 static struct gamemodeinfo
@@ -129,7 +129,8 @@ static struct gamemodeinfo
     { "team insta tactics", M_NOITEMS | M_TACTICS | M_INSTA | M_TEAM, "Team Instagib Tactics: You spawn with two random weapons and armour and die instantly from one shot. There are no items. Frag the enemy team to score points for your team."},
     { "grenade battle", M_NOITEMS | M_GRENADE, "Grenade Battle:  You spawn with full grenade launcher ammo. There are no items. Frag everyone to score points."}, //20
     { "gun game", M_NOITEMS | M_GUN, "Gun Game:  You spawn with the lowest tier weapon and work your way up. There are no items. Frag everyone to score points."}, //21
-    { "last man standing", M_LMS, "Last Man Standing: You spawn with one life. Frag everyone to score points. Be the last one alive to win."} //22
+    { "last man standing", M_LMS, "Last Man Standing: You spawn with one life. Frag everyone to score points. Be the last one alive to win."}, //22
+	{ "test mode", M_TEST, "Test Mode: It might be something stupid, or it might be cool. It also might crash your game."}, //23
 };
 
 #define STARTGAMEMODE (-3)
@@ -180,7 +181,7 @@ enum
 {
     S_JUMP = 0, S_LAND, S_RIFLE, S_PUNCH1, S_SG, S_CG,
     S_RLFIRE, S_RLHIT, S_WEAPLOAD, S_ITEMAMMO, S_ITEMHEALTH,
-    S_ITEMARMOUR, S_ITEMPUP, S_ITEMSPAWN, S_TELEPORT, S_NOAMMO, S_PUPOUT,
+    S_ITEMPUP, S_ITEMSPAWN, S_TELEPORT, S_NOAMMO, S_PUPOUT,
     S_PAIN1, S_PAIN2, S_PAIN3, S_PAIN4, S_PAIN5, S_PAIN6,
     S_DIE1, S_DIE2,
     S_FLAUNCH, S_FEXPLODE,
@@ -256,7 +257,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 {
     N_CONNECT, 0, N_SERVINFO, 0, N_WELCOME, 1, N_INITCLIENT, 0, N_POS, 0, N_TEXT, 0, N_SOUND, 2, N_CDIS, 2,
     N_SHOOT, 0, N_EXPLODE, 0, N_SUICIDE, 1,
-    N_DIED, 6, N_DAMAGE, 7, N_HITPUSH, 7, N_SHOTFX, 10, N_EXPLODEFX, 4,
+    N_DIED, 6, N_DAMAGE, 6, N_HITPUSH, 7, N_SHOTFX, 10, N_EXPLODEFX, 4,
     N_TRYSPAWN, 1, N_SPAWNSTATE, 14, N_SPAWN, 3, N_FORCEDEATH, 2,
     N_GUNSELECT, 2, N_TAUNT, 1,
     N_MAPCHANGE, 0, N_MAPVOTE, 0, N_TEAMINFO, 0, N_ITEMSPAWN, 2, N_ITEMPICKUP, 2, N_ITEMACC, 3,
@@ -265,7 +266,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_SERVMSG, 0, N_ITEMLIST, 0, N_RESUME, 0,
     N_EDITMODE, 2, N_EDITENT, 11, N_EDITF, 16, N_EDITT, 16, N_EDITM, 16, N_FLIP, 14, N_COPY, 14, N_PASTE, 14, N_ROTATE, 15, N_REPLACE, 17, N_DELCUBE, 14, N_REMIP, 1, N_EDITVSLOT, 16, N_UNDO, 0, N_REDO, 0, N_NEWMAP, 2, N_GETMAP, 1, N_SENDMAP, 0, N_EDITVAR, 0,
     N_MASTERMODE, 2, N_KICK, 0, N_CLEARBANS, 1, N_CURRENTMASTER, 0, N_SPECTATOR, 3, N_SETMASTER, 0, N_SETTEAM, 0,
-    N_BASES, 0, N_BASEINFO, 0, N_BASESCORE, 0, N_REPAMMO, 1, N_BASEREGEN, 6, N_ANNOUNCE, 2,
+    N_BASES, 0, N_BASEINFO, 0, N_BASESCORE, 0, N_REPAMMO, 1, N_BASEREGEN, 5, N_ANNOUNCE, 2,
     N_LISTDEMOS, 1, N_SENDDEMOLIST, 0, N_GETDEMO, 2, N_SENDDEMO, 0,
     N_DEMOPLAYBACK, 3, N_RECORDDEMO, 2, N_STOPDEMO, 1, N_CLEARDEMOS, 2,
     N_TAKEFLAG, 3, N_RETURNFLAG, 4, N_RESETFLAG, 6, N_INVISFLAG, 3, N_TRYDROPFLAG, 1, N_DROPFLAG, 7, N_SCOREFLAG, 10, N_INITFLAGS, 0,
@@ -301,19 +302,20 @@ struct demoheader
 
 enum
 {
-    HICON_BLUE_ARMOUR = 0,
-    HICON_GREEN_ARMOUR,
-    HICON_YELLOW_ARMOUR,
+    HICON_PLACEHOLDER = 0,
+    HICON_PLACEHOLDER2,
+    HICON_PLACEHOLDER3,
 
     HICON_HEALTH,
 
     HICON_FIST,
+    HICON_SMG,
     HICON_SG,
+    HICON_RIFLE,
     HICON_CG,
     HICON_RL,
-    HICON_RIFLE,
     HICON_GL,
-    HICON_SMG,
+
 
     HICON_QUAD,
 
@@ -341,8 +343,8 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {10,    30,    S_ITEMAMMO,   "GL", HICON_GL, GUN_GL},
     {250,   1000,  S_ITEMHEALTH, "H", HICON_HEALTH, -1},
     {100,   2000,  S_ITEMHEALTH, "MH", HICON_HEALTH, -1},
-    {100,   100,   S_ITEMARMOUR, "GA", HICON_GREEN_ARMOUR, A_GREEN},
-    {200,   200,   S_ITEMARMOUR, "YA", HICON_YELLOW_ARMOUR, A_YELLOW},
+    {NULL},
+    {NULL},
     {20000, 30000, S_ITEMPUP,    "Q", HICON_QUAD, -1},
 };
 
@@ -355,7 +357,7 @@ static struct guninfo { int sound, attackdelay, damage, spread, projspeed, kicka
 {
     { S_PUNCH1,     10,  400,   0,   0,  0,   14,  1,  80,  0,    0, "fist",            "fist",   0, false, 10 },
     { S_ARIFLE,    150,  200,  50,   0, 12, 1024,  1,  80,  0,    0, "smg",             "smg",    0, false, 10 },
-    { S_SG,       1400,   80, 400,   0, 20, 1024, 20,  80,  0,    0, "shotgun",         "shotg",  0, true, 10 },
+    { S_SG,       1400,   80, 400,   0, -200, 1024, 20,  80,  0,    0, "shotgun",         "shotg",  0, true, 10 },
     { S_RIFLE,    1500,  900,   0,   0, 30, 2048,  1,  80,  0,    0, "rifle",           "rifle",  0, false, 10 },
     { S_CG,        100,  150, 100,   0, 10, 1024,  1,  80,  0,    0, "chaingun",        "chaing", 0, true, 10 },
     { S_RLFIRE,    800, 1200,   0, 320, 10, 1024,  1, 160, 40,    0, "rocketlauncher",  "rocket", 0, true, 10 },
@@ -373,7 +375,6 @@ static struct guninfo { int sound, attackdelay, damage, spread, projspeed, kicka
 struct fpsstate
 {
     int health, maxhealth;
-    int armour, armourtype;
     int quadmillis;
     int gunselect, gunwait;
     int ammo[NUMGUNS];
@@ -406,8 +407,6 @@ struct fpsstate
         {
             case I_BOOST: return maxhealth<is.max;
             case I_HEALTH: return health<maxhealth;
-            case I_GREENARMOUR: return false;
-            case I_YELLOWARMOUR: return false;
             case I_QUAD: return quadmillis<is.max;
             default: return ammo[is.info]<is.max;
         }
@@ -424,9 +423,6 @@ struct fpsstate
             case I_HEALTH: // boost also adds to health
                 health = min(health+is.add, maxhealth);
                 break;
-            case I_GREENARMOUR:
-            case I_YELLOWARMOUR:
-                break;
             case I_QUAD:
                 quadmillis = min(quadmillis+is.add, is.max);
                 break;
@@ -439,15 +435,10 @@ struct fpsstate
     void respawn()
     {
         health = maxhealth;
-        armour = 0;
-        armourtype = A_BLUE;
         quadmillis = 0;
         gunwait = 0;
-        if(!M_GUN)
-        {
-            gunselect = GUN_SMG;
-            loopi(NUMGUNS) ammo[i] = 0;
-        }
+        gunselect = GUN_SMG;
+        loopi(NUMGUNS) ammo[i] = 0;
         ammo[GUN_FIST] = 1;
     }
 
@@ -488,6 +479,8 @@ struct fpsstate
             ammo[GUN_RIFLE] = 1;
             ammo[GUN_CG] = 1;
             ammo[GUN_RL] = 1;
+			ammo[GUN_GL] = 1;
+			ammo[GUN_SG] = 1;
         }
         else if(m_regencapture)
         {
@@ -516,15 +509,10 @@ struct fpsstate
 			ammo[GUN_CG] /= 2;
 			ammo[GUN_SMG] = 40;
         }
-        armour = 0;
     }
     // just subtract damage here, can set death, etc. later in code calling this
     int dodamage(int damage)
     {
-        int ad = damage*(armourtype+1)*25/100; // let armour absorb when possible
-        if(ad>armour) ad = armour;
-        armour -= ad;
-        damage -= ad;
         health -= damage;
         return damage;
     }

@@ -21,7 +21,6 @@ struct captureclientmode : clientmode
     static const int AMMOSECS = 15;
     static const int REGENSECS = 1;
     static const int REGENHEALTH = 10;
-    static const int REGENARMOUR = 10;
     static const int REGENAMMO = 20;
     static const int MAXAMMO = 5;
     static const int REPAMMODIST = 32;
@@ -890,16 +889,6 @@ ICOMMAND(insidebases, "", (),
                     ci->state.health = min(ci->state.health + ticks*REGENHEALTH, ci->state.maxhealth);
                     notify = true;
                 }
-                if(ci->state.armourtype != A_GREEN || ci->state.armour < itemstats[I_GREENARMOUR-I_SHELLS].max)
-                {
-                    if(ci->state.armourtype != A_GREEN)
-                    {
-                        ci->state.armourtype = A_GREEN;
-                        ci->state.armour = 0;
-                    }
-                    ci->state.armour = min(ci->state.armour + ticks*REGENARMOUR, itemstats[I_GREENARMOUR-I_SHELLS].max);
-                    notify = true;
-                }
                 if(b.valid())
                 {
                     int ammotype = b.ammotype-1+I_SHELLS;
@@ -910,7 +899,7 @@ ICOMMAND(insidebases, "", (),
                     }
                 }
                 if(notify)
-                    sendf(-1, 1, "ri6", N_BASEREGEN, ci->clientnum, ci->state.health, ci->state.armour, b.ammotype, b.valid() ? ci->state.ammo[b.ammotype] : 0);
+                    sendf(-1, 1, "ri5", N_BASEREGEN, ci->clientnum, ci->state.health, b.ammotype, b.valid() ? ci->state.ammo[b.ammotype] : 0);
             }
         }
     }
@@ -1120,13 +1109,11 @@ case N_BASEINFO:
 
 case N_BASEREGEN:
 {
-    int rcn = getint(p), health = getint(p), armour = getint(p), ammotype = getint(p), ammo = getint(p);
+    int rcn = getint(p), health = getint(p), ammotype = getint(p), ammo = getint(p);
     fpsent *regen = rcn==player1->clientnum ? player1 : getclient(rcn);
     if(regen && m_capture)
     {
         regen->health = health;
-        regen->armourtype = A_GREEN;
-        regen->armour = armour;
         if(ammotype>=GUN_SMG && ammotype<=GUN_GL) regen->ammo[ammotype] = ammo;
     }
     break;

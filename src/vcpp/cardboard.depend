@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1512389847 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\engine.h
+1512386247 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\engine.h
 	"cube.h"
 	"world.h"
 	"octa.h"
@@ -8,7 +8,7 @@
 	"texture.h"
 	"model.h"
 
-1505245567 c:\users\zsolt\git\cardboard-rewrite\src\shared\cube.h
+1505241967 c:\users\zsolt\git\cardboard-rewrite\src\shared\cube.h
 	<math.h>
 	<string.h>
 	<stdio.h>
@@ -37,7 +37,7 @@
 	"iengine.h"
 	"igame.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl.h
 	"SDL_main.h"
 	"SDL_stdinc.h"
 	"SDL_assert.h"
@@ -68,12 +68,12 @@
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_main.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_main.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_stdinc.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_stdinc.h
 	"SDL_config.h"
 	<sys/types.h>
 	<stdio.h>
@@ -102,7 +102,7 @@
 	<stdlib.h>
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_config.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_config.h
 	"SDL_platform.h"
 	"SDL_config_premake.h"
 	"SDL_config_windows.h"
@@ -113,38 +113,38 @@
 	"SDL_config_psp.h"
 	"SDL_config_minimal.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_platform.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_platform.h
 	"AvailabilityMacros.h"
 	"TargetConditionals.h"
 	<winapifamily.h>
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\begin_code.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\begin_code.h
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\close_code.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\close_code.h
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_config_windows.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_config_windows.h
 	"SDL_platform.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_config_macosx.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_config_macosx.h
 	"SDL_platform.h"
 	<AvailabilityMacros.h>
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_assert.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_assert.h
 	"SDL_config.h"
 	"begin_code.h"
 	<signal.h>
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_atomic.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_atomic.h
 	"SDL_stdinc.h"
 	"SDL_platform.h"
 	"begin_code.h"
 	<mbarrier.h>
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_audio.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_audio.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_endian.h"
@@ -154,24 +154,24 @@
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_error.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_error.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_endian.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_endian.h
 	"SDL_stdinc.h"
 	<endian.h>
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_mutex.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_mutex.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_thread.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_thread.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_atomic.h"
@@ -180,18 +180,18 @@
 	<process.h>
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_rwops.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_rwops.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_clipboard.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_clipboard.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_cpuinfo.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_cpuinfo.h
 	"SDL_stdinc.h"
 	<intrin.h>
 	<intrin.h>
@@ -203,7 +203,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_events.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_events.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_video.h"
@@ -217,7 +217,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_video.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_video.h
 	"SDL_stdinc.h"
 	"SDL_pixels.h"
 	"SDL_rect.h"
@@ -225,12 +225,12 @@
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_pixels.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_pixels.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_rect.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_rect.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_pixels.h"
@@ -238,7 +238,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_surface.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_surface.h
 	"SDL_stdinc.h"
 	"SDL_pixels.h"
 	"SDL_rect.h"
@@ -247,11 +247,11 @@
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_blendmode.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_blendmode.h
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_keyboard.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_keyboard.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_keycode.h"
@@ -259,27 +259,27 @@
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_keycode.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_keycode.h
 	"SDL_stdinc.h"
 	"SDL_scancode.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_scancode.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_scancode.h
 	"SDL_stdinc.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_mouse.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_mouse.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_video.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_joystick.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_joystick.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_gamecontroller.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_gamecontroller.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_rwops.h"
@@ -287,11 +287,11 @@
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_quit.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_quit.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_gesture.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_gesture.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_video.h"
@@ -299,60 +299,60 @@
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_touch.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_touch.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_video.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_filesystem.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_filesystem.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_haptic.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_haptic.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"SDL_joystick.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_hints.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_hints.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_loadso.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_loadso.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_log.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_log.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_messagebox.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_messagebox.h
 	"SDL_stdinc.h"
 	"SDL_video.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_power.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_power.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_render.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_render.h
 	"SDL_stdinc.h"
 	"SDL_rect.h"
 	"SDL_video.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_system.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_system.h
 	"SDL_stdinc.h"
 	"SDL_keyboard.h"
 	"SDL_render.h"
@@ -360,24 +360,24 @@
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_timer.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_timer.h
 	"SDL_stdinc.h"
 	"SDL_error.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_version.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_version.h
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_opengl.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_opengl.h
 	"SDL_config.h"
 	"gl_mangle.h"
 	<windows.h>
 	"SDL_opengl_glext.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_opengl_glext.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_opengl_glext.h
 	<windows.h>
 	<stddef.h>
 	<inttypes.h>
@@ -387,7 +387,7 @@
 	<stdint.h>
 	<inttypes.h>
 
-1430404799 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\enet.h
+1430401199 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\enet.h
 	<stdlib.h>
 	"enet/win32.h"
 	"enet/unix.h"
@@ -396,11 +396,11 @@
 	"enet/list.h"
 	"enet/callbacks.h"
 
-1398330306 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\win32.h
+1398326706 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\win32.h
 	<stdlib.h>
 	<winsock2.h>
 
-1383863808 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\unix.h
+1383860208 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\unix.h
 	<stdlib.h>
 	<sys/time.h>
 	<sys/types.h>
@@ -408,61 +408,61 @@
 	<netinet/in.h>
 	<unistd.h>
 
-1238566409 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\types.h
+1238562809 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\types.h
 
-1398330306 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\protocol.h
+1398326706 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\protocol.h
 	"enet/types.h"
 
-1273776658 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\list.h
+1273773058 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\list.h
 	<stdlib.h>
 
-1274392286 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\callbacks.h
+1274388686 c:\users\zsolt\git\cardboard-rewrite\src\enet\include\enet\callbacks.h
 	<stdlib.h>
 
-1327173269 c:\users\zsolt\git\cardboard-rewrite\src\include\zlib.h
+1327169669 c:\users\zsolt\git\cardboard-rewrite\src\include\zlib.h
 	"zconf.h"
 
-1327173269 c:\users\zsolt\git\cardboard-rewrite\src\include\zconf.h
+1327169669 c:\users\zsolt\git\cardboard-rewrite\src\include\zconf.h
 	<windows.h>
 	<sys/types.h>
 	<unistd.h>
 	<unixio.h>
 
-1486989286 c:\users\zsolt\git\cardboard-rewrite\src\shared\tools.h
+1486985686 c:\users\zsolt\git\cardboard-rewrite\src\shared\tools.h
 
-1471829913 c:\users\zsolt\git\cardboard-rewrite\src\shared\geom.h
+1471826313 c:\users\zsolt\git\cardboard-rewrite\src\shared\geom.h
 
-1540725311 c:\users\zsolt\git\cardboard-rewrite\src\shared\ents.h
+1540721711 c:\users\zsolt\git\cardboard-rewrite\src\shared\ents.h
 
-1505245567 c:\users\zsolt\git\cardboard-rewrite\src\shared\command.h
+1505241967 c:\users\zsolt\git\cardboard-rewrite\src\shared\command.h
 
-1453766601 c:\users\zsolt\git\cardboard-rewrite\src\shared\glexts.h
+1453763001 c:\users\zsolt\git\cardboard-rewrite\src\shared\glexts.h
 
-1438662968 c:\users\zsolt\git\cardboard-rewrite\src\shared\glemu.h
+1438659368 c:\users\zsolt\git\cardboard-rewrite\src\shared\glemu.h
 
-1515965706 c:\users\zsolt\git\cardboard-rewrite\src\shared\iengine.h
+1515962106 c:\users\zsolt\git\cardboard-rewrite\src\shared\iengine.h
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\shared\igame.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\shared\igame.h
 
-1436466571 c:\users\zsolt\git\cardboard-rewrite\src\engine\world.h
+1436462971 c:\users\zsolt\git\cardboard-rewrite\src\engine\world.h
 
-1438342815 c:\users\zsolt\git\cardboard-rewrite\src\engine\octa.h
+1438339215 c:\users\zsolt\git\cardboard-rewrite\src\engine\octa.h
 
-1436474017 c:\users\zsolt\git\cardboard-rewrite\src\engine\lightmap.h
+1436470417 c:\users\zsolt\git\cardboard-rewrite\src\engine\lightmap.h
 
-1522021918 c:\users\zsolt\git\cardboard-rewrite\src\engine\bih.h
+1522018318 c:\users\zsolt\git\cardboard-rewrite\src\engine\bih.h
 
-1453226927 c:\users\zsolt\git\cardboard-rewrite\src\engine\texture.h
+1453223327 c:\users\zsolt\git\cardboard-rewrite\src\engine\texture.h
 
-1438051149 c:\users\zsolt\git\cardboard-rewrite\src\engine\model.h
+1438047549 c:\users\zsolt\git\cardboard-rewrite\src\engine\model.h
 
-1541158867 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\game.h
+1541415472 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\game.h
 	"cube.h"
 	"ai.h"
 
-1540720432 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\ai.h
+1540716832 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\ai.h
 
-1505245567 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\cube.h
+1505241967 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\cube.h
 	<math.h>
 	<string.h>
 	<stdio.h>
@@ -491,11 +491,11 @@
 	"iengine.h"
 	"igame.h"
 
-1541037439 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\3dgui.cpp
+1541033839 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\3dgui.cpp
 	"engine.h"
 	"textedit.h"
 
-1512389847 c:\users\zsolt\git\cardboard-rewrite\src\engine\engine.h
+1512386247 c:\users\zsolt\git\cardboard-rewrite\src\engine\engine.h
 	"cube.h"
 	"world.h"
 	"octa.h"
@@ -504,62 +504,62 @@
 	"texture.h"
 	"model.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\engine\textedit.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\engine\textedit.h
 
-1488079127 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\bih.cpp
+1488075527 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\bih.cpp
 	"engine.h"
 
-1438335175 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\blend.cpp
+1438331575 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\blend.cpp
 	"engine.h"
 
-1438662968 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\blob.cpp
+1438659368 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\blob.cpp
 	"engine.h"
 
-1414445124 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\client.cpp
+1414441524 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\client.cpp
 	"engine.h"
 
-1541148544 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\command.cpp
+1541144944 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\command.cpp
 	"engine.h"
 
-1453161730 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\console.cpp
+1453158130 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\console.cpp
 	"engine.h"
 
 1438376306 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\cubeloader.cpp
 	"engine.h"
 
-1471829913 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\decal.cpp
+1471826313 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\decal.cpp
 	"engine.h"
 
-1436601224 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\dynlight.cpp
+1436597624 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\dynlight.cpp
 	"engine.h"
 
-1438331401 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\glare.cpp
+1438327801 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\glare.cpp
 	"engine.h"
 	"rendertarget.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\engine\rendertarget.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\engine\rendertarget.h
 
-1442052778 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\grass.cpp
+1442049178 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\grass.cpp
 	"engine.h"
 
-1453161730 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\lightmap.cpp
+1453158130 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\lightmap.cpp
 	"engine.h"
 
-1541149987 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\main.cpp
+1541146387 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\main.cpp
 	"engine.h"
 
-1442862130 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\material.cpp
+1442858530 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\material.cpp
 	"engine.h"
 
-1440569670 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\menus.cpp
+1440566070 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\menus.cpp
 	"engine.h"
 
-1540841586 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\movie.cpp
+1540837986 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\movie.cpp
 	"engine.h"
 	"SDL2_mixer/SDL_mixer.h"
 	"SDL_mixer.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_mixer.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_mixer.h
 	"SDL_stdinc.h"
 	"SDL_rwops.h"
 	"SDL_audio.h"
@@ -568,32 +568,32 @@
 	"begin_code.h"
 	"close_code.h"
 
-1438376306 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\normal.cpp
+1438372706 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\normal.cpp
 	"engine.h"
 
-1512389847 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\octa.cpp
+1512386247 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\octa.cpp
 	"engine.h"
 
-1541143877 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\octaedit.cpp
+1541140277 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\octaedit.cpp
 	"engine.h"
 
-1442052778 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\octarender.cpp
+1442049178 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\octarender.cpp
 	"engine.h"
 
-1541155986 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\physics.cpp
+1541152386 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\physics.cpp
 	"engine.h"
 	"mpr.h"
 
-1436679609 c:\users\zsolt\git\cardboard-rewrite\src\engine\mpr.h
+1436676009 c:\users\zsolt\git\cardboard-rewrite\src\engine\mpr.h
 
-1540841586 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\pvs.cpp
+1540837986 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\pvs.cpp
 	"engine.h"
 	"SDL_thread.h"
 
-1541144713 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\rendergl.cpp
+1541141113 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\rendergl.cpp
 	"engine.h"
 
-1438663659 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\rendermodel.cpp
+1438660059 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\rendermodel.cpp
 	"engine.h"
 	"ragdoll.h"
 	"animmodel.h"
@@ -606,27 +606,27 @@
 	"smd.h"
 	"iqm.h"
 
-1436679609 c:\users\zsolt\git\cardboard-rewrite\src\engine\ragdoll.h
+1436676009 c:\users\zsolt\git\cardboard-rewrite\src\engine\ragdoll.h
 
-1522021918 c:\users\zsolt\git\cardboard-rewrite\src\engine\animmodel.h
+1522018318 c:\users\zsolt\git\cardboard-rewrite\src\engine\animmodel.h
 
-1511242609 c:\users\zsolt\git\cardboard-rewrite\src\engine\vertmodel.h
+1511239009 c:\users\zsolt\git\cardboard-rewrite\src\engine\vertmodel.h
 
-1511242609 c:\users\zsolt\git\cardboard-rewrite\src\engine\skelmodel.h
+1511239009 c:\users\zsolt\git\cardboard-rewrite\src\engine\skelmodel.h
 
-1511242609 c:\users\zsolt\git\cardboard-rewrite\src\engine\md2.h
+1511239009 c:\users\zsolt\git\cardboard-rewrite\src\engine\md2.h
 
-1511242609 c:\users\zsolt\git\cardboard-rewrite\src\engine\md3.h
+1511239009 c:\users\zsolt\git\cardboard-rewrite\src\engine\md3.h
 
-1511242609 c:\users\zsolt\git\cardboard-rewrite\src\engine\md5.h
+1511239009 c:\users\zsolt\git\cardboard-rewrite\src\engine\md5.h
 
-1511242609 c:\users\zsolt\git\cardboard-rewrite\src\engine\obj.h
+1511239009 c:\users\zsolt\git\cardboard-rewrite\src\engine\obj.h
 
-1511242609 c:\users\zsolt\git\cardboard-rewrite\src\engine\smd.h
+1511239009 c:\users\zsolt\git\cardboard-rewrite\src\engine\smd.h
 
-1511242609 c:\users\zsolt\git\cardboard-rewrite\src\engine\iqm.h
+1511239009 c:\users\zsolt\git\cardboard-rewrite\src\engine\iqm.h
 
-1540532506 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\renderparticles.cpp
+1540528906 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\renderparticles.cpp
 	"engine.h"
 	"rendertarget.h"
 	"depthfx.h"
@@ -634,39 +634,39 @@
 	"lensflare.h"
 	"lightning.h"
 
-1438331401 c:\users\zsolt\git\cardboard-rewrite\src\engine\depthfx.h
+1438327801 c:\users\zsolt\git\cardboard-rewrite\src\engine\depthfx.h
 
-1438662968 c:\users\zsolt\git\cardboard-rewrite\src\engine\explosion.h
+1438659368 c:\users\zsolt\git\cardboard-rewrite\src\engine\explosion.h
 
-1453226927 c:\users\zsolt\git\cardboard-rewrite\src\engine\lensflare.h
+1453223327 c:\users\zsolt\git\cardboard-rewrite\src\engine\lensflare.h
 
-1540532506 c:\users\zsolt\git\cardboard-rewrite\src\engine\lightning.h
+1540528906 c:\users\zsolt\git\cardboard-rewrite\src\engine\lightning.h
 
-1442052778 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\rendersky.cpp
+1442049178 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\rendersky.cpp
 	"engine.h"
 
-1438326061 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\rendertext.cpp
+1438322461 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\rendertext.cpp
 	"engine.h"
 
-1511784786 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\renderva.cpp
+1511781186 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\renderva.cpp
 	"engine.h"
 
-1540531708 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\server.cpp
+1540528108 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\server.cpp
 	"engine.h"
 	"shellapi.h"
 
-1453161730 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\serverbrowser.cpp
+1453158130 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\serverbrowser.cpp
 	"engine.h"
 	"SDL_thread.h"
 
-1510184486 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\shader.cpp
+1510180886 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\shader.cpp
 	"engine.h"
 
-1438326061 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\shadowmap.cpp
+1438322461 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\shadowmap.cpp
 	"engine.h"
 	"rendertarget.h"
 
-1540863011 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\sound.cpp
+1540859411 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\sound.cpp
 	"engine.h"
 	"SDL2_mixer/SDL_mixer.h"
 	"SDL_mixer.h"
@@ -678,34 +678,34 @@
 	<fcntl.h>
 	<wchar.h>
 
-1509775862 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\texture.cpp
+1509772262 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\texture.cpp
 	"engine.h"
 	"SDL2_image/SDL_image.h"
 	"SDL_image.h"
 
-1453161730 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_image.h
+1453158130 c:\users\zsolt\git\cardboard-rewrite\src\include\sdl_image.h
 	"SDL.h"
 	"SDL_version.h"
 	"begin_code.h"
 	"close_code.h"
 
-1453206759 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\water.cpp
+1453203159 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\water.cpp
 	"engine.h"
 
-1540841586 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\world.cpp
+1540837986 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\world.cpp
 	"engine.h"
 
-1541143713 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\worldio.cpp
+1541140113 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\worldio.cpp
 	"engine.h"
 
-1540723246 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\ai.cpp
+1541415261 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\ai.cpp
 	"game.h"
 
-1541158867 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\game.h
+1541415472 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\game.h
 	"cube.h"
 	"ai.h"
 
-1540729145 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\client.cpp
+1540725545 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\client.cpp
 	"game.h"
 	"capture.h"
 	"ctf.h"
@@ -714,31 +714,31 @@
 	"ctf.h"
 	"collect.h"
 
-1540723246 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\capture.h
+1540719646 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\capture.h
 
-1540721363 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\ctf.h
+1540717763 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\ctf.h
 
-1540533831 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\collect.h
+1540530231 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\collect.h
 
-1540731021 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\entities.cpp
+1541415261 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\entities.cpp
 	"game.h"
 
-1541174792 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\fps.cpp
+1541171192 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\fps.cpp
 	"game.h"
 
-1436686163 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\monster.cpp
+1436682563 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\monster.cpp
 	"game.h"
 
-1356751179 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\movable.cpp
+1356747579 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\movable.cpp
 	"game.h"
 
-1541118429 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\render.cpp
+1541114829 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\render.cpp
 	"game.h"
 
-1540535704 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\scoreboard.cpp
+1540532104 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\scoreboard.cpp
 	"game.h"
 
-1540728497 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\server.cpp
+1540724897 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\server.cpp
 	"game.h"
 	"capture.h"
 	"ctf.h"
@@ -749,26 +749,26 @@
 	"extinfo.h"
 	"aiman.h"
 
-1438996192 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\extinfo.h
+1438992592 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\extinfo.h
 
-1540979737 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\aiman.h
+1540976137 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\aiman.h
 
-1436686163 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\waypoint.cpp
+1436682563 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\waypoint.cpp
 	"game.h"
 
-1540841586 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\weapon.cpp
+1540837986 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\weapon.cpp
 	"game.h"
 
-1399150211 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\crypto.cpp
+1399146611 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\crypto.cpp
 	"cube.h"
 
-1436679609 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\geom.cpp
+1436676009 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\geom.cpp
 	"cube.h"
 
-1453347083 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\glemu.cpp
+1453343483 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\glemu.cpp
 	"cube.h"
 
-1486994880 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\stream.cpp
+1486991280 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\stream.cpp
 	"cube.h"
 	<shlobj.h>
 	<unistd.h>
@@ -776,18 +776,18 @@
 	<sys/types.h>
 	<dirent.h>
 
-1497825432 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\tools.cpp
+1497821832 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\tools.cpp
 	"cube.h"
 
-1540729145 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\zip.cpp
+1540725545 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\zip.cpp
 	"cube.h"
 
-1540791597 source:c:\users\zsolt\git\cardboard-rewrite\src\vcpp\mingw.rc
+1540787997 source:c:\users\zsolt\git\cardboard-rewrite\src\vcpp\mingw.rc
 	"cardboard.rc"
 
 1297517007 c:\users\zsolt\git\cardboard-rewrite\src\vcpp\sauerbraten.rc
 	"winresrc.h"
 
-1540791652 c:\users\zsolt\git\cardboard-rewrite\src\vcpp\cardboard.rc
+1540788052 c:\users\zsolt\git\cardboard-rewrite\src\vcpp\cardboard.rc
 	"winresrc.h"
 

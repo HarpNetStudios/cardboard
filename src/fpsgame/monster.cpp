@@ -78,7 +78,6 @@ namespace game
             gunselect = t.gun;
             maxspeed = (float)t.speed*4;
             health = t.health;
-            armour = 0;
             loopi(NUMGUNS) ammo[i] = 10000;
             pitch = 0;
             roll = 0;

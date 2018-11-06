@@ -48,15 +48,15 @@ namespace entities
     const char *itemname(int i)
     {
         int t = ents[i]->type;
-        if(t<I_SHELLS || t>I_QUAD) return NULL;
-        return itemstats[t-I_SHELLS].name;
+        if(t<I_SMG || t>I_QUAD) return NULL;
+        return itemstats[t-I_SMG].name;
     }
 
     int itemicon(int i)
     {
         int t = ents[i]->type;
-        if(t<I_SHELLS || t>I_QUAD) return -1;
-        return itemstats[t-I_SHELLS].icon;
+        if(t<I_SMG || t>I_QUAD) return -1;
+        return itemstats[t-I_SMG].icon;
     }
 
     const char *entmdlname(int type)
@@ -65,7 +65,7 @@ namespace entities
         {
             NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
             "ammo/smg", "ammo/shells", "ammo/bullets", "ammo/rrounds", "ammo/rockets", "ammo/grenades",
-            "health", "boost", "armor/green", "armor/yellow", "quad", "teleporter",
+            "health", "boost", NULL, NULL, "quad", "teleporter",
             NULL, NULL,
             "carrot",
             NULL, NULL,
@@ -96,7 +96,7 @@ namespace entities
                 case I_SHELLS: case I_BULLETS: case I_ROCKETS: case I_ROUNDS: case I_GRENADES: case I_SMG:
                     if(m_noammo) continue;
                     break;
-                case I_HEALTH: case I_BOOST: case I_GREENARMOUR: case I_YELLOWARMOUR: case I_QUAD:
+                case I_HEALTH: case I_BOOST: case I_QUAD:
                     if(m_noitems) continue;
                     break;
                 case CARROT: case RESPAWNPOINT:
@@ -137,7 +137,7 @@ namespace entities
                     if(e.attr2 < 0) continue;
                     break;
                 default:
-                    if(!e.spawned() || e.type < I_SHELLS || e.type > I_QUAD) continue;
+                    if(!e.spawned() || e.type < I_SMG || e.type > I_QUAD) continue;
             }
             const char *mdlname = entmodel(e);
             if(mdlname)
@@ -151,7 +151,7 @@ namespace entities
 
     void addammo(int type, int &v, bool local)
     {
-        itemstat &is = itemstats[type-I_SHELLS];
+        itemstat &is = itemstats[type-I_SMG];
         v += is.add;
         if(v>is.max) v = is.max;
         if(local) msgsound(is.sound);
@@ -159,7 +159,7 @@ namespace entities
 
     void repammo(fpsent *d, int type, bool local)
     {
-        addammo(type, d->ammo[type-I_SHELLS+GUN_SG], local);
+        addammo(type, d->ammo[type-I_SMG+GUN_SMG], local);
     }
 
     // these two functions are called when the server acknowledges that you really
@@ -169,16 +169,16 @@ namespace entities
     {
         if(!ents.inrange(n)) return;
         int type = ents[n]->type;
-        if(type<I_SHELLS || type>I_QUAD) return;
+        if(type<I_SMG || type>I_QUAD) return;
         ents[n]->clearspawned();
         if(!d) return;
-        itemstat &is = itemstats[type-I_SHELLS];
+        itemstat &is = itemstats[type-I_SMG];
         if(d!=player1 || isthirdperson())
         {
             //particle_text(d->abovehead(), is.name, PART_TEXT, 2000, 0xFFC864, 4.0f, -8);
             particle_icon(d->abovehead(), is.icon%4, is.icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
         }
-        playsound(itemstats[type-I_SHELLS].sound, d!=player1 ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
+        playsound(itemstats[type-I_SMG].sound, d!=player1 ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
         d->pickup(type);
         if(d==player1) switch(type)
         {
@@ -668,7 +668,7 @@ namespace entities
         {
             "none?", "light", "mapmodel", "playerstart", "envmap", "particles", "sound", "spotlight",
             "smg", "shells", "riflerounds", "bullets", "rockets",  "grenades",
-            "health", "healthboost", "greenarmour", "yellowarmour", "quaddamage",
+            "health", "healthboost", "placeholder", "placeholder2", "quaddamage",
             "teleport", "teledest",
             "monster", "carrot", "jumppad",
             "base", "respawnpoint",

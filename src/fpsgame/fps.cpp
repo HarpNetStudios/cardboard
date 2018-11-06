@@ -318,7 +318,7 @@ namespace game
             respawnself();
             if(m_classicsp)
             {
-                conoutf(CON_GAMEINFO, "\f2You wasted another life! The monsters stole your armour and some ammo...");
+                conoutf(CON_GAMEINFO, "\f2You wasted another life! The monsters stole some ammo...");
                 loopi(NUMGUNS) if(i!=GUN_SMG && (player1->ammo[i] = savedammo[i]) > 5) player1->ammo[i] = max(player1->ammo[i]/3, 5);
             }
         }

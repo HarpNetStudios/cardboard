@@ -868,8 +868,6 @@ namespace server
             case I_GRENADES:
             case I_SMG: sec = np*4; break;
             case I_HEALTH: sec = np*5; break;
-            case I_GREENARMOUR: sec = 20; break;
-            case I_YELLOWARMOUR: sec = 30; break;
             case I_BOOST: sec = 60; break;
             case I_QUAD: sec = 70; break;
         }
@@ -880,9 +878,6 @@ namespace server
     {
         switch(type)
         {
-            case I_GREENARMOUR:
-            case I_YELLOWARMOUR:
-                return !m_classicsp;
             case I_BOOST:
             case I_QUAD:
                 return true;
@@ -1717,8 +1712,6 @@ namespace server
         putint(p, gs.lifesequence);
         putint(p, gs.health);
         putint(p, gs.maxhealth);
-        putint(p, gs.armour);
-        putint(p, gs.armourtype);
         putint(p, gs.gunselect);
         loopi(GUN_GL-GUN_SMG+1) putint(p, gs.ammo[GUN_SMG+i]);
     }
@@ -1734,9 +1727,8 @@ namespace server
     {
         gamestate &gs = ci->state;
         spawnstate(ci);
-        sendf(ci->ownernum, 1, "rii7v", N_SPAWNSTATE, ci->clientnum, gs.lifesequence,
+        sendf(ci->ownernum, 1, "rii5v", N_SPAWNSTATE, ci->clientnum, gs.lifesequence,
             gs.health, gs.maxhealth,
-            gs.armour, gs.armourtype,
             gs.gunselect, GUN_GL-GUN_SMG+1, &gs.ammo[GUN_SMG]);
         gs.lastspawn = gamemillis;
     }
@@ -1922,7 +1914,6 @@ namespace server
             gs.state, gs.frags, gs.flags, gs.quadmillis,
             gs.lifesequence,
             gs.health, gs.maxhealth,
-            gs.armour, gs.armourtype,
             gs.gunselect, GUN_GL-GUN_SMG+1, &gs.ammo[GUN_SMG], -1);
     }
 
@@ -2134,7 +2125,7 @@ namespace server
         gamestate &ts = target->state;
         ts.dodamage(damage);
         if(target!=actor && !isteam(target->team, actor->team)) actor->state.damage += damage;
-        sendf(-1, 1, "ri7", N_DAMAGE, target->clientnum, actor->clientnum, damage, ts.armour, ts.health, gun);
+        sendf(-1, 1, "ri6", N_DAMAGE, target->clientnum, actor->clientnum, damage, ts.health, gun);
         if(target==actor) target->setpushed();
         else if(!hitpush.iszero())
         {

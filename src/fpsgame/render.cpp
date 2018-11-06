@@ -112,12 +112,10 @@ namespace game
             else preloadmodel(mdl->ffa);
             if(mdl->vwep) preloadmodel(mdl->vwep);
             if(mdl->quad) preloadmodel(mdl->quad);
-            //loopj(3) if(mdl->armour[j]) preloadmodel(mdl->armour[j]);
         }
     }
 
     VAR(testquad, 0, 0, 1);
-    VAR(testarmour, 0, 0, 1);
     VAR(testteam, 0, 0, 3);
 
     void renderplayer(fpsent *d, const playermodelinfo &mdl, int team, float fade, bool mainpass)
@@ -153,12 +151,6 @@ namespace game
         {
             if((testquad || d->quadmillis) && mdl.quad)
                 a[ai++] = modelattach("tag_powerup", mdl.quad, ANIM_POWERUP|ANIM_LOOP, 0);
-            /* if(testarmour || d->armour)
-            {
-                int type = clamp(d->armourtype, (int)A_BLUE, (int)A_YELLOW);
-                if(mdl.armour[type])
-                    a[ai++] = modelattach("tag_shield", mdl.armour[type], ANIM_SHIELD|ANIM_LOOP, 0);
-            } */
         }
         if(mainpass)
         {
