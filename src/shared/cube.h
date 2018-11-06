@@ -17,6 +17,8 @@
 #include <assert.h>
 #include <time.h>
 
+#include <discord_rpc.h>
+
 #ifdef WIN32
   #define WIN32_LEAN_AND_MEAN
   #ifdef _WIN32_WINNT

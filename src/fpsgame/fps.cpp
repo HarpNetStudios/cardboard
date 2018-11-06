@@ -95,7 +95,7 @@ namespace game
         d->respawn();
         d->spawnstate(gamemode);
         return d;
-    }
+    } 
 
     void respawnself()
     {
@@ -258,31 +258,32 @@ namespace game
         gets2c();
         updatemovables(curtime);
         updatemonsters(curtime);
-        if(connected)
-        {
-            if(player1->state == CS_DEAD)
-            {
-                if(player1->ragdoll) moveragdoll(player1);
-                else if(lastmillis-player1->lastpain<2000)
-                {
-                    player1->move = player1->strafe = 0;
-                    moveplayer(player1, 10, true);
-                }
-            }
-            else if(!intermission)
-            {
-                if(player1->ragdoll) cleanragdoll(player1);
-                moveplayer(player1, 10, true);
-                swayhudgun(curtime);
-                entities::checkitems(player1);
-                if(m_sp)
-                {
-                    if(slowmosp) checkslowmo();
-                    if(m_classicsp) entities::checktriggers();
-                }
-                else if(cmode) cmode->checkitems(player1);
-            }
-        }
+		if (connected)
+		{
+			if (player1->state == CS_DEAD)
+			{
+				if (player1->ragdoll) moveragdoll(player1);
+				else if (lastmillis - player1->lastpain < 2000)
+				{
+					player1->move = player1->strafe = 0;
+					moveplayer(player1, 10, true);
+				}
+			}
+			else if (!intermission)
+			{
+				if (player1->ragdoll) cleanragdoll(player1);
+				moveplayer(player1, 10, true);
+				swayhudgun(curtime);
+				entities::checkitems(player1);
+				if (m_sp)
+				{
+					if (slowmosp) checkslowmo();
+					if (m_classicsp) entities::checktriggers();
+				}
+				else if (cmode) cmode->checkitems(player1);
+			}
+			discord::dis_updatepresence(D_PLAYING, gamemodes[gamemode - STARTGAMEMODE].name, player1);
+		}
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }
 

@@ -21,6 +21,7 @@ void cleanup()
     #ifdef __APPLE__
         if(screen) SDL_SetWindowFullscreen(screen, 0);
     #endif
+	Discord_Shutdown();
     SDL_Quit();
 }
 
@@ -1244,6 +1245,10 @@ int main(int argc, char **argv)
 
     identflags |= IDF_PERSIST;
 
+	logoutf("init: discord");
+	discord::dis_initdiscord();
+	discord::dis_updatepresence(D_MENU);
+
     logoutf("init: mainloop");
 
     if(execfile("once.cfg", false)) remove(findfile("once.cfg", "rb"));
@@ -1300,8 +1305,12 @@ int main(int argc, char **argv)
         if(minimized) continue;
 
         inbetweenframes = false;
-        if(mainmenu) gl_drawmainmenu();
+		if (mainmenu) {
+			gl_drawmainmenu(); 
+			discord::dis_updatepresence(D_MENU);
+		}
         else gl_drawframe();
+		//gl_drawframe();
         swapbuffers();
         renderedframe = inbetweenframes = true;
     }
