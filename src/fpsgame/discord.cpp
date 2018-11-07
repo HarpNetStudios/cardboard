@@ -2,11 +2,10 @@
 
 #include "engine.h"
 #include "cube.h"
-#include "game.h"
 
 namespace discord
 {
-	void dis_updatepresence(int gamestate, const char* modename, fpsent* ent)
+	void dis_updatepresence(int gamestate, const char* modename, string playername, int playermodel)
 	{
 		char buffer[128];
 		DiscordRichPresence discordPresence;

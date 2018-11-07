@@ -563,3 +563,17 @@ extern bool g3d_movecursor(int dx, int dy);
 extern void g3d_cursorpos(float &x, float &y);
 extern void g3d_resetcursor();
 extern void g3d_limitscale(float scale);
+
+// discord
+namespace discord
+{
+	extern void dis_updatepresence(int gamestate = 0, const char* modename = NULL, string playername = NULL, int playermodel = -1);
+	extern void dis_initdiscord();
+}
+
+enum dis_gamestates
+{
+	D_MENU = 0,
+	D_PLAYING,
+	D_SPECTATE,
+};

@@ -123,17 +123,3 @@ namespace server
     extern bool ispaused();
     extern int scaletime(int t);
 }
-
-// discord
-namespace discord
-{
-	extern void dis_updatepresence(int gamestate = 0, const char* modename = NULL, fpsent* ent = NULL);
-	extern void dis_initdiscord();
-}
-
-enum dis_gamestates
-{
-	D_MENU = 0,
-	D_PLAYING,
-	D_SPECTATE,
-};
