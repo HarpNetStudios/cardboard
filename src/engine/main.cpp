@@ -21,7 +21,9 @@ void cleanup()
     #ifdef __APPLE__
         if(screen) SDL_SetWindowFullscreen(screen, 0);
     #endif
-	Discord_Shutdown();
+	#ifdef WIN32
+		Discord_Shutdown();
+	#endif
     SDL_Quit();
 }
 
@@ -69,7 +71,7 @@ void fatal(const char *s, ...)    // failure exit
     exit(EXIT_FAILURE);
 }
 
-int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1;
+int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1, starttime = time(0);
 
 dynent *player = NULL;
 
@@ -183,7 +185,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
     gettextres(w, h);
 
     static int lastupdate = -1, lastw = -1, lasth = -1;
-    static float backgroundu = 0, backgroundv = 0, detailu = 0, detailv = 0;
+	static float backgroundu = 0, backgroundv = 0;
     static int numdecals = 0;
     static struct decal { float x, y, size; int side; } decals[12];
     if((renderedframe && !mainmenu && lastupdate != lastmillis) || lastw != w || lasth != h)
@@ -194,8 +196,6 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
         backgroundu = rndscale(1);
         backgroundv = rndscale(1);
-        detailu = rndscale(1);
-        detailv = rndscale(1);
         numdecals = sizeof(decals)/sizeof(decals[0]);
         numdecals = numdecals/3 + rnd((numdecals*2)/3 + 1);
         float maxsize = min(w, h)/16.0f;
@@ -1245,9 +1245,11 @@ int main(int argc, char **argv)
 
     identflags |= IDF_PERSIST;
 
-	logoutf("init: discord");
-	discord::dis_initdiscord();
-	discord::dis_updatepresence(D_MENU);
+	#ifdef WIN32
+		logoutf("init: discord");
+		discord::dis_initdiscord();
+		discord::dis_updatepresence(D_MENU);
+	#endif
 
     logoutf("init: mainloop");
 
@@ -1307,7 +1309,9 @@ int main(int argc, char **argv)
         inbetweenframes = false;
 		if (mainmenu) {
 			gl_drawmainmenu(); 
-			discord::dis_updatepresence(D_MENU);
+			#ifdef WIN32
+				discord::dis_updatepresence(D_MENU);
+			#endif
 		}
         else gl_drawframe();
 		//gl_drawframe();

@@ -4,6 +4,7 @@ extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time
 extern int elapsedtime;                 // elapsed frame time
 extern int totalmillis;                 // total elapsed time
+extern int starttime;                   // time from start
 extern uint totalsecs;
 extern int gamespeed, paused;
 
@@ -562,17 +563,3 @@ extern bool g3d_movecursor(int dx, int dy);
 extern void g3d_cursorpos(float &x, float &y);
 extern void g3d_resetcursor();
 extern void g3d_limitscale(float scale);
-
-// discord
-namespace discord
-{
-	extern void dis_updatepresence(int gamestate = 0, const char* modename = NULL, physent* ent = NULL);
-	extern void dis_initdiscord();
-}
-
-enum dis_gamestates
-{
-	D_MENU = 0,
-	D_PLAYING,
-	D_SPECTATE,
-};

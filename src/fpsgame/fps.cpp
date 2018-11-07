@@ -282,7 +282,9 @@ namespace game
 				}
 				else if (cmode) cmode->checkitems(player1);
 			}
-			discord::dis_updatepresence(D_PLAYING, gamemodes[gamemode - STARTGAMEMODE].name, player1);
+			#ifdef WIN32
+				discord::dis_updatepresence(D_PLAYING, gamemodes[gamemode - STARTGAMEMODE].name, player1);
+			#endif
 		}
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }

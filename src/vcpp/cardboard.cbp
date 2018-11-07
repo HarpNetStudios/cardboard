@@ -15,10 +15,10 @@
 				<Option parameters="-t0 -w640 -h480 -qhome" />
 				<Compiler>
 					<Add option="-fomit-frame-pointer" />
-					<Add option="-ffast-math" />
 					<Add option="-O3" />
 					<Add option="-Wall" />
 					<Add option="-m64" />
+					<Add option="-ffast-math" />
 					<Add option="-fsigned-char" />
 					<Add option="-fno-exceptions" />
 					<Add option="-fno-rtti" />
@@ -44,6 +44,7 @@
 					<Add library="enet" />
 					<Add library="ws2_32" />
 					<Add library="winmm" />
+					<Add library="discord-rpc" />
 					<Add directory="../../bin64" />
 					<Add directory="../lib64" />
 				</Linker>
@@ -89,6 +90,7 @@
 					<Add library="enet" />
 					<Add library="ws2_32" />
 					<Add library="winmm" />
+					<Add library="discord-rpc" />
 					<Add directory="../../bin" />
 					<Add directory="../lib" />
 				</Linker>
@@ -171,6 +173,7 @@
 		<Unit filename="../fpsgame/client.cpp" />
 		<Unit filename="../fpsgame/collect.h" />
 		<Unit filename="../fpsgame/ctf.h" />
+		<Unit filename="../fpsgame/discord.cpp" />
 		<Unit filename="../fpsgame/entities.cpp" />
 		<Unit filename="../fpsgame/extinfo.h" />
 		<Unit filename="../fpsgame/fps.cpp" />

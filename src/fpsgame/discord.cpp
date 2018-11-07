@@ -2,10 +2,11 @@
 
 #include "engine.h"
 #include "cube.h"
+#include "game.h"
 
 namespace discord
 {
-	void dis_updatepresence(int gamestate, const char* modename, physent* ent)
+	void dis_updatepresence(int gamestate, const char* modename, fpsent* ent)
 	{
 		char buffer[128];
 		DiscordRichPresence discordPresence;
@@ -15,12 +16,13 @@ namespace discord
 				discordPresence.state = "In the menus";
 				//formatstring(buffer, "Mode: %s | gamer: %s", modename, "one");
 				//discordPresence.details = buffer;
+				discordPresence.startTimestamp = starttime;
 				discordPresence.largeImageKey = "logo-large";
 				discordPresence.smallImageKey = "turkey-test";
 				discordPresence.smallImageText = "It's a turkey!";
 				discordPresence.partyId = "";
-				discordPresence.partySize = 1;
-				discordPresence.partyMax = 6;
+				discordPresence.partySize = NULL;
+				discordPresence.partyMax = NULL;
 				discordPresence.joinSecret = "";
 				break;
 			case D_PLAYING:
@@ -31,7 +33,7 @@ namespace discord
 				discordPresence.largeImageKey = "logo-large";
 				discordPresence.largeImageText = game::getclientmap();
 				discordPresence.smallImageKey = "turkey-test";
-				discordPresence.smallImageText = "It's a turkey!";
+				discordPresence.smallImageText = "";
 				discordPresence.partyId = "party1234";
 				discordPresence.partySize = 1;
 				discordPresence.partyMax = 6;
