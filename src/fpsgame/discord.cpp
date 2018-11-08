@@ -18,7 +18,7 @@ namespace discord
 				discordPresence.startTimestamp = starttime;
 				discordPresence.largeImageKey = "logo-large";
 				discordPresence.smallImageKey = "turkey-test";
-				discordPresence.smallImageText = "It's a turkey! Wow!";
+				discordPresence.smallImageText = "It's a turkey! Wow!"; // turkey time baby
 				discordPresence.partyId = "";
 				discordPresence.partySize = NULL;
 				discordPresence.partyMax = NULL;
@@ -32,7 +32,7 @@ namespace discord
 				discordPresence.largeImageKey = "logo-large";
 				discordPresence.largeImageText = game::getclientmap();
 				discordPresence.smallImageKey = "turkey-test";
-				discordPresence.smallImageText = "It's a turkey! Wow!";
+				discordPresence.smallImageText = "It's a turkey! Wow!"; // maximum turkey
 				discordPresence.partyId = "party1234";
 				discordPresence.partySize = 1;
 				discordPresence.partyMax = 6;
