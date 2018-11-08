@@ -1,7 +1,60 @@
 ﻿  pch.cpp
 c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(1540): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-hdBase>' when no variable is declared
 c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(3056): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-sfImage>' when no variable is declared
+  pch.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(1540): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-hdBase>' when no variable is declared
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(3056): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-sfImage>' when no variable is declared
+  pch.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(1540): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-hdBase>' when no variable is declared
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(3056): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-sfImage>' when no variable is declared
+  blend.cpp
+  lightmap.cpp
+  normal.cpp
+  octa.cpp
+  octaedit.cpp
+  octarender.cpp
+  physics.cpp
+  pvs.cpp
+  world.cpp
+  worldio.cpp
+  client.cpp
+  server.cpp
+  serverbrowser.cpp
+  3dgui.cpp
+  bih.cpp
+  blob.cpp
+  decal.cpp
+  dynlight.cpp
+  glare.cpp
+  grass.cpp
+  Generating Code...
+  Compiling...
+  material.cpp
+  rendergl.cpp
+  rendermodel.cpp
+  renderparticles.cpp
+  rendersky.cpp
+  rendertext.cpp
+  renderva.cpp
+  shader.cpp
+  shadowmap.cpp
+  texture.cpp
+  water.cpp
+  command.cpp
+  console.cpp
+  main.cpp
+  menus.cpp
+  movie.cpp
+  sound.cpp
+  Generating Code...
   discord.cpp
+  crypto.cpp
+  geom.cpp
+  glemu.cpp
+  stream.cpp
+  tools.cpp
+  zip.cpp
+  Generating Code...
   ai.cpp
   entities.cpp
   fps.cpp
@@ -14,4 +67,4 @@ c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(3056): war
   Generating Code...
   client.cpp
   server.cpp
-  cardboard.vcxproj -> C:\Users\Zsolt\Git\Cardboard-rewrite\src\vcpp\..\..\bin\cardboard_msvc.exe
+  cardboard.vcxproj -> C:\Users\nited\source\repos\HarpNetStudios\Cardboard-rewrite\src\vcpp\..\..\bin\cardboard_msvc.exe
