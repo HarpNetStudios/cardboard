@@ -88,7 +88,7 @@ namespace discord
 
 	static void handleDiscordJoin(const char* secret)
 	{
-		printf("\nDiscord: join (%s)\n", secret);
+		conoutf("\nDiscord: join (%s)\n", secret);
 	}
 
 	void dis_initdiscord()
