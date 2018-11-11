@@ -1091,6 +1091,46 @@ int getclockmillis()
 }
 
 VAR(numcpus, 1, 1, 16);
+/*
+
+// Define variable or field for the request
+nhr_request _request = NULL;
+
+void on_request_error(nhr_request request, nhr_error_code error_code) {
+	_request = NULL; // Clean up previously stored request variable or field
+	//TODO: process `error_code`
+}
+
+void on_request_response(nhr_request request, nhr_response response) {
+	_request = NULL; // Clean up previously stored request variable or field
+	char* body = nhr_response_get_body(response);
+	unsigned int body_length = nhr_response_get_body_length(response);
+	if (body && body_length) {
+		conoutf(body);
+	}
+}
+
+void ass()
+{
+	// Create request object
+	_request = nhr_request_create();
+
+	// Combined url: "http://isithackday.com/arrpi.php"
+	nhr_request_set_url(_request, "http", "worldclockapi.com", "/api/json/utc/now", 80);
+
+	nhr_request_set_method(_request, nhr_method_GET); // GET
+
+	// Set request callbacks
+	nhr_request_set_on_recvd_responce(_request, &on_request_response);
+	nhr_request_set_on_error(_request, &on_request_error);
+
+	nhr_request_send(_request);
+
+}
+
+COMMAND(ass, "N");
+
+*/
 
 int main(int argc, char **argv)
 {

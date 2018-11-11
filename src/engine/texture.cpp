@@ -610,7 +610,7 @@ void setuptexcompress()
 {
     if(!usetexcompress) return;
 
-    GLenum hint = GL_DONT_CARE;
+    GLenum hint = GL_DONT_CARE; // current mood -Y
     switch(texcompressquality)
     {
         case 1: hint = GL_NICEST; break;
@@ -3436,7 +3436,7 @@ bool loadimage(const char *filename, ImageData &image)
     return true;
 }
 
-SVARP(screenshotdir, "");
+SVARP(screenshotdir, "screenshots/");
 
 void screenshot(char *filename)
 {
@@ -3457,7 +3457,7 @@ void screenshot(char *filename)
     }
     else
     {
-        defformatstring(name, "screenshot_%d", totalmillis);
+        defformatstring(name, "ss_%d", time(0));
         concatstring(buf, name);
     }
     if(format < 0)

@@ -5,65 +5,101 @@
 
 namespace discord
 {
+
+	char* dis_modeltoname(int model)
+	{
+		char* name;
+		switch (model)
+		{
+			case 0:
+				name = "player-test";
+				break;
+			case 1:
+				name = "player-amber";
+				break;
+			case 2:
+				name = "";
+				break;
+			case 3:
+				name = "";
+				break;
+			case 4:
+				name = "";
+				break;
+			case 5:
+				name = "";
+				break;
+			default:
+				name = "";
+				break;
+		}
+		return name;
+	}
+
+	void dis_ass()
+	{
+		conoutf(game::getclientmap());
+	}
+
+	COMMAND(dis_ass,"N");
+
 	void dis_updatepresence(int gamestate, const char* modename, string playername, int playermodel)
 	{
 		char buffer[128];
 		DiscordRichPresence discordPresence;
 		memset(&discordPresence, 0, sizeof(discordPresence));
-		switch (gamestate) {
+		switch (gamestate)
+		{
 			case D_MENU:
 				discordPresence.state = "In the menus";
-				//formatstring(buffer, "Mode: %s | gamer: %s", modename, "one");
-				//discordPresence.details = buffer;
-				discordPresence.startTimestamp = starttime;
-				discordPresence.largeImageKey = "logo-large";
-				discordPresence.smallImageKey = "turkey-test";
-				discordPresence.smallImageText = "It's a turkey! Wow!";
-				discordPresence.partyId = "";
-				discordPresence.partySize = NULL;
-				discordPresence.partyMax = NULL;
-				discordPresence.joinSecret = "";
 				break;
 			case D_PLAYING:
 				discordPresence.state = "Playing the game";
-				formatstring(buffer, "Mode: %s | gamer: %s", modename, "one");
-				discordPresence.details = buffer;
-				discordPresence.endTimestamp = time(0) + 5 * 60;
-				discordPresence.largeImageKey = "logo-large";
-				discordPresence.largeImageText = game::getclientmap();
-				discordPresence.smallImageKey = "turkey-test";
-				discordPresence.smallImageText = "It's a turkey! Wow!";
-				discordPresence.partyId = "party1234";
-				discordPresence.partySize = 1;
-				discordPresence.partyMax = 6;
-				discordPresence.joinSecret = "join";
 				break;
 			case D_SPECTATE:
 				discordPresence.state = "Spectating";
-				formatstring(buffer, "Mode: %s | gamer: %s", modename, "two");
-				discordPresence.details = buffer;
-				discordPresence.endTimestamp = time(0) + 5 * 60;
-				discordPresence.largeImageKey = "turkey-test";
-				discordPresence.largeImageText = game::getclientmap();
-				discordPresence.smallImageKey = "logo-large";
-				discordPresence.smallImageText = "It's a turkey!";
-				discordPresence.partyId = "party1234";
-				discordPresence.partySize = 1;
-				discordPresence.partyMax = 6;
-				discordPresence.joinSecret = "join";
 				break;
 			default:
 				discordPresence.state = "SOMETHING BROKE";
-				discordPresence.details = "";
+				discordPresence.details = "Message Yellowberry#0483 about what you did!";
 				discordPresence.largeImageKey = "logo-large";
 				discordPresence.largeImageText = "Message Yellowberry#0483 about what you did!";
-				discordPresence.smallImageKey = "";
-				discordPresence.smallImageText = "";
+				discordPresence.smallImageKey = "turkey-text";
+				discordPresence.smallImageText = "Message Yellowberry#0483 about what you did!";
 				discordPresence.partyId = "";
-				discordPresence.partySize = 1;
-				discordPresence.partyMax = 1;
-				discordPresence.joinSecret = "join";
+				discordPresence.partySize = 0;
+				discordPresence.partyMax = 0;
+				discordPresence.joinSecret = "";
+				discordPresence.spectateSecret = "";
 				break;
+		}
+		if (gamestate != D_MENU) {
+			formatstring(buffer, "Mode: %s", modename);
+			discordPresence.details = buffer;
+			discordPresence.startTimestamp = 0;
+			discordPresence.endTimestamp = time(0) + 5 * 60;
+			discordPresence.largeImageKey = game::getclientmap();
+			discordPresence.largeImageText = game::getclientmap();
+			discordPresence.smallImageKey = dis_modeltoname(playermodel);
+			discordPresence.smallImageText = playername;
+			discordPresence.partyId = "w00t";
+			discordPresence.partySize = 1;
+			discordPresence.partyMax = 6;
+			discordPresence.joinSecret = "join";
+			discordPresence.spectateSecret = "spookytate";
+		} 
+		else 
+		{ 
+			discordPresence.details = "";
+			discordPresence.startTimestamp = starttime;
+			discordPresence.endTimestamp = 0;
+			discordPresence.largeImageKey = "logo-large";
+			discordPresence.largeImageText = "";
+			discordPresence.partyId = "";
+			discordPresence.partySize = NULL;
+			discordPresence.partyMax = NULL;
+			discordPresence.joinSecret = "";
+			discordPresence.spectateSecret = "";
 		}
 		Discord_UpdatePresence(&discordPresence);
 	}

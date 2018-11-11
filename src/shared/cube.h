@@ -19,6 +19,7 @@
 
 #ifdef WIN32
 #include <discord_rpc.h>
+#include <libnhr.h>
 #endif
 
 #ifdef WIN32

@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1512386247 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\engine.h
+1541620885 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\engine.h
 	"cube.h"
 	"world.h"
 	"octa.h"
@@ -8,7 +8,7 @@
 	"texture.h"
 	"model.h"
 
-1541510580 c:\users\zsolt\git\cardboard-rewrite\src\shared\cube.h
+1541612302 c:\users\zsolt\git\cardboard-rewrite\src\shared\cube.h
 	<math.h>
 	<string.h>
 	<stdio.h>
@@ -441,9 +441,9 @@
 
 1438659368 c:\users\zsolt\git\cardboard-rewrite\src\shared\glemu.h
 
-1541532132 c:\users\zsolt\git\cardboard-rewrite\src\shared\iengine.h
+1541620885 c:\users\zsolt\git\cardboard-rewrite\src\shared\iengine.h
 
-1541532132 c:\users\zsolt\git\cardboard-rewrite\src\shared\igame.h
+1541619713 c:\users\zsolt\git\cardboard-rewrite\src\shared\igame.h
 
 1436462971 c:\users\zsolt\git\cardboard-rewrite\src\engine\world.h
 
@@ -457,13 +457,13 @@
 
 1438047549 c:\users\zsolt\git\cardboard-rewrite\src\engine\model.h
 
-1541531038 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\game.h
+1541622586 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\game.h
 	"cube.h"
 	"ai.h"
 
 1540716832 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\ai.h
 
-1541510580 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\cube.h
+1541612302 source:c:\users\zsolt\git\cardboard-rewrite\src\shared\cube.h
 	<math.h>
 	<string.h>
 	<stdio.h>
@@ -497,7 +497,7 @@
 	"engine.h"
 	"textedit.h"
 
-1512386247 c:\users\zsolt\git\cardboard-rewrite\src\engine\engine.h
+1541620885 c:\users\zsolt\git\cardboard-rewrite\src\engine\engine.h
 	"cube.h"
 	"world.h"
 	"octa.h"
@@ -547,7 +547,7 @@
 1453158130 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\lightmap.cpp
 	"engine.h"
 
-1541533687 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\main.cpp
+1541613597 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\main.cpp
 	"engine.h"
 
 1442858530 source:c:\users\zsolt\git\cardboard-rewrite\src\engine\material.cpp
@@ -703,7 +703,7 @@
 1541505837 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\ai.cpp
 	"game.h"
 
-1541531038 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\game.h
+1541622586 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\game.h
 	"cube.h"
 	"ai.h"
 
@@ -725,7 +725,7 @@
 1541505837 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\entities.cpp
 	"game.h"
 
-1541531883 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\fps.cpp
+1541620920 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\fps.cpp
 	"game.h"
 
 1541505837 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\monster.cpp
@@ -795,4 +795,8 @@
 
 1522950484 c:\users\zsolt\git\cardboard-rewrite\src\include\discord_rpc.h
 	<stdint.h>
+
+1541622742 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\discord.cpp
+	"engine.h"
+	"cube.h"
 

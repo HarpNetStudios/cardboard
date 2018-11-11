@@ -283,7 +283,7 @@ namespace game
 				else if (cmode) cmode->checkitems(player1);
 			}
 			#ifdef WIN32
-				discord::dis_updatepresence(D_PLAYING, gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
+				discord::dis_updatepresence((player1->state == CS_SPECTATOR ? D_SPECTATE : D_PLAYING ), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
 			#endif
 		}
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
