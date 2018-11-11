@@ -82,7 +82,7 @@ namespace discord
 			discordPresence.largeImageText = game::getclientmap();
 			discordPresence.smallImageKey = dis_modeltoname(playermodel);
 			discordPresence.smallImageText = playername;
-			discordPresence.partyId = "w00t";
+			discordPresence.partyId = "w00t!";
 			discordPresence.partySize = 1;
 			discordPresence.partyMax = 6;
 			discordPresence.joinSecret = "join";
