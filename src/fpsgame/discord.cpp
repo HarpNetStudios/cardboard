@@ -106,27 +106,66 @@ namespace discord
 
 	void handleDiscordReady(const DiscordUser* connectedUser)
 	{
-		conoutf("\nDiscord: connected to user %s#%s - %s",
+		conoutf("Discord: connected to user %s#%s - %s",
 			connectedUser->username,
 			connectedUser->discriminator,
 			connectedUser->userId);
+		SDL_Quit();
+		exit(EXIT_SUCCESS);
 	}
 
 	void handleDiscordDisconnected(int errcode, const char* message)
 	{
-		conoutf("\nDiscord: disconnected (%d: %s)", errcode, message);
+		conoutf("Discord: disconnected (%d: %s)", errcode, message);
 	}
 
 	void handleDiscordError(int errcode, const char* message)
 	{
-		conoutf("\nDiscord: error (%d: %s)", errcode, message);
+		conoutf("Discord: error (%d: %s)", errcode, message);
 	}
 
-	static void handleDiscordJoin(const char* secret)
+	void handleDiscordJoin(const char* secret)
 	{
-		conoutf("\nDiscord: join (%s)\n", secret);
+		conoutf("Discord: join (%s)\n", secret);
 	}
 
+	static void handleDiscordSpectate(const char* secret)
+	{
+		conoutf("Discord: spectate (%s)\n", secret);
+	}
+
+	void handleDiscordJoinRequest(const DiscordUser* request)
+	{
+		int response = -1;
+		char yn[4];
+		conoutf("Discord: join request from %s#%s - %s",
+			request->username,
+			request->discriminator,
+			request->userId);
+		/*do {
+			conoutf("Accept? (y/n)");
+			if (!prompt(yn, sizeof(yn))) {
+				break;
+			}
+
+			if (!yn[0]) {
+				continue;
+			}
+
+			if (yn[0] == 'y') {
+				response = DISCORD_REPLY_YES;
+				break;
+			}
+
+			if (yn[0] == 'n') {
+				response = DISCORD_REPLY_NO;
+				break;
+			}
+		} while (1);*/
+		if (response != -1) {
+			Discord_Respond(request->userId, response);
+		}
+	}
 	void dis_initdiscord()
 	{
 		DiscordEventHandlers handlers;
@@ -135,6 +174,8 @@ namespace discord
 		handlers.errored = handleDiscordError;
 		handlers.disconnected = handleDiscordDisconnected;
 		handlers.joinGame = handleDiscordJoin;
+		handlers.joinRequest = handleDiscordJoinRequest;
+		handlers.spectateGame = handleDiscordSpectate;
 
 		// Discord_Initialize(const char* applicationId, DiscordEventHandlers* handlers, int autoRegister, const char* optionalSteamId)
 		Discord_Initialize("436989367941070848", &handlers, 1, "0");

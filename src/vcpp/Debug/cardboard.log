@@ -1,1 +1,3 @@
-﻿  cardboard.vcxproj -> C:\Users\nited\source\repos\Cardboard-rewrite\src\vcpp\..\..\bin\cardboard_msvc.exe
+﻿  discord.cpp
+c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\discord.cpp(140): warning C4101: 'yn': unreferenced local variable
+  cardboard.vcxproj -> C:\Users\Zsolt\Git\Cardboard-rewrite\src\vcpp\..\..\bin\cardboard_msvc.exe
