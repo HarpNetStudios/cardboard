@@ -566,7 +566,7 @@ struct fpsent : dynent, fpsstate
     void hitpush(int damage, const vec &dir, fpsent *actor, int gun)
     {
         vec push(dir);
-        push.mul((actor==this && guns[gun].exprad ? EXP_SELFPUSH : 0.1f)*guns[gun].hitpush*damage/weight);
+        push.mul((actor==this && guns[gun].exprad ? EXP_SELFPUSH : 0.1f)*guns[gun].hitpush*guns[gun].damage/weight); // hitpush damage
         vel.add(push);
     }
 
