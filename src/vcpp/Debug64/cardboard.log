@@ -1,2 +1,1 @@
-﻿LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
-  cardboard.vcxproj -> C:\Users\Zsolt\Git\Cardboard-rewrite\src\vcpp\..\..\bin64\cardboard_msvc.exe
+﻿  cardboard.vcxproj -> C:\!CODE\C++\Cardboard-rewrite\src\vcpp\..\..\bin64\cardboard_msvc.exe

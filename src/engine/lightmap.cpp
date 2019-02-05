@@ -593,8 +593,8 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
         case LM_BUMPMAP0:
             if(avgray.iszero()) break;
             // transform to tangent space
-            extern vec orientation_tangent[6][3];
-            extern vec orientation_bitangent[6][3];            
+			extern const vec orientation_tangent[8][3];
+			extern const vec orientation_bitangent[8][3];
             vec S(orientation_tangent[w->rotate][dimension(w->orient)]),
                 T(orientation_bitangent[w->rotate][dimension(w->orient)]);
             normal.orthonormalize(S, T);
@@ -683,9 +683,10 @@ static inline void generatealpha(lightmapworker *w, float tolerance, const vec &
         float k = 8.0f/w->vslot->scale,
               s = (pos[sdim[dim]] * k - w->vslot->offset.y) / w->slot->layermaskscale,
               t = (pos[tdim[dim]] * (dim <= 1 ? -k : k) - w->vslot->offset.y) / w->slot->layermaskscale;
-        if((w->rotate&5)==1) swap(s, t);
-        if(w->rotate>=2 && w->rotate<=4) s = -s;
-        if((w->rotate>=1 && w->rotate<=2) || w->rotate==5) t = -t;
+		const texrotation &r = texrotations[w->rotate];
+		if (r.swapxy) swap(s, t);
+		if (r.flipx) s = -s;
+		if (r.flipy) t = -t;
         const ImageData &mask = *w->slot->layermask;
         int mx = int(floor(s))%mask.w, my = int(floor(t))%mask.h;
         if(mx < 0) mx += mask.w;
@@ -2257,11 +2258,8 @@ VARF(fullbrightlevel, 0, 128, 255, setfullbrightlevel(fullbrightlevel));
 
 vector<LightMapTexture> lightmaptexs;
 
-static void rotatenormals(LightMap &lmlv, int x, int y, int w, int h, int rotate)
+static void rotatenormals(LightMap &lmlv, int x, int y, int w, int h, bool flipx, bool flipy, bool swapxy)
 {
-    bool flipx = rotate>=2 && rotate<=4,
-         flipy = (rotate>=1 && rotate<=2) || rotate==5,
-         swapxy = (rotate&5)==1;
     uchar *lv = lmlv.data + 3*(y*LM_PACKW + x);
     int stride = 3*(LM_PACKW-w);
     loopi(h)
@@ -2312,7 +2310,8 @@ static void rotatenormals(cube *c)
             y1 /= (USHRT_MAX+1)/LM_PACKH;
             x2 /= (USHRT_MAX+1)/LM_PACKW;
             y2 /= (USHRT_MAX+1)/LM_PACKH;
-            rotatenormals(lmlv, x1, y1, x2-x1, y1-y1, vslot.rotation < 4 ? 4-vslot.rotation : vslot.rotation);
+			const texrotation &r = texrotations[vslot.rotation < 4 ? 4 - vslot.rotation : vslot.rotation];
+			rotatenormals(lmlv, x1, y1, x2 - x1, y1 - y1, r.flipx, r.flipy, r.swapxy);
         }
     }
 }

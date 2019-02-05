@@ -699,9 +699,10 @@ struct gui : g3d_gui
         float xoff = vslot.offset.x, yoff = vslot.offset.y;
         if(vslot.rotation)
         {
-            if((vslot.rotation&5) == 1) { swap(xoff, yoff); loopk(4) swap(tc[k].x, tc[k].y); }
-            if(vslot.rotation >= 2 && vslot.rotation <= 4) { xoff *= -1; loopk(4) tc[k].x *= -1; }
-            if(vslot.rotation <= 2 || vslot.rotation == 5) { yoff *= -1; loopk(4) tc[k].y *= -1; }
+			const texrotation &r = texrotations[vslot.rotation];
+			if (r.swapxy) { swap(xoff, yoff); loopk(4) swap(tc[k].x, tc[k].y); }
+			if (r.flipx) { xoff *= -1; loopk(4) tc[k].x *= -1; }
+			if (r.flipy) { yoff *= -1; loopk(4) tc[k].y *= -1; }
         }
         loopk(4) { tc[k].x = tc[k].x/xt - xoff/t->xs; tc[k].y = tc[k].y/yt - yoff/t->ys; }
         if(slot.loaded) gle::color(vec(color).mul(vslot.colorscale));

@@ -1594,10 +1594,11 @@ void vecfromyawpitch(float yaw, float pitch, int move, int strafe, vec &m)
 
     if(strafe)
     {
-        m.x += strafe*cosf(RAD*yaw);
+        m.x += strafe*cosf(RAD*yaw); // ??? math too brain deade
         m.y += strafe*sinf(RAD*yaw);
     }
 }
+
 
 void vectoyawpitch(const vec &v, float &yaw, float &pitch)
 {
@@ -1616,12 +1617,22 @@ FVAR(straferoll, 0, 0.033f, 90);
 FVAR(faderoll, 0, 0.95f, 1);
 VAR(floatspeed, 1, 100, 10000);
 
+void calcfric(physent *pl, bool local, bool water, bool floating, int curtime, vec d)
+{
+	float fric = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
+    pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f));
+// old fps friction
+	//float friction = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
+	//float fpsfric = min(curtime/(20.0f*friction), 1.0f);
+	//pl->vel.lerp(pl->vel, d, fpsfric);
+}
+
 void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curtime)
 {
     bool allowmove = game::allowmove(pl);
     if(pl->physstate != PHYS_FALL)
     {
-        pl->jumpstate = false;
+		pl->jumpstate = false;
     }
     if(floating)
     {
@@ -1688,7 +1699,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
             m.z = water ? max(m.z, dz) : dz;
         }
 
-        m.normalize();
+        m.safenormalize();
     }
 
     vec d(m);
@@ -1699,14 +1710,10 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
         {
             if(pl==player) d.mul(floatspeed/100.0f);
         }
-        else if(!water && allowmove) d.mul((pl->move && !pl->strafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
+        //else if(!water && allowmove) d.mul((pl->move && !pl->strafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
+		else if (!water && allowmove) d.mul(1.3f * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
     }
-  float fric = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
-  pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f));
-// old fps friction
-    //float friction = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
-    //float fpsfric = min(curtime/(20.0f*friction), 1.0f);
-    //pl->vel.lerp(pl->vel, d, fpsfric);
+	calcfric(pl, local, water, floating, curtime, d);
 }
 
 void modifygravity(physent *pl, bool water, int curtime)

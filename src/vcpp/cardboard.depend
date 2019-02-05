@@ -8,7 +8,7 @@
 	"texture.h"
 	"model.h"
 
-1541612302 c:\users\zsolt\git\cardboard-rewrite\src\shared\cube.h
+1541666716 c:\users\zsolt\git\cardboard-rewrite\src\shared\cube.h
 	<math.h>
 	<string.h>
 	<stdio.h>
@@ -19,6 +19,7 @@
 	<assert.h>
 	<time.h>
 	<discord_rpc.h>
+	<libnhr.h>
 	"windows.h"
 	<eh.h>
 	<dbghelp.h>
@@ -441,7 +442,7 @@
 
 1438659368 c:\users\zsolt\git\cardboard-rewrite\src\shared\glemu.h
 
-1541620885 c:\users\zsolt\git\cardboard-rewrite\src\shared\iengine.h
+1541674995 c:\users\zsolt\git\cardboard-rewrite\src\shared\iengine.h
 
 1541619713 c:\users\zsolt\git\cardboard-rewrite\src\shared\igame.h
 
@@ -703,7 +704,7 @@
 1541505837 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\ai.cpp
 	"game.h"
 
-1541622586 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\game.h
+1543214877 c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\game.h
 	"cube.h"
 	"ai.h"
 
@@ -799,4 +800,7 @@
 1541622742 source:c:\users\zsolt\git\cardboard-rewrite\src\fpsgame\discord.cpp
 	"engine.h"
 	"cube.h"
+
+1541655673 c:\users\zsolt\git\cardboard-rewrite\src\include\libnhr.h
+	<stdio.h>
 

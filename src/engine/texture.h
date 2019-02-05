@@ -716,6 +716,11 @@ struct MSlot : Slot, VSlot
     }
 };
 
+struct texrotation
+{
+	bool flipx, flipy, swapxy;
+};
+
 struct cubemapside
 {
     GLenum target;
@@ -723,7 +728,8 @@ struct cubemapside
     bool flipx, flipy, swapxy;
 };
 
-extern cubemapside cubemapsides[6];
+extern const texrotation texrotations[8];
+extern const cubemapside cubemapsides[6];
 extern Texture *notexture;
 extern Shader *nullshader, *hudshader, *hudnotextureshader, *textureshader, *notextureshader, *nocolorshader, *foggedshader, *foggednotextureshader, *stdworldshader;
 extern int reservevpparams, maxvsuniforms, maxfsuniforms;

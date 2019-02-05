@@ -318,6 +318,8 @@ struct blobrenderer
                 GENFACEVERTS(o.x, o.x, o.y, o.y, o.z, o.z, , + mat->csize, , + mat->rsize, + 0.1f, - 0.1f);
             #undef GENFACEORIENT
             #undef GENFACEVERT 
+				default:
+					return;
             }
             flat = dim;
         }
