@@ -2,50 +2,14 @@
 
 #include "engine.h"
 #include "cube.h"
+#include "game.h"
 
 namespace discord
 {
-
-	char* dis_modeltoname(int model)
-	{
-		char* name;
-		switch (model)
-		{
-			case 0:
-				name = "player-test";
-				break;
-			case 1:
-				name = "player-amber";
-				break;
-			case 2:
-				name = "";
-				break;
-			case 3:
-				name = "";
-				break;
-			case 4:
-				name = "";
-				break;
-			case 5:
-				name = "";
-				break;
-			default:
-				name = "";
-				break;
-		}
-		return name;
-	}
-
-	void dis_ass()
-	{
-		conoutf(game::getclientmap());
-	}
-
-	COMMAND(dis_ass,"N");
-
 	void dis_updatepresence(int gamestate, const char* modename, string playername, int playermodel)
 	{
 		char buffer[128];
+		char gay[8];
 		DiscordRichPresence discordPresence;
 		memset(&discordPresence, 0, sizeof(discordPresence));
 		switch (gamestate)
@@ -64,7 +28,7 @@ namespace discord
 				discordPresence.details = "Message Yellowberry#0483 about what you did!";
 				discordPresence.largeImageKey = "logo-large";
 				discordPresence.largeImageText = "Message Yellowberry#0483 about what you did!";
-				discordPresence.smallImageKey = "turkey-text";
+				discordPresence.smallImageKey = "turkey-test";
 				discordPresence.smallImageText = "Message Yellowberry#0483 about what you did!";
 				discordPresence.partyId = "";
 				discordPresence.partySize = 0;
@@ -74,19 +38,22 @@ namespace discord
 				break;
 		}
 		if (gamestate != D_MENU) {
-			formatstring(buffer, "Mode: %s", modename);
+			defformatstring(buffer, "Mode: %s", modename);
 			discordPresence.details = buffer;
 			discordPresence.startTimestamp = 0;
 			discordPresence.endTimestamp = time(0) + 5 * 60;
 			discordPresence.largeImageKey = game::getclientmap();
 			discordPresence.largeImageText = game::getclientmap();
-			discordPresence.smallImageKey = dis_modeltoname(playermodel);
+			defformatstring(gay, "player-%d", playermodel);
+			//conoutf("shit: %s, balls: %d", gay, playermodel);
+			discordPresence.smallImageKey = gay;
 			discordPresence.smallImageText = playername;
 			discordPresence.partyId = "w00t!";
 			discordPresence.partySize = 1;
 			discordPresence.partyMax = 6;
 			discordPresence.joinSecret = "join";
 			discordPresence.spectateSecret = "spookytate";
+			
 		} 
 		else 
 		{ 
@@ -110,8 +77,8 @@ namespace discord
 			connectedUser->username,
 			connectedUser->discriminator,
 			connectedUser->userId);
-		SDL_Quit();
-		exit(EXIT_SUCCESS);
+		//SDL_Quit();
+		//exit(EXIT_SUCCESS);
 	}
 
 	void handleDiscordDisconnected(int errcode, const char* message)
@@ -137,7 +104,7 @@ namespace discord
 	void handleDiscordJoinRequest(const DiscordUser* request)
 	{
 		int response = -1;
-		char yn[4];
+		//char yn[4];
 		conoutf("Discord: join request from %s#%s - %s",
 			request->username,
 			request->discriminator,

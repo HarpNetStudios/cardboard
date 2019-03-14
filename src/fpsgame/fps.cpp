@@ -810,10 +810,10 @@ namespace game
         gle::end();
     }
 
-    void drawhealth(fpsent *d, float tx = 0, float ty = 0, float tw = 1, float th = 1)
+    void drawhealth(fpsent *d, bool isinsta = false, float tx = 0, float ty = 0, float tw = 1, float th = 1)
     {
         float barh = 200, bary = ((HICON_TEXTY/2)-barh)+HICON_SIZE*.75;
-        float h = d->state==CS_DEAD ? 0 : (d->health*barh)/d->maxhealth, w = HICON_SIZE*.75;
+        float h = d->state==CS_DEAD ? 0 : (d->health*barh)/(m_insta == true ? 1 : d->maxhealth), w = HICON_SIZE*.75;
         float x = (HICON_X/2), y = ((HICON_TEXTY/2)-h)+HICON_SIZE*.75;
 
         settexture("packages/hud/health_bar_back.png", 3);

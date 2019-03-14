@@ -179,6 +179,8 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
     if(!restore || force) stopsounds(); // stop sounds while loading
 
+	
+
     int w = screenw, h = screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
     getbackgroundres(w, h);
@@ -1164,34 +1166,35 @@ int main(int argc, char **argv)
     {
         if(argv[i][0]=='-') switch(argv[i][1])
         {
+			// reordered alpha to make it easier to see what's being used already. -Y
+			case 'a': fsaa = atoi(&argv[i][2]); break;
+			case 'b': /* compat, ignore */ break;
+			case 'd': dedicated = atoi(&argv[i][2]); if (dedicated <= 0) dedicated = 2; break;
+			case 'f': /* compat, ignore */ break;
+			case 'g': break;
+			case 'h': scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if (!findarg(argc, argv, "-w")) scr_w = -1; break;
+			case 'k':
+			{
+				const char *dir = addpackagedir(&argv[i][2]);
+				if (dir) logoutf("Adding package directory: %s", dir);
+				break;
+			}
+			case 'l':
+			{
+				char pkgdir[] = "packages/";
+				load = strstr(path(&argv[i][2]), path(pkgdir));
+				if (load) load += sizeof(pkgdir) - 1;
+				else load = &argv[i][2];
+				break;
+			}
             case 'q': if(homedir[0]) logoutf("Using home directory: %s", homedir); break;
-            case 'r': /* compat, ignore */ break;
-            case 'k':
-            {
-                const char *dir = addpackagedir(&argv[i][2]);
-                if(dir) logoutf("Adding package directory: %s", dir);
-                break;
-            }
-            case 'g': break;
-            case 'd': dedicated = atoi(&argv[i][2]); if(dedicated<=0) dedicated = 2; break;
+			case 'r': /* compat, ignore */ break;
+			case 's': /* compat, ignore */ break;
+			case 't': fullscreen = atoi(&argv[i][2]); break;
+			case 'v': /* compat, ignore */ break;
             case 'w': scr_w = clamp(atoi(&argv[i][2]), SCR_MINW, SCR_MAXW); if(!findarg(argc, argv, "-h")) scr_h = -1; break;
-            case 'h': scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if(!findarg(argc, argv, "-w")) scr_w = -1; break;
+			case 'x': initscript = &argv[i][2]; break;
             case 'z': depthbits = atoi(&argv[i][2]); break;
-            case 'b': /* compat, ignore */ break;
-            case 'a': fsaa = atoi(&argv[i][2]); break;
-            case 'v': /* compat, ignore */ break;
-            case 't': fullscreen = atoi(&argv[i][2]); break;
-            case 's': /* compat, ignore */ break;
-            case 'f': /* compat, ignore */ break;
-            case 'l':
-            {
-                char pkgdir[] = "packages/";
-                load = strstr(path(&argv[i][2]), path(pkgdir));
-                if(load) load += sizeof(pkgdir)-1;
-                else load = &argv[i][2];
-                break;
-            }
-            case 'x': initscript = &argv[i][2]; break;
             default: if(!serveroption(argv[i])) gameargs.add(argv[i]); break;
         }
         else gameargs.add(argv[i]);
