@@ -1982,12 +1982,12 @@ namespace server
         {
             clientinfo *ci = clients[i];
             ci->mapchange();
-			defformatstring(fname, "packages/base/%s.cmr", smapname);
+			/*defformatstring(fname, "packages/base/%s.cmr", smapname);
 			stream *map = openrawfile(path(fname), "wb");
 			mapdata = map;
 			if (!mapdata) sendf(-1, 1, "ris", N_SERVMSG, "no map to send");
 			if ((ci->getmap = sendfile(-1, 2, mapdata, "ri", N_SENDMAP)))
-				ci->getmap->freeCallback = freegetmap; // RESUME HERE. WILL ERROR.
+				ci->getmap->freeCallback = freegetmap; // RESUME HERE. WILL ERROR. */
             ci->state.lasttimeplayed = lastmillis;
             if(m_mp(gamemode) && ci->state.state!=CS_SPECTATOR) sendspawn(ci);
         }

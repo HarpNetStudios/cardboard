@@ -1,51 +1,52 @@
-﻿  pch.cpp
-c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(1540): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-hdBase>' when no variable is declared
-c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(3056): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-sfImage>' when no variable is declared
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Platforms\Win32\PlatformToolsets\v141_xp\Toolset.targets(39,5): warning MSB8051: Support for targeting Windows XP is deprecated and will not be present in future releases of Visual Studio. Please see https://go.microsoft.com/fwlink/?linkid=2023588 for more information.
   pch.cpp
 c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(1540): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-hdBase>' when no variable is declared
 c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(3056): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-sfImage>' when no variable is declared
   pch.cpp
 c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(1540): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-hdBase>' when no variable is declared
 c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(3056): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-sfImage>' when no variable is declared
-  blend.cpp
-  lightmap.cpp
-  normal.cpp
-  octa.cpp
-  octaedit.cpp
-  octarender.cpp
-  physics.cpp
-  pvs.cpp
-  world.cpp
-  worldio.cpp
-  client.cpp
-  server.cpp
-  serverbrowser.cpp
+  pch.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(1540): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-hdBase>' when no variable is declared
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\dbghelp.h(3056): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-sfImage>' when no variable is declared
   3dgui.cpp
   bih.cpp
+  blend.cpp
   blob.cpp
+  client.cpp
+  command.cpp
+  console.cpp
   decal.cpp
   dynlight.cpp
   glare.cpp
   grass.cpp
+  lightmap.cpp
+  main.cpp
+  material.cpp
+  menus.cpp
+  movie.cpp
+  normal.cpp
+  octa.cpp
+  octaedit.cpp
+  octarender.cpp
   Generating Code...
   Compiling...
-  material.cpp
+  physics.cpp
+  pvs.cpp
   rendergl.cpp
   rendermodel.cpp
   renderparticles.cpp
   rendersky.cpp
   rendertext.cpp
   renderva.cpp
+  server.cpp
+  serverbrowser.cpp
   shader.cpp
   shadowmap.cpp
+  sound.cpp
   texture.cpp
   water.cpp
-  command.cpp
-  console.cpp
-  main.cpp
-  menus.cpp
-  movie.cpp
-  sound.cpp
+  world.cpp
+  worldio.cpp
   Generating Code...
   discord.cpp
 d:\!code\c++\cardboard-rewrite\src\fpsgame\discord.cpp(12): warning C4101: 'gay': unreferenced local variable
