@@ -1,3 +1,6 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Platforms\x64\PlatformToolsets\v141_xp\Toolset.targets(39,5): warning MSB8051: Support for targeting Windows XP is deprecated and will not be present in future releases of Visual Studio. Please see https://go.microsoft.com/fwlink/?linkid=2023588 for more information.
-  rendergl.cpp
+  discord.cpp
+d:\!code\c++\cardboard-rewrite\src\fpsgame\discord.cpp(12): warning C4101: 'gay': unreferenced local variable
+d:\!code\c++\cardboard-rewrite\src\fpsgame\discord.cpp(11): warning C4101: 'buffer': unreferenced local variable
+  render.cpp
   cardboard.vcxproj -> D:\!CODE\C++\Cardboard-rewrite\src\vcpp\..\..\bin64\cardboard_msvc.exe

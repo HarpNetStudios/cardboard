@@ -31,6 +31,9 @@ extern void writeinitcfg();
 
 void quit()                     // normal exit
 {
+	#ifdef WIN32
+		discord::dis_updatepresence(D_QUITTING);
+	#endif
     writeinitcfg();
     writeservercfg();
     abortconnect();
@@ -741,6 +744,9 @@ void resetgl()
     reloadshaders();
     reloadtextures();
     initlights();
+	#ifdef WIN32
+		discord::dis_updatepresence(D_MENU);
+	#endif
     allchanged(true);
 }
 

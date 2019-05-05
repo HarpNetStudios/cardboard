@@ -10,6 +10,7 @@ namespace discord
 	{
 		char buffer[128];
 		char gay[8];
+		string partykey;
 		DiscordRichPresence discordPresence;
 		memset(&discordPresence, 0, sizeof(discordPresence));
 		switch (gamestate)
@@ -18,10 +19,15 @@ namespace discord
 				discordPresence.state = "In the menus";
 				break;
 			case D_PLAYING:
-				discordPresence.state = "Playing the game";
+				discordPresence.state = "Playing";
 				break;
 			case D_SPECTATE:
 				discordPresence.state = "Spectating";
+				break;
+			case D_QUITTING:
+				discordPresence.state = "Quitting game";
+				discordPresence.startTimestamp = 0;
+				discordPresence.endTimestamp = 0;
 				break;
 			default:
 				discordPresence.state = "SOMETHING BROKE";
@@ -38,22 +44,46 @@ namespace discord
 				break;
 		}
 		if (gamestate != D_MENU) {
+			const ENetAddress* address = connectedpeer();
 			defformatstring(buffer, "Mode: %s", modename);
 			discordPresence.details = buffer;
-			discordPresence.startTimestamp = 0;
-			discordPresence.endTimestamp = time(0) + 5 * 60;
+			if (game::maplimit >= 0) {
+				time_t curtime;
+				uint32_t endtimedelta = (game::maplimit - lastmillis) / 1000;
+				time(&curtime);
+				//conoutf("current time: %d", endtimedelta);
+				//conoutf("time: %u, end match time: %u", (uint32_t)curtime, (uint32_t)curtime + (uint32_t)endtimedelta);
+				discordPresence.startTimestamp = 0;
+				discordPresence.endTimestamp = (uint32_t)curtime + (uint32_t)endtimedelta;
+			}
+			else {
+				discordPresence.startTimestamp = 0;
+				discordPresence.endTimestamp = 0;
+			}
+			//discordPresence.startTimestamp = 0;
+			//discordPresence.endTimestamp = time(0) + (5 * 60);
 			discordPresence.largeImageKey = game::getclientmap();
 			discordPresence.largeImageText = game::getclientmap();
 			defformatstring(gay, "player-%d", playermodel);
 			//conoutf("shit: %s, balls: %d", gay, playermodel);
 			discordPresence.smallImageKey = gay;
 			discordPresence.smallImageText = playername;
-			discordPresence.partyId = "w00t!";
-			discordPresence.partySize = 1;
-			discordPresence.partyMax = 6;
-			discordPresence.joinSecret = "join";
-			discordPresence.spectateSecret = "spookytate";
-			
+			if (address) {
+				if (enet_address_get_host_ip(address, partykey, sizeof(partykey)) >= 0)
+				{
+					//conoutf("%s:%d", partykey, address->port);
+					defformatstring(newpartykey, "%s:%u", partykey, address->port);
+					//conoutf(newpartykey);
+					discordPresence.partyId = newpartykey;
+					discordPresence.partySize = game::players.length();
+					discordPresence.partyMax = game::players.length();
+					//discordPresence.joinSecret = newpartykey;
+					discordPresence.joinSecret = "gay";
+				}
+			}
+			else {
+				discordPresence.state = "Playing alone";
+			}		
 		} 
 		else 
 		{ 
@@ -63,8 +93,8 @@ namespace discord
 			discordPresence.largeImageKey = "logo-large";
 			discordPresence.largeImageText = "";
 			discordPresence.partyId = "";
-			discordPresence.partySize = NULL;
-			discordPresence.partyMax = NULL;
+			discordPresence.partySize = 0;
+			discordPresence.partyMax = 0;
 			discordPresence.joinSecret = "";
 			discordPresence.spectateSecret = "";
 		}
@@ -93,7 +123,9 @@ namespace discord
 
 	void handleDiscordJoin(const char* secret)
 	{
+		// This code never runs???
 		conoutf("Discord: join (%s)\n", secret);
+		//disconnect();
 	}
 
 	static void handleDiscordSpectate(const char* secret)
@@ -103,35 +135,13 @@ namespace discord
 
 	void handleDiscordJoinRequest(const DiscordUser* request)
 	{
-		int response = -1;
-		//char yn[4];
+		// This code doesn't run either?
+		int response = DISCORD_REPLY_YES;
 		conoutf("Discord: join request from %s#%s - %s",
 			request->username,
 			request->discriminator,
 			request->userId);
-		/*do {
-			conoutf("Accept? (y/n)");
-			if (!prompt(yn, sizeof(yn))) {
-				break;
-			}
-
-			if (!yn[0]) {
-				continue;
-			}
-
-			if (yn[0] == 'y') {
-				response = DISCORD_REPLY_YES;
-				break;
-			}
-
-			if (yn[0] == 'n') {
-				response = DISCORD_REPLY_NO;
-				break;
-			}
-		} while (1);*/
-		if (response != -1) {
-			Discord_Respond(request->userId, response);
-		}
+		Discord_Respond(request->userId, response);
 	}
 	void dis_initdiscord()
 	{

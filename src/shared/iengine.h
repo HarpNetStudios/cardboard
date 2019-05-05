@@ -576,4 +576,5 @@ enum dis_gamestates
 	D_MENU = 0,
 	D_PLAYING,
 	D_SPECTATE,
+	D_QUITTING,
 };

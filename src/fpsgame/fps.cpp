@@ -76,7 +76,9 @@ namespace game
     ICOMMAND(nextfollow, "i", (int *dir), nextfollow(*dir < 0 ? -1 : 1));
 
 
-    const char *getclientmap() { return clientmap; }
+    const char *getclientmap() { 
+		return clientmap; 
+	}
 
     void resetgamestate()
     {
@@ -966,8 +968,8 @@ namespace game
 
         if(crosshair!=1 && !editmode && !m_insta && healthcrosshair)
         {
-            if(d->health<=25) color = vec(1, 0, 0);
-            else if(d->health<=50) color = vec(1, 0.5f, 0);
+            if(d->health<=250) color = vec(1, 0, 0);
+            else if(d->health<=500) color = vec(1, 0.5f, 0);
         }
         if(d->gunwait) color.mul(0.5f);
         return crosshair;
