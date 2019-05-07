@@ -452,7 +452,7 @@ void processmasterinput()
     char *input = &masterin[masterinpos], *end = (char *)memchr(input, '\n', masterin.length() - masterinpos);
     while(end)
     {
-        *end++ = '\0';
+        *end = '\0';
 
         const char *args = input;
         while(args < end && !iscubespace(*args)) args++;
@@ -465,6 +465,7 @@ void processmasterinput()
             conoutf("master server registration succeeded");
         else server::processmasterinput(input, cmdlen, args);
 
+		end++;
         masterinpos = end - masterin.getbuf();
         input = end;
         end = (char *)memchr(input, '\n', masterin.length() - masterinpos);

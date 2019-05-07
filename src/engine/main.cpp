@@ -22,6 +22,7 @@ void cleanup()
         if(screen) SDL_SetWindowFullscreen(screen, 0);
     #endif
 	#ifdef WIN32
+		discord::dis_updatepresence(D_QUITTING);
 		Discord_Shutdown();
 	#endif
     SDL_Quit();
@@ -33,6 +34,7 @@ void quit()                     // normal exit
 {
 	#ifdef WIN32
 		discord::dis_updatepresence(D_QUITTING);
+		Discord_Shutdown();
 	#endif
     writeinitcfg();
     writeservercfg();
@@ -70,7 +72,9 @@ void fatal(const char *s, ...)    // failure exit
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Cardboard Engine fatal error", msg, NULL);
         }
     }
-
+	#ifdef WIN32
+		Discord_Shutdown();
+	#endif
     exit(EXIT_FAILURE);
 }
 
@@ -1099,46 +1103,93 @@ int getclockmillis()
 }
 
 VAR(numcpus, 1, 1, 16);
-/*
 
-// Define variable or field for the request
-nhr_request _request = NULL;
+struct memoryStruct {
+	char* memory;
+	size_t size;
 
-void on_request_error(nhr_request request, nhr_error_code error_code) {
-	_request = NULL; // Clean up previously stored request variable or field
-	//TODO: process `error_code`
-}
+};
 
-void on_request_response(nhr_request request, nhr_response response) {
-	_request = NULL; // Clean up previously stored request variable or field
-	char* body = nhr_response_get_body(response);
-	unsigned int body_length = nhr_response_get_body_length(response);
-	if (body && body_length) {
-		conoutf(body);
-	}
-}
-
-void ass()
+static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
-	// Create request object
-	_request = nhr_request_create();
+	size_t realsize = size * nmemb;
+	struct memoryStruct* mem = (struct memoryStruct*)userp;
 
-	// Combined url: "http://isithackday.com/arrpi.php"
-	nhr_request_set_url(_request, "http", "worldclockapi.com", "/api/json/utc/now", 80);
+	char* ptr = (char*)realloc(mem->memory, mem->size + realsize + 1);
+	if (ptr == NULL) {
+		/* out of memory! this should never happen */
+		conoutf(CON_ERROR, "not enough memory for web operation (realloc returned NULL)");
+		return 0;
+	}
 
-	nhr_request_set_method(_request, nhr_method_GET); // GET
+	mem->memory = ptr;
+	memcpy(&(mem->memory[mem->size]), contents, realsize);
+	mem->size += realsize;
+	mem->memory[mem->size] = 0;
 
-	// Set request callbacks
-	nhr_request_set_on_recvd_responce(_request, &on_request_response);
-	nhr_request_set_on_error(_request, &on_request_error);
-
-	nhr_request_send(_request);
-
+	return realsize;
 }
 
-COMMAND(ass, "N");
+void web_get(char* targetUrl)
+{
+	CURL* curl;
+	CURLcode res;
 
-*/
+	struct memoryStruct chunk;
+
+	char* url; // thing
+	long response_code;
+
+	chunk.memory = (char*)malloc(1);  // will be grown as needed by the realloc above */
+	chunk.size = 0;    // no data at this point */
+
+	curl_global_init(CURL_GLOBAL_ALL);
+
+	// init the curl session */
+	curl = curl_easy_init();
+
+	// specify URL to get */
+	curl_easy_setopt(curl, CURLOPT_URL, targetUrl);
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
+
+	// send all data to this function  */
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeMemoryCallback);
+
+	// we pass our 'chunk' struct to the callback function */
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)& chunk);
+
+	// some servers don't like requests that are made without a user-agent field, so we provide one
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cardboard-Engine/1.0.0");
+
+	// get it! */
+	res = curl_easy_perform(curl);
+
+	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+	curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &url);
+
+	// check for errors */
+	if (res != CURLE_OK) {
+		conoutf(CON_ERROR, "curl_easy_perform() failed: %s", curl_easy_strerror(res));
+	}
+	else {
+		// we now have the data, do stuff with it
+		conoutf(CON_INFO, "%lu bytes retrieved", (unsigned long)chunk.size);
+		conoutf(CON_INFO, "%d response, %s url", response_code, url);
+
+		conoutf(CON_ECHO, chunk.memory);
+	}
+
+	/* cleanup curl stuff */
+	curl_easy_cleanup(curl);
+
+	free(chunk.memory);
+}
+
+void testcurl_(char* targetUrl) {
+	web_get(targetUrl);
+}
+
+COMMANDN(testcurl, testcurl_, "s");
 
 int main(int argc, char **argv)
 {
@@ -1175,6 +1226,7 @@ int main(int argc, char **argv)
 			// reordered alpha to make it easier to see what's being used already. -Y
 			case 'a': fsaa = atoi(&argv[i][2]); break;
 			case 'b': /* compat, ignore */ break;
+			case 'c': 
 			case 'd': dedicated = atoi(&argv[i][2]); if (dedicated <= 0) dedicated = 2; break;
 			case 'f': /* compat, ignore */ break;
 			case 'g': break;
@@ -1240,10 +1292,10 @@ int main(int argc, char **argv)
     gl_checkextensions();
     gl_init();
     notexture = textureload("packages/textures/notexture.png");
-    if(!notexture) fatal("could not find core textures");
+    if(!notexture) fatal("could not find core textures (are you running in the right directory?)");
 
     logoutf("init: console");
-    if(!execfile("data/stdlib.cfg", false)) fatal("cannot find data files (you are running from the wrong folder, try .bat file in the main folder)");   // this is the first file we load.
+    if(!execfile("data/stdlib.cfg", false)) fatal("cannot find data files (are you running in the right directory?)");   // this is the first config file we load.
     if(!execfile("data/font.cfg", false)) fatal("cannot find font definitions");
     if(!setfont("default")) fatal("no default font specified");
 

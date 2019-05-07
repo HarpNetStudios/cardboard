@@ -19,7 +19,6 @@
 
 #ifdef WIN32
 #include <discord_rpc.h>
-#include <libnhr.h>
 #endif
 
 #ifdef WIN32
@@ -54,6 +53,8 @@
 #endif
 
 #include <enet/enet.h>
+
+#include <curl/curl.h>
 
 #include <zlib.h>
 

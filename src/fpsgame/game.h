@@ -508,7 +508,7 @@ struct fpsstate
         {
             loopi(6) baseammo(i + 1);
 			gunselect = GUN_CG;
-			ammo[GUN_CG] /= 2;
+			//ammo[GUN_CG] /= 2;
 			ammo[GUN_SMG] = 40;
         }
     }

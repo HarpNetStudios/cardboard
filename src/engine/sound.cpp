@@ -478,7 +478,7 @@ void checkmapsounds()
 
 VAR(stereo, 0, 1, 1);
 
-VARP(maxsoundradius, 0, 340, 10000);
+VAR(maxsoundradius, 1, 340, 0);
 
 bool updatechannel(soundchannel &chan)
 {

@@ -308,8 +308,55 @@
     <Filter Include="fpsgame">
       <UniqueIdentifier>{9b7a70df-c8ed-4662-8380-4ffe119eb216}</UniqueIdentifier>
     </Filter>
+    <Filter Include="config">
+      <UniqueIdentifier>{707ff788-77de-496a-8440-1f61fb626dda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="cardboard.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\data\blendbrush.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\default_map_models.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\default_map_settings.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\defaults.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\font.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\game_fps.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\glsl.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\heightmap.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\keymap.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\maps.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\menus.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\sounds.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\stdedit.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\stdlib.cfg">
+      <Filter>config</Filter>
+    </None>
   </ItemGroup>
 </Project>

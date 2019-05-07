@@ -223,8 +223,19 @@ namespace game
         genprivkey(secret, privkey, pubkey);
         conoutf("private key: %s", privkey.getbuf());
         conoutf("public key: %s", pubkey.getbuf());
+		result(privkey.getbuf());
     }
     COMMAND(genauthkey, "s");
+
+	void getpubkey(const char* desc)
+	{
+		authkey * k = findauthkey(desc);
+		if (!k) { if (desc[0]) conoutf("no authkey found: %s", desc); else conoutf("no global authkey found"); return; }
+		vector<char> pubkey;
+		if (!calcpubkey(k->key, pubkey)) { conoutf("failed calculating pubkey"); return; }
+		result(pubkey.getbuf());
+	}
+	COMMAND(getpubkey, "s");
 
     void saveauthkeys()
     {
@@ -489,6 +500,8 @@ namespace game
     ICOMMAND(auth, "s", (char *desc), tryauth(desc));
     ICOMMAND(sauth, "", (), if(servauth[0]) tryauth(servauth));
     ICOMMAND(dauth, "s", (char *desc), if(desc[0]) tryauth(desc));
+
+	ICOMMAND(getservauth, "", (), result(servauth));
 
     void togglespectator(int val, const char *who)
     {
@@ -1462,7 +1475,7 @@ namespace game
                 parsestate(s, p);
                 s->state = CS_ALIVE;
                 if(cmode) cmode->pickspawn(s);
-                else findplayerspawn(s);
+                else findplayerspawn(s, -1, (!m_teammode ? 0 : (strcmp(s->team,"red") ? 2 : 1)));
                 if(s == player1)
                 {
                     showscores(false);

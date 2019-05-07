@@ -293,8 +293,8 @@ namespace game
 
     void spawnplayer(fpsent *d)   // place at random spawn
     {
-        if(cmode) cmode->pickspawn(d);
-        else findplayerspawn(d, d==player1 && respawnent>=0 ? respawnent : -1);
+        /*if(cmode) cmode->pickspawn(d);
+        else*/ findplayerspawn(d, d==player1 && respawnent  >=0 ? respawnent : -1, (!m_teammode ? 0 : (strcmp(player1->team,"red") ? 2 : 1)));
         spawnstate(d);
         if(d==player1)
         {
@@ -664,7 +664,7 @@ namespace game
 
         respawnent = -1; // so we don't respawn at an old spot
         if(!m_mp(gamemode)) spawnplayer(player1);
-        else findplayerspawn(player1, -1);
+        else findplayerspawn(player1, -1, (!m_teammode ? 0 : (strcmp(player1->team, "red") ? 2 : 1)));
         entities::resetspawns();
         copystring(clientmap, name ? name : "");
 

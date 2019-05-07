@@ -2126,14 +2126,14 @@ namespace server
 
     void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(); }
 
-    void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush = vec(0, 0, 0))
-    {
-        gamestate &ts = target->state;
-        ts.dodamage(damage);
-        if(target!=actor && !isteam(target->team, actor->team)) actor->state.damage += damage;
-        sendf(-1, 1, "ri6", N_DAMAGE, target->clientnum, actor->clientnum, damage, ts.health, gun);
-        if(target==actor) target->setpushed();
-        else if(!hitpush.iszero())
+	void dodamage(clientinfo* target, clientinfo* actor, int damage, int gun, const vec& hitpush = vec(0, 0, 0))
+	{
+		gamestate& ts = target->state;
+		if(!m_parkour) ts.dodamage(damage);
+		if (target != actor && !isteam(target->team, actor->team)) actor->state.damage += damage;
+		sendf(-1, 1, "ri6", N_DAMAGE, target->clientnum, actor->clientnum, damage, ts.health, gun);
+		if(target==actor) target->setpushed();
+        if(!hitpush.iszero())
         {
             ivec v(vec(hitpush).rescale(DNF));
             sendf(ts.health<=0 ? -1 : target->ownernum, 1, "ri7", N_HITPUSH, target->clientnum, gun, damage, v.x, v.y, v.z);
@@ -2165,7 +2165,7 @@ namespace server
             }
             ts.deadflush = ts.lastdeath + DEATHMILLIS;
             // don't issue respawn yet until DEATHMILLIS has elapsed
-            // ts.respawn();
+            //ts.respawn();
         }
     }
 
@@ -3370,7 +3370,9 @@ namespace server
             }
 
             case N_FORCEINTERMISSION:
+				if(!ci->privilege && !ci->local) break;
                 if(ci->local && !hasnonlocalclients()) startintermission();
+				else startintermission();
                 break;
 
             case N_RECORDDEMO:
