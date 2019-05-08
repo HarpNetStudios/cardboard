@@ -1765,7 +1765,7 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
     modifyvelocity(pl, local, water, floating, curtime);
 
     vec d(pl->vel);
-    if((!floating || !ispack) && water) d.mul(0.5f);
+    if((!floating || !ispack) && water && !editmode) d.mul(0.5f);
     d.add(pl->falling);
     d.mul(secs);
 

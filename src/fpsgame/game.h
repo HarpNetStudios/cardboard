@@ -359,8 +359,8 @@ static struct guninfo { int sound, attackdelay, damage, spread, projspeed, kicka
 {
     { S_PUNCH1,     10,  400,   0,   0,  0,   14,  1,  80,  0,    0, "fist",            "fist",   0, false, 10 },
     { S_ARIFLE,    150,  200,  50,   0, 12, 1024,  1,  80,  0,    0, "smg",             "smg",    0, false, 10 },
-    { S_SG,       1400,   80, 400,   0, 20, 1024, 20,  80,  0,    0, "shotgun",         "shotg",  0, true, 10 },
-    { S_RIFLE,    1500,  900,   0,   0, 30, 2048,  1,  80,  0,    0, "rifle",           "rifle",  0, false, 10 },
+    { S_SG,       1360,   80, 320,   0, 20, 1024, 20,  80,  0,    0, "shotgun",         "shotg",  0, true, 10 },
+    { S_RIFLE,    1400,  900,   0,   0, 30, 2048,  1,  80,  0,    0, "rifle",           "rifle",  0, false, 10 },
     { S_CG,        100,  150, 100,   0, 10, 1024,  1,  80,  0,    0, "chaingun",        "chaing", 0, true, 10 },
     { S_RLFIRE,    800, 1200,   0, 320, 10, 1024,  1, 160, 40,    0, "rocketlauncher",  "rocket", 0, true, 10 },
     { S_FLAUNCH,  1000,  900,   0, 200, 10, 1024,  1, 250, 45, 1500, "grenadelauncher", "gl",     0, true, 10 },
