@@ -387,7 +387,9 @@ namespace game
 
     void hit(int damage, dynent *d, fpsent *at, const vec &vel, int gun, float info1, int info2 = 1)
     {
-        if(at==player1 && d!=at)
+		fpsent *f = (fpsent *)d;
+
+        if(at==player1 && d!=at && !isteam(at->team, f->team))
         {
             extern int hitsound;
             if(hitsound && lasthit != lastmillis && !m_parkour) playsound(S_HIT);
@@ -400,8 +402,7 @@ namespace game
             return;
         }
 
-        fpsent *f = (fpsent *)d;
-
+        
         f->lastpain = lastmillis;
         if(at->type==ENT_PLAYER && !isteam(at->team, f->team)) at->totaldamage += damage;
 
