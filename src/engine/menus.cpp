@@ -754,6 +754,7 @@ void clearmainmenu()
     if(mainmenu && isconnected())
     {
         mainmenu = 0;
+		discord::updatePresence(discord::D_MENU);
         if(!processingmenu) cleargui();
     }
 }

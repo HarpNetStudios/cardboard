@@ -786,7 +786,7 @@ bool isthirdperson() { return player!=camera1 || detachedcamera || reflecting; }
 void fixcamerarange()
 {
     const float MAXPITCH = 90.0f;
-	if (player->spacepack && player->physstate != PHYS_FLOOR) {
+	if ((player->spacepack && !player->spaceclip) && player->physstate != PHYS_FLOOR) {
 		if (camera1->pitch >= 180.0f) camera1->pitch = -179.9f;
 		if (camera1->pitch <= -180.0f) camera1->pitch = 179.9f;
 		while (camera1->yaw < 0.0f) camera1->yaw += 360.0f;
@@ -828,7 +828,7 @@ void mousemove(int dx, int dy)
     }
     if(curaccel && curtime && (dx || dy)) cursens += curaccel * sqrtf(dx*dx + dy*dy)/curtime;
     cursens /= 33.0f*sensitivityscale;
-    if ((camera1->pitch >= 90.0f || camera1->pitch <= -90.0f) && player->spacepack) {
+    if ((camera1->pitch >= 90.0f || camera1->pitch <= -90.0f) && (player->spacepack && !player->spaceclip)) {
 		camera1->yaw -= dx * cursens;
 	}
 	else {
@@ -2255,7 +2255,7 @@ void gl_drawhud()
             hudmatrix.scale(conscale, conscale, 1);
             flushhudmatrix();
 
-            draw_textf("\f3Project Crimson Alpha 1.4.5", conw-12*FONTH, 20); //abovehud-FONTH*4
+            draw_textf("\f3Project Crimson Alpha 1.5 (%s)", conw-18*FONTH, 20, __DATE__); //abovehud-FONTH*4
             if(!hidestats)
             {
                 int roffset = 0;

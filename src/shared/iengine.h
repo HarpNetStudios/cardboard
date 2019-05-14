@@ -7,6 +7,7 @@ extern int totalmillis;                 // total elapsed time
 extern int starttime;                   // time from start
 extern uint totalsecs;
 extern int gamespeed, paused;
+extern int globalgamestate;             // game state, set by and for discord
 
 enum
 {
@@ -23,22 +24,24 @@ enum
 
 enum // cube empty-space materials
 {
-    MAT_AIR      = 0,                      // the default, fill the empty space with air
-    MAT_WATER    = 1 << MATF_VOLUME_SHIFT, // fill with water, showing waves at the surface
-    MAT_LAVA     = 2 << MATF_VOLUME_SHIFT, // fill with lava
-    MAT_GLASS    = 3 << MATF_VOLUME_SHIFT, // behaves like clip but is blended blueish
+    MAT_AIR       = 0,                      // the default, fill the empty space with air
+    MAT_WATER     = 1 << MATF_VOLUME_SHIFT, // fill with water, showing waves at the surface
+    MAT_LAVA      = 2 << MATF_VOLUME_SHIFT, // fill with lava
+    MAT_GLASS     = 3 << MATF_VOLUME_SHIFT, // behaves like clip but is blended blueish
 
-    MAT_NOCLIP   = 1 << MATF_CLIP_SHIFT,  // collisions always treat cube as empty
-    MAT_CLIP     = 2 << MATF_CLIP_SHIFT,  // collisions always treat cube as solid
-    MAT_GAMECLIP = 3 << MATF_CLIP_SHIFT,  // game specific clip material
+    MAT_NOCLIP    = 1 << MATF_CLIP_SHIFT,  // collisions always treat cube as empty
+    MAT_CLIP      = 2 << MATF_CLIP_SHIFT,  // collisions always treat cube as solid
+    MAT_GAMECLIP  = 3 << MATF_CLIP_SHIFT,  // game specific clip material
 
-    MAT_DEATH    = 1 << MATF_FLAG_SHIFT,  // force player suicide
-    MAT_ALPHA    = 4 << MATF_FLAG_SHIFT   // alpha blended
+    MAT_DEATH     = 1 << MATF_FLAG_SHIFT,  // force player suicide
+	MAT_SPACECLIP = 2 << MATF_FLAG_SHIFT,  // disables spacepack
+    MAT_ALPHA     = 4 << MATF_FLAG_SHIFT   // alpha blended
 };
 
 #define isliquid(mat) ((mat)==MAT_WATER || (mat)==MAT_LAVA)
 #define isclipped(mat) ((mat)==MAT_GLASS)
 #define isdeadly(mat) ((mat)==MAT_LAVA)
+#define isspaceclip(mat) ((mat)==MAT_SPACECLIP)
 
 extern void lightent(extentity &e, float height = 8.0f);
 extern void lightreaching(const vec &target, vec &color, vec &dir, bool fast = false, extentity *e = 0, float ambient = 0.4f);
@@ -568,14 +571,14 @@ extern void g3d_limitscale(float scale);
 // discord
 namespace discord
 {
-	extern void dis_updatepresence(int gamestate = 0, const char* modename = NULL, string playername = NULL, int playermodel = -1);
-	extern void dis_initdiscord();
-}
+	extern void updatePresence(int gamestate = 0, const char* modename = NULL, string playername = NULL, int playermodel = -1);
+	extern void initDiscord();
 
-enum dis_gamestates
-{
-	D_MENU = 0,
-	D_PLAYING,
-	D_SPECTATE,
-	D_QUITTING,
-};
+	enum gamestates
+	{
+		D_MENU = 0,
+		D_PLAYING,
+		D_SPECTATE,
+		D_QUITTING,
+	};
+}

@@ -120,7 +120,7 @@ namespace game
 
     void renderplayer(fpsent *d, const playermodelinfo &mdl, int team, float fade, bool mainpass)
     {
-        int lastaction = d->lastaction, hold = mdl.vwep || d->gunselect==GUN_GL ? 0 : (ANIM_HOLD1+d->gunselect)|ANIM_LOOP, attack = ANIM_ATTACK1+d->gunselect, delay = mdl.vwep ? 300 : guns[d->gunselect].attackdelay+50;
+        int lastaction = d->lastaction[d->gunselect], hold = mdl.vwep || d->gunselect==GUN_GL ? 0 : (ANIM_HOLD1+d->gunselect)|ANIM_LOOP, attack = ANIM_ATTACK1+d->gunselect, delay = mdl.vwep ? 300 : guns[d->gunselect].attackdelay+50;
         if(intermission && d->state!=CS_DEAD)
         {
             lastaction = 0;
@@ -128,7 +128,7 @@ namespace game
             delay = 0;
             if(m_teammode ? bestteams.htfind(d->team)>=0 : bestplayers.find(d)>=0) hold = attack = ANIM_WIN|ANIM_LOOP;
         }
-        else if(d->state==CS_ALIVE && d->lasttaunt && lastmillis-d->lasttaunt<1000 && lastmillis-d->lastaction>delay)
+        else if(d->state==CS_ALIVE && d->lasttaunt && lastmillis-d->lasttaunt<1000 && lastmillis-d->lastaction[d->gunselect]>delay)
         {
             lastaction = d->lasttaunt;
             hold = attack = ANIM_TAUNT;
@@ -321,9 +321,9 @@ namespace game
         }
 
         int rtime = guns[d->gunselect].attackdelay;
-        if(d->lastaction && d->lastattackgun==d->gunselect && lastmillis-d->lastaction<rtime)
+        if(d->lastaction && d->lastattackgun==d->gunselect && lastmillis-d->lastaction[d->gunselect] <rtime)
         {
-            drawhudmodel(d, ANIM_GUN_SHOOT|ANIM_SETSPEED, rtime/17.0f, d->lastaction);
+            drawhudmodel(d, ANIM_GUN_SHOOT|ANIM_SETSPEED, rtime/17.0f, d->lastaction[d->gunselect]);
         }
         else
         {

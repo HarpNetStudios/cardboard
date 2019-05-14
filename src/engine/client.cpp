@@ -75,6 +75,8 @@ VARP(connectport, 0, 0, 0xFFFF);
 
 void connectserv(const char *servername, int serverport, const char *serverpassword)
 {   
+	globalgamestate = -1;
+
     if(connpeer)
     {
         conoutf("aborting connection attempt");
@@ -156,6 +158,7 @@ void disconnect(bool async, bool cleanup)
         conoutf("disconnected");
         game::gamedisconnect(cleanup);
         mainmenu = 1;
+		discord::updatePresence(discord::D_MENU);
     }
     if(!connpeer && clienthost)
     {

@@ -84,13 +84,13 @@ namespace ai
     bool canshoot(fpsent *d, fpsent *e)
     {
         if(weaprange(d, d->gunselect, e->o.squaredist(d->o)) && targetable(d, e))
-            return d->ammo[d->gunselect] > 0 && lastmillis - d->lastaction >= d->gunwait;
+			return d->ammo[d->gunselect] > 0 && lastmillis - d->lastaction[d->gunselect] >= d->gunwait[d->gunselect];
         return false;
     }
 
     bool canshoot(fpsent *d)
     {
-        return !d->ai->becareful && d->ammo[d->gunselect] > 0 && lastmillis - d->lastaction >= d->gunwait;
+        return !d->ai->becareful && d->ammo[d->gunselect] > 0 && lastmillis - d->lastaction[d->gunselect] >= d->gunwait[d->gunselect];
     }
 
 	bool hastarget(fpsent *d, aistate &b, fpsent *e, float yaw, float pitch, float dist)

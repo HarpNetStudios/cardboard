@@ -505,6 +505,7 @@ namespace game
 
     void togglespectator(int val, const char *who)
     {
+		globalgamestate = -1;
         int i = who[0] ? parseplayer(who) : player1->clientnum;
         if(i>=0) addmsg(N_SPECTATOR, "rii", i, val);
     }
@@ -582,6 +583,7 @@ namespace game
 
     void changemap(const char *name, int mode) // request map change, server may ignore
     {
+		globalgamestate = -1;
         if(!remote)
         {
             server::forcemap(name, mode);
@@ -1389,7 +1391,7 @@ namespace game
             {
                 int cn = getint(p);
                 fpsent *d = newclient(cn);
-                if(!d)
+                if(!d) // client doesn't actually exist?
                 {
                     getstring(text, p);
                     getstring(text, p);
@@ -1398,6 +1400,7 @@ namespace game
                 }
                 getstring(text, p);
                 filtertext(text, text, false, false, MAXNAMELEN);
+				//checkroles(text);
                 if(!text[0]) copystring(text, "unnamed");
                 if(d->name[0])          // already connected
                 {
@@ -1497,9 +1500,9 @@ namespace game
                 if(!s) break;
                 if(gun>GUN_FIST && gun<=GUN_GL && s->ammo[gun]) s->ammo[gun]--;
                 s->gunselect = clamp(gun, (int)GUN_FIST, (int)GUN_GL);
-                s->gunwait = guns[s->gunselect].attackdelay;
-                int prevaction = s->lastaction;
-                s->lastaction = lastmillis;
+                s->gunwait[s->gunselect] = guns[s->gunselect].attackdelay;
+                int prevaction = s->lastaction[d->gunselect];
+                s->lastaction[d->gunselect] = lastmillis;
                 s->lastattackgun = s->gunselect;
                 shoteffects(s->gunselect, from, to, s, false, id, prevaction);
                 break;

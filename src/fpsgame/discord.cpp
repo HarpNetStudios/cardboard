@@ -1,20 +1,19 @@
 // discord RPC
 
+#include "game.h"
 #include "engine.h"
 #include "cube.h"
-#include "game.h"
 
 namespace discord
 {
-	void dis_updatepresence(int gamestate, const char* modename, string playername, int playermodel)
+	void updatePresence(int gamestate, const char* modename, string playername, int playermodel)
 	{
-		char buffer[128];
-		char gay[8];
-		string partykey;
-		DiscordRichPresence discordPresence;
-		memset(&discordPresence, 0, sizeof(discordPresence));
-		switch (gamestate)
-		{
+		if (globalgamestate != gamestate) {
+			string partykey;
+			DiscordRichPresence discordPresence;
+			memset(&discordPresence, 0, sizeof(discordPresence));
+			switch (gamestate)
+			{
 			case D_MENU:
 				discordPresence.state = "In the menus";
 				break;
@@ -42,63 +41,65 @@ namespace discord
 				discordPresence.joinSecret = "";
 				discordPresence.spectateSecret = "";
 				break;
-		}
-		if (gamestate != D_MENU) {
-			const ENetAddress* address = connectedpeer();
-			defformatstring(buffer, "Mode: %s", modename);
-			discordPresence.details = buffer;
-			if (game::maplimit >= 0) {
-				time_t curtime;
-				uint32_t endtimedelta = (game::maplimit - lastmillis) / 1000;
-				time(&curtime);
-				//conoutf("current time: %d", endtimedelta);
-				//conoutf("time: %u, end match time: %u", (uint32_t)curtime, (uint32_t)curtime + (uint32_t)endtimedelta);
-				discordPresence.startTimestamp = 0;
-				discordPresence.endTimestamp = (uint32_t)curtime + (uint32_t)endtimedelta;
 			}
-			else {
-				discordPresence.startTimestamp = 0;
-				discordPresence.endTimestamp = 0;
-			}
-			//discordPresence.startTimestamp = 0;
-			//discordPresence.endTimestamp = time(0) + (5 * 60);
-			discordPresence.largeImageKey = game::getclientmap();
-			discordPresence.largeImageText = game::getclientmap();
-			defformatstring(gay, "player-%d", playermodel);
-			//conoutf("shit: %s, balls: %d", gay, playermodel);
-			discordPresence.smallImageKey = gay;
-			discordPresence.smallImageText = playername;
-			if (address) {
-				if (enet_address_get_host_ip(address, partykey, sizeof(partykey)) >= 0)
-				{
-					//conoutf("%s:%d", partykey, address->port);
-					defformatstring(newpartykey, "%s:%u", partykey, address->port);
-					//conoutf(newpartykey);
-					discordPresence.partyId = newpartykey;
-					discordPresence.partySize = game::players.length();
-					discordPresence.partyMax = game::players.length();
-					//discordPresence.joinSecret = newpartykey;
-					discordPresence.joinSecret = "gay";
+			if (gamestate != D_MENU) {
+				const ENetAddress* address = connectedpeer();
+
+				defformatstring(buffer, "Mode: %s", modename);
+				discordPresence.details = buffer;
+				if (game::maplimit >= 0) {
+					time_t curtime;
+					uint32_t endtimedelta = (game::maplimit - lastmillis) / 1000;
+					time(&curtime);
+					//conoutf("current time: %d", endtimedelta);
+					//conoutf("time: %u, end match time: %u", (uint32_t)curtime, (uint32_t)curtime + (uint32_t)endtimedelta);
+					discordPresence.startTimestamp = 0;
+					discordPresence.endTimestamp = (uint32_t)curtime + (uint32_t)endtimedelta;
+				}
+				else {
+					discordPresence.startTimestamp = 0;
+					discordPresence.endTimestamp = 0;
+				}
+				discordPresence.largeImageKey = game::getclientmap();
+				discordPresence.largeImageText = game::getclientmap();
+				defformatstring(icon, "player-%d", playermodel);
+				//conoutf("imagekey: %s, playermodel: %d", icon, playermodel);
+				discordPresence.smallImageKey = icon;
+				discordPresence.smallImageText = playername;
+				if (address) {
+					if (enet_address_get_host_ip(address, partykey, sizeof(partykey)) >= 0)
+					{
+						//conoutf("%s:%d", partykey, address->port);
+						defformatstring(newpartykey, "%s:%u", partykey, address->port);
+						//conoutf(newpartykey);
+						defformatstring(partyid, "%s%s", "srv:", newpartykey);
+						discordPresence.partyId = partyid;
+						discordPresence.partySize = game::players.length();
+						discordPresence.partyMax = game::players.length();
+						discordPresence.joinSecret = newpartykey;
+						//discordPresence.joinSecret = "ye yeet";
+					}
+				}
+				else {
+					discordPresence.state = "Playing alone";
 				}
 			}
-			else {
-				discordPresence.state = "Playing alone";
-			}		
-		} 
-		else 
-		{ 
-			discordPresence.details = "";
-			discordPresence.startTimestamp = starttime;
-			discordPresence.endTimestamp = 0;
-			discordPresence.largeImageKey = "logo-large";
-			discordPresence.largeImageText = "";
-			discordPresence.partyId = "";
-			discordPresence.partySize = 0;
-			discordPresence.partyMax = 0;
-			discordPresence.joinSecret = "";
-			discordPresence.spectateSecret = "";
+			else
+			{
+				discordPresence.details = "";
+				discordPresence.startTimestamp = starttime;
+				discordPresence.endTimestamp = 0;
+				discordPresence.largeImageKey = "logo-large";
+				discordPresence.largeImageText = "";
+				discordPresence.partyId = "";
+				discordPresence.partySize = 0;
+				discordPresence.partyMax = 0;
+				discordPresence.joinSecret = "";
+				discordPresence.spectateSecret = "";
+			}
+			Discord_UpdatePresence(&discordPresence);
+			globalgamestate = gamestate;
 		}
-		Discord_UpdatePresence(&discordPresence);
 	}
 
 	void handleDiscordReady(const DiscordUser* connectedUser)
@@ -125,6 +126,16 @@ namespace discord
 	{
 		// This code never runs???
 		conoutf("Discord: join (%s)\n", secret);
+
+		// split at colon
+		char* glob = (char*)secret; // make a temp value i can change
+		char* addr = strtok(glob, ":"); // give me everything before the colon
+		char* port = strtok(NULL, " "); // use the rest as a port number
+		
+		// do le connect (i hope)
+		conoutf("DEBUG: trying to connect to %s:%d", addr, (int)port); // leaving this in for live testing
+		connectserv(addr, (int)port, "");
+
 		//disconnect();
 	}
 
@@ -143,7 +154,7 @@ namespace discord
 			request->userId);
 		Discord_Respond(request->userId, response);
 	}
-	void dis_initdiscord()
+	void initDiscord()
 	{
 		DiscordEventHandlers handlers;
 		memset(&handlers, 0, sizeof(handlers));
@@ -157,4 +168,4 @@ namespace discord
 		// Discord_Initialize(const char* applicationId, DiscordEventHandlers* handlers, int autoRegister, const char* optionalSteamId)
 		Discord_Initialize("436989367941070848", &handlers, 1, "0");
 	}
-}
+} 

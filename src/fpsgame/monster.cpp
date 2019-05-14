@@ -172,7 +172,7 @@ namespace game
                 case M_AIMING:                      // this state is the delay between wanting to shoot and actually firing
                     if(trigger<lastmillis)
                     {
-                        lastaction = 0;
+                        lastaction[gunselect] = 0;
                         attacking = true;
                         shoot(this, attacktarget);
                         transition(M_ATTACKING, 0, 600, 0);
@@ -396,7 +396,7 @@ namespace game
                 vwep[0] = modelattach("tag_weapon", monstertypes[m.mtype].vwepname, ANIM_VWEP_IDLE|ANIM_LOOP, 0);
                 float fade = 1;
                 if(m.state==CS_DEAD) fade -= clamp(float(lastmillis - (m.lastpain + 9000))/1000, 0.0f, 1.0f);
-                renderclient(&m, monstertypes[m.mtype].mdlname, vwep, 0, m.monsterstate==M_ATTACKING ? -ANIM_ATTACK1 : 0, 300, m.lastaction, m.lastpain, fade);
+                renderclient(&m, monstertypes[m.mtype].mdlname, vwep, 0, m.monsterstate==M_ATTACKING ? -ANIM_ATTACK1 : 0, 300, m.lastaction[m.gunselect], m.lastpain, fade);
             }
         }
     }

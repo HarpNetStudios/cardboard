@@ -1,0 +1,13 @@
+version: 1.0.{build}
+build:
+  verbosity: minimal
+environment:
+  matrix:
+    - GENERATOR: "Visual Studio 15 2017"
+      CONFIGURATION: Debug
+      TOOLSET: v141_xp
+      APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2017"
+    - GENERATOR: "Visual Studio 15 2017 Win64"
+      CONFIGURATION: Debug
+      TOOLSET: v141_xp
+      APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2017"

@@ -340,7 +340,7 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {30,    120,   S_ITEMAMMO,   "MG", HICON_SMG, GUN_SMG},
     {10,    30,    S_ITEMAMMO,   "SG", HICON_SG, GUN_SG},
     {5,     15,    S_ITEMAMMO,   "RI", HICON_RIFLE, GUN_RIFLE},
-    {20,    60,    S_ITEMAMMO,   "CG", HICON_CG, GUN_CG},
+    {60,    60,    S_ITEMAMMO,   "CG", HICON_CG, GUN_CG},
     {5,     15,    S_ITEMAMMO,   "RL", HICON_RL, GUN_RL},
     {10,    30,    S_ITEMAMMO,   "GL", HICON_GL, GUN_GL},
     {250,   1000,  S_ITEMHEALTH, "H", HICON_HEALTH, -1},
@@ -378,7 +378,8 @@ struct fpsstate
 {
     int health, maxhealth;
     int quadmillis;
-    int gunselect, gunwait;
+    int gunselect;
+	int gunwait[NUMGUNS];
     int ammo[NUMGUNS];
     int aitype, skill;
 
@@ -438,7 +439,7 @@ struct fpsstate
     {
         health = maxhealth;
         quadmillis = 0;
-        gunwait = 0;
+		loopi(NUMGUNS) gunwait[i] = 0;
         gunselect = GUN_SMG;
         loopi(NUMGUNS) ammo[i] = 0;
         ammo[GUN_FIST] = 1;
@@ -475,14 +476,14 @@ struct fpsstate
             gunselect = GUN_GL;
             ammo[GUN_GL] = 100;
         }
-        else if(m_parkour)
+        else if(m_parkour) // I have my doubts about this high ammo count becoming a problem, hopefully it doesn't. -Y 05/13
         {
             gunselect = GUN_RIFLE;
-            ammo[GUN_RIFLE] = 1;
-            ammo[GUN_CG] = 1;
-            ammo[GUN_RL] = 1;
-			ammo[GUN_GL] = 1;
-			ammo[GUN_SG] = 1;
+            ammo[GUN_RIFLE] = 32000;
+            ammo[GUN_CG] = 32000;
+            ammo[GUN_RL] = 32000;
+			ammo[GUN_GL] = 32000;
+			ammo[GUN_SG] = 32000;
         }
         else if(m_regencapture)
         {
@@ -532,7 +533,9 @@ struct fpsent : dynent, fpsstate
     int lifesequence;                   // sequence id for each respawn, used in damage test
     int respawned, suicided;
     int lastpain;
-    int lastaction, lastattackgun;
+	int lastaction[NUMGUNS];
+	int lastgun;
+	int lastattackgun;
     bool attacking;
     int attacksound, attackchan, idlesound, idlechan;
     int lasttaunt;
@@ -586,9 +589,8 @@ struct fpsent : dynent, fpsstate
     {
         dynent::reset();
         fpsstate::respawn();
-        //gunselect =
         respawned = suicided = -1;
-        lastaction = 0;
+        loopi(NUMGUNS) lastaction[i] = 0;
         lastattackgun = gunselect;
         attacking = false;
         lasttaunt = 0;

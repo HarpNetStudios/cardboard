@@ -1642,7 +1642,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
             pl->vel.z = max(pl->vel.z, JUMPVEL);
         }
     }
-    if(pl->spacepack)
+    if(pl->spacepack && !pl->spaceclip)
     {
         if(pl->jumping && allowmove)
 		{
@@ -1681,14 +1681,14 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 		game::physicstrigger(pl, local, 1, 0);
 	}
 
-    if(!(floating || pl->spacepack) && pl->physstate == PHYS_FALL) {
+    if(!(floating || (pl->spacepack && !pl->spaceclip)) && pl->physstate == PHYS_FALL) {
 		pl->timeinair += curtime;
 	}
 
     vec m(0.0f, 0.0f, 0.0f);
     if((pl->move || pl->strafe) && allowmove)
     {
-        vecfromyawpitch(pl->yaw, pl->spacepack || floating || water || pl->type==ENT_CAMERA ? pl->pitch : 0, pl->move, pl->strafe, m);
+        vecfromyawpitch(pl->yaw, (pl->spacepack && !pl->spaceclip) || floating || water || pl->type==ENT_CAMERA ? pl->pitch : 0, pl->move, pl->strafe, m);
 
         if((!floating || !pl->spacepack) && pl->physstate >= PHYS_SLOPE)
         {
@@ -1730,15 +1730,15 @@ void modifygravity(physent *pl, bool water, int curtime)
     }
     if(!water || !game::allowmove(pl) || (!pl->move && !pl->strafe))
     {
-        if (!pl->spacepack) pl->falling.add(g);
+        if (!pl->spacepack || pl->spaceclip) pl->falling.add(g);
     }
 
 
     if(water || pl->physstate >= PHYS_SLOPE)
     {
-      float fric = water ? 2.0f : 6.0f,
-            c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
-      pl->falling.mul(pow(1 - c/fric, curtime/20.0f));
+		float fric = water ? 2.0f : 6.0f;
+		float c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
+		pl->falling.mul(pow(1 - c/fric, curtime/20.0f));
 // old fps friction
     //float friction = water ? 2.0f : 6.0f,
     //    fpsfric = friction/curtime*20.0f,
@@ -1751,83 +1751,110 @@ void modifygravity(physent *pl, bool water, int curtime)
 // moveres indicated the physics precision (which is lower for monsters and multiplayer prediction)
 // local is false for multiplayer prediction
 
-bool moveplayer(physent *pl, int moveres, bool local, int curtime)
+bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 {
-    int material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (3*pl->aboveeye - pl->eyeheight)/4));
-    bool water = isliquid(material&MATF_VOLUME);
-    bool floating = pl->type==ENT_PLAYER && (pl->state==CS_EDITING || pl->state==CS_SPECTATOR);
-    bool ispack = pl->type==ENT_PLAYER && pl->spacepack;
-    float secs = curtime/1000.f;
+	int material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (3 * pl->aboveeye - pl->eyeheight) / 4));
+	bool water = isliquid(material & MATF_VOLUME);
+	bool inspclip = isspaceclip(material & MATF_VOLUME);
+	bool floating = pl->type == ENT_PLAYER && (pl->state == CS_EDITING || pl->state == CS_SPECTATOR);
+	bool ispack = pl->type == ENT_PLAYER && pl->spacepack && !pl->spaceclip;
+	float secs = curtime / 1000.f;
 
-    // apply gravity
-    if(!floating || !ispack) modifygravity(pl, water, curtime);
-    // apply any player generated changes in velocity
-    modifyvelocity(pl, local, water, floating, curtime);
+	// apply gravity
+	if (!floating && !ispack) modifygravity(pl, water, curtime);
+	// apply any player generated changes in velocity
+	modifyvelocity(pl, local, water, floating, curtime);
 
-    vec d(pl->vel);
-    if((!floating || !ispack) && water) d.mul(0.5f);
-    d.add(pl->falling);
-    d.mul(secs);
+	vec d(pl->vel);
+	if ((!floating || !ispack) && water && !editmode) d.mul(0.5f);
+	d.add(pl->falling);
+	d.mul(secs);
 
-    pl->blocked = false;
+	pl->blocked = false;
 
-    if(floating)                // just apply velocity
-    {
-        if(pl->physstate != PHYS_FLOAT)
-        {
-            pl->physstate = PHYS_FLOAT;
-            pl->timeinair = 0;
-            pl->falling = vec(0, 0, 0);
-        }
-        pl->o.add(d);
-    }
-    else if(ispack) //using spacepack
-    {
+	if (floating)                 // just apply velocity
+	{
+		if (pl->physstate != PHYS_FLOAT)
+		{
+			pl->physstate = PHYS_FLOAT;
+			pl->timeinair = 0;
+			pl->falling = vec(0, 0, 0);
+		}
+		pl->o.add(d);
+	}
+	else if (ispack && !inspclip) // using spacepack
+	{
 		const float f = 1.0f / moveres;
-        int collisions = 0;
+		int collisions = 0;
 
-        if(pl->physstate != PHYS_FLOAT)
-        {
-            pl->physstate = PHYS_FLOAT;
-            pl->timeinair = 0;
-            pl->falling = vec(0, 0, 0);
-        }
+		if (pl->physstate != PHYS_FLOAT)
+		{
+			pl->physstate = PHYS_FLOAT;
+			pl->timeinair = 0;
+			pl->falling = vec(0, 0, 0);
+		}
 		d.mul(f);
-        loopi(moveres) if(!spacemove(pl, d) && ++collisions<5) i--; // discrete steps collision detection & sliding
-    }
-    else                        // apply velocity with collision
-    {
-        const float f = 1.0f/moveres;
-        const int timeinair = pl->timeinair;
-        int collisions = 0;
+		loopi(moveres) if (!spacemove(pl, d) && ++collisions < 5) i--; // discrete steps collision detection & sliding
+	}
+	else                          // apply velocity with collision
+	{
+		const float f = 1.0f / moveres;
+		const int timeinair = pl->timeinair;
+		int collisions = 0;
 
-        d.mul(f);
-        loopi(moveres) if(!move(pl, d) && ++collisions<5) i--; // discrete steps collision detection & sliding
-        if(timeinair > 800 && !pl->timeinair && !water) // if we land after long time must have been a high jump, make thud sound
-        {
-            game::physicstrigger(pl, local, -1, 0);
-        }
-    }
+		d.mul(f);
+		loopi(moveres) if (!move(pl, d) && ++collisions < 5) i--; // discrete steps collision detection & sliding
+		if (timeinair > 800 && !pl->timeinair && !water) // if we land after long time must have been a high jump, make thud sound
+		{
+			game::physicstrigger(pl, local, -1, 0);
+		}
+	}
 
-    if(pl->state==CS_ALIVE) updatedynentcache(pl);
+	if (pl->state == CS_ALIVE) updatedynentcache(pl);
 
-    // automatically apply smooth roll when strafing
+	// automatically apply smooth roll when strafing
 
-    if(pl->strafe && maxroll) pl->roll = clamp(pl->roll - pow(clamp(1.0f + pl->strafe*pl->roll/maxroll, 0.0f, 1.0f), 0.33f)*pl->strafe*curtime*straferoll, -maxroll, maxroll);
-    else pl->roll *= curtime == PHYSFRAMETIME ? faderoll : pow(faderoll, curtime/float(PHYSFRAMETIME));
+	if (pl->strafe && maxroll) pl->roll = clamp(pl->roll - pow(clamp(1.0f + pl->strafe * pl->roll / maxroll, 0.0f, 1.0f), 0.33f) * pl->strafe * curtime * straferoll, -maxroll, maxroll);
+	else pl->roll *= curtime == PHYSFRAMETIME ? faderoll : pow(faderoll, curtime / float(PHYSFRAMETIME));
 
-    // play sounds on water transitions
+	// play sounds on water transitions if not in edit mode
+	if (!editmode) {
+		if (pl->inwater && !water)
+		{
+			material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (pl->aboveeye - pl->eyeheight) / 2));
+			water = isliquid(material & MATF_VOLUME);
+		}
+		if (!pl->inwater && water) game::physicstrigger(pl, local, 0, -1, material & MATF_VOLUME);
+		else if (pl->inwater && !water) game::physicstrigger(pl, local, 0, 1, pl->inwater);
+		pl->inwater = water ? material & MATF_VOLUME : MAT_AIR;
+	}
 
-    if(pl->inwater && !water)
-    {
-        material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (pl->aboveeye - pl->eyeheight)/2));
-        water = isliquid(material&MATF_VOLUME);
-    }
-    if(!pl->inwater && water) game::physicstrigger(pl, local, 0, -1, material&MATF_VOLUME);
-    else if(pl->inwater && !water) game::physicstrigger(pl, local, 0, 1, pl->inwater);
-    pl->inwater = water ? material&MATF_VOLUME : MAT_AIR;
+	if (pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_DEATH)) game::suicide(pl); //DEATH kills you
+	/*if (pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_SPACECLIP))
+	{
+		//conoutf("\f3spaceclip");
+		pl->spaceclip = true; // this just don't work for some reason, idk
+	}
 
-    if(pl->state==CS_ALIVE && (pl->o.z < 0 || material&MAT_DEATH)) game::suicide(pl); //DEATH kills you
+	pl->spaceclip = inspclip; */
+	/*
+	if (pl->spaceclip && !inspclip)
+	{
+		material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (pl->aboveeye - pl->eyeheight) / 2));
+		inspclip = isliquid(material & MATF_VOLUME);
+	}
+	if (!pl->spaceclip && inspclip) {
+		pl->spaceclip = true;
+		conoutf("in"); //game::physicstrigger(pl, local, 0, -1, material & MATF_VOLUME);
+	}
+	else if (pl->spaceclip && !inspclip) {
+		pl->spaceclip = false;
+		conoutf("out"); //game::physicstrigger(pl, local, 0, 1, pl->inwater);
+	}
+	pl->spaceclip = inspclip ? material & MATF_VOLUME : MAT_AIR; // join a cool, be gang -Y 05/09/19
+
+	conoutf("spacepack: %d, spaceclip: %d, inspclip: %d", pl->spacepack, pl->spaceclip, inspclip); // i sure do love debugging
+	*/
 
     return true;
 }
@@ -1914,6 +1941,14 @@ void updatephysstate(physent *d)
      */
     switch(d->physstate)
     {
+		case PHYS_FLOAT:
+		if (d->spacepack && !d->spaceclip)
+		{
+			if (collide(d, vec(0, 0, 0)) && collidewall.z == SLOPEZ)
+				d->floor = collidewall;
+		}
+		break; // what the fuck
+
         case PHYS_SLOPE:
         case PHYS_FLOOR:
         case PHYS_STEP_DOWN:
@@ -1933,14 +1968,6 @@ void updatephysstate(physent *d)
             if(collide(d, vec(0, 0, -1)) && collidewall.z < SLOPEZ)
                 d->floor = collidewall;
             break;
-
-        case PHYS_FLOAT:
-            if(d->spacepack)
-            {
-                if(collide(d, vec(0, 0, 0)) && collidewall.z == SLOPEZ)
-                    d->floor = collidewall;
-                break;
-            }
     }
     if(d->physstate > PHYS_FALL && d->floor.z <= 0) d->floor = vec(0, 0, 1);
     d->o = old;

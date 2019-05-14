@@ -22,7 +22,7 @@ void cleanup()
         if(screen) SDL_SetWindowFullscreen(screen, 0);
     #endif
 	#ifdef WIN32
-		discord::dis_updatepresence(D_QUITTING);
+		discord::updatePresence(discord::D_QUITTING);
 		Discord_Shutdown();
 	#endif
     SDL_Quit();
@@ -33,7 +33,7 @@ extern void writeinitcfg();
 void quit()                     // normal exit
 {
 	#ifdef WIN32
-		discord::dis_updatepresence(D_QUITTING);
+		discord::updatePresence(discord::D_QUITTING);
 		Discord_Shutdown();
 	#endif
     writeinitcfg();
@@ -749,7 +749,7 @@ void resetgl()
     reloadtextures();
     initlights();
 	#ifdef WIN32
-		discord::dis_updatepresence(D_MENU);
+		discord::updatePresence(discord::D_MENU);
 	#endif
     allchanged(true);
 }
@@ -1191,6 +1191,8 @@ void testcurl_(char* targetUrl) {
 
 COMMANDN(testcurl, testcurl_, "s");
 
+int globalgamestate = -1;
+
 int main(int argc, char **argv)
 {
     #ifdef WIN32
@@ -1348,8 +1350,8 @@ int main(int argc, char **argv)
 
 	#ifdef WIN32
 		logoutf("init: discord");
-		discord::dis_initdiscord();
-		discord::dis_updatepresence(D_MENU);
+		discord::initDiscord();
+		discord::updatePresence(discord::D_MENU);
 	#endif
 
     logoutf("init: mainloop");
@@ -1411,7 +1413,7 @@ int main(int argc, char **argv)
 		if (mainmenu) {
 			gl_drawmainmenu(); 
 			#ifdef WIN32
-				discord::dis_updatepresence(D_MENU);
+				discord::updatePresence(discord::D_MENU);
 			#endif
 		}
         else gl_drawframe();

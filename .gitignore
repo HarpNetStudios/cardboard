@@ -11,5 +11,10 @@
 
 # Testing directories
 /home
+.trash/
 .objs/
 .vs/
+
+*.tlog
+*.pdb
+*.pch

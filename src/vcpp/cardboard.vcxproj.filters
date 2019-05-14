@@ -358,5 +358,20 @@
     <None Include="..\..\data\stdlib.cfg">
       <Filter>config</Filter>
     </None>
+    <None Include="..\..\config.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\init.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\restore.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\server-init.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\servers.cfg">
+      <Filter>config</Filter>
+    </None>
   </ItemGroup>
 </Project>

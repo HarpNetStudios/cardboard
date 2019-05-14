@@ -209,7 +209,7 @@ namespace game
             if(d->state==CS_DEAD && d->ragdoll) moveragdoll(d);
             else if(!intermission)
             {
-                if(lastmillis - d->lastaction >= d->gunwait) d->gunwait = 0;
+                if(lastmillis - d->lastaction[d->gunselect] >= d->gunwait[d->gunselect]) d->gunwait[d->gunselect] = 0;
                 if(d->quadmillis) entities::checkquad(curtime, d);
             }
 
@@ -285,7 +285,7 @@ namespace game
 				else if (cmode) cmode->checkitems(player1);
 			}
 			#ifdef WIN32
-				discord::dis_updatepresence((player1->state == CS_SPECTATOR ? D_SPECTATE : D_PLAYING ), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
+				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING ), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
 			#endif
 		}
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
@@ -443,41 +443,41 @@ namespace game
         if(verbosekill)
         {
             if(actor->type==ENT_AI)
-                conoutf(contype, "\f2%s got killed by %s with %s!", dname, aname, getweaponname(gun));
+                conoutf(contype, "\f2%s\f2 got killed by %s with %s!", dname, aname, getweaponname(gun));
             else if(d==actor || actor->type==ENT_INANIMATE)
-                conoutf(contype, "\f2%s suicided%s", dname, d==player1 ? "!" : "");
+                conoutf(contype, "\f2%s\f2 suicided%s", dname, d==player1 ? "!" : "");
             #if 0
             else if(isteam(d->team, actor->team))
             {
                 contype |= CON_TEAMKILL;
-                if(actor==player1) conoutf(contype, "\f6%s fragged a teammate (%s)", aname, dname);
-                else if(d==player1) conoutf(contype, "\f6%s got fragged by a teammate (%s)", dname, aname);
-                else conoutf(contype, "\f2%s fragged a teammate (%s)", aname, dname);
+                if(actor==player1) conoutf(contype, "\f6%s\f26 fragged a teammate (%s)", aname, dname);
+                else if(d==player1) conoutf(contype, "\f6%s\f6 got fragged by a teammate (%s)", dname, aname);
+                else conoutf(contype, "\f2%s\f2 fragged a teammate (%s)", aname, dname);
             }
             #endif
             else
             {
-                if(d==player1) conoutf(contype, "\f2%s got fragged by %s with %s", dname, aname, getweaponname(gun));
-                else conoutf(contype, "\f2%s fragged %s with %s", aname, dname, getweaponname(gun));
+                if(d==player1) conoutf(contype, "\f2%s\f2 got fragged by %s with %s", dname, aname, getweaponname(gun));
+                else conoutf(contype, "\f2%s\f2 fragged %s with %s", aname, dname, getweaponname(gun));
             }
         }
         else
         {
             if(actor->type==ENT_AI)
-                conoutf(contype, "\f2%s -> %s -> %s!", dname, getweaponname(gun), aname);
+                conoutf(contype, "\f2%s\f2 -> %s -> %s\f2!", dname, getweaponname(gun), aname);
             else if(d==actor || actor->type==ENT_INANIMATE)
-                conoutf(contype, "\f2world -> %s", dname);
+                conoutf(contype, "\f2world -> %s\f2", dname);
             #if 0
             else if(isteam(d->team, actor->team))
             {
                 contype |= CON_TEAMKILL;
-                if(actor==player1) conoutf(contype, "\f6%s fragged a teammate (%s)", aname, dname);
-                else if(d==player1) conoutf(contype, "\f6%s got fragged by a teammate (%s)", dname, aname);
-                else conoutf(contype, "\f2%s fragged a teammate (%s)", aname, dname);
+				if (actor == player1) conoutf(contype, "\f6%s\f6 fragged a teammate (%s\f6)", aname, dname);
+				else if (d == player1) conoutf(contype, "\f6%s\f6 got fragged by a teammate (%s\f6)", dname, aname);
+				else conoutf(contype, "\f2%s\f2 fragged a teammate (%s\f2)", aname, dname);
             }
             #endif
             else
-                conoutf(contype, "\f2%s -> %s -> %s", aname, getweaponname(gun), dname);
+                conoutf(contype, "\f2%s\f2 -> %s -> %s\f2", aname, getweaponname(gun), dname);
         }
 		if (d != actor) {
 			if (m_gun)
@@ -743,7 +743,7 @@ namespace game
             {
                 if(d->aitype == AI_NONE)
                 {
-                    formatstring(cname[cidx], "%s%s \fs\f5(%d)\fr%s", prefix, name, d->clientnum, suffix);
+                    formatstring(cname[cidx], "%s%s \fs\f8(%d)\fr%s", prefix, name, d->clientnum, suffix);
                 }
                 else
                 {
@@ -849,6 +849,7 @@ namespace game
 
     VARP(ammohud, 0, 1, 1);
     VARP(showvel, 0, 1, 1);
+	VARP(healthbar, 0, 1, 1);
 
     void drawhudicons(fpsent *d)
     {
@@ -856,7 +857,7 @@ namespace game
         hudmatrix.scale(2, 2, 1);
         flushhudmatrix();
 
-        drawhealth(d);
+        if(healthbar) drawhealth(d);
 
         draw_textf("%d", (HICON_X + HICON_SIZE + HICON_SPACE+20)/2, HICON_TEXTY/2, d->state==CS_DEAD ? 0 : d->health);
         if(d->state!=CS_DEAD)
@@ -869,7 +870,7 @@ namespace game
             {
                 draw_textf("INF", (HICON_X + 4*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2);
             }
-            if(showvel) draw_textf("%i", (HICON_X + ammohud+2*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, (int)d->vel.magnitude());
+            if(showvel) draw_textf("%d", (HICON_X + ammohud+2*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, (int)d->vel.magnitude());
         }
 
         pophudmatrix();
@@ -971,7 +972,7 @@ namespace game
             if(d->health<=250) color = vec(1, 0, 0);
             else if(d->health<=500) color = vec(1, 0.5f, 0);
         }
-        if(d->gunwait) color.mul(0.5f);
+        if(d->gunwait[d->gunselect]) color.mul(0.5f);
         return crosshair;
     }
 

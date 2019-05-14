@@ -229,6 +229,7 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
             case '5': color = bvec(192,  64, 192); break;   // magenta
             case '6': color = bvec(255, 128,   0); break;   // orange
             case '7': color = bvec(255, 255, 255); break;   // white
+			case '8': color = bvec(0  , 255, 255); break;   // cyan
             // provided color: everything else
         }
         gle::color(color, a);

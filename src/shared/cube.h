@@ -18,10 +18,6 @@
 #include <time.h>
 
 #ifdef WIN32
-#include <discord_rpc.h>
-#endif
-
-#ifdef WIN32
   #define WIN32_LEAN_AND_MEAN
   #ifdef _WIN32_WINNT
   #undef _WIN32_WINNT
@@ -50,6 +46,10 @@
     #include <SDL.h>
     #include <SDL_opengl.h>
   #endif
+#endif
+
+#ifdef WIN32
+#include <discord_rpc.h>
 #endif
 
 #include <enet/enet.h>

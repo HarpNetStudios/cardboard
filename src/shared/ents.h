@@ -72,9 +72,9 @@ struct physent                                  // base entity type, can be affe
 
     int inwater;
     bool jumping;
-    int jumpstate;
-    bool candouble;								// For Double the Jumps :P
-	bool spacepack;
+    int jumpstate;								// state of the jump, 1 for single, 2 for double
+    bool candouble;								// used to see if the player can double jump
+	bool spacepack, spaceclip;					// used to see if the player can activate spacepack
     char move, strafe;
 
     uchar physstate;                            // one of PHYS_* above
@@ -84,8 +84,9 @@ struct physent                                  // base entity type, can be affe
 
     bool blocked;                               // used by physics to signal ai
 
-    physent() : o(0, 0, 0), deltapos(0, 0, 0), newpos(0, 0, 0), yaw(0), pitch(0), roll(0), maxspeed(100),
-               radius(4.1f), eyeheight(14), aboveeye(1), xradius(4.1f), yradius(4.1f), zmargin(0),
+	physent() : o(0, 0, 0), deltapos(0, 0, 0), newpos(0, 0, 0), yaw(0), pitch(0), roll(0), maxspeed(100),
+		       radius(4.1f), eyeheight(14), aboveeye(1), xradius(4.1f), yradius(4.1f), zmargin(0),
+		       spacepack(false), spaceclip(false),
                state(CS_ALIVE), editstate(CS_ALIVE), type(ENT_PLAYER),
                collidetype(COLLIDE_ELLIPSE),
                blocked(false)
@@ -104,6 +105,7 @@ struct physent                                  // base entity type, can be affe
         jumping = false;
         candouble = false;
 		spacepack = false;
+		spaceclip = false;
 		jumpstate = 0;
         strafe = move = 0;
         physstate = PHYS_FALL;

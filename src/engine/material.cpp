@@ -156,7 +156,8 @@ const struct material
     {"noclip", MAT_NOCLIP},
     {"gameclip", MAT_GAMECLIP},
     {"death", MAT_DEATH},
-    {"alpha", MAT_ALPHA}
+    {"alpha", MAT_ALPHA},
+	{"spaceclip", MAT_SPACECLIP}
 };
 
 int findmaterial(const char *name)
@@ -176,7 +177,7 @@ const char *findmaterialname(int mat)
    
 const char *getmaterialdesc(int mat, const char *prefix)
 {
-    static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA };
+    static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA, MAT_SPACECLIP };
     static string desc;
     desc[0] = '\0';
     loopi(sizeof(matmasks)/sizeof(matmasks[0])) if(mat&matmasks[i])
@@ -222,7 +223,7 @@ void genmatsurfs(const cube &c, const ivec &co, int size, vector<materialsurface
 {
     loopi(6)
     {
-        static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA };
+        static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA, MAT_SPACECLIP };
         loopj(sizeof(matmasks)/sizeof(matmasks[0]))
         {
             int matmask = matmasks[j];
@@ -555,14 +556,15 @@ void rendermatgrid(vector<materialsurface *> &vismats)
             bvec color;
             switch(m.material&~MATF_INDEX)
             {
-                case MAT_WATER:    color = bvec( 0,  0, 85); break; // blue
-                case MAT_CLIP:     color = bvec(85,  0,  0); break; // red
-                case MAT_GLASS:    color = bvec( 0, 85, 85); break; // cyan
-                case MAT_NOCLIP:   color = bvec( 0, 85,  0); break; // green
-                case MAT_LAVA:     color = bvec(85, 40,  0); break; // orange
-                case MAT_GAMECLIP: color = bvec(85, 85,  0); break; // yellow
-                case MAT_DEATH:    color = bvec(40, 40, 40); break; // black
-                case MAT_ALPHA:    color = bvec(85,  0, 85); break; // pink
+                case MAT_WATER:     color = bvec( 0,  0, 85); break; // blue
+                case MAT_CLIP:      color = bvec(85,  0,  0); break; // red
+                case MAT_GLASS:     color = bvec( 0, 85, 85); break; // cyan
+                case MAT_NOCLIP:    color = bvec( 0, 85,  0); break; // green
+                case MAT_LAVA:      color = bvec(85, 40,  0); break; // orange
+                case MAT_GAMECLIP:  color = bvec(85, 85,  0); break; // yellow
+                case MAT_DEATH:     color = bvec(40, 40, 40); break; // black
+                case MAT_ALPHA:     color = bvec(85,  0, 85); break; // pink
+				case MAT_SPACECLIP: color = bvec(60, 60, 60); break; // gray
                 default:continue;
             }
             gle::color(color);
@@ -670,14 +672,15 @@ void rendermaterials()
                 bvec color;
                 switch(m.material&~MATF_INDEX)
                 {
-                    case MAT_WATER:    color = bvec(255, 128,   0); break; // blue
-                    case MAT_CLIP:     color = bvec(  0, 255, 255); break; // red
-                    case MAT_GLASS:    color = bvec(255,   0,   0); break; // cyan
-                    case MAT_NOCLIP:   color = bvec(255,   0, 255); break; // green
-                    case MAT_LAVA:     color = bvec(  0, 128, 255); break; // orange
-                    case MAT_GAMECLIP: color = bvec(  0,   0, 255); break; // yellow
-                    case MAT_DEATH:    color = bvec(192, 192, 192); break; // black
-                    case MAT_ALPHA:    color = bvec(  0, 255,   0); break; // pink
+                    case MAT_WATER:     color = bvec(255, 128,   0); break; // blue
+                    case MAT_CLIP:      color = bvec(  0, 255, 255); break; // red
+                    case MAT_GLASS:     color = bvec(255,   0,   0); break; // cyan
+                    case MAT_NOCLIP:    color = bvec(255,   0, 255); break; // green
+                    case MAT_LAVA:      color = bvec(  0, 128, 255); break; // orange
+                    case MAT_GAMECLIP:  color = bvec(  0,   0, 255); break; // yellow
+                    case MAT_DEATH:     color = bvec(192, 192, 192); break; // black
+                    case MAT_ALPHA:     color = bvec(  0, 255,   0); break; // pink
+					case MAT_SPACECLIP: color = bvec(230, 230, 230); break; // gray
                     default: continue;
                 }
                 gle::color(color);

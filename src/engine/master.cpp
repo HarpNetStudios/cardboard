@@ -143,7 +143,7 @@ vector<client *> clients;
 
 ENetSocket serversocket = ENET_SOCKET_NULL;
 
-time_t starttime;
+time_t startingtime;
 enet_uint32 servtime = 0;
 
 void fatal(const char *fmt, ...)
@@ -240,8 +240,8 @@ void setupserver(int port, const char *ip = NULL)
 
     enet_time_set(0);
 
-    starttime = time(NULL);
-    char *ct = ctime(&starttime);
+    startingtime = time(NULL);
+    char *ct = ctime(&startingtime);
     if(strchr(ct, '\n')) *strchr(ct, '\n') = '\0';
     conoutf("*** Starting master server on %s %d at %s ***", ip ? ip : "localhost", port, ct);
 }
@@ -499,7 +499,7 @@ void reqauth(client &c, uint id, char *name)
     authreq &a = c.authreqs.add();
     a.reqtime = servtime;
     a.id = id;
-    uint seed[3] = { uint(starttime), servtime, randomMT() };
+    uint seed[3] = { uint(startingtime), servtime, randomMT() };
     static vector<char> buf;
     buf.setsize(0);
     a.answer = genchallenge(u->pubkey, seed, sizeof(seed), buf);

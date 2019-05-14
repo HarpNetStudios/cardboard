@@ -23,6 +23,7 @@ namespace game
     {
         if(gun!=d->gunselect)
         {
+			d->lastgun = d->gunselect;
             addmsg(N_GUNSELECT, "rci", d, gun);
             playsound(S_WEAPLOAD, d == player1 ? NULL : &d->o);
             if(gun==GUN_FIST){
@@ -105,7 +106,7 @@ namespace game
     void weaponswitch(fpsent *d)
     {
         if(d->state!=CS_ALIVE) return;
-        int s = d->gunselect;
+        /*int s = d->gunselect;
         if     (s!=GUN_CG     && d->ammo[GUN_CG])     s = GUN_CG;
         else if(s!=GUN_RL     && d->ammo[GUN_RL])     s = GUN_RL;
         else if(s!=GUN_SG     && d->ammo[GUN_SG])     s = GUN_SG;
@@ -113,8 +114,9 @@ namespace game
         else if(s!=GUN_GL     && d->ammo[GUN_GL])     s = GUN_GL;
         else if(s!=GUN_SMG    && d->ammo[GUN_SMG])    s = GUN_SMG;
         else                                          s = GUN_FIST;
-
-        gunselect(s, d);
+		gunselect(s, d);
+		*/
+        gunselect(d->lastgun, d);
     }
 
     ICOMMAND(weapon, "V", (tagval *args, int numargs),
@@ -246,7 +248,7 @@ namespace game
         bouncer *b = (bouncer *)d;
         if(b->bouncetype != BNC_GIBS || b->bounces >= 2) return;
         b->bounces++;
-        unsigned int bloodin = bloodcolor,
+        unsigned int bloodin = bloodcolor ^ 0xFFFFFF,
             bloodb = bloodin & 0xff,
             bloodg = (bloodin >> 8) & 0xff,
             bloodr = (bloodin >> 16) & 0xff;
@@ -355,7 +357,7 @@ namespace game
         } else {
             blddiv = 100;
         }
-        if(blood) particle_splash(PART_BLOOD, damage/blddiv, 1000, p, bloodcolor, 2.96f);
+        if(blood) particle_splash(PART_BLOOD, damage/blddiv, 1000, p, bloodcolor ^ 0xFFFFFF, 2.96f);
         if(thirdperson)
         {
             defformatstring(ds, "%d", damage);
@@ -387,7 +389,9 @@ namespace game
 
     void hit(int damage, dynent *d, fpsent *at, const vec &vel, int gun, float info1, int info2 = 1)
     {
-        if(at==player1 && d!=at)
+		fpsent* f = (fpsent*)d;
+
+        if(at==player1 && d!=at && !isteam(at->team, f->team))
         {
             extern int hitsound;
             if(hitsound && lasthit != lastmillis && !m_parkour) playsound(S_HIT);
@@ -399,8 +403,6 @@ namespace game
             hitmovable(damage, (movable *)d, at, vel, gun);
             return;
         }
-
-        fpsent *f = (fpsent *)d;
 
         f->lastpain = lastmillis;
         if(at->type==ENT_PLAYER && !isteam(at->team, f->team)) at->totaldamage += damage;
@@ -819,18 +821,18 @@ namespace game
 
     void shoot(fpsent *d, const vec &targ)
     {
-        int prevaction = d->lastaction, attacktime = lastmillis-prevaction;
-        if(attacktime<d->gunwait) return;
-        d->gunwait = 0;
+        int prevaction = d->lastaction[d->gunselect], attacktime = lastmillis-prevaction;
+        if(attacktime<d->gunwait[d->gunselect]) return;
+        d->gunwait[d->gunselect] = 0;
         if((d==player1 || d->ai) && !d->attacking) return;
-        d->lastaction = lastmillis;
+        d->lastaction[d->gunselect] = lastmillis;
         d->lastattackgun = d->gunselect;
         if(!d->ammo[d->gunselect])
         {
             if(d==player1)
             {
                 msgsound(S_NOAMMO, d);
-                d->gunwait = 600;
+                d->gunwait[d->gunselect] = 600;
                 d->lastattackgun = -1;
                 weaponswitch(d);
             }
@@ -873,8 +875,8 @@ namespace game
                    hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
         }
 
-		d->gunwait = guns[d->gunselect].attackdelay;
-		if(d->gunselect == GUN_SMG && d->ai) d->gunwait += int(d->gunwait*(((101-d->skill)+rnd(111-d->skill))/100.f));
+		d->gunwait[d->gunselect] = guns[d->gunselect].attackdelay;
+		if(d->gunselect == GUN_SMG && d->ai) d->gunwait[d->gunselect] += int(d->gunwait[d->gunselect]*(((101-d->skill)+rnd(111-d->skill))/100.f));
         d->totalshots += guns[d->gunselect].damage*(d->quadmillis ? 4 : 1)*guns[d->gunselect].rays;
     }
 
@@ -978,7 +980,7 @@ namespace game
         }
         if(gun >= 0 && gun < NUMGUNS &&
            d->clientnum >= 0 && d->state == CS_ALIVE &&
-           d->lastattackgun == gun && lastmillis - d->lastaction < guns[gun].attackdelay + 50)
+           d->lastattackgun == gun && lastmillis - d->lastaction[d->gunselect] < guns[gun].attackdelay + 50)
         {
             d->attackchan = playsound(d->attacksound, local ? NULL : &d->o, NULL, 0, -1, -1, d->attackchan);
             if(d->attackchan < 0) d->attacksound = -1;

@@ -134,7 +134,7 @@ namespace server
 
         bool waitexpired(int gamemillis)
         {
-            return gamemillis - lastshot >= gunwait;
+            return gamemillis - lastshot >= gunwait[gunselect];
         }
 
         void reset()
@@ -2240,13 +2240,13 @@ namespace server
         gamestate &gs = ci->state;
         int wait = millis - gs.lastshot;
         if(!gs.isalive(gamemillis) ||
-           wait<gs.gunwait ||
+           wait<gs.gunwait[gs.gunselect] ||
            gun<GUN_FIST || gun>GUN_GL ||
            gs.ammo[gun]<=0 || (guns[gun].range && from.dist(to) > guns[gun].range + 1))
             return;
         if(gun!=GUN_FIST) gs.ammo[gun]--;
         gs.lastshot = millis;
-        gs.gunwait = guns[gun].attackdelay;
+        gs.gunwait[gs.gunselect] = guns[gun].attackdelay;
         sendf(-1, 1, "rii9x", N_SHOTFX, ci->clientnum, gun, id,
                 int(from.x*DMF), int(from.y*DMF), int(from.z*DMF),
                 int(to.x*DMF), int(to.y*DMF), int(to.z*DMF),
@@ -3461,7 +3461,7 @@ namespace server
             }
 
             case N_ADDBOT:
-            {
+            {	
                 aiman::reqadd(ci, getint(p));
                 break;
             }
