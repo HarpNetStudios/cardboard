@@ -158,7 +158,9 @@ void disconnect(bool async, bool cleanup)
         conoutf("disconnected");
         game::gamedisconnect(cleanup);
         mainmenu = 1;
-		discord::updatePresence(discord::D_MENU);
+		#ifdef WIN32
+			discord::updatePresence(discord::D_MENU);
+		#endif
     }
     if(!connpeer && clienthost)
     {

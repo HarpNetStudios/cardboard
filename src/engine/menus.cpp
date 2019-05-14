@@ -754,7 +754,9 @@ void clearmainmenu()
     if(mainmenu && isconnected())
     {
         mainmenu = 0;
-		discord::updatePresence(discord::D_MENU);
+		#ifdef WIN32
+			discord::updatePresence(discord::D_MENU);
+		#endif
         if(!processingmenu) cleargui();
     }
 }

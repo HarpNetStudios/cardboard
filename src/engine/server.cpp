@@ -723,7 +723,9 @@ void localdisconnect(bool cleanup)
     if(!disconnected) return;
     game::gamedisconnect(cleanup);
     mainmenu = 1;
-	discord::updatePresence(discord::D_MENU);
+	#ifdef WIN32
+		discord::updatePresence(discord::D_MENU);
+	#endif
 }
 
 void localconnect()

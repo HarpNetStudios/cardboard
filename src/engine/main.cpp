@@ -1110,6 +1110,14 @@ struct memoryStruct {
 
 };
 
+#ifdef WIN32
+#ifndef CURLENABLED
+#define CURLENABLED
+#endif
+#endif
+
+
+#ifdef CURLENABLED
 static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
 	size_t realsize = size * nmemb;
@@ -1190,6 +1198,7 @@ void testcurl_(char* targetUrl) {
 }
 
 COMMANDN(testcurl, testcurl_, "s");
+#endif 
 
 int globalgamestate = -1;
 
