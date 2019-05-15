@@ -103,20 +103,26 @@ namespace game
          cycleweapon(numguns, guns);
     });
 
+	VARP(oldweapswitch, 0, 0, 1);
+
     void weaponswitch(fpsent *d)
     {
         if(d->state!=CS_ALIVE) return;
-        /*int s = d->gunselect;
-        if     (s!=GUN_CG     && d->ammo[GUN_CG])     s = GUN_CG;
-        else if(s!=GUN_RL     && d->ammo[GUN_RL])     s = GUN_RL;
-        else if(s!=GUN_SG     && d->ammo[GUN_SG])     s = GUN_SG;
-        else if(s!=GUN_RIFLE  && d->ammo[GUN_RIFLE])  s = GUN_RIFLE;
-        else if(s!=GUN_GL     && d->ammo[GUN_GL])     s = GUN_GL;
-        else if(s!=GUN_SMG    && d->ammo[GUN_SMG])    s = GUN_SMG;
-        else                                          s = GUN_FIST;
-		gunselect(s, d);
-		*/
-        gunselect(d->lastgun, d);
+		if (oldweapswitch) {
+			int s = d->gunselect;
+			if (s != GUN_CG && d->ammo[GUN_CG])     s = GUN_CG;
+			else if (s != GUN_RL && d->ammo[GUN_RL])     s = GUN_RL;
+			else if (s != GUN_SG && d->ammo[GUN_SG])     s = GUN_SG;
+			else if (s != GUN_RIFLE && d->ammo[GUN_RIFLE])  s = GUN_RIFLE;
+			else if (s != GUN_GL && d->ammo[GUN_GL])     s = GUN_GL;
+			else if (s != GUN_SMG && d->ammo[GUN_SMG])    s = GUN_SMG;
+			else                                          s = GUN_FIST;
+			gunselect(s, d);
+		}
+		else 
+		{
+			if (d->ammo[d->lastgun]) gunselect(d->lastgun, d); // make sure we don't switch to something we don't have ammo for.
+		}
     }
 
     ICOMMAND(weapon, "V", (tagval *args, int numargs),
@@ -240,7 +246,7 @@ namespace game
 
     VARP(blood, 0, 1, 1);
     VARP(extrablood, 0, 0, 1);
-    VARP(bloodcolor, 0, 0x60FFFF, 0xFFFFFF);
+    VARP(bloodcolor, 0, 0x9F0000, 0xFFFFFF);
 
     void bounced(physent *d, const vec &surface)
     {
@@ -878,6 +884,18 @@ namespace game
 		d->gunwait[d->gunselect] = guns[d->gunselect].attackdelay;
 		if(d->gunselect == GUN_SMG && d->ai) d->gunwait[d->gunselect] += int(d->gunwait[d->gunselect]*(((101-d->skill)+rnd(111-d->skill))/100.f));
         d->totalshots += guns[d->gunselect].damage*(d->quadmillis ? 4 : 1)*guns[d->gunselect].rays;
+
+		if (!d->ammo[d->gunselect])
+		{
+			if (d == player1)
+			{
+				msgsound(S_NOAMMO, d);
+				d->gunwait[d->gunselect] = 600;
+				d->lastattackgun = -1;
+				weaponswitch(d);
+			}
+			return;
+		}
     }
 
     void adddynlights()

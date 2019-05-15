@@ -170,7 +170,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 }
 
 #ifndef STANDALONE
-string ogzname, bakname, cfgname, picname;
+string ogzname, bakname, cfgname, picname, loadname;
 
 VARP(savebak, 0, 2, 2);
 
@@ -184,11 +184,13 @@ void setmapfilenames(const char *fname, const char *cname = NULL)
     else formatstring(bakname, "packages/%s_%d.cmr.BAK", mapname, totalmillis);
     formatstring(cfgname, "packages/%s/%s.cfg", pakname, mcfgname);
     formatstring(picname, "packages/%s.png", mapname);
+	formatstring(loadname, "packages/%s_big.png", mapname);
 
     path(ogzname);
     path(bakname);
     path(cfgname);
     path(picname);
+	path(loadname);
 }
 
 void mapcfgname()
@@ -1025,8 +1027,8 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 
     resetmap();
 
-    Texture *mapshot = textureload(picname, 3, true, false);
-    renderbackground("loading...", mapshot, mname, game::getmapinfo());
+    Texture *mapshot = textureload(loadname, 3, true, false);
+    renderbackground("", mapshot, mname, game::getmapinfo()); // "loading..."
 
     game::loadingmap(cname ? cname : mname);
 
@@ -1268,7 +1270,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     initlights();
     allchanged(true);
 
-    renderbackground("loading...", mapshot, mname, game::getmapinfo());
+    renderbackground("", mapshot, mname, game::getmapinfo()); // "loading..."
 
     if(maptitle[0] && strcmp(maptitle, "Untitled Map by Unknown")) conoutf(CON_ECHO, "%s", maptitle);
 

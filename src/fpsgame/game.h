@@ -476,7 +476,7 @@ struct fpsstate
             gunselect = GUN_GL;
             ammo[GUN_GL] = 100;
         }
-        else if(m_parkour) // I have my doubts about this high ammo count becoming a problem, hopefully it doesn't. -Y 05/13
+        else if(m_parkour) // I have my doubts about this high ammo count becoming a problem, hopefully it doesn't. -Y 05/13/19
         {
             gunselect = GUN_RIFLE;
             ammo[GUN_RIFLE] = 32000;
@@ -594,6 +594,7 @@ struct fpsent : dynent, fpsstate
         lastattackgun = gunselect;
         attacking = false;
         lasttaunt = 0;
+		lastgun = GUN_FIST;
         lastpickup = -1;
         lastpickupmillis = 0;
         lastbase = lastrepammo = -1;

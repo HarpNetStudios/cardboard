@@ -673,7 +673,7 @@ namespace game
 
     const char *getmapinfo()
     {
-        return showmodeinfo && m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
+        return showmodeinfo && m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].name : NULL; // .info
     }
 
     void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material)

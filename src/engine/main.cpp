@@ -186,8 +186,6 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
     if(!restore || force) stopsounds(); // stop sounds while loading
 
-	
-
     int w = screenw, h = screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
     getbackgroundres(w, h);
@@ -227,22 +225,33 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         gle::defvertex(2);
         gle::deftexcoord0();
 
-        settexture("data/background.png", 0);
-        float bu = w*0.67f/256.0f + backgroundu, bv = h*0.67f/256.0f + backgroundv;
-        bgquad(0, 0, w, h, 0, 0, bu, bv);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_BLEND);
-        float lh = 0.5f*min(w, h), lw = lh*2,
-              lx = 0.5f*(w - lw), ly = 0.5f*(h*0.5f - lh);
-        settexture((maxtexsize ? min(maxtexsize, hwtexsize) : hwtexsize) >= 1024 && (screenw > 1280 || screenh > 800) ? "data/logo_1024.png" : "data/logo.png", 3);
-        bgquad(lx, ly, lw, lh);
-        /*engine badge*/
-		float badgeh = 0.12f*min(w, h), badgew = badgeh*2.00,
-              badgex = 0.01f*(w - badgew), badgey = 2.3f*(h*0.5f - badgeh);
+		
+		if (!(mapshot || mapname)) {
+			/*background and logo*/
+			settexture("data/background.png", 0);
+			float bu = w * 0.67f / 256.0f + backgroundu, bv = h * 0.67f / 256.0f + backgroundv;
+			bgquad(0, 0, w, h, 0, 0, bu, bv);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glEnable(GL_BLEND);
+			float lh = 0.5f * min(w, h), lw = lh * 2,
+				lx = 0.5f * (w - lw), ly = 0.5f * (h * 0.5f - lh);
+			settexture((maxtexsize ? min(maxtexsize, hwtexsize) : hwtexsize) >= 1024 && (screenw > 1280 || screenh > 800) ? "data/logo_1024.png" : "data/logo.png", 3);
+			bgquad(lx, ly, lw, lh);
+		
+			/*engine badge*/
+			float badgeh = 0.12f*min(w, h), badgew = badgeh*2.00,
+				  badgex = 0.01f*(w - badgew), badgey = 2.2f*(h*0.5f - badgeh);
+			settexture("data/cube2badge.png", 3);
+			bgquad(badgex, badgey, badgew, badgeh);
+		}
+		else {
+			/* blank black box, used for map load*/
+			gle::colorf(0,0,0);
+			bgquad(0, 0, w, h);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glEnable(GL_BLEND);
+		}
 
-		settexture("data/cube2badge.png", 3);
-
-		bgquad(badgex, badgey, badgew, badgeh);
         if(caption)
         {
             int tw = text_width(caption);
@@ -258,19 +267,21 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         if(mapshot || mapname)
         {
             int infowidth = 12*FONTH;
-            float sz = 0.35f*min(w, h), msz = (0.75f*min(w, h) - sz)/(infowidth + FONTH), x = 0.5f*(w-sz), y = ly+lh - sz/15;
+			float sz = 0.35f * min(w, h), msz = (0.75f * min(w, h) - sz) / (infowidth + FONTH);//, x = 0.5f*(w-sz), y = ly+lh - sz/15;
+			//float sz = 0.5f * min(w, h), msz = (0.75f * min(w, h) - sz) / (infowidth + FONTH), x = 0.5f * (w - sz), y = ly + lh - sz / 15;
             if(mapinfo)
             {
                 int mw, mh;
                 text_bounds(mapinfo, mw, mh, infowidth);
-                x -= 0.5f*(mw*msz + FONTH*msz);
+                //x -= 0.5f*(mw*msz + FONTH*msz);
             }
             if(mapshot && mapshot!=notexture)
             {
                 glBindTexture(GL_TEXTURE_2D, mapshot->id);
-                bgquad(x, y, sz, sz);
+                //bgquad(x, y, sz, sz);
+				bgquad(0, h/10, w, h-(h/10));
             }
-            else
+            /*else
             {
                 int qw, qh;
                 text_bounds("?", qw, qh);
@@ -282,26 +293,32 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
                 draw_text("?", 0, 0);
                 pophudmatrix();
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            }
-            settexture("data/mapshot_frame.png", 3);
-            bgquad(x, y, sz, sz);
+            }*/
+            //settexture("data/mapshot_frame.png", 3);
+            //bgquad(x, y, sz, sz);
             if(mapname)
             {
                 int tw = text_width(mapname);
-                float tsz = sz/(8*FONTH),
+                /*float tsz = sz/(8*FONTH),
                       tx = 0.9f*sz - tw*tsz, ty = 0.9f*sz - FONTH*tsz;
-                if(tx < 0.1f*sz) { tsz = 0.1f*sz/tw; tx = 0.1f; }
+				if(tx < 0.1f*sz) { tsz = 0.1f*sz/tw; tx = 0.1f; }*/
+				float tsz = sz / (6 * FONTH),
+					tx = (0.5f * w) - (tw/2),// - tw * tsz, 
+					ty = 0.25f * sz - FONTH * tsz;
+                //tsz = 0.1f*sz/tw; tx = 0.1f;
                 pushhudmatrix();
-                hudmatrix.translate(x+tx, y+ty, 0);
+                //hudmatrix.translate(x+tx, y+ty, 0);
+				hudmatrix.translate(tx, ty, 0);
                 hudmatrix.scale(tsz, tsz, 1);
                 flushhudmatrix();
-                draw_text(mapname, 0, 0);
+                draw_text(mapname, 0, 0, 0x00, 0xFF, 0xFF);
                 pophudmatrix();
             }
             if(mapinfo)
             {
                 pushhudmatrix();
-                hudmatrix.translate(x+sz+FONTH*msz, y, 0);
+                //hudmatrix.translate(x+sz+FONTH*msz, y, 0);
+				hudmatrix.translate((0.5f * w) - (infowidth / 2), 0, 0);
                 hudmatrix.scale(msz, msz, 1);
                 flushhudmatrix();
                 draw_text(mapinfo, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, -1, infowidth);
@@ -357,19 +374,25 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
     gle::defvertex(2);
     gle::deftexcoord0();
 
-    float fh = 0.075f*min(w, h), fw = fh*10,
+    /*float fh = 0.075f*min(w, h), fw = fh*10,
           fx = renderedframe ? w - fw - fh/4 : 0.5f*(w - fw),
           fy = renderedframe ? fh/4 : h - fh*1.5f,
           fu1 = 0/512.0f, fu2 = 511/512.0f,
-          fv1 = 0/64.0f, fv2 = 52/64.0f;
+          fv1 = 0/64.0f, fv2 = 52/64.0f;*/
+	float fh = h/30, fw = w,
+		fx = 0,
+		fy = (h / 30) * 29.8f,
+		fu1 = 0 / 512.0f, fu2 = 511 / 512.0f,
+		fv1 = 0 / 64.0f, fv2 = 52 / 64.0f;
     settexture("data/loading_frame.png", 3);
     bgquad(fx, fy, fw, fh, fu1, fv1, fu2-fu1, fv2-fv1);
+	//bgquad(0,(h/20)*19, w, h / 20, fu1, fv1, fu2 - fu1, fv2 - fv1);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    float bw = fw*(511 - 2*17)/511.0f, bh = fh*20/52.0f,
-          bx = fx + fw*17/511.0f, by = fy + fh*16/52.0f,
+    float bw = fw/**(511 - 2*17)/511.0f*/, bh = fh/**20/52.0f*/,
+          bx = fx/* + fw*17/511.0f*/, by = fy/* + fh*16/52.0f*/,
           bv1 = 0/32.0f, bv2 = 20/32.0f,
           su1 = 0/32.0f, su2 = 7/32.0f, sw = fw*7/511.0f,
           eu1 = 23/32.0f, eu2 = 30/32.0f, ew = fw*7/511.0f,
@@ -1234,7 +1257,7 @@ int main(int argc, char **argv)
     {
         if(argv[i][0]=='-') switch(argv[i][1])
         {
-			// reordered alpha to make it easier to see what's being used already. -Y
+			// reordered alpha to make it easier to see what's being used already. -Y 03/14/19
 			case 'a': fsaa = atoi(&argv[i][2]); break;
 			case 'b': /* compat, ignore */ break;
 			case 'c': 

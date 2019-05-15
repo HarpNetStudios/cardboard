@@ -884,7 +884,7 @@ namespace ai
     {
 		vec off = vec(pos).sub(d->feetpos()), dir(off.x, off.y, 0);
         bool sequenced = d->ai->blockseq || d->ai->targseq, offground = d->timeinair && !d->inwater,
-            jump = !offground && lastmillis >= d->ai->jumpseed && (sequenced || off.z >= JUMPMIN || lastmillis >= d->ai->jumprand);
+            jump = /* !offground && */ lastmillis >= d->ai->jumpseed && (sequenced || off.z >= JUMPMIN || lastmillis >= d->ai->jumprand);
 		if(jump)
 		{
 			vec old = d->o;
@@ -903,7 +903,9 @@ namespace ai
 		}
 		if(jump)
 		{
+			if(offground) gunselect(GUN_FIST, d);
 			d->jumping = true;
+			d->jumpstate++;
 			int seed = (111-d->skill)*(d->inwater ? 3 : 5);
 			d->ai->jumpseed = lastmillis+seed+rnd(seed);
 			seed *= b.idle ? 50 : 25;
