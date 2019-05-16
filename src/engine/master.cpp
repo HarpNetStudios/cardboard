@@ -85,7 +85,7 @@ struct authreq
 struct gameserver
 {
     ENetAddress address;
-    string ip;
+    oldstring ip;
     int port, numpings;
     enet_uint32 lastping, lastpong;
 };
@@ -195,7 +195,7 @@ void output(client &c, const char *msg, int len = 0)
 
 void outputf(client &c, const char *fmt, ...)
 {
-    string msg;
+    oldstring msg;
     va_list args;
     va_start(args, fmt);
     vformatstring(msg, fmt, args);
@@ -269,7 +269,7 @@ void gengbanlist()
     messagebuf *l = new messagebuf(gbanlists);
     const char *header = "cleargbans\n";
     l->buf.put(header, strlen(header));
-    string cmd = "addgban ";
+    oldstring cmd = "addgban ";
     int cmdlen = strlen(cmd);
     loopv(gbans)
     {
@@ -322,7 +322,7 @@ void addgameserver(client &c)
         outputf(c, "failreg too many servers on ip\n");
         return;
     }
-    string hostname;
+    oldstring hostname;
     if(enet_address_get_host_ip(&c.address, hostname, sizeof(hostname)) < 0)
     {
         outputf(c, "failreg failed resolving ip\n");
@@ -478,7 +478,7 @@ void reqauth(client &c, uint id, char *name)
         char *newline = strchr(ct, '\n');
         if(newline) *newline = '\0';
     }
-    string ip;
+    oldstring ip;
     if(enet_address_get_host_ip(&c.address, ip, sizeof(ip)) < 0) copystring(ip, "-");
     conoutf("%s: attempting \"%s\" as %u from %s", ct ? ct : "-", name, id, ip);
 
@@ -513,7 +513,7 @@ void confauth(client &c, uint id, const char *val)
 
     loopv(c.authreqs) if(c.authreqs[i].id == id)
     {
-        string ip;
+        oldstring ip;
         if(enet_address_get_host_ip(&c.address, ip, sizeof(ip)) < 0) copystring(ip, "-");
         if(checkchallenge(val, c.authreqs[i].answer))
         {
@@ -543,7 +543,7 @@ bool checkclientinput(client &c)
 
         int port;
         uint id;
-        string user, val;
+        oldstring user, val;
         if(!strncmp(c.input, "list", 4) && (!c.input[4] || c.input[4] == '\n' || c.input[4] == '\r'))
         {
             genserverlist();

@@ -174,7 +174,7 @@ namespace server
     struct savedscore
     {
         uint ip;
-        string name;
+        oldstring name;
         int maxhealth, frags, flags, deaths, teamkills, shotdamage, damage;
         int timeplayed;
         float effectiveness;
@@ -212,7 +212,7 @@ namespace server
     struct clientinfo
     {
         int clientnum, ownernum, connectmillis, sessionid, overflow;
-        string name, team, mapvote;
+        oldstring name, team, mapvote;
         int playermodel;
         int modevote;
         int privilege;
@@ -225,14 +225,14 @@ namespace server
         int wslen;
         vector<clientinfo *> bots;
         int ping, aireinit;
-        string clientmap;
+        oldstring clientmap;
         int mapcrc;
         bool warned, gameclip;
         ENetPacket *getdemo, *getmap, *clipboard;
         int lastclipboard, needclipboard;
         int connectauth;
         uint authreq;
-        string authname, authdesc;
+        oldstring authname, authdesc;
         void *authchallenge;
         int authkickvictim;
         char *authkickreason;
@@ -390,7 +390,7 @@ namespace server
     int gamemillis = 0, gamelimit = 0, nextexceeded = 0, gamespeed = 100;
     bool gamepaused = false, shouldstep = true;
 
-    string smapname = "";
+    oldstring smapname = "";
     int interm = 0;
     enet_uint32 lastsend = 0;
     int mastermode = MM_OPEN, mastermask = MM_PRIVSERV;
@@ -427,7 +427,7 @@ namespace server
     {
         static int exclude;
         int modes;
-        string map;
+        oldstring map;
 
         int calcmodemask() const { return modes&(1<<NUMGAMEMODES) ? modes & ~exclude : modes; }
         bool hasmode(int mode, int offset = STARTGAMEMODE) const { return (calcmodemask() & (1 << (mode-offset))) != 0; }
@@ -594,7 +594,7 @@ namespace server
 
     struct demofile
     {
-        string info;
+        oldstring info;
         uchar *data;
         int len;
     };
@@ -804,7 +804,7 @@ namespace server
     {
         if(!name) name = ci->name;
         if(name[0] && !duplicatename(ci, name) && ci->state.aitype == AI_NONE) return name;
-        static string cname[3];
+        static oldstring cname[3];
         static int cidx = 0;
         cidx = (cidx+1)%3;
         formatstring(cname[cidx], ci->state.aitype == AI_NONE ? "%s \fs\f5(%d)\fr" : "%s \fs\f5[%d]\fr", name, ci->clientnum);
@@ -1172,7 +1172,7 @@ namespace server
     {
         if(demoplayback) return;
         demoheader hdr;
-        string msg;
+        oldstring msg;
         msg[0] = '\0';
         defformatstring(file, "%s.dmo", smapname);
         demoplayback = opengzfile(file, "rb");
@@ -1332,7 +1332,7 @@ namespace server
 
     void hashpassword(int cn, int sessionid, const char *pwd, char *result, int maxlen)
     {
-        char buf[2*sizeof(string)];
+        char buf[2*sizeof(oldstring)];
         formatstring(buf, "%d %d ", cn, sessionid);
         concatstring(buf, pwd, sizeof(buf));
         if(!hashstring(buf, result, maxlen)) *result = '\0';
@@ -1340,7 +1340,7 @@ namespace server
 
     bool checkpassword(clientinfo *ci, const char *wanted, const char *given)
     {
-        string hash;
+        oldstring hash;
         hashpassword(ci->clientnum, ci->sessionid, wanted, hash, sizeof(hash));
         return !strcmp(hash, given);
     }
@@ -1398,7 +1398,7 @@ namespace server
             mastermode = MM_OPEN;
             allowedips.shrink(0);
         }
-        string msg;
+        oldstring msg;
         if(val && authname)
         {
             if(authdesc && authdesc[0]) formatstring(msg, "%s claimed %s as '\fs\f5%s\fr' [\fs\f0%s\fr]", colorname(ci), name, authname, authdesc);
@@ -1435,7 +1435,7 @@ namespace server
             if(vinfo && vinfo->connected && (priv >= vinfo->privilege || ci->local) && vinfo->privilege < PRIV_ADMIN && !vinfo->local)
             {
                 if(trial) return true;
-                string kicker;
+                oldstring kicker;
                 if(authname)
                 {
                     if(authdesc && authdesc[0]) formatstring(kicker, "%s as '\fs\f5%s\fr' [\fs\f0%s\fr]", colorname(ci), authname, authdesc);
@@ -2462,7 +2462,7 @@ namespace server
         }
         if(!mcrc && total - unsent < min(total, 4)) return;
         crcs.sort(crcinfo::compare);
-        string msg;
+        oldstring msg;
         loopv(clients)
         {
             clientinfo *ci = clients[i];
@@ -2761,7 +2761,7 @@ namespace server
     void processmasterinput(const char *cmd, int cmdlen, const char *args)
     {
         uint id;
-        string val;
+        oldstring val;
         if(sscanf(cmd, "failauth %u", &id) == 1)
             authfailed(id);
         else if(sscanf(cmd, "succauth %u", &id) == 1)
@@ -2852,7 +2852,7 @@ namespace server
                     copystring(ci->name, text, MAXNAMELEN+1);
                     ci->playermodel = getint(p);
 
-                    string password, authdesc, authname;
+                    oldstring password, authdesc, authname;
                     getstring(password, p, sizeof(password));
                     getstring(authdesc, p, sizeof(authdesc));
                     getstring(authname, p, sizeof(authname));
@@ -2872,7 +2872,7 @@ namespace server
 
                 case N_AUTHANS:
                 {
-                    string desc, ans;
+                    oldstring desc, ans;
                     getstring(desc, p, sizeof(desc));
                     uint id = (uint)getint(p);
                     getstring(ans, p, sizeof(ans));
@@ -3488,7 +3488,7 @@ namespace server
 
             case N_AUTHTRY:
             {
-                string desc, name;
+                oldstring desc, name;
                 getstring(desc, p, sizeof(desc));
                 getstring(name, p, sizeof(name));
                 tryauth(ci, name, desc);
@@ -3497,7 +3497,7 @@ namespace server
 
             case N_AUTHKICK:
             {
-                string desc, name;
+                oldstring desc, name;
                 getstring(desc, p, sizeof(desc));
                 getstring(name, p, sizeof(name));
                 int victim = getint(p);
@@ -3520,7 +3520,7 @@ namespace server
 
             case N_AUTHANS:
             {
-                string desc, ans;
+                oldstring desc, ans;
                 getstring(desc, p, sizeof(desc));
                 uint id = (uint)getint(p);
                 getstring(ans, p, sizeof(ans));

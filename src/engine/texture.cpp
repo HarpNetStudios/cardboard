@@ -1360,7 +1360,7 @@ static bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, 
         }
         else file = tex->name;
         
-        static string pname;
+        static oldstring pname;
         formatstring(pname, "packages/%s", file);
         file = path(pname);
     }
@@ -1399,7 +1399,7 @@ static bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, 
     int flen = strlen(file);
     if(flen >= 4 && (!strcasecmp(file + flen - 4, ".dds") || (dds && !raw)))
     {
-        string dfile;
+        oldstring dfile;
         copystring(dfile, file);
         memcpy(dfile + flen - 4, ".dds", 4);
         if(!loaddds(dfile, d, raw ? 1 : (dds ? 0 : -1)) && (!dds || raw))
@@ -1502,7 +1502,7 @@ uchar *loadalphamask(Texture *t)
 
 Texture *textureload(const char *name, int clamp, bool mipit, bool msg)
 {
-    string tname;
+    oldstring tname;
     copystring(tname, name);
     Texture *t = textures.access(path(tname));
     if(t) return t;
@@ -1906,7 +1906,7 @@ bool unpackvslot(ucharbuf &buf, VSlot &dst, bool delta)
         {
             case VSLOT_SHPARAM:
             {
-                string name;
+                oldstring name;
                 getstring(name, buf);
                 SlotShaderParam p = { name[0] ? getshaderparamname(name) : NULL, -1, { 0, 0, 0, 0 } };
                 loopi(4) p.val[i] = getfloat(buf);
@@ -2452,7 +2452,7 @@ VARFP(envmapsize, 4, 7, 10, setupmaterials());
 
 Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg, bool transient = false)
 {
-    string tname;
+    oldstring tname;
     if(!name) copystring(tname, t->name);
     else
     {
@@ -2466,7 +2466,7 @@ Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg,
     }
     char *wildcard = strchr(tname, '*');
     ImageData surface[6];
-    string sname;
+    oldstring sname;
     if(!wildcard) copystring(sname, tname);
     int tsize = 0, compress = 0;
     loopi(6)
@@ -2563,7 +2563,7 @@ Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg,
 
 Texture *cubemapload(const char *name, bool mipit, bool msg, bool transient)
 {
-    string pname;
+    oldstring pname;
     copystring(pname, makerelpath("packages", name));
     path(pname);
     Texture *t = NULL;
@@ -3146,7 +3146,7 @@ void gendds(char *infile, char *outfile)
 
     if(!outfile[0])
     {
-        static string buf;
+        static oldstring buf;
         copystring(buf, infile);
         int len = strlen(buf);
         if(len > 4 && buf[len-4]=='.') memcpy(&buf[len-4], ".dds", 4);
@@ -3463,7 +3463,7 @@ SVARP(screenshotdir, "screenshots/");
 
 void screenshot(char *filename)
 {
-    static string buf;
+    static oldstring buf;
     int format = -1;
     copystring(buf, screenshotdir);
     if(screenshotdir[0])

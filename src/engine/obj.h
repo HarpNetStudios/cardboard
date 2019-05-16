@@ -77,7 +77,7 @@ struct obj : vertloader<obj>
                 } \
             } while(0)
 
-            string meshname = "";
+            oldstring meshname = "";
             vertmesh *curmesh = NULL;
             while(file->getline(buf, sizeof(buf)))
             {

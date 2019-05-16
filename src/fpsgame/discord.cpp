@@ -6,10 +6,10 @@
 
 namespace discord
 {
-	void updatePresence(int gamestate, const char* modename, string playername, int playermodel)
+	void updatePresence(int gamestate, const char* modename, oldstring playername, int playermodel)
 	{
 		if (globalgamestate != gamestate) {
-			string partykey;
+			oldstring partykey;
 			DiscordRichPresence discordPresence;
 			memset(&discordPresence, 0, sizeof(discordPresence));
 			switch (gamestate)

@@ -323,7 +323,7 @@ static void allocglslactiveuniforms(Shader &s)
 {
     GLint numactive = 0;
     glGetProgramiv_(s.program, GL_ACTIVE_UNIFORMS, &numactive);
-    string name;
+    oldstring name;
     loopi(numactive)
     {
         GLsizei namelen = 0;
@@ -544,7 +544,7 @@ void Shader::cleanup(bool invalid)
 static void genattriblocs(Shader &s, const char *vs, const char *ps, Shader *reusevs, Shader *reuseps)
 {
     static int len = strlen("//:attrib");
-    string name;
+    oldstring name;
     int loc;
     if(reusevs) s.attriblocs = reusevs->attriblocs;
     else while((vs = strstr(vs, "//:attrib")))
@@ -558,7 +558,7 @@ static void genattriblocs(Shader &s, const char *vs, const char *ps, Shader *reu
 static void genuniformlocs(Shader &s, const char *vs, const char *ps, Shader *reusevs, Shader *reuseps)
 {
     static int len = strlen("//:uniform");
-    string name, blockname;
+    oldstring name, blockname;
     int binding, stride;
     if(reusevs) s.uniformlocs = reusevs->uniformlocs;
     else while((vs = strstr(vs, "//:uniform")))
@@ -735,7 +735,7 @@ static void gengenericvariant(Shader &s, const char *sname, const char *vs, cons
     if(row < 0 || row >= MAXVARIANTROWS) return;
     int col = s.numvariants(row);
     defformatstring(varname, "<variant:%d,%d>%s", col, row, sname);
-    string reuse;
+    oldstring reuse;
     if(col) formatstring(reuse, "%d", row);
     else copystring(reuse, "");
     newshader(s.type, varname, vschanged ? vsv.getbuf() : reuse, pschanged ? psv.getbuf() : reuse, &s, row);
@@ -781,7 +781,7 @@ static void gendynlightvariant(Shader &s, const char *sname, const char *vs, con
     const char *vspragma = strstr(vs, "//:dynlight"), *pspragma = strstr(ps, "//:dynlight");
     if(!vspragma || !pspragma) return;
 
-    string pslight;
+    oldstring pslight;
     vspragma += strcspn(vspragma, "\n");
     if(*vspragma) vspragma++;
     
@@ -849,7 +849,7 @@ static void genshadowmapvariant(Shader &s, const char *sname, const char *vs, co
     const char *vspragma = strstr(vs, "//:shadowmap"), *pspragma = strstr(ps, "//:shadowmap");
     if(!vspragma || !pspragma) return;
 
-    string pslight;
+    oldstring pslight;
     vspragma += strcspn(vspragma, "\n");
     if(*vspragma) vspragma++;
 

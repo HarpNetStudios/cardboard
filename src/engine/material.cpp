@@ -178,7 +178,7 @@ const char *findmaterialname(int mat)
 const char *getmaterialdesc(int mat, const char *prefix)
 {
     static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA, MAT_SPACECLIP };
-    static string desc;
+    static oldstring desc;
     desc[0] = '\0';
     loopi(sizeof(matmasks)/sizeof(matmasks[0])) if(mat&matmasks[i])
     {

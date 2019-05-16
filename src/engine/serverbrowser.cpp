@@ -269,7 +269,7 @@ struct serverinfo : pingattempts
         MAXPINGS = 3
     };
 
-    string name, map, sdesc;
+    oldstring name, map, sdesc;
     int port, numplayers, resolved, ping, lastping, nextping;
     int pings[MAXPINGS];
     vector<int> attr;

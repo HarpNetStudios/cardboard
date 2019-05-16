@@ -238,7 +238,7 @@ static const char *debugline(const char *p, const char *fmt)
         if(!end) end = line + strlen(line);
         if(p >= line && p <= end)
         {
-            static string buf;
+            static oldstring buf;
             if(sourcefile) formatstring(buf, "%s:%d: %s", sourcefile, num, fmt);
             else formatstring(buf, "%d: %s", num, fmt);
             return buf;
@@ -2195,7 +2195,7 @@ bool executebool(const char *p)
 
 bool execfile(const char *cfgfile, bool msg)
 {
-    string s;
+    oldstring s;
     copystring(s, cfgfile);
     char *buf = loadfile(path(s), NULL);
     if(!buf)
@@ -2325,7 +2325,7 @@ COMMAND(changedvars, "");
 // below the commands that implement a small imperative language. thanks to the semantics of
 // () and [] expressions, any control construct can be defined trivially.
 
-static string retbuf[4];
+static oldstring retbuf[4];
 static int retidx = 0;
 
 const char *intstr(int v)
@@ -2874,7 +2874,7 @@ ICOMMAND(loopfiles, "rsse", (ident *id, char *dir, char *ext, uint *body),
 
 void findfile_(char *name)
 {
-    string fname;
+    oldstring fname;
     copystring(fname, name);
     path(fname);
     intret(

@@ -21,7 +21,7 @@ struct md5vert
 
 struct md5hierarchy
 {
-    string name;
+    oldstring name;
     int parent, flags, start;
 };
 
@@ -183,7 +183,7 @@ struct md5 : skelloader<md5>
                 }
                 else if(strstr(buf, "joints {"))
                 {
-                    string name;
+                    oldstring name;
                     int parent;
                     md5joint j;
                     while(f->getline(buf, sizeof(buf)) && buf[0]!='}')

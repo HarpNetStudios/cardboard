@@ -1009,7 +1009,7 @@ ICOMMAND(findanims, "s", (char *name),
     vector<int> anims;
     findanims(name, anims);
     vector<char> buf;
-    string num;
+    oldstring num;
     loopv(anims)
     {
         formatstring(num, "%d", anims[i]);

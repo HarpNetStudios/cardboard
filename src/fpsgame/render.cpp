@@ -392,7 +392,7 @@ namespace game
         {
             const char *file = guns[i].file;
             if(!file) continue;
-            string fname;
+            oldstring fname;
             if((m_teammode || teamskins) && teamhudguns)
             {
 					formatstring(fname, "%s/%s/blue", hudgunsdir[0] ? hudgunsdir : mdl.hudguns, file);

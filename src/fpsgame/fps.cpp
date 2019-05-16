@@ -729,7 +729,7 @@ namespace game
         return false;
     }
 
-    static string cname[3];
+    static oldstring cname[3];
     static int cidx = 0;
 
     const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
@@ -929,6 +929,7 @@ namespace game
 
     VARP(teamcrosshair, 0, 1, 1);
     VARP(healthcrosshair, 0, 1, 1);
+	VARP(delaycrosshair, 0, 1, 1);
     VARP(hitcrosshair, 0, 425, 1000);
 
     const char *defaultcrosshair(int index)
@@ -972,7 +973,7 @@ namespace game
             if(d->health<=250) color = vec(1, 0, 0);
             else if(d->health<=500) color = vec(1, 0.5f, 0);
         }
-        if(d->gunwait[d->gunselect]) color.mul(0.5f);
+        if(d->gunwait[d->gunselect] && delaycrosshair) color.mul(0.5f);
         return crosshair;
     }
 

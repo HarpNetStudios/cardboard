@@ -30,10 +30,10 @@ struct captureclientmode : clientmode
     struct baseinfo
     {
         vec o;
-        string owner, enemy;
+        oldstring owner, enemy;
 #ifndef SERVMODE
         vec ammopos;
-        string name, info;
+        oldstring name, info;
         entitylight light;
 #endif
         int ammogroup, ammotype, ammo, owners, enemies, converted, capturetime;
@@ -132,7 +132,7 @@ struct captureclientmode : clientmode
 
     struct score
     {
-        string team;
+        oldstring team;
         int total;
     };
 
@@ -432,7 +432,7 @@ struct captureclientmode : clientmode
             dir.rotate_around_z(-camera1->yaw*RAD);
             if(basenumbers)
             {
-                static string blip;
+                static oldstring blip;
                 formatstring(blip, "%d", i+1);
                 int tw, th;
                 text_bounds(blip, tw, th);
@@ -1097,7 +1097,7 @@ case N_REPAMMO:
 case N_BASEINFO:
 {
     int base = getint(p);
-    string owner, enemy;
+    oldstring owner, enemy;
     getstring(text, p);
     copystring(owner, text);
     getstring(text, p);
@@ -1125,7 +1125,7 @@ case N_BASES:
     loopi(numbases)
     {
         int ammotype = getint(p);
-        string owner, enemy;
+        oldstring owner, enemy;
         getstring(text, p);
         copystring(owner, text);
         getstring(text, p);

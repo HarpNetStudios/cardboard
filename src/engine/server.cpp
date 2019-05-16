@@ -112,7 +112,7 @@ struct client                   // server side version of "dynent" type
     int type;
     int num;
     ENetPeer *peer;
-    string hostname;
+    oldstring hostname;
     void *info;
 };
 
@@ -328,7 +328,7 @@ void disconnect_client(int n, int reason)
     server::clientdisconnect(n);
     delclient(clients[n]);
     const char *msg = disconnectreason(reason);
-    string s;
+    oldstring s;
     if(msg) formatstring(s, "client (%s) disconnected because: %s", clients[n]->hostname, msg);
     else formatstring(s, "client (%s) disconnected", clients[n]->hostname);
     logoutf("%s", s);
@@ -675,7 +675,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
                 client &c = addclient(ST_TCPIP);
                 c.peer = event.peer;
                 c.peer->data = &c;
-                string hn;
+                oldstring hn;
                 copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
                 logoutf("client connected (%s)", c.hostname);
                 int reason = server::clientconnect(c.num, c.peer->address.host);
@@ -742,7 +742,7 @@ void localconnect()
 
 #define IDI_ICON1 1
 
-static string apptip = "";
+static oldstring apptip = "";
 static HINSTANCE appinstance = NULL;
 static ATOM wndclass = 0;
 static HWND appwindow = NULL, conwindow = NULL;

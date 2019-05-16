@@ -29,7 +29,7 @@ struct collectclientmode : clientmode
 #ifdef SERVMODE
 #else
         vec tokenpos;
-        string info;
+        oldstring info;
         entitylight light;
 #endif
 

@@ -2280,7 +2280,7 @@ void gl_drawhud()
                     if(!walltime) { walltime = time(NULL); walltime -= totalmillis/1000; if(!walltime) walltime++; }
                     time_t walloffset = walltime + totalmillis/1000;
                     struct tm *localvals = localtime(&walloffset);
-                    static string buf;
+                    static oldstring buf;
                     if(localvals && strftime(buf, sizeof(buf), wallclocksecs ? (wallclock24 ? "%H:%M:%S" : "%I:%M:%S%p") : (wallclock24 ? "%H:%M" : "%I:%M%p"), localvals))
                     {
                         // hack because not all platforms (windows) support %P lowercase option

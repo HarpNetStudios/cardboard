@@ -2,7 +2,7 @@ struct smd;
 
 struct smdbone
 {
-    string name;
+    oldstring name;
     int parent;
     smdbone() : parent(-1) { name[0] = '\0'; }
 };
@@ -76,7 +76,7 @@ struct smd : skelloader<smd>
                 if(skipcomment(curbuf)) continue;
                 if(!strncmp(curbuf, "end", 3)) break;
                 int id = strtol(curbuf, &curbuf, 10);
-                string name;
+                oldstring name;
                 readname(curbuf, name, sizeof(name));
                 int parent = strtol(curbuf, &curbuf, 10);
                 if(id < 0 || id > 255 || parent > 255 || !name[0]) continue; 
@@ -152,7 +152,7 @@ struct smd : skelloader<smd>
                 char *curbuf = buf;
                 if(skipcomment(curbuf)) continue;
                 if(!strncmp(curbuf, "end", 3)) break;
-                string material;
+                oldstring material;
                 readmaterial(curbuf, material, sizeof(material)); 
                 if(!curmesh || strcmp(curmesh->mesh->name, material))
                 {

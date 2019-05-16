@@ -638,7 +638,7 @@ struct Slot
     {
         int type;
         Texture *t;
-        string name;
+        oldstring name;
         int combined;
     };
 

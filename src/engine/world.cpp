@@ -255,7 +255,7 @@ void findents(int low, int high, bool notspawned, const vec &pos, const vec &rad
 
 char *entname(entity &e)
 {
-    static string fullentname;
+    static oldstring fullentname;
     copystring(fullentname, entities::entname(e.type));
     const char *einfo = entities::entnameinfo(e);
     if(*einfo)
@@ -1075,7 +1075,7 @@ ICOMMAND(enthavesel,"",  (), addimplicit(intret(entgroup.length())));
 ICOMMAND(entselect, "e", (uint *body), if(!noentedit()) addgroup(e.type != ET_EMPTY && entgroup.find(n)<0 && executebool(body)));
 ICOMMAND(entloop,   "e", (uint *body), if(!noentedit()) addimplicit(groupeditloop(((void)e, execute(body)))));
 ICOMMAND(insel,     "",  (), entfocus(efocus, intret(pointinsel(sel, e.o))));
-ICOMMAND(entget,    "",  (), entfocus(efocus, string s; printent(e, s, sizeof(s)); result(s)));
+ICOMMAND(entget,    "",  (), entfocus(efocus, oldstring s; printent(e, s, sizeof(s)); result(s)));
 ICOMMAND(entindex,  "",  (), intret(efocus));
 COMMAND(entset, "siiiii");
 COMMAND(nearestent, "");

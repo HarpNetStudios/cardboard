@@ -24,7 +24,7 @@ void fixmapname(char *name)
 void getmapfilenames(const char *fname, const char *cname, char *pakname, char *mapname, char *cfgname)
 {
     if(!cname) cname = fname;
-    string name;
+    oldstring name;
     validmapname(name, cname);
     char *slash = strpbrk(name, "/\\");
     if(slash)
@@ -59,7 +59,7 @@ static void fixent(entity &e, int version)
 
 bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 {
-    string pakname, mapname, mcfgname, ogzname;
+    oldstring pakname, mapname, mcfgname, ogzname;
     getmapfilenames(fname, NULL, pakname, mapname, mcfgname);
     formatstring(ogzname, "packages/%s.cmr", mapname);
     path(ogzname);
@@ -108,7 +108,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
         }
     }
 
-    string gametype;
+    oldstring gametype;
     copystring(gametype, "fps");
     bool samegame = true;
     int eif = 0;
@@ -170,13 +170,13 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 }
 
 #ifndef STANDALONE
-string ogzname, bakname, cfgname, picname, loadname;
+oldstring ogzname, bakname, cfgname, picname, loadname;
 
 VARP(savebak, 0, 2, 2);
 
 void setmapfilenames(const char *fname, const char *cname = NULL)
 {
-    string pakname, mapname, mcfgname;
+    oldstring pakname, mapname, mcfgname;
     getmapfilenames(fname, cname, pakname, mapname, mcfgname);
 
     formatstring(ogzname, "packages/%s.cmr", mapname);
@@ -196,7 +196,7 @@ void setmapfilenames(const char *fname, const char *cname = NULL)
 void mapcfgname()
 {
     const char *mname = game::getclientmap();
-    string pakname, mapname, mcfgname;
+    oldstring pakname, mapname, mcfgname;
     getmapfilenames(mname, NULL, pakname, mapname, mcfgname);
     defformatstring(cfgname, "packages/%s/%s.cfg", pakname, mcfgname);
     path(cfgname);
@@ -207,7 +207,7 @@ COMMAND(mapcfgname, "");
 
 void backup(char *name, char *backupname)
 {
-    string backupfile;
+    oldstring backupfile;
     copystring(backupfile, findfile(backupname, "wb"));
     remove(backupfile);
     rename(findfile(name, "wb"), backupfile);
@@ -815,7 +815,7 @@ void loadvslot(stream *f, VSlot &vs, int changed)
     if(vs.changed & (1<<VSLOT_SHPARAM))
     {
         int numparams = f->getlil<ushort>();
-        string name;
+        oldstring name;
         loopi(numparams)
         {
             SlotShaderParam &p = vs.params.add();
@@ -1080,7 +1080,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     loopi(hdr.numvars)
     {
         int type = f->getchar(), ilen = f->getlil<ushort>();
-        string name;
+        oldstring name;
         f->read(name, min(ilen, MAXSTRLEN-1));
         name[min(ilen, MAXSTRLEN-1)] = '\0';
         if(ilen >= MAXSTRLEN) f->seek(ilen - (MAXSTRLEN-1), SEEK_CUR);
@@ -1107,7 +1107,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
             case ID_SVAR:
             {
                 int slen = f->getlil<ushort>();
-                string val;
+                oldstring val;
                 f->read(val, min(slen, MAXSTRLEN-1));
                 val[min(slen, MAXSTRLEN-1)] = '\0';
                 if(slen >= MAXSTRLEN) f->seek(slen - (MAXSTRLEN-1), SEEK_CUR);
@@ -1119,7 +1119,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     }
     if(dbgvars) conoutf(CON_DEBUG, "read %d vars", hdr.numvars);
 
-    string gametype;
+    oldstring gametype;
     copystring(gametype, "fps");
     bool samegame = true;
     int eif = 0;

@@ -142,9 +142,9 @@ static void getbackgroundres(int &w, int &h)
     h = int(ceil(h*hk));
 }
 
-string backgroundcaption = "";
+oldstring backgroundcaption = "";
 Texture *backgroundmapshot = NULL;
-string backgroundmapname = "";
+oldstring backgroundmapname = "";
 char *backgroundmapinfo = NULL;
 
 void setbackgroundinfo(const char *caption = NULL, Texture *mapshot = NULL, const char *mapname = NULL, const char *mapinfo = NULL)

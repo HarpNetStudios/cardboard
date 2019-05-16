@@ -546,7 +546,7 @@ struct fpsent : dynent, fpsstate
     float deltayaw, deltapitch, deltaroll, newyaw, newpitch, newroll;
     int smoothmillis;
 
-    string name, team, info;
+    oldstring name, team, info;
     int playermodel;
     ai::aiinfo *ai;
     int ownernum, lastnode;
@@ -693,7 +693,7 @@ namespace game
 
     // fps
     extern int gamemode, nextmode;
-    extern string clientmap;
+    extern oldstring clientmap;
     extern bool intermission;
     extern int maptime, maprealtime, maplimit;
     extern fpsent *player1;
@@ -730,7 +730,7 @@ namespace game
 
     // client
     extern bool connected, remote, demoplayback;
-    extern string servinfo;
+    extern oldstring servinfo;
     extern vector<uchar> messages;
 
     extern int parseplayer(const char *arg);

@@ -177,7 +177,7 @@ struct animmodel : model
             #define SETMODELSHADER(m, name) DOMODELSHADER(name, (m)->setshader(name##shader))
             if(shader) return shader;
 
-            string opts;
+            oldstring opts;
             int optslen = 0; 
             if(alphatested()) opts[optslen++] = 'a';
             if(owner->tangents()) opts[optslen++] = 'q';
@@ -1429,7 +1429,7 @@ int animmodel::shaderparamskey::firstversion = 0, animmodel::shaderparamskey::la
 template<class MDL, class BASE> struct modelloader : BASE
 {
     static MDL *loading;
-    static string dir;
+    static oldstring dir;
 
     modelloader(const char *name) : BASE(name) {}
 
@@ -1460,7 +1460,7 @@ template<class MDL, class BASE> struct modelloader : BASE
 };
 
 template<class MDL, class BASE> MDL *modelloader<MDL, BASE>::loading = NULL;
-template<class MDL, class BASE> string modelloader<MDL, BASE>::dir = {'\0'}; // crashes clang if "" is used here
+template<class MDL, class BASE> oldstring modelloader<MDL, BASE>::dir = {'\0'}; // crashes clang if "" is used here
 
 template<class MDL, class MESH> struct modelcommands
 {

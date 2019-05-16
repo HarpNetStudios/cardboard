@@ -121,7 +121,7 @@ namespace game
 
     bool connected = false, remote = false, demoplayback = false, gamepaused = false;
     int sessionid = 0, mastermode = MM_OPEN, gamespeed = 100;
-    string servinfo = "", servauth = "", connectpass = "";
+    oldstring servinfo = "", servauth = "", connectpass = "";
 
     VARP(deadpush, 1, 2, 20);
 
@@ -382,7 +382,7 @@ namespace game
     void listclients(bool local, bool bots)
     {
         vector<char> buf;
-        string cn;
+        oldstring cn;
         int numclients = 0;
         if(local && connected)
         {
@@ -462,7 +462,7 @@ namespace game
     void hashpwd(const char *pwd)
     {
         if(player1->clientnum<0) return;
-        string hash;
+        oldstring hash;
         server::hashpassword(player1->clientnum, sessionid, pwd, hash);
         result(hash);
     }
@@ -477,7 +477,7 @@ namespace game
             cn = parseplayer(who);
             if(cn < 0) return;
         }
-        string hash = "";
+        oldstring hash = "";
         if(!arg[1] && isdigit(arg[0])) val = parseint(arg);
         else
         {
@@ -514,7 +514,7 @@ namespace game
     ICOMMAND(checkmaps, "", (), addmsg(N_CHECKMAPS, "r"));
 
     int gamemode = INT_MAX, nextmode = INT_MAX;
-    string clientmap = "";
+    oldstring clientmap = "";
 
     void changemapserv(const char *name, int mode)        // forced map change from the server
     {
@@ -747,7 +747,7 @@ namespace game
             case ID_VAR:
             {
                 int val = *id->storage.i;
-                string str;
+                oldstring str;
                 if(val < 0)
                     formatstring(str, "%d", val);
                 else if(id->flags&IDF_HEX && id->maxval==0xFFFFFF)
@@ -1075,7 +1075,7 @@ namespace game
         putint(p, N_CONNECT);
         sendstring(player1->name, p);
         putint(p, player1->playermodel);
-        string hash = "";
+        oldstring hash = "";
         if(connectpass[0])
         {
             server::hashpassword(player1->clientnum, sessionid, connectpass, hash);
@@ -1728,7 +1728,7 @@ namespace game
                 if(!d) return;
                 int type = getint(p);
                 getstring(text, p);
-                string name;
+                oldstring name;
                 filtertext(name, text, false);
                 ident *id = getident(name);
                 switch(type)
@@ -1944,7 +1944,7 @@ namespace game
             case N_INITAI:
             {
                 int bn = getint(p), on = getint(p), at = getint(p), sk = clamp(getint(p), 1, 101), pm = getint(p);
-                string name, team;
+                oldstring name, team;
                 getstring(text, p);
                 filtertext(name, text, false, false, MAXNAMELEN);
                 getstring(text, p);
@@ -1986,7 +1986,7 @@ namespace game
             case N_SENDMAP:
             {
                 if(!m_edit) return;
-                string oldname;
+                oldstring oldname;
                 copystring(oldname, getclientmap());
                 defformatstring(mname, "getmap_%d", lastmillis);
                 defformatstring(fname, "packages/base/%s.cmr", mname);

@@ -263,7 +263,7 @@ bool soundsample::load(bool msg)
     if(!name[0]) return false;
 
     static const char * const exts[] = { "", ".sgz", ".wav", ".ogg" };
-    string filename;
+    oldstring filename;
     loopi(sizeof(exts)/sizeof(exts[0]))
     {
         formatstring(filename, "packages/soundpacks/%s/%s%s", soundpack, name, exts[i]);

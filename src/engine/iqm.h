@@ -263,7 +263,7 @@ struct iqm : skelloader<iqm>
             loopi(hdr.num_anims)
             {
                 iqmanim &a = anims[i];
-                string name;
+                oldstring name;
                 copystring(name, filename);
                 concatstring(name, ":");
                 concatstring(name, &str[a.name]);
@@ -357,7 +357,7 @@ struct iqm : skelloader<iqm>
             skelanimspec *sa = skel->findskelanim(animname, sep ? '\0' : ':');
             if(!sa)
             {
-                string filename;
+                oldstring filename;
                 copystring(filename, animname);
                 if(sep) filename[sep - animname] = '\0';
                 if(loadiqm(filename, false, true))

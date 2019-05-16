@@ -147,7 +147,7 @@ static bool readzipdirectory(const char *archname, FILE *f, int entries, int off
         }
         if(src + hdr.namelength > &buf[size]) break;
 
-        string pname;
+        oldstring pname;
         int namelen = min((int)hdr.namelength, (int)sizeof(pname)-1);
         memcpy(pname, src, namelen);
         pname[namelen] = '\0';
@@ -211,7 +211,7 @@ static bool checkprefix(vector<zipfile> &files, const char *prefix, int prefixle
 
 static void mountzip(ziparchive &arch, vector<zipfile> &files, const char *mountdir, const char *stripdir)
 {
-    string packagesdir = "packages/";
+    oldstring packagesdir = "packages/";
     path(packagesdir);
     size_t striplen = stripdir ? strlen(stripdir) : 0;
     if(!mountdir && !stripdir) loopv(files)
@@ -244,7 +244,7 @@ static void mountzip(ziparchive &arch, vector<zipfile> &files, const char *mount
             }
         }
     }
-    string mdir = "", fname;
+    oldstring mdir = "", fname;
     if(mountdir)
     {
         copystring(mdir, mountdir);
@@ -264,7 +264,7 @@ static void mountzip(ziparchive &arch, vector<zipfile> &files, const char *mount
 
 bool addzip(const char *name, const char *mount = NULL, const char *strip = NULL)
 {
-    string pname;
+    oldstring pname;
     copystring(pname, name);
     path(pname);
     size_t plen = strlen(pname);
@@ -304,7 +304,7 @@ bool addzip(const char *name, const char *mount = NULL, const char *strip = NULL
 
 bool removezip(const char *name)
 {
-    string pname;
+    oldstring pname;
     copystring(pname, name);
     path(pname);
     int plen = (int)strlen(pname);

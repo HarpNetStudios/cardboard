@@ -156,7 +156,7 @@ struct partrenderer
     int texclamp;
     uint type;
     int collide;
-    string info;
+    oldstring info;
 
     partrenderer(const char *texname, int texclamp, int type, int collide = 0)
         : tex(NULL), texname(texname), texclamp(texclamp), type(type), collide(collide)

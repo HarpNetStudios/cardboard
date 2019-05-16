@@ -7,7 +7,7 @@ struct cline { char *line; int type, outtime; };
 reversequeue<cline, MAXCONLINES> conlines;
 
 int commandmillis = -1;
-string commandbuf;
+oldstring commandbuf;
 char *commandaction = NULL, *commandprompt = NULL;
 enum { CF_COMPLETE = 1<<0, CF_EXECUTE = 1<<1 };
 int commandflags = 0, commandpos = -1;

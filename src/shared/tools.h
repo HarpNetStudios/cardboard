@@ -35,10 +35,12 @@ typedef unsigned long long int ullong;
 
 void *operator new(size_t, bool);
 void *operator new[](size_t, bool);
+/*
 inline void *operator new(size_t, void *p) { return p; }
 inline void *operator new[](size_t, void *p) { return p; }
 inline void operator delete(void *, void *) {}
 inline void operator delete[](void *, void *) {}
+*/
 
 #ifdef swap
 #undef swap
@@ -155,7 +157,7 @@ static inline int bitscan(uint mask)
 // easy safe strings
 
 #define MAXSTRLEN 260
-typedef char string[MAXSTRLEN];
+typedef char oldstring[MAXSTRLEN];
 
 inline void vformatstring(char *d, const char *fmt, va_list v, int len) { _vsnprintf(d, len, fmt, v); d[len-1] = 0; }
 template<size_t N> inline void vformatstring(char (&d)[N], const char *fmt, va_list v) { vformatstring(d, fmt, v, N); }
@@ -210,8 +212,8 @@ template<size_t N> inline void concformatstring(char (&d)[N], const char *fmt, .
     va_end(v);
 }
 
-#define defformatstring(d,...) string d; formatstring(d, __VA_ARGS__)
-#define defvformatstring(d,last,fmt) string d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
+#define defformatstring(d,...) oldstring d; formatstring(d, __VA_ARGS__)
+#define defvformatstring(d,last,fmt) oldstring d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
 
 template<size_t N> inline bool matchstring(const char *s, size_t len, const char (&d)[N])
 {
@@ -1307,7 +1309,7 @@ static inline uchar cubeupper(uchar c)
 extern size_t decodeutf8(uchar *dst, size_t dstlen, const uchar *src, size_t srclen, size_t *carry = NULL);
 extern size_t encodeutf8(uchar *dstbuf, size_t dstlen, const uchar *srcbuf, size_t srclen, size_t *carry = NULL);
 
-extern string homedir;
+extern oldstring homedir;
 
 extern char *makerelpath(const char *dir, const char *file, const char *prefix = NULL, const char *cmd = NULL);
 extern char *path(char *s);

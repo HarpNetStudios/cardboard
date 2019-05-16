@@ -42,7 +42,7 @@ struct aviwriter
     uint videoframes;
     stream::offset totalsize;
     const uint videow, videoh, videofps;
-    string filename;
+    oldstring filename;
 
     int soundfrequency, soundchannels;
     Uint16 soundformat;
