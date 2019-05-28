@@ -785,7 +785,7 @@ bool isthirdperson() { return player!=camera1 || detachedcamera || reflecting; }
 
 void fixcamerarange()
 {
-    const float MAXPITCH = 90.0f;
+    const float MAXPITCH = 89.9f;
 	if ((player->spacepack && !player->spaceclip) && player->physstate != PHYS_FLOOR) {
 		if (camera1->pitch >= 180.0f) camera1->pitch = -179.9f;
 		if (camera1->pitch <= -180.0f) camera1->pitch = 179.9f;

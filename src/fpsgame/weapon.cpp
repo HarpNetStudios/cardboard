@@ -846,7 +846,7 @@ namespace game
         }
         if(d->gunselect)
         {
-            if(!(m_parkour || m_gun))
+            if(!m_bottomless)
             {
                 d->ammo[d->gunselect]--; //subtract ammo
             }

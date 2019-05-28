@@ -9,7 +9,7 @@
 			<Target title="client64">
 				<Option output="../../bin64/cardboard_mingw.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="../../" />
-				<Option object_output=".objs/client64" />
+				<Option object_output="../../.trash/.objs/client64" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option parameters="-t0 -w640 -h480 -qhome" />
@@ -45,6 +45,7 @@
 					<Add library="ws2_32" />
 					<Add library="winmm" />
 					<Add library="discord-rpc" />
+					<Add library="libcurl" />
 					<Add directory="../../bin64" />
 					<Add directory="../lib64" />
 				</Linker>
@@ -55,7 +56,7 @@
 			<Target title="client32">
 				<Option output="../../bin/cardboard_mingw.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="../../" />
-				<Option object_output=".objs/client32" />
+				<Option object_output="../../.trash/.objs/client32" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option parameters="-t0 -w640 -h480 -qhome" />
@@ -91,6 +92,7 @@
 					<Add library="ws2_32" />
 					<Add library="winmm" />
 					<Add library="discord-rpc" />
+					<Add library="libcurl" />
 					<Add directory="../../bin" />
 					<Add directory="../lib" />
 				</Linker>

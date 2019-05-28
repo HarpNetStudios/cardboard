@@ -131,10 +131,10 @@ namespace discord
 		char* glob = (char*)secret; // make a temp value i can change
 		char* addr = strtok(glob, ":"); // give me everything before the colon
 		char* port = strtok(NULL, " "); // use the rest as a port number
-		
+
 		// do le connect (i hope)
-		conoutf("DEBUG: trying to connect to %s:%d", addr, (int)port); // leaving this in for live testing
-		connectserv(addr, (int)port, "");
+		conoutf("DEBUG: trying to connect to %s:%d", addr, atoi(port)); // leaving this in for live testing
+		connectserv(addr, atoi(port), "");
 
 		//disconnect();
 	}
@@ -168,4 +168,4 @@ namespace discord
 		// Discord_Initialize(const char* applicationId, DiscordEventHandlers* handlers, int autoRegister, const char* optionalSteamId)
 		Discord_Initialize("436989367941070848", &handlers, 1, "0");
 	}
-} 
+}

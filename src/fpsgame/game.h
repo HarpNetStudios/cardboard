@@ -96,7 +96,9 @@ enum
     M_GRENADE    = 1<<21,
     M_GUN        = 1<<22,
 	M_LMS        = 1<<23,
-	M_TEST       = 1<<24,
+	M_IRCTF      = 1<<24,
+	M_BOTTOMLESS = 1<<25,
+	M_TEST       = 1<<26,
 };
 
 static struct gamemodeinfo
@@ -126,13 +128,14 @@ static struct gamemodeinfo
     { "insta hold", M_NOITEMS | M_INSTA | M_CTF | M_HOLD | M_TEAM, "Instagib Hold The Flag: Hold the flag for 20 seconds to score points for your team. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
     { "collect", M_COLLECT | M_TEAM, "Skull Collector: Frag the enemy team to drop skulls. Collect them and bring them to the enemy base to score points for your team or steal back your skulls. Collect items for ammo." },
     { "insta collect", M_NOITEMS | M_INSTA | M_COLLECT | M_TEAM, "Instagib Skull Collector: Frag the enemy team to drop skulls. Collect them and bring them to the enemy base to score points for your team or steal back your skulls. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-    { "parkour", M_NOITEMS | M_PARKOUR, "Parkour: Jump up, jump up and get down!" },
+    { "parkour", M_NOITEMS | M_BOTTOMLESS | M_PARKOUR, "Parkour: Jump up, jump up and get down!" },
     { "insta tactics", M_NOITEMS | M_TACTICS | M_INSTA, "Instagib Tactics: You spawn with two random weapons and armour and die instantly from one shot. There are no items. Frag everyone to score points."},
     { "team insta tactics", M_NOITEMS | M_TACTICS | M_INSTA | M_TEAM, "Team Instagib Tactics: You spawn with two random weapons and armour and die instantly from one shot. There are no items. Frag the enemy team to score points for your team."},
     { "grenade battle", M_NOITEMS | M_GRENADE, "Grenade Battle:  You spawn with full grenade launcher ammo. There are no items. Frag everyone to score points."}, //20
     { "gun game", M_NOITEMS | M_GUN, "Gun Game:  You spawn with the lowest tier weapon and work your way up. There are no items. Frag everyone to score points."}, //21
     { "last man standing", M_LMS, "Last Man Standing: You spawn with one life. Frag everyone to score points. Be the last one alive to win."}, //22
-	{ "test mode", M_TEST, "Test Mode: It might be something stupid, or it might be cool. It also might crash your game."}, //23
+	{ "insta rocket ctf", M_INSTA | M_BOTTOMLESS | M_TEAM | M_CTF | M_NOITEMS | M_IRCTF, "Instagib Rocket Capture The Flag: Rockets! Instagib! CTF! Exciting!"}, //23
+	{ "test mode", M_TEST, "Test Mode: It might be something stupid, or it might be cool. It also might crash your game."}, //24
 };
 
 #define STARTGAMEMODE (-3)
@@ -146,10 +149,13 @@ static struct gamemodeinfo
 #define m_noitems      (m_check(gamemode, M_NOITEMS))
 #define m_noammo       (m_check(gamemode, M_NOAMMO|M_NOITEMS))
 #define m_insta        (m_check(gamemode, M_INSTA))
+#define m_bottomless   (m_check(gamemode, M_BOTTOMLESS))
+#define m_test         (m_check(gamemode, M_TEST))
 #define m_parkour      (m_check(gamemode, M_PARKOUR))
 #define m_grenade      (m_check(gamemode, M_GRENADE))
 #define m_gun          (m_check(gamemode, M_GUN))
 #define m_lms          (m_check(gamemode, M_LMS))
+#define m_irctf        (m_check(gamemode, M_IRCTF))
 #define m_tactics      (m_check(gamemode, M_TACTICS))
 #define m_capture      (m_check(gamemode, M_CAPTURE))
 #define m_regencapture (m_checkall(gamemode, M_CAPTURE | M_REGEN))
@@ -465,11 +471,13 @@ struct fpsstate
             baseammo(spawngun2, m_noitems ? 2 : 1);
             //if(m_noitems) ammo[GUN_GL]++;
         }
-        else if(m_insta)
-        {
-            health = 1;
-            gunselect = GUN_RIFLE;
-            ammo[GUN_RIFLE] = 100;
+		else if (m_insta)
+		{
+			health = 1;
+			if (!m_irctf) {
+				gunselect = GUN_RIFLE;
+				ammo[GUN_RIFLE] = 100;
+			}
         }
         else if(m_grenade)
         {
@@ -491,10 +499,17 @@ struct fpsstate
             ammo[GUN_SMG] = 40;
             ammo[GUN_GL] = 1;
         }
-        else if(m_ctf || m_collect)
-        {
-            ammo[GUN_SMG] = 40;
-            ammo[GUN_GL] = 1;
+		else if (m_ctf || m_collect) // CTF and variants
+		{
+			if (m_irctf) {
+				conoutf("irctf wtf");
+				gunselect = GUN_RL;
+				ammo[GUN_RL] = 32000;
+			}
+			else {
+				ammo[GUN_SMG] = 40;
+				ammo[GUN_GL] = 1;
+			}
         }
         else if(m_sp)
         {
@@ -503,7 +518,7 @@ struct fpsstate
         }
 		else if (m_gun)
 		{
-			loopi(NUMGUNS) ammo[i] = 1000;
+			loopi(NUMGUNS) ammo[i] = 32000;
 		}
         else
         {

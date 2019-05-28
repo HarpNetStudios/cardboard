@@ -139,6 +139,7 @@ namespace game
         if(showservinfo && address)
         {
             oldstring hostname;
+
             if(enet_address_get_host_ip(address, hostname, sizeof(hostname)) >= 0)
             {
                 if(servinfo[0]) g.titlef("%.25s", 0xFFFF80, NULL, servinfo);

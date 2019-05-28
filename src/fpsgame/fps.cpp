@@ -862,7 +862,7 @@ namespace game
         draw_textf("%d", (HICON_X + HICON_SIZE + HICON_SPACE+20)/2, HICON_TEXTY/2, d->state==CS_DEAD ? 0 : d->health);
         if(d->state!=CS_DEAD)
         {
-            if(!m_parkour)
+            if(!m_bottomless)
             {
                 draw_textf("%d", (HICON_X + 4*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->ammo[d->gunselect]);
             }
