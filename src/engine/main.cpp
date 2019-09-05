@@ -1033,7 +1033,7 @@ void stackdumper(unsigned int type, EXCEPTION_POINTERS *ep)
 	STACKFRAME64 sf = {{context->Rip, 0, AddrModeFlat}, {}, {context->Rbp, 0, AddrModeFlat}, {context->Rsp, 0, AddrModeFlat}, 0};
     while(::StackWalk64(IMAGE_FILE_MACHINE_AMD64, GetCurrentProcess(), GetCurrentThread(), &sf, context, NULL, ::SymFunctionTableAccess, ::SymGetModuleBase, NULL))
 	{
-		union { IMAGEHLP_SYMBOL64 sym; char symext[sizeof(IMAGEHLP_SYMBOL64) + sizeof(string)]; };
+		union { IMAGEHLP_SYMBOL64 sym; char symext[sizeof(IMAGEHLP_SYMBOL64) + sizeof(oldstring)]; };
 		sym.SizeOfStruct = sizeof(sym);
 		sym.MaxNameLength = sizeof(symext) - sizeof(sym);
 		IMAGEHLP_LINE64 line;
@@ -1045,7 +1045,7 @@ void stackdumper(unsigned int type, EXCEPTION_POINTERS *ep)
     STACKFRAME sf = {{context->Eip, 0, AddrModeFlat}, {}, {context->Ebp, 0, AddrModeFlat}, {context->Esp, 0, AddrModeFlat}, 0};
     while(::StackWalk(IMAGE_FILE_MACHINE_I386, GetCurrentProcess(), GetCurrentThread(), &sf, context, NULL, ::SymFunctionTableAccess, ::SymGetModuleBase, NULL))
 	{
-		union { IMAGEHLP_SYMBOL sym; char symext[sizeof(IMAGEHLP_SYMBOL) + sizeof(string)]; };
+		union { IMAGEHLP_SYMBOL sym; char symext[sizeof(IMAGEHLP_SYMBOL) + sizeof(oldstring)]; };
 		sym.SizeOfStruct = sizeof(sym);
 		sym.MaxNameLength = sizeof(symext) - sizeof(sym);
 		IMAGEHLP_LINE line;

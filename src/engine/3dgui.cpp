@@ -1140,6 +1140,16 @@ static vector<gui> guis2d, guis3d;
 
 VARP(guipushdist, 1, 4, 64);
 
+void pastegui() // this code might cause a memory leak, idk -Y
+{
+	if (!SDL_HasClipboardText()) return;
+	char* cb = SDL_GetClipboardText();
+	if (!cb) return;
+	size_t cblen = strlen(cb);
+	editor* e = currentfocus();
+	e->input(cb, cblen);
+}
+
 bool g3d_input(const char *str, int len)
 {
     editor *e = currentfocus();
@@ -1215,6 +1225,12 @@ bool g3d_key(int code, bool isdown)
 
         return false;
     }
+	#ifdef __APPLE__
+		#define MOD_KEYS (KMOD_LGUI|KMOD_RGUI)
+	#else
+		#define MOD_KEYS (KMOD_LCTRL|KMOD_RCTRL)
+	#endif
+
     switch(code)
     {
         case SDLK_ESCAPE: //cancel editing without commit
@@ -1226,6 +1242,9 @@ bool g3d_key(int code, bool isdown)
         case SDLK_KP_ENTER:
             if(isdown) fieldmode = FIELDCOMMIT; //signal field commit (handled when drawing field)
             return true;
+		case SDLK_v:
+			if(isdown) if(SDL_GetModState() & MOD_KEYS) pastegui(); // paste into editable field -Y
+			return true;
     }
     if(isdown) e->key(code);
     return true;

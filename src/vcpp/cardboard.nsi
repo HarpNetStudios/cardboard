@@ -1,6 +1,6 @@
-Name "Project Crimson Alpha 1.5.1"
+Name "Project Crimson Alpha 1.6.0"
 
-OutFile "crimson_alpha_1_5_1_win_setup.exe"
+OutFile "crimson_alpha_1_6_0_win_setup.exe"
 
 InstallDir "$PROGRAMFILES\HarpNet Studios\Project Crimson Alpha"
 
@@ -52,8 +52,8 @@ Section "Start Menu Shortcuts"
 
   SetOutPath "$INSTDIR"
 
-  CreateShortCut "$INSTDIR\Project Crimson Alpha.lnk"                "$INSTDIR\crimson.bat" "" "$INSTDIR\bin64\cardboard_msvc.exe" 0 SW_SHOWMINIMIZED
-  CreateShortCut "$SMPROGRAMS\Project Crimson Alpha\Project Crimson Alpha.lnk" "$INSTDIR\crimson.bat" "" "$INSTDIR\bin64\cardboard_msvc.exe" 0 SW_SHOWMINIMIZED
+  CreateShortCut "$INSTDIR\Project Crimson Alpha.lnk"                "$INSTDIR\crimson_msvc.bat" "" "$INSTDIR\bin64\cardboard_msvc.exe" 0 SW_SHOWMINIMIZED
+  CreateShortCut "$SMPROGRAMS\Project Crimson Alpha\Project Crimson Alpha.lnk" "$INSTDIR\crimson_msvc.bat" "" "$INSTDIR\bin64\cardboard_msvc.exe" 0 SW_SHOWMINIMIZED
   CreateShortCut "$SMPROGRAMS\Project Crimson Alpha\Uninstall.lnk"   "$INSTDIR\uninstall.exe"   "" "$INSTDIR\uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\Project Crimson Alpha\README.lnk"      "$INSTDIR\README.html"     "" "$INSTDIR\README.html" 0
 

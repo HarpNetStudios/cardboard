@@ -2255,7 +2255,7 @@ void gl_drawhud()
             hudmatrix.scale(conscale, conscale, 1);
             flushhudmatrix();
 
-            draw_textf("\f3Project Crimson Alpha 1.5 (%s)", conw-18*FONTH, 20, __DATE__); //abovehud-FONTH*4
+            draw_textf("\f3Project Crimson Alpha 1.6 (%s)", conw-18*FONTH, 20, __DATE__); //abovehud-FONTH*4
             if(!hidestats)
             {
                 int roffset = 0;
