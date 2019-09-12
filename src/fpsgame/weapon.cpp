@@ -246,7 +246,7 @@ namespace game
 
     VARP(blood, 0, 1, 1);
     VARP(extrablood, 0, 0, 1);
-    VARP(bloodcolor, 0, 0x9F0000, 0xFFFFFF);
+    HVARP(bloodcolor, 0, 0x9F0000, 0xFFFFFF);
 
     void bounced(physent *d, const vec &surface)
     {
@@ -631,7 +631,7 @@ namespace game
     VARP(muzzleflash, 0, 1, 1);
     VARP(muzzlelight, 0, 1, 1);
 
-    VARP(rifletrail, 0, 0x404040, 0xFFFFFF);
+    HVARP(rifletrail, 0, 0x404040, 0xFFFFFF);
     VARP(teamcolorrifle, 0, 1, 1);
 
     void shoteffects(int gun, const vec &from, const vec &to, fpsent *d, bool local, int id, int prevaction)     // create visual effect from a shot

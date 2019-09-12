@@ -884,7 +884,7 @@ namespace ai
     {
 		vec off = vec(pos).sub(d->feetpos()), dir(off.x, off.y, 0);
         bool sequenced = d->ai->blockseq || d->ai->targseq, offground = d->timeinair && !d->inwater,
-            jump = /* !offground && */ lastmillis >= d->ai->jumpseed && (sequenced || off.z >= JUMPMIN || lastmillis >= d->ai->jumprand);
+            jump = !offground && lastmillis >= d->ai->jumpseed && (sequenced || off.z >= JUMPMIN || lastmillis >= d->ai->jumprand);
 		if(jump)
 		{
 			vec old = d->o;

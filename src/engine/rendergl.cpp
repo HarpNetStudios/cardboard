@@ -849,8 +849,9 @@ void recomputecamera()
     game::setupcamera();
     computezoom();
 
-    bool shoulddetach = thirdperson > 1 || game::detachcamera();
-    if(!thirdperson && !shoulddetach)
+	bool allowthirdperson = game::allowthirdperson();
+    bool shoulddetach = (allowthirdperson && thirdperson > 1) || game::detachcamera();
+    if((!allowthirdperson || !thirdperson) && !shoulddetach)
     {
         camera1 = player;
         detachedcamera = false;

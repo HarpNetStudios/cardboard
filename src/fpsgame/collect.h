@@ -698,7 +698,7 @@ struct collectclientmode : clientmode
             {
                 b.laststeal = lastmillis;
                 conoutf(CON_GAMEINFO, "%s stole a skull from %s", teamcolorname(d), teamcolor("your team", collectbaseteam(enemyteam), "the enemy team"));
-                playsound(S_FLAGDROP, &b.tokenpos);
+                teamsound(d, S_FLAGDROP, &b.tokenpos);
             }
             if(t) particle_flare(b.tokenpos, vec(t->o.x, t->o.y, t->o.z + 0.5f*(TOKENHEIGHT + 1)), 500, PART_LIGHTNING, team==collectteambase(player1->team) ? 0x2222FF : 0xFF2222, 1.0f);
         }
@@ -710,7 +710,7 @@ struct collectclientmode : clientmode
         {
             base &b = bases[basenum];
             b.laststeal = lastmillis;
-            //playsound(S_FLAGSCORE, d != player1 ? &b.tokenpos : NULL);
+            //teamsound(d, S_FLAGSCORE, d != player1 ? &b.tokenpos : NULL);
             int n = 0;
             loopv(bases)
             {

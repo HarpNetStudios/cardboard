@@ -302,26 +302,31 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
                 /*float tsz = sz/(8*FONTH),
                       tx = 0.9f*sz - tw*tsz, ty = 0.9f*sz - FONTH*tsz;
 				if(tx < 0.1f*sz) { tsz = 0.1f*sz/tw; tx = 0.1f; }*/
-				float tsz = sz / (6 * FONTH),
+				float tsz = sz / (7 * FONTH),
 					tx = (0.5f * w) - (tw/2),// - tw * tsz, 
-					ty = 0.25f * sz - FONTH * tsz;
+					ty = 0.275f * sz - FONTH * tsz;
                 //tsz = 0.1f*sz/tw; tx = 0.1f;
                 pushhudmatrix();
                 //hudmatrix.translate(x+tx, y+ty, 0);
 				hudmatrix.translate(tx, ty, 0);
                 hudmatrix.scale(tsz, tsz, 1);
                 flushhudmatrix();
-                draw_text(mapname, 0, 0, 0x00, 0xFF, 0xFF);
+                draw_text(mapname, 0, 0, 0xFF, 0x24, 0x00);
                 pophudmatrix();
             }
             if(mapinfo)
             {
+				int tw = text_width(mapinfo);
+				float tsz = sz / (8 * FONTH),
+					tx = (0.5f * w) - (tw / 2),
+					ty = 0.125f * sz - FONTH * tsz;
                 pushhudmatrix();
                 //hudmatrix.translate(x+sz+FONTH*msz, y, 0);
-				hudmatrix.translate((0.5f * w) - (infowidth / 2), 0, 0);
-                hudmatrix.scale(msz, msz, 1);
+				//hudmatrix.translate((0.5f * w) - (infowidth / 2), 0, 0);
+				hudmatrix.translate(tx, ty, 0);
+                hudmatrix.scale(tsz, tsz, 1);
                 flushhudmatrix();
-                draw_text(mapinfo, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, -1, infowidth);
+                draw_text(mapinfo, 0, 0, 0xFF, 0xFF, 0xFF);
                 pophudmatrix();
             }
         }

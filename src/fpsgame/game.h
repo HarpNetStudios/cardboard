@@ -499,17 +499,16 @@ struct fpsstate
             ammo[GUN_SMG] = 40;
             ammo[GUN_GL] = 1;
         }
+		else if (m_irctf) 
+		{
+			conoutf("irctf wtf");
+			gunselect = GUN_RL;
+			ammo[GUN_RL] = 32000; // why doesn't this work. -Y 09/11/19
+		}
 		else if (m_ctf || m_collect) // CTF and variants
 		{
-			if (m_irctf) {
-				conoutf("irctf wtf");
-				gunselect = GUN_RL;
-				ammo[GUN_RL] = 32000;
-			}
-			else {
-				ammo[GUN_SMG] = 40;
-				ammo[GUN_GL] = 1;
-			}
+			ammo[GUN_SMG] = 40;
+			ammo[GUN_GL] = 1;
         }
         else if(m_sp)
         {
@@ -726,6 +725,8 @@ namespace game
     extern const char *teamcolorname(fpsent *d, const char *alt = "you");
     extern const char *teamcolor(const char *name, bool sameteam, const char *alt = NULL);
     extern const char *teamcolor(const char *name, const char *team, const char *alt = NULL);
+	extern void teamsound(bool sameteam, int n, const vec* loc = NULL);
+	extern void teamsound(fpsent* d, int n, const vec* loc = NULL);
     extern fpsent *pointatplayer();
     extern fpsent *hudplayer();
     extern fpsent *followingplayer();

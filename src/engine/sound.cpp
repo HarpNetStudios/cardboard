@@ -37,9 +37,11 @@ struct soundconfig
         return p >= v.getbuf() + slots && p < v.getbuf() + slots+numslots && slots+numslots < v.length();
     }
 
-    int chooseslot() const
+    int chooseslot(int flags) const
     {
-        return numslots > 1 ? slots + rnd(numslots) : slots;
+		if (flags & SND_NO_ALT || numslots <= 1) return slots;
+		if (flags & SND_USE_ALT) return slots + 1 + rnd(numslots - 1);
+		return slots + rnd(numslots);
     }
 };
 
@@ -626,7 +628,7 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     }
     if(fade < 0) return -1;
 
-    soundslot &slot = sounds.slots[config.chooseslot()];
+	soundslot& slot = sounds.slots[config.chooseslot(flags)];
     if(!slot.sample->chunk && !slot.sample->load()) return -1;
 
     if(dbgsound) conoutf("sound: %s", slot.sample->name);

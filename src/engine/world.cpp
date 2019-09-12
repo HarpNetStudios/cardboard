@@ -1154,6 +1154,9 @@ void findplayerspawn(dynent *d, int forceent, int tag)   // place at random spaw
     {
         int r = rnd(10)+2;
         loopi(r) spawncycle = findentity(ET_PLAYERSTART, spawncycle+1, -1, tag);
+		if(spawncycle<0){
+			loopi(r) spawncycle = findentity(ET_PLAYERSTART, spawncycle + 1, -1, 0);
+		}
         pick = spawncycle;
     }
     if(pick>=0)
@@ -1178,10 +1181,6 @@ void findplayerspawn(dynent *d, int forceent, int tag)   // place at random spaw
     }
     else
     {
-		if (tag != 0) {
-			//conoutf(CON_DEBUG, "no tags");
-			findplayerspawn(d, forceent, 0); // if we can't find a team spawn, spawn normally
-		}
 		//conoutf(CON_DEBUG, "no valid spawns");
         d->o.x = d->o.y = d->o.z = 0.5f*worldsize;
         d->o.z++;

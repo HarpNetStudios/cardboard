@@ -2,160 +2,165 @@
 
 namespace game
 {
-    bool intermission = false;
-    int maptime = 0, maprealtime = 0, maplimit = -1;
-    int respawnent = -1;
-    int lasthit = 0, lastspawnattempt = 0;
+	bool intermission = false;
+	int maptime = 0, maprealtime = 0, maplimit = -1;
+	int respawnent = -1;
+	int lasthit = 0, lastspawnattempt = 0;
 
-    int following = -1, followdir = 0;
+	int following = -1, followdir = 0;
 
-    fpsent *player1 = NULL;         // our client
-    vector<fpsent *> players;       // other clients
-    int savedammo[NUMGUNS];
+	fpsent* player1 = NULL;         // our client
+	vector<fpsent*> players;       // other clients
+	int savedammo[NUMGUNS];
 
-    bool clientoption(const char *arg) { return false; }
+	bool clientoption(const char* arg) { return false; }
 
-    void taunt()
-    {
-        if(player1->state!=CS_ALIVE || player1->physstate<PHYS_SLOPE) return;
-        if(lastmillis-player1->lasttaunt<1000) return;
-        player1->lasttaunt = lastmillis;
-        addmsg(N_TAUNT, "rc", player1);
-    }
-    COMMAND(taunt, "");
-
-    void togglespacepack()
-    {
-        if(!isconnected()) return;
-        if(!m_edit) return;
-        if(player1->state!=CS_ALIVE && player1->state!=CS_DEAD && player1->spacepack!=true) return;
-        player1->spacepack = !player1->spacepack;
-    }
-
-    ICOMMAND(togglespacepack, "", (), togglespacepack());
-
-    ICOMMAND(getfollow, "", (),
-    {
-        fpsent *f = followingplayer();
-        intret(f ? f->clientnum : -1);
-    });
-
-	void follow(char *arg)
-    {
-        if(arg[0] ? player1->state==CS_SPECTATOR : following>=0)
-        {
-            following = arg[0] ? parseplayer(arg) : -1;
-            if(following==player1->clientnum) following = -1;
-            followdir = 0;
-            conoutf("following: %s", following>=0 ? "on" : "off");
-        }
+	void taunt()
+	{
+		if (player1->state != CS_ALIVE || player1->physstate < PHYS_SLOPE) return;
+		if (lastmillis - player1->lasttaunt < 1000) return;
+		player1->lasttaunt = lastmillis;
+		addmsg(N_TAUNT, "rc", player1);
 	}
-    COMMAND(follow, "s");
+	COMMAND(taunt, "");
 
-    void nextfollow(int dir)
-    {
-        if(player1->state!=CS_SPECTATOR || clients.empty())
-        {
-            stopfollowing();
-            return;
-        }
-        int cur = following >= 0 ? following : (dir < 0 ? clients.length() - 1 : 0);
-        loopv(clients)
-        {
-            cur = (cur + dir + clients.length()) % clients.length();
-            if(clients[cur] && clients[cur]->state!=CS_SPECTATOR)
-            {
-                if(following<0) conoutf("follow on");
-                following = cur;
-                followdir = dir;
-                return;
-            }
-        }
-        stopfollowing();
-    }
-    ICOMMAND(nextfollow, "i", (int *dir), nextfollow(*dir < 0 ? -1 : 1));
-
-
-    const char *getclientmap() { 
-		return clientmap; 
+	void togglespacepack()
+	{
+		if (!isconnected()) return;
+		if (!m_edit) return;
+		if (player1->state != CS_ALIVE && player1->state != CS_DEAD && player1->spacepack != true) return;
+		player1->spacepack = !player1->spacepack;
 	}
 
-    void resetgamestate()
-    {
-        if(m_classicsp)
-        {
-            clearmovables();
-            clearmonsters();                 // all monsters back at their spawns for editing
-            entities::resettriggers();
-        }
-        clearprojectiles();
-        clearbouncers();
-    }
+	ICOMMAND(togglespacepack, "", (), togglespacepack());
 
-    fpsent *spawnstate(fpsent *d)              // reset player state not persistent accross spawns
-    {
-        d->respawn();
-        d->spawnstate(gamemode);
-        return d;
-    } 
+	ICOMMAND(getfollow, "", (),
+		{
+			fpsent * f = followingplayer();
+			intret(f ? f->clientnum : -1);
+		});
 
-    void respawnself()
-    {
-        if(ispaused()) return;
-        if(m_mp(gamemode))
-        {
-            int seq = (player1->lifesequence<<16)|((lastmillis/1000)&0xFFFF);
-            if(player1->respawned!=seq) { addmsg(N_TRYSPAWN, "rc", player1); player1->respawned = seq; }
-        }
-        else
-        {
-            spawnplayer(player1);
-            showscores(false);
-            lasthit = 0;
-            if(cmode) cmode->respawned(player1);
-        }
-    }
+	void follow(char* arg)
+	{
+		if (arg[0] ? player1->state == CS_SPECTATOR : following >= 0)
+		{
+			following = arg[0] ? parseplayer(arg) : -1;
+			if (following == player1->clientnum) following = -1;
+			followdir = 0;
+			conoutf("following: %s", following >= 0 ? "on" : "off");
+		}
+	}
+	COMMAND(follow, "s");
 
-    fpsent *pointatplayer()
-    {
-        loopv(players) if(players[i] != player1 && intersect(players[i], player1->o, worldpos)) return players[i];
-        return NULL;
-    }
+	void nextfollow(int dir)
+	{
+		if (player1->state != CS_SPECTATOR || clients.empty())
+		{
+			stopfollowing();
+			return;
+		}
+		int cur = following >= 0 ? following : (dir < 0 ? clients.length() - 1 : 0);
+		loopv(clients)
+		{
+			cur = (cur + dir + clients.length()) % clients.length();
+			if (clients[cur] && clients[cur]->state != CS_SPECTATOR)
+			{
+				if (following < 0) conoutf("follow on");
+				following = cur;
+				followdir = dir;
+				return;
+			}
+		}
+		stopfollowing();
+	}
+	ICOMMAND(nextfollow, "i", (int* dir), nextfollow(*dir < 0 ? -1 : 1));
 
-    void stopfollowing()
-    {
-        if(following<0) return;
-        following = -1;
-        followdir = 0;
-        conoutf("follow off");
-    }
 
-    fpsent *followingplayer()
-    {
-        if(player1->state!=CS_SPECTATOR || following<0) return NULL;
-        fpsent *target = getclient(following);
-        if(target && target->state!=CS_SPECTATOR) return target;
-        return NULL;
-    }
+	const char* getclientmap() {
+		return clientmap;
+	}
 
-    fpsent *hudplayer()
-    {
-        if(thirdperson) return player1;
-        fpsent *target = followingplayer();
-        return target ? target : player1;
-    }
+	void resetgamestate()
+	{
+		if (m_classicsp)
+		{
+			clearmovables();
+			clearmonsters();                 // all monsters back at their spawns for editing
+			entities::resettriggers();
+		}
+		clearprojectiles();
+		clearbouncers();
+	}
 
-    void setupcamera()
-    {
-        fpsent *target = followingplayer();
-        if(target)
-        {
-            player1->yaw = target->yaw;
-            player1->pitch = target->state==CS_DEAD ? 0 : target->pitch;
-            player1->o = target->o;
-            player1->resetinterp();
-        }
-    }
+	fpsent* spawnstate(fpsent* d)              // reset player state not persistent accross spawns
+	{
+		d->respawn();
+		d->spawnstate(gamemode);
+		return d;
+	}
+
+	void respawnself()
+	{
+		if (ispaused()) return;
+		if (m_mp(gamemode))
+		{
+			int seq = (player1->lifesequence << 16) | ((lastmillis / 1000) & 0xFFFF);
+			if (player1->respawned != seq) { addmsg(N_TRYSPAWN, "rc", player1); player1->respawned = seq; }
+		}
+		else
+		{
+			spawnplayer(player1);
+			showscores(false);
+			lasthit = 0;
+			if (cmode) cmode->respawned(player1);
+		}
+	}
+
+	fpsent* pointatplayer()
+	{
+		loopv(players) if (players[i] != player1 && intersect(players[i], player1->o, worldpos)) return players[i];
+		return NULL;
+	}
+
+	void stopfollowing()
+	{
+		if (following < 0) return;
+		following = -1;
+		followdir = 0;
+		conoutf("follow off");
+	}
+
+	fpsent* followingplayer()
+	{
+		if (player1->state != CS_SPECTATOR || following < 0) return NULL;
+		fpsent* target = getclient(following);
+		if (target && target->state != CS_SPECTATOR) return target;
+		return NULL;
+	}
+
+	fpsent* hudplayer()
+	{
+		if (thirdperson) return player1;
+		fpsent* target = followingplayer();
+		return target ? target : player1;
+	}
+
+	void setupcamera()
+	{
+		fpsent* target = followingplayer();
+		if (target)
+		{
+			player1->yaw = target->yaw;
+			player1->pitch = target->state == CS_DEAD ? 0 : target->pitch;
+			player1->o = target->o;
+			player1->resetinterp();
+		}
+	}
+
+	bool allowthirdperson()
+	{
+		return !multiplayer(false) || player1->state == CS_SPECTATOR || player1->state == CS_EDITING || m_edit || m_parkour;
+	}
 
     bool detachcamera()
     {
@@ -777,6 +782,18 @@ namespace game
         return teamcolor(name, team && isteam(team, player1->team), alt);
     }
 
+	VARP(teamsounds, 0, 1, 1);
+	
+	void teamsound(bool sameteam, int n, const vec* loc)
+	{
+		playsound(n, loc, NULL, teamsounds ? (m_teammode && sameteam ? SND_USE_ALT : SND_NO_ALT) : 0);
+	}
+
+	void teamsound(fpsent* d, int n, const vec* loc)
+	{
+		teamsound(isteam(d->team, player1->team), n, loc);
+	}
+
     void suicide(physent *d)
     {
         if(d==player1 || (d->type==ENT_PLAYER && ((fpsent *)d)->ai))
@@ -883,6 +900,42 @@ namespace game
         }
     }
 
+	VARP(gameclock, 0, 0, 1);
+	FVARP(gameclockscale, 1e-3f, 0.5f, 1e3f);
+	HVARP(gameclockcolour, 0, 0xFFFFFF, 0xFFFFFF);
+	VARP(gameclockalpha, 0, 255, 255);
+	HVARP(gameclocklowcolour, 0, 0xFFC040, 0xFFFFFF);
+	VARP(gameclockalign, -1, 1, 1);
+	FVARP(gameclockx, 0, 0.765f, 1);
+	FVARP(gameclocky, 0, 0.015f, 1);
+	
+	void drawgameclock(int w, int h)
+	{
+		int secs = max(maplimit - lastmillis, 0) / 1000, mins = secs / 60;
+		secs %= 60;
+		
+		defformatstring(buf, "%d:%02d", mins, secs);
+		int tw = 0, th = 0;
+		text_bounds(buf, tw, th);
+		
+		vec2 offset = vec2(gameclockx, gameclocky).mul(vec2(w, h).div(gameclockscale));
+		if (gameclockalign == 1) offset.x -= tw;
+		else if (gameclockalign == 0) offset.x -= tw / 2.0f;
+		offset.y -= th / 2.0f;
+		
+		pushhudmatrix();
+		hudmatrix.scale(gameclockscale, gameclockscale, 1);
+		flushhudmatrix();
+		
+		int color = mins < 1 ? gameclocklowcolour : gameclockcolour;
+		draw_text(buf, int(offset.x), int(offset.y), (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, gameclockalpha);
+
+		pophudmatrix();
+	}
+
+	extern int hudscore;
+	extern void drawhudscore(int w, int h);
+
     void gameplayhud(int w, int h)
     {
         pushhudmatrix();
@@ -919,6 +972,12 @@ namespace game
         }
 
         pophudmatrix();
+
+		if (!m_edit)
+		{
+			if (gameclock) drawgameclock(w, h);
+			if (hudscore) drawhudscore(w, h);
+		}
     }
 
     int clipconsole(int w, int h)

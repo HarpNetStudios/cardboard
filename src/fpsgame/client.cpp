@@ -72,7 +72,7 @@ namespace game
             {
                 if(!alive++)
                 {
-                    settexture(strcmp(o->team, "red") ? "packages/hud/blip_blue_alive.png" : "packages/hud/blip_red_alive.png");
+                    settexture(strcmp(o->team, "red") ? "packages/hud/blip_red_alive.png" : "packages/hud/blip_blue_alive.png");
                     gle::defvertex(2);
                     gle::deftexcoord0();
                     gle::begin(GL_QUADS);
@@ -88,7 +88,7 @@ namespace game
             {
                 if(!dead++)
                 {
-                    settexture(strcmp(o->team, "red") ? "packages/hud/blip_blue_dead.png" : "packages/hud/blip_red_dead.png");
+                    settexture(strcmp(o->team, "red") ? "packages/hud/blip_red_dead.png" : "packages/hud/blip_blue_dead.png");
                     gle::defvertex(2);
                     gle::deftexcoord0();
                     gle::begin(GL_QUADS);
@@ -156,9 +156,14 @@ namespace game
     {
         if(*numargs > 0)
         {
-            if(!strcmp(s,"blue") || !strcmp(s,"red")){
+            if(!strcmp(s,"blue") || !strcmp(s,"red"))
+			{
                 switchteam(s);
-             }
+            } 
+			else 
+			{
+				conoutf("invalid team: %s", s);
+			}
         }
         else if(!*numargs) printteam();
         else result(player1->team);
@@ -1553,7 +1558,8 @@ namespace game
                 if(!actor) break;
                 actor->frags = frags;
                 if(m_teammode) setteaminfo(actor->team, tfrags);
-                if(actor!=player1 && (!cmode || !cmode->hidefrags()))
+				extern int hidefrags;
+				if (actor != player1 && (!cmode || !cmode->hidefrags() || !hidefrags))
                 {
                     defformatstring(ds, "%d", actor->frags);
                     particle_textcopy(actor->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);

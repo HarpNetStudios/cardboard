@@ -30,11 +30,11 @@ namespace discord
 				break;
 			default:
 				discordPresence.state = "SOMETHING BROKE";
-				discordPresence.details = "Message Yellowberry#0483 about what you did!";
+				discordPresence.details = "Tell the #bugs channel about what you did!";
 				discordPresence.largeImageKey = "logo-large";
-				discordPresence.largeImageText = "Message Yellowberry#0483 about what you did!";
+				discordPresence.largeImageText = "Tell the #bugs channel about what you did!";
 				discordPresence.smallImageKey = "turkey-test";
-				discordPresence.smallImageText = "Message Yellowberry#0483 about what you did!";
+				discordPresence.smallImageText = "Tell the #bugs channel about what you did!";
 				discordPresence.partyId = "";
 				discordPresence.partySize = 0;
 				discordPresence.partyMax = 0;
@@ -60,7 +60,23 @@ namespace discord
 					discordPresence.startTimestamp = 0;
 					discordPresence.endTimestamp = 0;
 				}
-				discordPresence.largeImageKey = game::getclientmap();
+				char* x[] = { "highland", "fz_burn", "zsolttest", "illusion", "neo_noir" };
+				const char* s = game::getclientmap();
+				int len = sizeof(x) / sizeof(x[0]);
+				int i;
+
+				for (i = 0; i < len; ++i)
+				{
+					if (!strcmp(x[i], s))
+					{
+						discordPresence.largeImageKey = game::getclientmap();
+					}
+					else 
+					{
+						discordPresence.largeImageKey = "logo-large";
+					}
+				}
+				
 				discordPresence.largeImageText = game::getclientmap();
 				defformatstring(icon, "player-%d", playermodel);
 				//conoutf("imagekey: %s, playermodel: %d", icon, playermodel);
@@ -166,6 +182,8 @@ namespace discord
 		handlers.spectateGame = handleDiscordSpectate;
 
 		// Discord_Initialize(const char* applicationId, DiscordEventHandlers* handlers, int autoRegister, const char* optionalSteamId)
-		Discord_Initialize("436989367941070848", &handlers, 1, "0");
+
+		// skip initializing discord RPC until we can get everything sorted, avoids confusion 
+		// Discord_Initialize("436989367941070848", &handlers, 1, "0");
 	}
 }
