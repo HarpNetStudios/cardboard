@@ -174,7 +174,8 @@ namespace game
                     {
                         lastaction[gunselect] = 0;
                         attacking = true;
-                        shoot(this, attacktarget);
+						secattacking = true;
+                        shoot(this, attacktarget, false);
                         transition(M_ATTACKING, 0, 600, 0);
                     }
                     break;

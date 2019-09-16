@@ -240,6 +240,7 @@ extern void renderentring(const extentity &e, float radius, int axis = 0);
 
 // main
 extern void fatal(const char *s, ...) PRINTFARGS(1, 2);
+extern void getuserinfo_(bool debug);
 
 // rendertext
 extern bool setfont(const char *name);

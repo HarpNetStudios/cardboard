@@ -135,11 +135,11 @@ namespace game
     {
         conoutf("your name is: %s", colorname(player1));
     }
-    ICOMMAND(name, "sN", (char *s, int *numargs),
+    ICOMMAND(name, "", ()/*"sN", (char *s, int *numargs)*/,
     {
-        if(*numargs > 0) switchname(s);
+        /*if(*numargs > 0) switchname(s);
         else if(!*numargs) printname();
-        else result(colorname(player1));
+        else */result(colorname(player1));
     });
     ICOMMAND(getname, "", (), result(player1->name));
 
@@ -1304,6 +1304,7 @@ namespace game
                 {
                     gamepaused = val;
                     player1->attacking = false;
+					player1->secattacking = false;
                 }
                 if(a) conoutf("%s %s the game", colorname(a), val ? "paused" : "resumed");
                 else conoutf("game is %s", val ? "paused" : "resumed");

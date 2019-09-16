@@ -3093,7 +3093,7 @@ namespace server
                 break;
             }
 
-            case N_SHOOT:
+            case N_SHOOT: // TODO: add secondary handling
             {
                 shotevent *shot = new shotevent;
                 shot->id = getint(p);

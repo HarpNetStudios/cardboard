@@ -2,6 +2,8 @@
 
 namespace game
 {
+	char* gametitle = "Project Crimson";
+
 	bool intermission = false;
 	int maptime = 0, maprealtime = 0, maplimit = -1;
 	int respawnent = -1;
@@ -316,6 +318,7 @@ namespace game
         if(player1->state==CS_DEAD)
         {
             player1->attacking = false;
+			player1->secattacking = false;
             int wait = cmode ? cmode->respawnwait(player1) : 0;
             if(wait>0)
             {
@@ -341,6 +344,12 @@ namespace game
         if(!connected || intermission) return;
         if((player1->attacking = on)) respawn();
     }
+
+	void dosecattack(bool on)
+	{
+		if (!connected || intermission) return;
+		if ((player1->secattacking = on)) respawn();
+	}
 
     bool canjump()
     {
@@ -402,6 +411,7 @@ namespace game
             disablezoom();
             if(!restore) loopi(NUMGUNS) savedammo[i] = player1->ammo[i];
             d->attacking = false;
+			d->secattacking = false;
             if(!restore) d->deaths++;
             //d->pitch = 0;
             d->roll = 0;
@@ -492,6 +502,7 @@ namespace game
 				conoutf("gun should be %d", currentgun);
 				actor->ammo[currentgun] = (itemstats[currentgun - GUN_SMG].add * 2);
 				actor->attacking = false;
+				actor->secattacking = false;
 				actor->gunselect = currentgun;
 			}
 		}
@@ -509,6 +520,7 @@ namespace game
         {
             intermission = true;
             player1->attacking = false;
+			player1->secattacking = false;
             if(cmode) cmode->gameover();
             conoutf(CON_GAMEINFO, "\f2intermission:");
             conoutf(CON_GAMEINFO, "\f2game has ended!");

@@ -1,6 +1,7 @@
 // main.cpp: initialisation & main loop
 
 #include "engine.h"
+#include <game.h>
 
 extern void cleargamma();
 
@@ -684,7 +685,7 @@ void setupscreen()
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&2 ? 1 : 0);
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&2 ? fsaa : 0);
         }
-        screen = SDL_CreateWindow("Cardboard Engine", winx, winy, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
+        screen = SDL_CreateWindow(game::gametitle, winx, winy, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
         if(!screen) continue;
 
     #ifdef __APPLE__
@@ -1144,8 +1145,13 @@ struct memoryStruct {
 #endif
 #endif
 
+#define MAXTOKENLEN 64
+SVARP(__gametoken, ""); // game token time
 
 #ifdef CURLENABLED
+
+#define HNAPI "harpnetstudios.com/hnid/api/v1"
+
 static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
 	size_t realsize = size * nmemb;
@@ -1166,7 +1172,7 @@ static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, voi
 	return realsize;
 }
 
-void web_get(char* targetUrl)
+char* web_get(char* targetUrl, bool debug)
 {
 	CURL* curl;
 	CURLcode res;
@@ -1206,13 +1212,16 @@ void web_get(char* targetUrl)
 	// check for errors */
 	if (res != CURLE_OK) {
 		conoutf(CON_ERROR, "curl_easy_perform() failed: %s", curl_easy_strerror(res));
+		return "";
 	}
 	else {
 		// we now have the data, do stuff with it
-		conoutf(CON_INFO, "%lu bytes retrieved", (unsigned long)chunk.size);
-		conoutf(CON_INFO, "%d response, %s url", response_code, url);
+		if (debug) {
+			conoutf(CON_INFO, "%lu bytes retrieved", (unsigned long)chunk.size);
+			conoutf(CON_INFO, "%d response, %s url", response_code, url);
+		}
 
-		conoutf(CON_ECHO, chunk.memory);
+		return chunk.memory;
 	}
 
 	/* cleanup curl stuff */
@@ -1222,11 +1231,67 @@ void web_get(char* targetUrl)
 }
 
 void testcurl_(char* targetUrl) {
-	web_get(targetUrl);
+	char* thing = web_get(targetUrl, true);
+	conoutf(CON_ECHO, thing);
 }
 
 COMMANDN(testcurl, testcurl_, "s");
+
+void getuserinfo_(bool debug) {
+	if (debug) conoutf(CON_DEBUG, __gametoken);
+	oldstring apiurl;
+	formatstring(apiurl, "%s/game/get/userinfo.php?id=1&token=%s", HNAPI, __gametoken);
+	char* thing = web_get(apiurl, debug);
+	if (debug) conoutf(CON_DEBUG, thing);
+	cJSON *json = cJSON_Parse(thing);
+
+	// error handling
+	const cJSON* status = cJSON_GetObjectItemCaseSensitive(json, "status");
+	const cJSON* message = cJSON_GetObjectItemCaseSensitive(json, "message");
+	if (cJSON_IsNumber(status) && cJSON_IsString(message)) {
+		if (status->valueint > 0) {
+			conoutf(CON_ERROR, "web error! status: %s, \"%s\"", status->valueint, message->valuestring);
+		}
+		else {
+			// actual parse
+			const cJSON* name = NULL;
+			name = cJSON_GetObjectItemCaseSensitive(json, "username");
+			if (cJSON_IsString(name) && (name->valuestring != NULL))
+			{
+				if (debug) conoutf(CON_DEBUG, "username is \"%s\"", name->valuestring);
+				game::switchname(name->valuestring);
+			}
+		}
+	}
+	else {
+		conoutf(CON_ERROR, "malformed JSON recieved from server");
+	}
+}
+
+COMMANDN(getuserinfo, getuserinfo_, "i");
+
 #endif 
+
+void setgametoken(const char* token) {
+	filtertext(__gametoken, token, false, false, MAXTOKENLEN);
+	/*if (!__gametoken[0]) {
+		copystring(__gametoken, token, strlen(token));
+	}
+	conoutf("length: %s", strlen(__gametoken));*/
+	#ifdef CURLENABLED
+		getuserinfo_(false);
+	#endif
+}
+
+ICOMMAND(gametoken, "sN", (char* s, int* numargs),
+{
+	if (*numargs > 0) setgametoken(s);
+	else if (!*numargs) return;
+	else result(__gametoken);
+});
+
+ICOMMAND(getgametoken, "", (), result(__gametoken));
+
 
 int globalgamestate = -1;
 
@@ -1265,7 +1330,6 @@ int main(int argc, char **argv)
 			// reordered alpha to make it easier to see what's being used already. -Y 03/14/19
 			case 'a': fsaa = atoi(&argv[i][2]); break;
 			case 'b': /* compat, ignore */ break;
-			case 'c': 
 			case 'd': dedicated = atoi(&argv[i][2]); if (dedicated <= 0) dedicated = 2; break;
 			case 'f': /* compat, ignore */ break;
 			case 'g': break;
@@ -1298,7 +1362,7 @@ int main(int argc, char **argv)
     }
     initing = NOT_INITING;
 
-    numcpus = clamp(SDL_GetCPUCount(), 1, 16);
+    numcpus = clamp(SDL_GetCPUCount(), 1, 64); // i wonder if this will break anything -Y 09/13/19
 
     if(dedicated <= 1)
     {
@@ -1376,6 +1440,10 @@ int main(int argc, char **argv)
 
     initing = NOT_INITING;
 
+	#ifdef CURLENABLED
+		if (strcmp(__gametoken,"")) { getuserinfo_(false); }
+	#endif
+
     logoutf("init: render");
     restoregamma();
     restorevsync();
@@ -1425,6 +1493,8 @@ int main(int argc, char **argv)
 		lastmillis += curtime;
         totalmillis = millis;
         updatetime();
+
+		//SDL_SetWindowTitle(screen, SDL_GetWindowTitle(screen));
 
         checkinput();
         menuprocess();

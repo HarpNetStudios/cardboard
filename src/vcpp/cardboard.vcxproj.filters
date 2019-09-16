@@ -175,6 +175,9 @@
     <ClCompile Include="..\fpsgame\discord.cpp">
       <Filter>fpsgame</Filter>
     </ClCompile>
+    <ClCompile Include="..\include\cJSON\cJSON.c">
+      <Filter>shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\command.h">

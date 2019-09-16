@@ -60,6 +60,8 @@
 
 #include <curl/curl.h>
 
+#include <cJSON/cJSON.h>
+
 #include <zlib.h>
 
 #include "tools.h"

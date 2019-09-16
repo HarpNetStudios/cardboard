@@ -361,7 +361,9 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
 #define EXP_SELFPUSH .12f
 #define EXP_DISTSCALE 1.5f
 
-static struct guninfo { int sound, attackdelay, damage, spread, projspeed, kickamount, range, rays, hitpush, exprad, ttl; const char *name, *file; short part; bool hassecond; int secondconsume; } guns[NUMGUNS] =
+static struct guninfo { int sound, attackdelay, damage, spread, projspeed, kickamount, range, rays, hitpush, exprad, ttl; const char *name, *file; short part; bool hassecond; int secondconsume; } 
+
+guns[NUMGUNS] =
 {
     { S_PUNCH1,     10,  400,   0,   0,  0,   14,  1,  80,  0,    0, "fist",            "fist",   0, false, 10 },
     { S_ARIFLE,    150,  200,  50,   0, 12, 1024,  1,  80,  0,    0, "smg",             "smg",    0, false, 10 },
@@ -551,6 +553,7 @@ struct fpsent : dynent, fpsstate
 	int lastgun;
 	int lastattackgun;
     bool attacking;
+	bool secattacking;
     int attacksound, attackchan, idlesound, idlechan;
     int lasttaunt;
     int lastpickup, lastpickupmillis, lastbase, lastrepammo, flagpickup, tokens;
@@ -607,6 +610,7 @@ struct fpsent : dynent, fpsstate
         loopi(NUMGUNS) lastaction[i] = 0;
         lastattackgun = gunselect;
         attacking = false;
+		secattacking = false;
         lasttaunt = 0;
 		lastgun = GUN_FIST;
         lastpickup = -1;
@@ -793,7 +797,7 @@ namespace game
     // weapon
     extern int getweapon(const char *name);
     extern const char *getweaponname(int gun);
-    extern void shoot(fpsent *d, const vec &targ);
+    extern void shoot(fpsent *d, const vec &targ, bool secondary);
     extern void shoteffects(int gun, const vec &from, const vec &to, fpsent *d, bool local, int id, int prevaction);
     extern void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int dam, int gun);
     extern void explodeeffects(int gun, fpsent *d, bool local, int id = 0);

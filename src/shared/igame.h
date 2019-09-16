@@ -49,6 +49,8 @@ namespace game
     extern const char *savedservers();
     extern void loadconfigs();
 
+	extern char* gametitle;
+
     extern void updateworld();
     extern void initclient();
     extern void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material = 0);
@@ -69,6 +71,7 @@ namespace game
     extern bool canjump();
     extern bool allowmove(physent *d);
     extern void doattack(bool on);
+	extern void dosecattack(bool on);
     extern dynent *iterdynents(int i);
     extern int numdynents();
     extern void rendergame(bool mainpass);

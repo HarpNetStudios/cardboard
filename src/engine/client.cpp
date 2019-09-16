@@ -75,6 +75,10 @@ VARP(connectport, 0, 0, 0xFFFF);
 
 void connectserv(const char *servername, int serverport, const char *serverpassword)
 {   
+	#ifdef CURLENABLED
+		getuserinfo_(false);
+	#endif
+
 	globalgamestate = -1;
 
     if(connpeer)
@@ -157,6 +161,7 @@ void disconnect(bool async, bool cleanup)
         discmillis = 0;
         conoutf("disconnected");
         game::gamedisconnect(cleanup);
+		getuserinfo_(false);
         mainmenu = 1;
 		#ifdef WIN32
 			discord::updatePresence(discord::D_MENU);

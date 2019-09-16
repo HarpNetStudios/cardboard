@@ -1055,6 +1055,7 @@ namespace ai
                     if(canshoot(d, e) && hastarget(d, b, e, yaw, pitch, dp.squaredist(ep)))
                     {
                         d->attacking = true;
+						d->secattacking = true;
                         d->ai->lastaction = lastmillis;
                         result = 3;
                     }
@@ -1228,7 +1229,7 @@ namespace ai
             if(allowmove)
             {
                 if(!request(d, b)) target(d, b, d->gunselect == GUN_FIST ? 1 : 0, b.idle ? true : false);
-                shoot(d, d->ai->target);
+                shoot(d, d->ai->target, false);
             }
             if(!intermission)
             {
@@ -1249,7 +1250,7 @@ namespace ai
                 moveplayer(d, 10, false);
             }
         }
-        d->attacking = d->jumping = false;
+        d->attacking = d->secattacking = d->jumping = false;
     }
 
 	void avoid()
