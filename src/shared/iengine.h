@@ -9,6 +9,8 @@ extern uint totalsecs;
 extern int gamespeed, paused;
 extern int globalgamestate;             // game state, set by and for discord
 
+#define HNAPI "harpnetstudios.com/hnid/api/v1"
+
 enum
 {
     MATF_INDEX_SHIFT  = 0,
@@ -240,6 +242,7 @@ extern void renderentring(const extentity &e, float radius, int axis = 0);
 
 // main
 extern void fatal(const char *s, ...) PRINTFARGS(1, 2);
+extern char *web_get(char *targetUrl, bool debug);
 extern void getuserinfo_(bool debug);
 
 // rendertext

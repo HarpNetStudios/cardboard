@@ -184,6 +184,6 @@ namespace discord
 		// Discord_Initialize(const char* applicationId, DiscordEventHandlers* handlers, int autoRegister, const char* optionalSteamId)
 
 		// skip initializing discord RPC until we can get everything sorted, avoids confusion 
-		// Discord_Initialize("436989367941070848", &handlers, 1, "0");
+		Discord_Initialize("623616609952464936", &handlers, 1, "0");
 	}
 }

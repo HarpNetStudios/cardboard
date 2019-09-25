@@ -143,6 +143,8 @@ namespace game
     });
     ICOMMAND(getname, "", (), result(player1->name));
 
+	ICOMMAND(gettags, "", (), result(player1->tags));
+
     void switchteam(const char *team)
     {
         if(player1->clientnum < 0) filtertext(player1->team, team, false, false, MAXTEAMLEN);
@@ -585,7 +587,7 @@ namespace game
 	ICOMMANDS("m_grenade", "i", (int *mode), { int gamemode = *mode; intret(m_grenade); });
 	ICOMMANDS("m_gun", "i", (int *mode), { int gamemode = *mode; intret(m_gun); });
 	ICOMMANDS("m_lms", "i", (int *mode), { int gamemode = *mode; intret(m_lms); });
-	ICOMMANDS("m_irctf", "i", (int* mode), { int gamemode = *mode; intret(m_irctf); });
+	ICOMMANDS("m_ectf", "i", (int* mode), { int gamemode = *mode; intret(m_ectf); });
 	ICOMMANDS("m_bottomless", "i", (int* mode), { int gamemode = *mode; intret(m_bottomless); });
 	ICOMMANDS("m_test", "i", (int* mode), { int gamemode = *mode; intret(m_test); });
 

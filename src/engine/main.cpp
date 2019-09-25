@@ -321,14 +321,14 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 				float tsz = sz / (8 * FONTH),
 					tx = (0.5f * w) - (tw / 2),
 					ty = 0.125f * sz - FONTH * tsz;
-                pushhudmatrix();
-                //hudmatrix.translate(x+sz+FONTH*msz, y, 0);
+				pushhudmatrix();
+				//hudmatrix.translate(x+sz+FONTH*msz, y, 0);
 				//hudmatrix.translate((0.5f * w) - (infowidth / 2), 0, 0);
 				hudmatrix.translate(tx, ty, 0);
-                hudmatrix.scale(tsz, tsz, 1);
-                flushhudmatrix();
-                draw_text(mapinfo, 0, 0, 0xFF, 0xFF, 0xFF);
-                pophudmatrix();
+				hudmatrix.scale(tsz, tsz, 1);
+				flushhudmatrix();
+				draw_text(mapinfo, 0, 0, 0xFF, 0xFF, 0xFF);
+				pophudmatrix();
             }
         }
         glDisable(GL_BLEND);
@@ -1150,8 +1150,6 @@ SVARP(__gametoken, ""); // game token time
 
 #ifdef CURLENABLED
 
-#define HNAPI "harpnetstudios.com/hnid/api/v1"
-
 static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
 	size_t realsize = size * nmemb;
@@ -1172,7 +1170,9 @@ static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, voi
 	return realsize;
 }
 
-char* web_get(char* targetUrl, bool debug)
+VARP(curltimeout, 1, 5, 60);
+
+char* web_get(char *targetUrl, bool debug)
 {
 	CURL* curl;
 	CURLcode res;
@@ -1202,6 +1202,9 @@ char* web_get(char* targetUrl, bool debug)
 
 	// some servers don't like requests that are made without a user-agent field, so we provide one
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cardboard-Engine/1.0.0");
+
+	// set timeout to 5 seconds so the game doesn't break when servers aren't responding
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, curltimeout);
 
 	// get it! */
 	res = curl_easy_perform(curl);
@@ -1240,10 +1243,10 @@ COMMANDN(testcurl, testcurl_, "s");
 void getuserinfo_(bool debug) {
 	if (debug) conoutf(CON_DEBUG, __gametoken);
 	oldstring apiurl;
-	formatstring(apiurl, "%s/game/get/userinfo.php?id=1&token=%s", HNAPI, __gametoken);
+	formatstring(apiurl, "%s/game/get/userinfo?id=1&token=%s", HNAPI, __gametoken);
 	char* thing = web_get(apiurl, debug);
 	if (debug) conoutf(CON_DEBUG, thing);
-	cJSON *json = cJSON_Parse(thing);
+	cJSON *json = cJSON_Parse(thing); // fix on linux, makefile doesn't work.
 
 	// error handling
 	const cJSON* status = cJSON_GetObjectItemCaseSensitive(json, "status");

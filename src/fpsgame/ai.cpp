@@ -903,7 +903,7 @@ namespace ai
 		}
 		if(jump)
 		{
-			if(offground) gunselect(GUN_FIST, d);
+			gunselect(GUN_FIST, d);
 			d->jumping = true;
 			d->jumpstate++;
 			int seed = (111-d->skill)*(d->inwater ? 3 : 5);

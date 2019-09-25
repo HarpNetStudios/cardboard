@@ -497,10 +497,11 @@ namespace game
 		if (d != actor) {
 			if (m_gun)
 			{
-				loopi(GUN_GL-GUN_FIST+1) actor->ammo[i] = 0;
-				int currentgun = int(floor(actor->frags / 2));
+				if (actor->frags >= 12) { intermission = true; if (cmode) cmode->gameover(); addmsg(N_FORCEINTERMISSION); }
+				//loopi(GUN_GL-GUN_FIST+1) actor->ammo[i] = 0;
+				int currentgun = clamp(int(floor(actor->frags / 2))+1, GUN_SMG, GUN_GL);
 				conoutf("gun should be %d", currentgun);
-				actor->ammo[currentgun] = (itemstats[currentgun - GUN_SMG].add * 2);
+				//actor->ammo[currentgun] = (itemstats[currentgun - GUN_SMG].add * 2);
 				actor->attacking = false;
 				actor->secattacking = false;
 				actor->gunselect = currentgun;
@@ -608,6 +609,76 @@ namespace game
         players.add(player1);
     }
 
+	static oldstring cname[3];
+	static int cidx = 0;
+
+	VARP(showtags, 0, 1, 1);
+
+	const char* gettags(fpsent* d)
+	{
+		if (!d->name[0] || !strcmp(d->name, "CardboardPlayer")) { return ""; }
+		if (d->tagfetch) { return d->tags; }
+		copystring(d->tags, "");
+		conoutf(CON_INFO, "\fs\f1getting tags for %s...\fr", d->name);
+		oldstring apiurl;
+		formatstring(apiurl, "%s/game/get/tags?id=1&name=%s", HNAPI, d->name);
+		char* thing = web_get(apiurl, false);
+		//conoutf(CON_DEBUG, thing);
+		cJSON* json = cJSON_Parse(thing); // fix on linux, makefile doesn't work.
+
+		// error handling
+		const cJSON* status = cJSON_GetObjectItemCaseSensitive(json, "status");
+		const cJSON* message = cJSON_GetObjectItemCaseSensitive(json, "message");
+		if (cJSON_IsNumber(status) && cJSON_IsString(message)) {
+			if (status->valueint > 0) {
+				//conoutf(CON_ERROR, "web error! status: %d, \"%s\"", status->valueint, message->valuestring);
+				return "";
+			}
+			else {
+				// actual parse
+				const cJSON* tag = NULL;
+				const cJSON* color = NULL;
+
+				const cJSON* tags = NULL;
+				const cJSON* tagitm = NULL;
+
+				oldstring fulltag = "";
+				oldstring conc = "";
+
+				tags = cJSON_GetObjectItemCaseSensitive(json, "tags");
+				cJSON_ArrayForEach(tagitm, tags)
+				{
+					tag = cJSON_GetObjectItemCaseSensitive(tagitm, "tag");
+					if (cJSON_IsString(tag) && (tag->valuestring != NULL))
+					{
+						//conoutf(CON_DEBUG, "tag is \"%s\"", tag->valuestring);
+						color = cJSON_GetObjectItemCaseSensitive(tagitm, "color");
+						if (cJSON_IsString(color) && (color->valuestring != NULL) && (strcmp(color->valuestring, "")))
+						{
+							//conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
+							concformatstring(conc, "\fs\f%s[%s] \fr", color->valuestring, tag->valuestring);
+						}
+						else {
+							concformatstring(conc, "\fs\f7[%s] \fr", tag->valuestring);
+						}
+					}
+				}
+				formatstring(fulltag, "%s", conc);
+				copystring(d->tags, fulltag);
+				d->tagfetch = true;
+				free(json);
+				return fulltag;
+			}
+		}
+		else {
+			//conoutf(CON_ERROR, "malformed JSON recieved from server");
+			free(json);
+			return "";
+		}
+		free(json);
+		return "";
+	}
+
     VARP(showmodeinfo, 0, 1, 1);
 
     void startgame()
@@ -645,6 +716,8 @@ namespace game
             cmode->preload();
             cmode->setup();
         }
+
+		gettags(player1);
 
         conoutf(CON_GAMEINFO, "\f2game mode is %s", server::modename(gamemode));
 
@@ -746,16 +819,17 @@ namespace game
         return false;
     }
 
-    static oldstring cname[3];
-    static int cidx = 0;
-
     const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
     {
-        if(!name) name = alt && d == player1 ? alt : d->name;
+        //if(!name) name = alt && d == player1 ? alt : d->name;
+		if (!name) name = d->name;
         bool dup = !name[0] || duplicatename(d, name, alt) || d->aitype != AI_NONE;
+		cidx = (cidx + 1) % 3;
+		if (d->aitype == AI_NONE && showtags) {
+			prefix = gettags(d);
+		}
         if(dup || prefix[0] || suffix[0])
         {
-            cidx = (cidx+1)%3;
             if(dup)
             {
                 if(d->aitype == AI_NONE)
@@ -770,7 +844,9 @@ namespace game
             else formatstring(cname[cidx], "%s%s%s", prefix, name, suffix);
             return cname[cidx];
         }
-        return name;
+		else formatstring(cname[cidx], "%s", name);
+		return cname[cidx];
+        //return name;
     }
 
     VARP(teamcolortext, 0, 1, 1);
@@ -778,12 +854,13 @@ namespace game
     const char *teamcolorname(fpsent *d, const char *alt)
     {
         if(!teamcolortext || !m_teammode) return colorname(d, NULL, "", "", alt);
-        return colorname(d, NULL, strcmp(d->team, "red") ? "\fs\f1" : "\fs\f3", "\fr", alt);
+        return colorname(d, NULL, !strcmp(d->team, "red") ? "\fs\f1" : "\fs\f3", "\fr", alt);
     }
 
     const char *teamcolor(const char *name, bool sameteam, const char *alt)
     {
-        if(!teamcolortext || !m_teammode) return sameteam || !alt ? name : alt;
+		conoutf(CON_DEBUG, "wrong teamcolor() used");
+		if(!teamcolortext || !m_teammode) return sameteam || !alt ? name : alt;
         cidx = (cidx+1)%3;
         formatstring(cname[cidx], sameteam ? "\fs\f1%s\fr" : "\fs\f3%s\fr", sameteam || !alt ? name : alt);
         return cname[cidx];
@@ -791,7 +868,10 @@ namespace game
 
     const char *teamcolor(const char *name, const char *team, const char *alt)
     {
-        return teamcolor(name, team && isteam(team, player1->team), alt);
+        //return teamcolor(name, team && isteam(team, player1->team), alt);
+		cidx = (cidx + 1) % 3;
+		formatstring(cname[cidx], !strcmp(team, "red") ? "\fs\f1%s\fr" : "\fs\f3%s\fr", name);
+		return cname[cidx];
     }
 
 	VARP(teamsounds, 0, 1, 1);

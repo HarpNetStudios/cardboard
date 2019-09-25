@@ -229,7 +229,14 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
             case '5': color = bvec(192,  64, 192); break;   // magenta
             case '6': color = bvec(255, 128,   0); break;   // orange
             case '7': color = bvec(255, 255, 255); break;   // white
-			case '8': color = bvec(0  , 255, 255); break;   // cyan
+			case '8': color = bvec(  0, 255, 255); break;   // cyan
+			case '9': color = bvec(  0,   0,   0); break;   // black as my soul -Y
+			case 'a': color = bvec(255,  36,   0); break;   // hn scarlet
+			//case 'b':
+			//case 'c':
+			//case 'd':
+			//case 'e':
+			//case 'f':
             // provided color: everything else
         }
         gle::color(color, a);

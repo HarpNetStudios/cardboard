@@ -1,6 +1,6 @@
-Name "Project Crimson Alpha 1.6.0"
+Name "Project Crimson Alpha 1.7.1"
 
-OutFile "crimson_alpha_1_6_0_win_setup.exe"
+OutFile "crimson_alpha_win_setup.exe"
 
 InstallDir "$PROGRAMFILES\HarpNet Studios\Project Crimson Alpha"
 

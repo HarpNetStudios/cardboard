@@ -73,6 +73,7 @@ namespace game
 
     void dbgreload(const char *name)
     {
+		if (m_gun) return;
         int gun = getweapon(name);
         if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_GL) return;
         player1->ammo[gun] = itemstats[gun-GUN_SMG].add*2;
@@ -82,6 +83,7 @@ namespace game
     void cycleweapon(int numguns, int *guns, bool force = false)
     {
         if(numguns<=0 || player1->state!=CS_ALIVE) return;
+		if (m_gun) return;
         int offset = 0;
         loopi(numguns) if(guns[i] == player1->gunselect) { offset = i+1; break; }
         loopi(numguns)
@@ -108,6 +110,7 @@ namespace game
     void weaponswitch(fpsent *d)
     {
         if(d->state!=CS_ALIVE) return;
+		if (m_gun) return;
 		if (oldweapswitch) {
 			int s = d->gunselect;
 			if (s != GUN_CG && d->ammo[GUN_CG])     s = GUN_CG;
@@ -129,6 +132,7 @@ namespace game
     ICOMMAND(weapon, "V", (tagval *args, int numargs),
     {
         if(player1->state!=CS_ALIVE) return;
+		if (m_gun) return;
         loopi(7)
         {
             const char *name = i < numargs ? args[i].getstr() : "";
@@ -161,7 +165,7 @@ namespace game
         loopi(guns[gun].rays) offsetray(from, to, guns[gun].spread, guns[gun].range, rays[i]);
     }
 
-    enum { BNC_GRENADE, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS, BNC_GRENADE_IMPACT };
+    enum { BNC_GRENADE, BNC_GIBS, BNC_DEBRIS, BNC_BARRELDEBRIS };
 
     struct bouncer : physent
     {
@@ -220,7 +224,6 @@ namespace game
 
         switch(type)
         {
-            case BNC_GRENADE_IMPACT: bnc.collidetype = COLLIDE_ELLIPSE_PRECISE; break;
 			case BNC_GRENADE: bnc.collidetype = COLLIDE_ELLIPSE_PRECISE; break;
             case BNC_DEBRIS: case BNC_BARRELDEBRIS: bnc.variant = rnd(4); break;
             case BNC_GIBS: bnc.variant = rnd(3); break;
@@ -233,7 +236,7 @@ namespace game
 
         avoidcollision(&bnc, dir, owner, 0.1f);
 
-        if(type==(BNC_GRENADE||BNC_GRENADE_IMPACT))
+        if(type==BNC_GRENADE)
         {
             bnc.offset = hudgunorigin(GUN_GL, from, to, owner);
             if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
@@ -269,7 +272,7 @@ namespace game
         loopv(bouncers)
         {
             bouncer &bnc = *bouncers[i];
-            if((bnc.bouncetype==BNC_GRENADE && bnc.vel.magnitude() > 50.0f)||(bnc.bouncetype==BNC_GRENADE_IMPACT))
+            if(bnc.bouncetype==BNC_GRENADE && bnc.vel.magnitude() > 50.0f)
             {
                 vec pos = bnc.offsetpos();
                 regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x404040, 2.4f, 50, -20);
@@ -279,17 +282,6 @@ namespace game
 			if (bnc.bouncetype == BNC_GRENADE)
 			{
 				stopped = bounce(&bnc, 0.6f, 0.5f, 0.8f) || (bnc.lifetime -= time) < 0;
-				if (bnc.bouncetype == BNC_GRENADE_IMPACT)
-				{
-					int qdam = guns[GUN_GL].damage * (bnc.owner->quadmillis ? 4 : 1);
-					hits.setsize(0);
-					explode(bnc.local, bnc.owner, bnc.o, NULL, qdam, GUN_GL);
-					adddecal(DECAL_SCORCH, bnc.o, vec(0, 0, 1), guns[GUN_GL].exprad / 2);
-					if (bnc.local)
-						addmsg(N_EXPLODE, "rci3iv", bnc.owner, lastmillis - maptime, GUN_GL, bnc.id - maptime,
-							hits.length(), hits.length() * sizeof(hitmsg) / sizeof(int), hits.getbuf());
-					delete bouncers.remove(i--);
-				}
 			}
             else
             {
@@ -705,7 +697,7 @@ namespace game
                 if(muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, 200, PART_MUZZLE_FLASH2, 0xFFFFFF, 1.5f, d);
                 if(muzzlelight) adddynlight(hudgunorigin(gun, d->o, to, d), 20, vec(0.5f, 0.375f, 0.25f), 100, 100, DL_FLASH, 0, vec(0, 0, 0), d);
-                newbouncer(from, up, local, id, d, BNC_GRENADE, guns[gun].ttl, guns[gun].projspeed); // TODO: Finish impact grenades
+                newbouncer(from, up, local, id, d, BNC_GRENADE, guns[gun].ttl, guns[gun].projspeed);
                 break;
             }
 
@@ -927,7 +919,7 @@ namespace game
         loopv(bouncers)
         {
             bouncer &bnc = *bouncers[i];
-            if(bnc.bouncetype!=(BNC_GRENADE||BNC_GRENADE_IMPACT)) continue;
+            if(bnc.bouncetype!=BNC_GRENADE) continue;
             vec pos = bnc.offsetpos();
             adddynlight(pos, 8, vec(0.25f, 1, 1));
         }
@@ -962,7 +954,7 @@ namespace game
                 bnc.lastyaw = yaw;
             }
             pitch = -bnc.roll;
-            if(bnc.bouncetype==(BNC_GRENADE||BNC_GRENADE_IMPACT))
+            if(bnc.bouncetype==BNC_GRENADE)
                 rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW);
             else
             {
@@ -1082,7 +1074,7 @@ namespace game
         loopv(bouncers)
         {
             bouncer &bnc = *bouncers[i];
-            if(bnc.bouncetype != (BNC_GRENADE||BNC_GRENADE_IMPACT)) continue;
+            if(bnc.bouncetype != BNC_GRENADE) continue;
             obstacles.avoidnear(NULL, bnc.o.z + guns[GUN_GL].exprad + 1, bnc.o, radius + guns[GUN_GL].exprad);
         }
     }
