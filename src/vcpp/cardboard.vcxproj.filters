@@ -178,6 +178,9 @@
     <ClCompile Include="..\include\cJSON\cJSON.c">
       <Filter>shared</Filter>
     </ClCompile>
+    <ClCompile Include="..\engine\lang.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\command.h">

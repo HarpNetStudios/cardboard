@@ -257,14 +257,22 @@ static Mix_Chunk *loadwav(const char *name)
 }
 
 //SVARP(soundpack, "default");
-SVARFP(soundpack, "default", {initsound();});
+SVARFP(soundpack, "default", { 
+		if(strcmp(soundpack,"default")){
+			oldstring gamer;
+			formatstring(gamer, "packages/soundpacks/%s", soundpack);
+			if (addzip(gamer, "packages/soundpacks", NULL, true)) resetsound();
+			return;
+		}
+		resetsound(); 
+	});
 
 bool soundsample::load(bool msg)
 {
     if(chunk) return true;
     if(!name[0]) return false;
 
-    static const char * const exts[] = { "", ".sgz", ".wav", ".ogg" };
+    static const char * const exts[] = { "", ".wav", ".ogg" };
     oldstring filename;
     loopi(sizeof(exts)/sizeof(exts[0]))
     {

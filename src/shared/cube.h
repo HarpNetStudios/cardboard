@@ -6,16 +6,16 @@
 #ifdef WIN32
 #define _USE_MATH_DEFINES
 #endif
-#include <math.h>
+#include <cmath>
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <stdarg.h>
-#include <limits.h>
-#include <assert.h>
-#include <time.h>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cstdarg>
+#include <climits>
+#include <cassert>
+#include <ctime>
 
 // include C++ standard libs here
 
@@ -57,11 +57,8 @@
 #endif
 
 #include <enet/enet.h>
-
 #include <curl/curl.h>
-
 #include <cJSON/cJSON.h>
-
 #include <zlib.h>
 
 #include "tools.h"

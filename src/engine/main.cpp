@@ -1,6 +1,6 @@
 // main.cpp: initialisation & main loop
 
-#include "engine.h"
+#include <engine.h>
 #include <game.h>
 
 extern void cleargamma();
@@ -268,7 +268,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         if(mapshot || mapname)
         {
             int infowidth = 12*FONTH;
-			float sz = 0.35f * min(w, h), msz = (0.75f * min(w, h) - sz) / (infowidth + FONTH);//, x = 0.5f*(w-sz), y = ly+lh - sz/15;
+			float sz = 0.35f * min(w, h);//, msz = (0.75f * min(w, h) - sz) / (infowidth + FONTH), x = 0.5f*(w-sz), y = ly+lh - sz/15;
 			//float sz = 0.5f * min(w, h), msz = (0.75f * min(w, h) - sz) / (infowidth + FONTH), x = 0.5f * (w - sz), y = ly + lh - sz / 15;
             if(mapinfo)
             {
@@ -1496,6 +1496,8 @@ int main(int argc, char **argv)
 		lastmillis += curtime;
         totalmillis = millis;
         updatetime();
+
+		//conoutf(CON_WARN, langtest("Korshårstorlek:")); // i sure do love handling unicode characters
 
 		//SDL_SetWindowTitle(screen, SDL_GetWindowTitle(screen));
 
