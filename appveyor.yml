@@ -11,7 +11,7 @@ environment:
       CONFIGURATION: Debug
       TOOLSET: v142
       APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2019"
-	- GENERATOR: "Visual Studio 16 2019"
+    - GENERATOR: "Visual Studio 16 2019"
       CONFIGURATION: Release
       TOOLSET: v142
       APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2019"
