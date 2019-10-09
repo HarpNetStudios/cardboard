@@ -3,6 +3,11 @@
 namespace game
 {
 	char* gametitle = "Project Crimson";
+	char* gamestage = "Alpha";
+	char* gameversion = "2.0pre3";
+	
+	// this doesn't work for some reason, fix later -Y
+	//ICOMMAND(version, "", (), { defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);  stringret(vers); })
 
 	bool intermission = false;
 	int maptime = 0, maprealtime = 0, maplimit = -1;
@@ -31,10 +36,10 @@ namespace game
 		if (!isconnected()) return;
 		if (!m_edit) return;
 		if (player1->state != CS_ALIVE && player1->state != CS_DEAD && player1->spacepack != true) return;
-		player1->spacepack = !player1->spacepack;
+		if (player1->state == CS_ALIVE) // only allow spacepack toggle when alive 
+			player1->spacepack = !player1->spacepack;
 	}
-
-	ICOMMAND(togglespacepack, "", (), togglespacepack());
+	COMMAND(togglespacepack, "");
 
 	ICOMMAND(getfollow, "", (),
 		{
@@ -291,9 +296,7 @@ namespace game
 				}
 				else if (cmode) cmode->checkitems(player1);
 			}
-			#ifdef WIN32
-				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING ), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
-			#endif
+			discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING ), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
 		}
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }
@@ -611,13 +614,14 @@ namespace game
 
 	static oldstring cname[3];
 	static int cidx = 0;
+	oldstring fulltag = "";
 
 	VARP(showtags, 0, 1, 1);
 
 	const char* gettags(fpsent* d)
 	{
-		if (!d->name[0] || !strcmp(d->name, "CardboardPlayer")) { return ""; }
-		if (d->tagfetch) { return d->tags; }
+		if (!d->name[0] || !strcmp(d->name, "CardboardPlayer")) return "";
+		if (d->tagfetch) return d->tags;
 		copystring(d->tags, "");
 		conoutf(CON_INFO, "\fs\f1getting tags for %s...\fr", d->name);
 		oldstring apiurl;
@@ -642,7 +646,6 @@ namespace game
 				const cJSON* tags = NULL;
 				const cJSON* tagitm = NULL;
 
-				oldstring fulltag = "";
 				oldstring conc = "";
 
 				tags = cJSON_GetObjectItemCaseSensitive(json, "tags");
@@ -719,19 +722,9 @@ namespace game
 
 		gettags(player1);
 
-        conoutf(CON_GAMEINFO, "\f2game mode is %s", server::modename(gamemode));
-
-        if(m_sp)
-        {
-            defformatstring(scorename, "bestscore_%s", getclientmap());
-            const char *best = getalias(scorename);
-            if(*best) conoutf(CON_GAMEINFO, "\f2try to beat your best score so far: %s", best);
-        }
-        else
-        {
-            const char *info = m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
-            if(showmodeinfo && info) conoutf(CON_GAMEINFO, "\f0%s", info);
-        }
+        //conoutf(CON_GAMEINFO, "\f2game mode is %s", server::modename(gamemode));
+		const char* info = m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
+		if (showmodeinfo && info) conoutf(CON_GAMEINFO, "\f2%s: \f0%s", server::modename(gamemode), info);
 
         if(player1->playermodel != playermodel) switchplayermodel(playermodel);
 

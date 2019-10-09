@@ -50,6 +50,8 @@ namespace game
     extern void loadconfigs();
 
 	extern char* gametitle;
+	extern char* gamestage;
+	extern char* gameversion;
 
     extern void updateworld();
     extern void initclient();

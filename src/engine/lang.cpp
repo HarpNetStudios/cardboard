@@ -2,8 +2,9 @@
 
 SVARP(userlang, "en");
 
+oldstring theboi;
+
 char* langtest(char* index, char* lang) {
-	oldstring theboi;
 	formatstring(theboi, "%s (%s)", index, lang);
 	return theboi;
 }

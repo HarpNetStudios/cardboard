@@ -26,7 +26,7 @@ enum                            // static entity types
 {
     NOTUSED = ET_EMPTY,         // entity slot not in use in map
     LIGHT = ET_LIGHT,           // lightsource, attr1 = radius, attr2 = intensity
-    MAPMODEL = ET_MAPMODEL,     // attr1 = angle, attr2 = idx
+    MAPMODEL = ET_MAPMODEL,     // attr1 = angle, attr2 = idx, attr3 = trigger
     PLAYERSTART,                // attr1 = angle, attr2 = team
     ENVMAP = ET_ENVMAP,         // attr1 = radius
     PARTICLES = ET_PARTICLES,
@@ -110,32 +110,32 @@ static struct gamemodeinfo
 {
     { "SP", M_LOCAL | M_CLASSICSP, NULL },
     { "DMSP", M_LOCAL | M_DMSP, NULL },
-    { "demo", M_DEMO | M_LOCAL, NULL},
-    { "ffa", M_LOBBY, "Free For All: Collect items for ammo. Frag everyone to score points." },
-    { "coop edit", M_EDIT, "Cooperative Editing: Edit maps with multiple players simultaneously." },
-    { "team deathmatch", M_TEAM, "Team Deathmatch: Collect items for ammo. Frag the enemy team to score points for your team." },
-    { "instagib", M_NOITEMS | M_INSTA, "Instagib: You spawn with full rifle ammo and die instantly from one shot. There are no items. Frag everyone to score points." },
-    { "insta team", M_NOITEMS | M_INSTA | M_TEAM, "Instagib Team: You spawn with full rifle ammo and die instantly from one shot. There are no items. Frag the enemy team to score points for your team." },
-    { "tactics", M_NOITEMS | M_TACTICS, "Tactics: You spawn with two random weapons and armour. There are no items. Frag everyone to score points." },
-    { "team tactics", M_NOITEMS | M_TACTICS | M_TEAM, "Team Tactics: You spawn with two random weapons and armour. There are no items. Frag the enemy team to score points for your team." },
-    { "capture", M_NOAMMO | M_TACTICS | M_CAPTURE | M_TEAM, "Capture: Capture neutral bases or steal enemy bases by standing next to them.  Your team scores points for every 10 seconds it holds a base. You spawn with two random weapons and armour. Collect extra ammo that spawns at your bases. There are no ammo items." },
-    { "regen capture", M_NOITEMS | M_CAPTURE | M_REGEN | M_TEAM, "Regen Capture: Capture neutral bases or steal enemy bases by standing next to them. Your team scores points for every 10 seconds it holds a base. Regenerate health and ammo by standing next to your bases. There are no items." },
-	{ "ctf", M_CTF | M_TEAM, "Capture The Flag: Capture the enemy flag and bring it back to your flag to score points for your team. Collect items for ammo." },
-    { "insta ctf", M_NOITEMS | M_INSTA | M_CTF | M_TEAM, "Instagib Capture The Flag: Capture the enemy flag and bring it back to your flag to score points for your team. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-	{ "protect", M_CTF | M_PROTECT | M_TEAM, "Protect The Flag: Touch the enemy flag to score points for your team. Pick up your flag to protect it. Your team loses points if a dropped flag resets. Collect items for ammo." },
-    { "insta protect", M_NOITEMS | M_INSTA | M_CTF | M_PROTECT | M_TEAM, "Instagib Protect The Flag: Touch the enemy flag to score points for your team. Pick up your flag to protect it. Your team loses points if a dropped flag resets. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-    { "hold", M_CTF | M_HOLD | M_TEAM, "Hold The Flag: Hold the flag for 20 seconds to score points for your team. Collect items for ammo." },
-    { "insta hold", M_NOITEMS | M_INSTA | M_CTF | M_HOLD | M_TEAM, "Instagib Hold The Flag: Hold the flag for 20 seconds to score points for your team. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-    { "collect", M_COLLECT | M_TEAM, "Skull Collector: Frag the enemy team to drop skulls. Collect them and bring them to the enemy base to score points for your team or steal back your skulls. Collect items for ammo." },
-    { "insta collect", M_NOITEMS | M_INSTA | M_COLLECT | M_TEAM, "Instagib Skull Collector: Frag the enemy team to drop skulls. Collect them and bring them to the enemy base to score points for your team or steal back your skulls. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-    { "parkour", M_NOITEMS | M_BOTTOMLESS | M_PARKOUR, "Parkour: Jump up, jump up and get down!" },
-    { "insta tactics", M_NOITEMS | M_TACTICS | M_INSTA, "Instagib Tactics: You spawn with two random weapons and armour and die instantly from one shot. There are no items. Frag everyone to score points."},
-    { "team insta tactics", M_NOITEMS | M_TACTICS | M_INSTA | M_TEAM, "Team Instagib Tactics: You spawn with two random weapons and armour and die instantly from one shot. There are no items. Frag the enemy team to score points for your team."},
-    { "grenade battle", M_NOITEMS | M_GRENADE, "Grenade Battle:  You spawn with full grenade launcher ammo. There are no items. Frag everyone to score points."}, //20
-    { "gun game", M_NOITEMS | M_GUN | M_BOTTOMLESS, "Gun Game:  You spawn with the lowest tier weapon and work your way up. There are no items. Frag everyone to score points."}, //21
-    { "last man standing", M_LMS, "Last Man Standing: You spawn with one life. Frag everyone to score points. Be the last one alive to win."}, //22
-	{ "explosive ctf", M_INSTA | M_BOTTOMLESS | M_TEAM | M_CTF | M_NOITEMS | M_ECTF, "Explosive CTF: Rockets! Grenades! Instagib! CTF! Exciting!"}, //23
-	{ "test mode", M_TEST, "Test Mode: It might be something stupid, or it might be cool. It also might crash your game."}, //24
+    { "Demo", M_DEMO | M_LOCAL, NULL},
+    { "Free For All", M_LOBBY, "Collect items for ammo. Frag everyone to score points." },
+    { "Cooperative Editing", M_EDIT, "Edit maps with multiple players simultaneously." },
+    { "Team Deathmatch", M_TEAM, "Collect items for ammo. Frag the enemy team to score points for your team." },
+    { "Instagib", M_NOITEMS | M_INSTA, "You spawn with full rifle ammo and die instantly from one shot. There are no items. Frag everyone to score points." },
+    { "Instagib Team", M_NOITEMS | M_INSTA | M_TEAM, "You spawn with full rifle ammo and die instantly from one shot. There are no items. Frag the enemy team to score points for your team." },
+    { "Tactics", M_NOITEMS | M_TACTICS, "You spawn with two random weapons and armour. There are no items. Frag everyone to score points." },
+    { "Team Tactics", M_NOITEMS | M_TACTICS | M_TEAM, "You spawn with two random weapons and armour. There are no items. Frag the enemy team to score points for your team." },
+    { "Capture", M_NOAMMO | M_TACTICS | M_CAPTURE | M_TEAM, "Capture neutral bases or steal enemy bases by standing next to them.  Your team scores points for every 10 seconds it holds a base. You spawn with two random weapons and armour. Collect extra ammo that spawns at your bases. There are no ammo items." },
+    { "Regen Capture", M_NOITEMS | M_CAPTURE | M_REGEN | M_TEAM, "Capture neutral bases or steal enemy bases by standing next to them. Your team scores points for every 10 seconds it holds a base. Regenerate health and ammo by standing next to your bases. There are no items." },
+	{ "Capture The Flag", M_CTF | M_TEAM, "Capture the enemy flag and bring it back to your flag to score points for your team. Collect items for ammo." },
+    { "Instagib Capture The Flag", M_NOITEMS | M_INSTA | M_CTF | M_TEAM, "Capture the enemy flag and bring it back to your flag to score points for your team. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
+	{ "Protect The Flag", M_CTF | M_PROTECT | M_TEAM, ": Touch the enemy flag to score points for your team. Pick up your flag to protect it. Your team loses points if a dropped flag resets. Collect items for ammo." },
+    { "Instagib Protect The Flag", M_NOITEMS | M_INSTA | M_CTF | M_PROTECT | M_TEAM, "Touch the enemy flag to score points for your team. Pick up your flag to protect it. Your team loses points if a dropped flag resets. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
+    { "Hold The Flag", M_CTF | M_HOLD | M_TEAM, "Hold the flag for 20 seconds to score points for your team. Collect items for ammo." },
+    { "Instagib Hold The Flag", M_NOITEMS | M_INSTA | M_CTF | M_HOLD | M_TEAM, "Hold the flag for 20 seconds to score points for your team. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
+    { "Skull Collector", M_COLLECT | M_TEAM, "Frag the enemy team to drop skulls. Collect them and bring them to the enemy base to score points for your team or steal back your skulls. Collect items for ammo." },
+    { "Instagib Skull Collector", M_NOITEMS | M_INSTA | M_COLLECT | M_TEAM, "Frag the enemy team to drop skulls. Collect them and bring them to the enemy base to score points for your team or steal back your skulls. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
+    { "Parkour", M_NOITEMS | M_BOTTOMLESS | M_PARKOUR, "Jump up, jump up and get down!" },
+    { "Instagib Tactics", M_NOITEMS | M_TACTICS | M_INSTA, "You spawn with two random weapons and armour and die instantly from one shot. There are no items. Frag everyone to score points."},
+    { "Team Instagib Tactics", M_NOITEMS | M_TACTICS | M_INSTA | M_TEAM, "You spawn with two random weapons and armour and die instantly from one shot. There are no items. Frag the enemy team to score points for your team."},
+    { "Grenade Battle", M_NOITEMS | M_GRENADE, "You spawn with full grenade launcher ammo. There are no items. Frag everyone to score points."}, //20
+    { "Gun Game", M_NOITEMS | M_GUN | M_BOTTOMLESS, "You spawn with the lowest tier weapon and work your way up. There are no items. Frag everyone to score points."}, //21
+    { "Last Man Standing", M_LMS, "You spawn with ten lives. Frag everyone to score points. Be the last one alive to win."}, //22
+	{ "Explosive CTF", M_INSTA | M_BOTTOMLESS | M_TEAM | M_CTF | M_NOITEMS | M_ECTF, "Rockets! Grenades! Instagib! CTF! Exciting!"}, //23
+	{ "Test Mode", M_TEST, "It might be something stupid, or it might be cool. It also might crash your game."}, //24
 };
 
 #define STARTGAMEMODE (-3)
@@ -358,26 +358,11 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
 
 #define MAXRAYS 20
 //#define EXP_SELFDAMDIV 2
+
 #define EXP_SELFPUSH .12f
 #define EXP_DISTSCALE 1.5f
 
-static struct guninfo { int sound, attackdelay, damage, spread, projspeed, kickamount, range, rays, hitpush, exprad, ttl; const char *name, *file; short part; bool hassecond; int secondconsume; } 
-
-guns[NUMGUNS] =
-{
-    { S_PUNCH1,     10,  400,   0,   0,  0,   14,  1,  80,  0,    0, "fist",            "fist",   0, false, 10 },
-    { S_ARIFLE,    150,  200,  50,   0,  5, 1024,  1,  80,  0,    0, "smg",             "smg",    0, false, 10 },
-    { S_SG,       1400,   80, 400,   0, 15,  512, 20,  80,  0,    0, "shotgun",         "shotg",  0, true, 10 },
-    { S_RIFLE,    1500,  900,   0,   0, 30, 2048,  1,  80,  0,    0, "rifle",           "rifle",  0, false, 10 },
-    { S_CG,        100,  150, 100,   0, 10,  512,  1,  80,  0,    0, "chaingun",        "chaing", 0, true, 10 },
-    { S_RLFIRE,    800, 1200,   0, 320, 10, 1024,  1, 160, 40,    0, "rocketlauncher",  "rocket", 0, true, 10 },
-    { S_FLAUNCH,  1000,  900,   0, 200, 10, 1024,  1, 250, 45, 1500, "grenadelauncher", "gl",     0, true, 10 },
-    { S_FLAUNCH,   200,   20,   0, 200,  1, 1024,  1,  80, 40,    0, "fireball",        NULL,     PART_FIREBALL1, true, 10 },
-    { S_ICEBALL,   200,   40,   0, 120,  1, 1024,  1,  80, 40,    0, "iceball",         NULL,     PART_FIREBALL2, true, 10 },
-    { S_SLIMEBALL, 200,   30,   0, 640,  1, 1024,  1,  80, 40,    0, "slimeball",       NULL,     PART_FIREBALL3, true, 10 },
-    { S_PIGR1,     250,   50,   0,   0,  1,   12,  1,  80,  0,    0, "bite",            NULL,     0, true, 10 },
-    { -1,            0,  120,   0,   0,  0,    0,  1,  80, 40,    0, "barrel",          NULL,     0, true, 10 }
-};
+#include "weapon.h"
 
 #include "ai.h"
 
@@ -447,6 +432,7 @@ struct fpsstate
 
     void respawn()
     {
+		disablezoom();
         health = maxhealth;
         quadmillis = 0;
 		loopi(NUMGUNS) gunwait[i] = 0;
@@ -477,6 +463,7 @@ struct fpsstate
         }
 		else if (m_ectf)
 		{
+			health = 1;
 			gunselect = GUN_RL;
 			ammo[GUN_RL] = 32000;
 			ammo[GUN_GL] = 32000; // fixed it -Y 09/17/19

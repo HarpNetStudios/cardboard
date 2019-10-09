@@ -64,8 +64,8 @@ namespace entities
         static const char * const entmdlnames[] =
         {
             NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-            "ammo/smg", "ammo/shells", "ammo/bullets", "ammo/rrounds", "ammo/rockets", "ammo/grenades",
-            "health", "boost", NULL, NULL, "quad", "teleporter",
+            NULL, NULL, NULL, NULL, NULL, NULL,
+            NULL, NULL, NULL, NULL, "quad", NULL,
             NULL, NULL,
             "carrot",
             NULL, NULL,
@@ -183,7 +183,7 @@ namespace entities
         if(d==player1) switch(type)
         {
             case I_BOOST:
-                conoutf(CON_GAMEINFO, "\f2you have a permanent +10 health bonus! (%d)", d->maxhealth);
+                conoutf(CON_GAMEINFO, "\f2you have a permanent +100 health bonus! (%d)", d->maxhealth);
                 playsound(S_V_BOOST, NULL, NULL, 0, 0, 0, -1, 0, 3000);
                 break;
 

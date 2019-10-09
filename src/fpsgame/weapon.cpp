@@ -21,6 +21,7 @@ namespace game
 
     void gunselect(int gun, fpsent *d)
     {
+		
         if(gun!=d->gunselect)
         {
 			d->lastgun = d->gunselect;
@@ -31,6 +32,7 @@ namespace game
             } else {
                 d->candouble = false;
             }
+			if (d->attacking) d->attacking = false; // no more unlockable scrollwheel shenanigans -Y
         }
         d->gunselect = gun;
     }
@@ -78,7 +80,7 @@ namespace game
         if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_GL) return;
         player1->ammo[gun] = itemstats[gun-GUN_SMG].add*2;
     }
-    ICOMMAND(dbgreload, "si", (char *name), dbgreload(name));
+    ICOMMAND(dbgreload, "s", (char *name), dbgreload(name));
 
     void cycleweapon(int numguns, int *guns, bool force = false)
     {
@@ -124,9 +126,9 @@ namespace game
 		}
 		else 
 		{
-			if (d->ammo[d->lastgun]) gunselect(d->lastgun, d); // make sure we don't switch to something we don't have ammo for.
+			if (d->gunselect != d->lastgun && d->ammo[d->lastgun]) gunselect(d->lastgun, d); // make sure we don't switch to something we don't have ammo for.
+			else gunselect(GUN_FIST, d);
 		}
-		d->attacking = false; // that didn't work. -Y
     }
 
     ICOMMAND(weapon, "V", (tagval *args, int numargs),
@@ -195,7 +197,7 @@ namespace game
             }
             return pos;
         }
-
+		
         void limitoffset()
         {
             if(bouncetype == BNC_GRENADE && offsetmillis > 0 && offset.z < 0)
@@ -281,7 +283,7 @@ namespace game
             bool stopped = false;
 			if (bnc.bouncetype == BNC_GRENADE)
 			{
-				stopped = bounce(&bnc, 0.6f, 0.5f, 0.8f) || (bnc.lifetime -= time) < 0;
+				stopped = bounce(&bnc, 0.6f, 0.5f, 0.7f) || (bnc.lifetime -= time) < 0;
 			}
             else
             {
@@ -640,6 +642,7 @@ namespace game
     VARP(muzzlelight, 0, 1, 1);
 
     HVARP(rifletrail, 0, 0x404040, 0xFFFFFF);
+
     VARP(teamcolorrifle, 0, 1, 1);
 
     void shoteffects(int gun, const vec &from, const vec &to, fpsent *d, bool local, int id, int prevaction)     // create visual effect from a shot
@@ -649,6 +652,7 @@ namespace game
         {
             case GUN_FIST:
                 if(d->type==ENT_PLAYER && chainsawhudgun) sound = S_CHAINSAW_ATTACK;
+				if ((muzzlelight) && (darkmap)) adddynlight(hudgunorigin(gun, d->o, to, d), 25, vec(0.6f, 0.275f, 0.15f), 10, 10, DL_FLASH, 0, vec(0, 0, 0), d);
                 break;
 
             case GUN_SG:
@@ -862,7 +866,7 @@ namespace game
 
         vec from = d->o, to = targ, dir = vec(to).sub(from).safenormalize();
         float dist = to.dist(from);
-        vec kickback = vec(dir).mul(guns[d->gunselect].kickamount*-2.5f);
+		vec kickback = vec(dir).mul(guns[d->gunselect].kickamount * ((d->spacepack && d->physstate == PHYS_FLOAT) ? -6.0f : -2.5f)); //spacepack dependant kickback
         d->vel.add(kickback);
         float shorten = 0;
         if(guns[d->gunselect].range && dist > guns[d->gunselect].range)
@@ -921,21 +925,21 @@ namespace game
             bouncer &bnc = *bouncers[i];
             if(bnc.bouncetype!=BNC_GRENADE) continue;
             vec pos = bnc.offsetpos();
-            adddynlight(pos, 8, vec(0.25f, 1, 1));
+            adddynlight(pos, 10, vec(0.25f, 1, 1));
         }
     }
 
     static const char * const projnames[2] = { "projectiles/grenade", "projectiles/rocket" };
     static const char * const gibnames[3] = { "gibs/gib01", "gibs/gib02", "gibs/gib03" };
     static const char * const debrisnames[4] = { "debris/debris01", "debris/debris02", "debris/debris03", "debris/debris04" };
-    static const char * const barreldebrisnames[4] = { "barreldebris/debris01", "barreldebris/debris02", "barreldebris/debris03", "barreldebris/debris04" };
+    //static const char * const barreldebrisnames[4] = { "barreldebris/debris01", "barreldebris/debris02", "barreldebris/debris03", "barreldebris/debris04" };
 
     void preloadbouncers()
     {
         loopi(sizeof(projnames)/sizeof(projnames[0])) preloadmodel(projnames[i]);
         loopi(sizeof(gibnames)/sizeof(gibnames[0])) preloadmodel(gibnames[i]);
         loopi(sizeof(debrisnames)/sizeof(debrisnames[0])) preloadmodel(debrisnames[i]);
-        loopi(sizeof(barreldebrisnames)/sizeof(barreldebrisnames[0])) preloadmodel(barreldebrisnames[i]);
+        //loopi(sizeof(barreldebrisnames)/sizeof(barreldebrisnames[0])) preloadmodel(barreldebrisnames[i]);
     }
 
     void renderbouncers()
@@ -966,7 +970,7 @@ namespace game
                 {
                     case BNC_GIBS: mdl = gibnames[bnc.variant]; cull |= MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW; break;
                     case BNC_DEBRIS: mdl = debrisnames[bnc.variant]; break;
-                    case BNC_BARRELDEBRIS: mdl = barreldebrisnames[bnc.variant]; break;
+                    //case BNC_BARRELDEBRIS: mdl = barreldebrisnames[bnc.variant]; break;
                     default: continue;
                 }
                 rendermodel(&bnc.light, mdl, ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, cull, NULL, NULL, 0, 0, fade);

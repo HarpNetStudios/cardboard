@@ -84,6 +84,13 @@ HVARFR(ambient, 1, 0x191919, 0xFFFFFF,
     if(ambient <= 255) ambient |= (ambient<<8) | (ambient<<16);
     ambientcolor = bvec((ambient>>16)&0xFF, (ambient>>8)&0xFF, ambient&0xFF);
 });
+
+VARFR(darkmap, 0, 0, 1, {
+/*if ((darkmap == 1) && (ambient != 0) && (ambient > 0x010101)) {
+	conoutf(CON_WARN, "ambient 0x010101 is recommended for darkmap");
+}*/ // commented out because ambient is set after darkmap on map load -Y
+});
+
 HVARFR(skylight, 0, 0, 0xFFFFFF, 
 {
     if(skylight <= 255) skylight |= (skylight<<8) | (skylight<<16);

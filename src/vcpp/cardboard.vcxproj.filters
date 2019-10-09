@@ -175,11 +175,11 @@
     <ClCompile Include="..\fpsgame\discord.cpp">
       <Filter>fpsgame</Filter>
     </ClCompile>
-    <ClCompile Include="..\include\cJSON\cJSON.c">
-      <Filter>shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\engine\lang.cpp">
       <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\cJSON\cJSON.c">
+      <Filter>shared</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -301,6 +301,9 @@
       <Filter>fpsgame</Filter>
     </ClInclude>
     <ClInclude Include="..\fpsgame\game.h">
+      <Filter>fpsgame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fpsgame\weapon.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
   </ItemGroup>

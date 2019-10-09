@@ -2662,11 +2662,12 @@ COMMAND(editmat, "ss");
 
 extern int menudistance, menuautoclose;
 
-VARP(texguiwidth, 1, 12, 1000);
-VARP(texguiheight, 1, 8, 1000);
+VARP(texguiwidth, 1, 15, 1000);
+VARP(texguiheight, 1, 6, 1000);
 VARP(texguitime, 0, 25, 1000);
 
 static int lastthumbnail = 0;
+static int texhoveridx = 0;
 
 VARP(texgui2d, 0, 1, 1);
 
@@ -2703,16 +2704,24 @@ struct texturegui : g3d_callback
                             if(totalmillis-lastthumbnail<texguitime)
                             {
                                 g.texture(dummyvslot, 1.0, false); //create an empty space
+								hudshader->set();
                                 continue;
                             }
                             loadthumbnail(slot);
                             lastthumbnail = totalmillis;
                         }
-                        if(g.texture(vslot, 1.0f, true)&G3D_UP && (slot.loaded || slot.thumbnail!=notexture))
+						int test = g.texture(vslot, 1.0f, true);
+                        if(test & G3D_UP && (slot.loaded || slot.thumbnail!=notexture))
                         {
                             edittex(vslot.index);
                             hudshader->set();
                         }
+						if (test & G3D_ROLLOVER)
+						{
+							if (!slot.loaded && !slot.thumbnail)
+								loadthumbnail(slot);
+							texhoveridx = ti;
+						}
                     }
                     else
                     {
@@ -2721,6 +2730,38 @@ struct texturegui : g3d_callback
                 }
                 g.poplist();
             }
+			Slot& prev = lookupslot(texhoveridx, false);
+			VSlot& vprev = *prev.variants;
+
+			g.pushlist();
+			g.texture(vprev, 2.0f, true);
+
+			int guitextcolour = 0xFFFFFF;
+			g.pushlist();
+			defformatstring(ds, "Texture: %s", prev.sts[0].name);
+			if (ds[60]) //shorten strings, to avoid a jittery interface
+			{
+				ds[60] = '\0';
+				ds[59] = ds[58] = ds[57] = '.';
+			}
+			g.text(ds, guitextcolour, "info");
+
+			formatstring(ds, "Layer: %i\tShader: %s", vprev.layer, prev.shader->name);
+			if (ds[60]) //shorten strings, to avoid a jittery interface
+			{
+				ds[60] = '\0';
+				ds[59] = ds[58] = ds[57] = '.';
+			}
+			g.text(ds, guitextcolour, "info");
+
+			formatstring(ds, "Scale: %.2f\tAlpha %.2f %.2f", vprev.scale, vprev.alphafront, vprev.alphaback);
+			g.text(ds, guitextcolour, "info");
+
+			formatstring(ds, "Scroll: %.2f %.2f\tOffset %i %i", (float)vprev.scroll.x * 1000.0f, (float)vprev.scroll.y * 1000.0f, vprev.offset.x, vprev.offset.y);
+			g.text(ds, guitextcolour, "info");
+
+			g.poplist();
+			g.poplist();
         }
         g.end();
     }

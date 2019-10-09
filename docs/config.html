@@ -6,14 +6,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-<title>Cube 2: Sauerbraten - Configuration</title>
+<title>Project Crimson - Configuration</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="shortcut icon" href="favicon.ico" />
 </head>
 
 <body>
 
-<h1>Cube 2: Sauerbraten - Configuration</h1>
+<h1>Project Crimson - Configuration</h1>
 
 <div class="contents">
 <ul class="contents">
@@ -21,7 +21,7 @@
 <a href="#before_you_start"><b>Before You Start</b></a>
 </li>
 <li>
-<a href="#running_cube2"><b>Running Cube 2</b></a>
+<a href="#running_crimson"><b>Running Project Crimson</b></a>
 </li>
 <li>
 <a href="#command_line_options"><b>Command Line Options</b></a>
@@ -585,23 +585,20 @@
 
 <p>
 Take some time to read the rest of this document, as it describes options and commands that may be crucial to a successful
-experience with <i>Cube 2: Sauerbraten</i>.
-</p>
-
-<p>
+experience with <i>Project Crimson</i>.
+<br><br>
 Binding keys, as well as performance and gameplay related settings are documented below, these commands can be used in
 both the console and configuration scripts. In addition, you can also press "ESC" to go into the menu, which will provide
 you with an interface for navigating some (not all) of the commands.
 </p>
 
-<h2 id="running_cube2">Running Cube 2</h2>
-
-<ul>
-<li>For Windows: Install and then run sauerbraten.bat or select the entry from the Start menu.</li>
-<li>For Linux: Extract and then run <i>./sauerbraten_unix</i> inside the <i>sauerbraten</i> directory. Needs a decent and compliant OpenGL implementation.</li>
-</ul>
-
+<h2 id="running_crimson">Running Project Crimson</h2>
 <p>
+
+<tt>For Windows: Install and then run crimson_msvc.bat or select the entry from the Start menu.</tt>
+<br>
+<tt>For Linux: Extract and then run <i>./crimson_unix</i>. Needs a decent and compliant OpenGL implementation.</tt>
+<br><br>
 The game and engine derives its simplicity from some rather brute force rendering methods, and as such it needs 
 a beefy machine to get good visual quality. It runs best with vertical sync (vsync) set to OFF and at high
 refresh rates (otherwise, you may get excessive LOD/FPS variance).
@@ -614,7 +611,7 @@ refresh rates (otherwise, you may get excessive LOD/FPS variance).
 This starts as a dedicated server. The default is a non-dedicated server with only a single client in graphical
 mode. Dedicated servers run in the shell only (no graphics), with increased priority yet use very little cpu time and memory,
 so you can run one in the background, or at the same time with a client if you want to host a game (which is usually better 
-than using a listen server). Servers use the ports 28785 (UDP) and 28786 (UDP).
+than using a listen server). Servers use the ports 35000 (UDP) and 35001 (UDP).
 </p>
 
 <pre id="_minus_dN">-dN</pre>
@@ -646,7 +643,7 @@ Sets FSAA (Full Scene AntiAliasing) to N samples, i.e. -a4 is 4xFSAA
 
 <pre id="_minus_t">-t</pre>
 <p>
-Sets Sauerbaten to run windowed.
+Sets Crimson to run windowed.
 </p>
 
 <pre id="_minus_qs">-qS</pre>
@@ -704,12 +701,12 @@ Sets the server ip to S. This option is only useful for people running on machin
 
 <pre id="_minus_jn">-jN</pre>
 <p>
-Sets the server port to N. This option is only useful for people running on machines with multiple network interfaces. Note that both UDP ports N (game traffic) and N+1 (pings) must be available for this to work. If not specified, the default ports used are 28785 and 28786. Regardless of what ports are set, port 28784 must be available for pinging servers over a LAN to work.
+Sets the server port to N. This option is only useful for people running on machines with multiple network interfaces. Note that both UDP ports N (game traffic) and N+1 (pings) must be available for this to work. If not specified, the default ports used are 35000 and 35001. Regardless of what ports are set, port 34999 must be available for pinging servers over a LAN to work.
 </p>
 
 <pre id="_minus_ms">-mS</pre>
 <p>
-Sets the master server to use for either server (registering) and client (updating) to S. (default: sauerbraten.org).
+Sets the master server to use for either server (registering) and client (updating) to S. (default: master.harpnetstudios.com).
 </p>
 
 <pre id="_minus_ps">-pS</pre>
@@ -1190,7 +1187,7 @@ changes are not committed, if they select another field, changes will be lost.
 </p>
 
 <h2 id="server_commands">Server Configuration Commands</h2>
-<p>The following commands may be placed in the file "server-init.cfg" in the root Sauerbraten directory to configure a dedicated server, or they may be used inside a running client to config
+<p>The following commands may be placed in the file "server-init.cfg" in the root Crimson directory to configure a dedicated server, or they may be used inside a running client to config
 ure a listen server:</p>
 
 <pre id="startlistenserver">startlistenserver [MASTER]</pre>
@@ -1203,7 +1200,7 @@ ure a listen server:</p>
 <p>Sets the IP the server should bind/listen to S. This is only useful if your server is running on a host with multiple interfaces.</p>
 
 <pre id="serverport">serverport N</pre>
-<p>Sets the port the server should bind/listen to N. By default, server's listen on port 8785.</p>
+<p>Sets the port the server should bind/listen to N. By default, server's listen on port 35000.</p>
 
 <pre id="maxclients">maxclients N</pre>
 <p>Sets the maximum number of clients that can connect to the server to N.</p>
@@ -1230,7 +1227,7 @@ ure a listen server:</p>
 <p>Toggles whether or not the server should report to the masterserver. B=1 enables (default) and B=0 disables.</p>
 
 <pre id="mastername">mastername S</pre>
-<p>Sets the IP of the master server the server reports to. This defaults to "sauerbraten.org" and generally should not be changed.</p>
+<p>Sets the IP of the master server the server reports to. This defaults to "master.harpnetstudios.com" and generally should not be changed.</p>
 
 <pre id="restrictdemos">restrictdemos B</pre>
 <p>Toggles whether admin is required to start recording a demo. B=1 enables (default) and B=0 disables.</p>
@@ -1252,55 +1249,41 @@ ure a listen server:</p>
 <p>
 Cube's console language is similar to console languages of other games (e.g. Quake), but is a bit more powerful in that it is a
 full programming language.
-</p>
-
-<p>
+<br><br>
 What is similar to quake is the basic command structure: commands consist of 
 the command itself, followed by any number of arguments seperated by 
 whitespace. you can use "" to quote strings with whitespace in them (such as 
 the actions in bind/alias), and whereever a command is required you can also 
 use ; to sequence multiple commands in one.
-</p>
-
-<p>
+<br><br>
 What is new compared to quake is that you can evaluate aliases and expressions. 
 You can substitute the value of an alias as an argument by prefixing it with a 
 "$" sign, (example: echo The current value of x is $x). You can even 
 substitute the values of console variables this way, i.e $fov gives the current 
 fov. Some aliases are set automatically, for example $arg1 to $argN are set (as if by the "push" command)
 if you supply arguments when you execute an alias, and are popped when the alias finishes executing.
-</p>
-
-<p>
+<br><br>
 There are two alternatives to "" for quoting a string: () and []. They work in
 the same way as "", with the difference that they can be nested infinitely, and
 that they may contain linefeeds (useful for larger scripts). () is different
 from [] in that it evaluates the commands contained in it _before_ it evaluates
 the surrounding command, and substitutes the results. () bracketed strings are
 called expressions, while [] bracketed strings may be thought of as blocks.
-</p>
-
-<p>
+<br><br>
 An alternative to $x is @x, which uses an alias as a macro. The difference is that @x 
 can be substituted inside [] forms before they have ever been evaluated (at parse time), 
 which makes them useful for composing strings or creating code on the fly. The @x form will be
 substituted using the value of x at the time the enclosing [] is evaluated. You can add more @ prefixes
 to move up more levels of []s, so @@x will move up two levels of []s and so on.
 Example: x = 0; if $cond [x = 1; [x = 2; echo @@x]] will echo 0, since it uses the value of x at two levels up. 
-</p>
-
-<p>
+<br><br>
 The form @(body) is similar to @x, except that body contains commands executed at parse time.
 The result value after body executes is substituted in for @(body). 
 You may use multiple @ prefixes as with the @x form.
 Example: @(result "Hello, World!") will substitute itself with Hello, World!
-</p>
-
-<p>
+<br><br>
 @[body] is also similar to @(body), except that it does not execute its contents and instead expands macros to use as the alias name for the final macro substitution.
-</p>
-
-<p>
+<br><br>
 The following commands are available for programming:
 </p>
 

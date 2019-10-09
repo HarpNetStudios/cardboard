@@ -441,7 +441,8 @@ const float FLOORZ = 0.867f;
 const float SLOPEZ = 0.5f;
 const float WALLZ = 0.2f;
 extern const float JUMPVEL = 125.0f;
-extern const float GRAVITY = 200.0f;
+FVARR(gravity, 10, 200, 1000);
+
 
 bool ellipseboxcollide(physent *d, const vec &dir, const vec &o, const vec &center, float yaw, float xr, float yr, float hi, float lo)
 {
@@ -1437,10 +1438,10 @@ bool bounce(physent *d, float secs, float elasticity, float waterfric, float gra
     bool water = isliquid(mat);
     if(water)
     {
-        d->vel.z -= grav*GRAVITY/16*secs;
+        d->vel.z -= grav*gravity/16*secs;
         d->vel.mul(max(1.0f - secs/waterfric, 0.0f));
     }
-    else d->vel.z -= grav*GRAVITY*secs;
+    else d->vel.z -= grav*gravity*secs;
     vec old(d->o);
     loopi(2)
     {
@@ -1720,13 +1721,13 @@ void modifygravity(physent *pl, bool water, int curtime)
 {
     float secs = curtime/1000.0f;
     vec g(0, 0, 0);
-    if(pl->physstate == PHYS_FALL) g.z -= GRAVITY*secs;
+    if(pl->physstate == PHYS_FALL) g.z -= gravity*secs;
     else if(pl->floor.z > 0 && pl->floor.z < FLOORZ)
     {
         g.z = -1;
         g.project(pl->floor);
         g.normalize();
-        g.mul(GRAVITY*secs);
+        g.mul(gravity*secs);
     }
     if(!water || !game::allowmove(pl) || (!pl->move && !pl->strafe))
     {
@@ -1829,32 +1830,15 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 		pl->inwater = water ? material & MATF_VOLUME : MAT_AIR;
 	}
 
-	if (pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_DEATH)) game::suicide(pl); //DEATH kills you
-	/*if (pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_SPACECLIP))
+	if (pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_DEATH)) game::suicide(pl); //DEATH or being under the origin (z<0) kills you
+	if (pl->state == CS_ALIVE && (material & MAT_SPACECLIP)) //SPACECLIP prevents spacepack usage
 	{
-		//conoutf("\f3spaceclip");
-		pl->spaceclip = true; // this just don't work for some reason, idk
+		//if(pl->spacepack) conoutf("\f3spaceclip");
+		pl->spaceclip = true;	
 	}
-
-	pl->spaceclip = inspclip; */
-	/*
-	if (pl->spaceclip && !inspclip)
-	{
-		material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (pl->aboveeye - pl->eyeheight) / 2));
-		inspclip = isliquid(material & MATF_VOLUME);
+	else if (pl->state == CS_ALIVE && !(material & MAT_SPACECLIP) && pl->spaceclip) {
+		pl->spaceclip = !pl->spaceclip;
 	}
-	if (!pl->spaceclip && inspclip) {
-		pl->spaceclip = true;
-		conoutf("in"); //game::physicstrigger(pl, local, 0, -1, material & MATF_VOLUME);
-	}
-	else if (pl->spaceclip && !inspclip) {
-		pl->spaceclip = false;
-		conoutf("out"); //game::physicstrigger(pl, local, 0, 1, pl->inwater);
-	}
-	pl->spaceclip = inspclip ? material & MATF_VOLUME : MAT_AIR; // join a cool, be gang -Y 05/09/19
-
-	conoutf("spacepack: %d, spaceclip: %d, inspclip: %d", pl->spacepack, pl->spaceclip, inspclip); // i sure do love debugging
-	*/
 
     return true;
 }

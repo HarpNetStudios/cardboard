@@ -6,14 +6,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-<title>Cube 2: Sauerbraten - Model Reference</title>
+<title>Project Crimson - Model Reference</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="shortcut icon" href="favicon.ico" />
 </head>
 
 <body>
 
-<h1>Cube 2: Sauerbraten - Model Reference</h1>
+<h1>Project Crimson - Model Reference</h1>
 
 <div class="contents">
 <ul class="contents">
@@ -232,20 +232,14 @@ MD2 files must be located in a directory in <i>packages/models/</i>, you must pr
 (either <i>skin.jpg</i> or <i>skin.png</i>) and the md2 itself (<i>tris.md2</i>).
 Optionally you may provide a <i>masks.jpg</i> that holds a specmap in the R channel, a glowmap
 in the G channel, and a chrome map in the B channel. The engine will apply it automatically.
-</p>
-
-<p>
+<br><br>
 If either of these files is not found, the engine will search the parent directory for them.
 For example, if for the <i>flags/red</i> model, the tris.md2 is not found in
 <i>packages/models/flags/red/</i>, then it will look for tris.md2 in <i>packages/models/flags/</i>.
 This allows the sharing of skins and geometry.
-</p>
-
-<p>
+<br><br>
 It is expected that md2 format files use Quake-compatible scale and animations, unless you configure the model otherwise.
-</p>
-
-<p>
+<br><br>
 You may also supply a config file (<i>md2.cfg</i>) in your model directory, which allows you to
 customize the model's animations. The following commands may be used in an <i>md2.cfg</i>:
 </p>
@@ -281,13 +275,11 @@ N is the name of the animation to define. Any of the following names may be used
 	<li>trigger</li>
 </ul>
 
-<p>
+<p style="border-top:2px solid #555;">
 F is the frame number the animation starts at. M is the number of frames in the
 animation. S is the optional frames per second at which to run the anim. If none is specified,
 10 FPS is the default. P specifies an optional priority for the animation (defaults to P=0).
-</p>
-
-<p>
+<br><br>
 For example, defining a "pain" animation starting at frame 50 with 6 frames and running at 30 frames per
 second would look like: <i>md2anim "pain" 50 6 30</i>
 </p>
@@ -306,9 +298,7 @@ located in a directory in <i>packages/models/</i>, and provide a skin (either <i
 or <i>skin.png</i>) and the md3 itself (<i>tris.md3</i>). Optionally you may provide a
 <i>masks.jpg</i> that holds a specmap in the R channel, a glowmap in the G channel, and a
 chrome map in the B channel. The engine will apply it automatically.
-</p>
-
-<p>
+<br><br>
 If either of these files is not found, the engine will search the parent directory for them.
 For example, if for the <i>flags/red model</i>, the <i>tris.md3</i> is not found in
 <i>packages/models/flags/red/</i>, then it will look for <i>tris.md3</i> in
@@ -443,13 +433,13 @@ to define. Any of the following names may be used:
 	<li>trigger</li>
 </ul>
 
-<p>
+<p style="border-top:2px solid #555;">
 F is the frame number the animation starts at. N is the number of frames in the animation.
 S is frames per second at which to run the anim. If none is specified or S=0, 10 FPS is the default.
 P specifies an optional priority for the animation (defaults to P=0).
 </p>
 
-<p>
+<p style="border-top:2px solid #555;">
 A character model will have up to 2 animations simultaneously playing - a primary animation
 and a secondary animation. If a character model defines the primary animation, it will be used,
 otherwise the secondary will be used if it is available. Primary animations are:
@@ -467,7 +457,7 @@ otherwise the secondary will be used if it is available. Primary animations are:
     <li>lose</li>
 </ul>
 
-<p>
+<p style="border-top:2px solid #555;">
 Secondary animations are:
 </p>
 <ul>
@@ -481,7 +471,7 @@ Secondary animations are:
 	<li>swim</li>
 </ul>
 
-<p>
+<p style="border-top:2px solid #555;">
 This allows, for example, a torso part to "shoot" (a primary animation) while a leg part
 simultaneously runs "forward" (a secondary animation). In the event that a secondary animation
 other than "idle" is playing and there is no primary animation, then the secondary animation
@@ -493,9 +483,7 @@ and the animation with the highest priority is chosen, regardless of which is pr
 which is secondary. So, for example, you could give an animation a -1 priority so that all animations
 with the default 0 priority are chosen first, or you could give an animation a 1 or greater priority
 so that it is always chosen before animations with the default 0 priority.
-</p>
-
-<p>
+<br><br>
 For example, to define a "punch" animation starting at frame 131 with 6 frames and running at
 15 frames per second: <i>md3anim "punch" 131 6 15</i>
 </p>
@@ -507,9 +495,7 @@ you load has the ID 0, the second has the ID 1, and so on, those ID's are now us
 the models and link them together. P the ID of the parent model. C to ID of the
 child model. T name of the tag that specifies at which vertex the models should be linked. 
 X, Y, and Z are optional translation for this link.
-</p>
-
-<p>
+<br><br>
 Hint: <i>Make sure you understand the difference between the parent and child model.
 Rendering starts at model 0 (first loaded model) and then continues with model 0's children,
 etc. Imagine a tree, model 0 is the root if it.</i>
@@ -557,21 +543,15 @@ The Wavefront OBJ format is configured almost identically to how MD3s are used. 
 <h2 id="md5_format">MD5 Format</h2>
 <p>
 MD5 models require a proper configuration to function; make sure your exporter properly exports mesh names in the MD5 file so that these can be referenced in the configuration file (the Blender exporter does not export these, but a fixed  Blender MD5 exporter can be gotten from the Cube wiki).
-</p>
-
-<p>
+<br><br>
 Make sure no more than 4 blend weights are used per vertex, any extra blend weights will be dropped silently. The skeleton should use no more than 256 bones, and less than 70 or so bones should be used if you wish the model to be skeletally animated on the GPU. To optimize animation of the model on both CPU and GPU, keep the number of blend weights per vertex to a minimum. Also, similar combinations of blend weights are cached while animating, especially on the CPU, such that if two or more vertices use the same blend weights, blending calculations only have to be done once for all the vertices - so try and minimize the number of distinct combinations of blend weights if possible. 
-</p>
-
-<p>
+<br><br>
 When animating skeletal models, you should model the animations as a single piece for the entire body (unlike for MD3 which requires splitting the mesh). In the configuration file, you can choose a bone at which to split the model into an upper and lower part (via "md5animpart"), which allows, for example, the upper body movement of one animation to be combined with the lower body movement of another animation automatically. The bone at which you split the animation up should ideally be a root bone, of which the upper body and lower body are separate sub-trees. Rigging the model in this way also allows for pitch animation (which also requires selecting a bone to pitch at) to take place such as bending at the waist, which similarly requires the upper body to be a sub-tree of the bone at which the pitch animation will occur.
-</p>
-
-<p>
+<br><br>
 The included MD5 support allows for two methods of attaching models to another: via tags (by assigning a tag name to a bone with "md5tag"), or by animating multiple models against a common, named skeleton that will be shared among all of them (useful for modeling clothing attachments and similar items). To use a shared skeleton, you simply export all the models with the same skeleton. Animations only need to be specified for the base model. A name for the skeleton is specified via the "md5load" command, for both the model exporting the skeleton and the models using it. When one of the models is attached to the one supplying the skeleton internally, the tag setup is instead ignored and the skeleton/animations of the base model are used to animate the attachment as if it were a sub-mesh of the base model itself.
 </p>
 
-<p>
+<p style="border-top:2px solid #555;">
 You must place a <i>md5.cfg</i> in a directory in <i>packages/models/</i>.
 The following commands may be used in the <i>md5.cfg</i>:
 </p>
@@ -698,11 +678,11 @@ to define. Any of the following names may be used:
     <li>trigger</li>
 </ul>
 
-<p>
+<p style="border-top:2px solid #555;">
 F is the file name of an md5 animation file. S is frames per second at which to run the anim. If none is specified or S=0, 10 FPS is the default. P specifies an optional priority for the animation (defaults to P=0). START is an optional start frame offset within the animation, where a positive values is an offset from the first frame, and a negative value is an offset from end. END is an optional animation length in frames, where positive values specify the length, or negative values merely subtract off from the length.
 </p>
 
-<p>
+<p style="border-top:2px solid #555;">
 A character model will have up to 2 animations simultaneously playing - a primary animation
 and a secondary animation. If a character model defines the primary animation, it will be used,
 otherwise the secondary will be used if it is available. Primary animations are:
@@ -720,7 +700,7 @@ otherwise the secondary will be used if it is available. Primary animations are:
     <li>lose</li>
 </ul>
 
-<p>
+<p style="border-top:2px solid #555;">
 Secondary animations are:
 </p>
 <ul>
@@ -845,7 +825,6 @@ point).
 <pre id="mdlyaw">mdlyaw Y</pre>
 <p>
 Offsets the model's yaw by Y degrees.
-point).
 </p>
 
 <pre id="mdlpitch">mdlpitch P</pre>

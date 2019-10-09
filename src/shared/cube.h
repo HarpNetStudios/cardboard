@@ -74,5 +74,9 @@
 #include "iengine.h"
 #include "igame.h"
 
+#ifndef CURLENABLED
+#define CURLENABLED
+#endif
+
 #endif
 

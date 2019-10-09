@@ -332,11 +332,6 @@ void mmodel(char *name)
     mmi.m = NULL;
 }
 
-void mapmodelcompat(int *rad, int *h, int *tex, char *name, char *shadow)
-{
-    mmodel(name);
-}
-
 void mapmodelreset(int *n) 
 { 
     if(!(identflags&IDF_OVERRIDDEN) && !game::allowedittoggle()) return;
@@ -347,7 +342,6 @@ mapmodelinfo *getmminfo(int i) { return mapmodels.inrange(i) ? &mapmodels[i] : 0
 const char *mapmodelname(int i) { return mapmodels.inrange(i) ? mapmodels[i].name : NULL; }
 
 COMMAND(mmodel, "s");
-COMMANDN(mapmodel, mapmodelcompat, "iiiss");
 COMMAND(mapmodelreset, "i");
 ICOMMAND(mapmodelname, "i", (int *index), { result(mapmodels.inrange(*index) ? mapmodels[*index].name : ""); });
 ICOMMAND(nummapmodels, "", (), { intret(mapmodels.length()); });
@@ -581,6 +575,7 @@ void renderbatchedmodel(model *m, batchedmodel &b)
         if(b.flags&MDL_GHOST) anim |= ANIM_GHOST;
     }
 
+	if (darkmap) anim |= ANIM_NOSKIN;
     m->render(anim, b.basetime, b.basetime2, b.pos, b.yaw, b.pitch, b.d, a, b.color, b.dir, b.transparent);
 }
 
@@ -953,6 +948,8 @@ void rendermodel(entitylight *light, const char *mdl, int anim, const vec &o, fl
         if(flags&MDL_FULLBRIGHT) anim |= ANIM_FULLBRIGHT;
         if(flags&MDL_GHOST) anim |= ANIM_GHOST;
     }
+
+	if(darkmap) anim |= ANIM_NOSKIN;
 
     if(flags&MDL_CULL_QUERY)
     {

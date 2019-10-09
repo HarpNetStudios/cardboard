@@ -54,34 +54,14 @@ namespace discord
 					//conoutf("current time: %d", endtimedelta);
 					//conoutf("time: %u, end match time: %u", (uint32_t)curtime, (uint32_t)curtime + (uint32_t)endtimedelta);
 					discordPresence.startTimestamp = 0;
-					discordPresence.endTimestamp = (uint32_t)curtime + (uint32_t)endtimedelta;
+					discordPresence.endTimestamp = (uint32_t)(curtime + endtimedelta);
 				}
 				else {
 					discordPresence.startTimestamp = 0;
 					discordPresence.endTimestamp = 0;
 				}
-				char* x[] = { "highland", "fz_burn", "zsolttest", "illusion", "neo_noir" };
-				const char* s = game::getclientmap();
-				int len = sizeof(x) / sizeof(x[0]);
-				int i;
-
-				for (i = 0; i < len; ++i)
-				{
-					if (!strcmp(x[i], s))
-					{
-						discordPresence.largeImageKey = game::getclientmap();
-					}
-					else 
-					{
-						discordPresence.largeImageKey = "logo-large";
-					}
-				}
-				
+				discordPresence.largeImageKey = game::getclientmap();
 				discordPresence.largeImageText = game::getclientmap();
-				defformatstring(icon, "player-%d", playermodel);
-				//conoutf("imagekey: %s, playermodel: %d", icon, playermodel);
-				discordPresence.smallImageKey = icon;
-				discordPresence.smallImageText = playername;
 				if (address) {
 					if (enet_address_get_host_ip(address, partykey, sizeof(partykey)) >= 0)
 					{
@@ -93,7 +73,6 @@ namespace discord
 						discordPresence.partySize = game::players.length();
 						discordPresence.partyMax = game::players.length();
 						discordPresence.joinSecret = newpartykey;
-						//discordPresence.joinSecret = "ye yeet";
 					}
 				}
 				else {
@@ -113,6 +92,10 @@ namespace discord
 				discordPresence.joinSecret = "";
 				discordPresence.spectateSecret = "";
 			}
+			defformatstring(icon, "player-%d", playermodel);
+			//conoutf("imagekey: %s, playermodel: %d", icon, playermodel);
+			discordPresence.smallImageKey = icon;
+			discordPresence.smallImageText = playername;
 			Discord_UpdatePresence(&discordPresence);
 			globalgamestate = gamestate;
 		}
@@ -183,7 +166,6 @@ namespace discord
 
 		// Discord_Initialize(const char* applicationId, DiscordEventHandlers* handlers, int autoRegister, const char* optionalSteamId)
 
-		// skip initializing discord RPC until we can get everything sorted, avoids confusion 
 		Discord_Initialize("623616609952464936", &handlers, 1, "0");
 	}
 }

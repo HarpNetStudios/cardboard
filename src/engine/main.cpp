@@ -22,10 +22,8 @@ void cleanup()
     #ifdef __APPLE__
         if(screen) SDL_SetWindowFullscreen(screen, 0);
     #endif
-	#ifdef WIN32
-		discord::updatePresence(discord::D_QUITTING);
-		Discord_Shutdown();
-	#endif
+	discord::updatePresence(discord::D_QUITTING);
+	Discord_Shutdown();
     SDL_Quit();
 }
 
@@ -33,10 +31,8 @@ extern void writeinitcfg();
 
 void quit()                     // normal exit
 {
-	#ifdef WIN32
-		discord::updatePresence(discord::D_QUITTING);
-		Discord_Shutdown();
-	#endif
+	discord::updatePresence(discord::D_QUITTING);
+	Discord_Shutdown();
     writeinitcfg();
     writeservercfg();
     abortconnect();
@@ -73,9 +69,7 @@ void fatal(const char *s, ...)    // failure exit
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Cardboard Engine fatal error", msg, NULL);
         }
     }
-	#ifdef WIN32
-		Discord_Shutdown();
-	#endif
+	Discord_Shutdown();
     exit(EXIT_FAILURE);
 }
 
@@ -777,9 +771,7 @@ void resetgl()
     reloadshaders();
     reloadtextures();
     initlights();
-	#ifdef WIN32
-		discord::updatePresence(discord::D_MENU);
-	#endif
+	discord::updatePresence(discord::D_MENU);
     allchanged(true);
 }
 
@@ -1139,16 +1131,12 @@ struct memoryStruct {
 
 };
 
-#ifdef WIN32
-#ifndef CURLENABLED
-#define CURLENABLED
-#endif
-#endif
-
 #define MAXTOKENLEN 64
 SVARP(__gametoken, ""); // game token time
 
 #ifdef CURLENABLED
+
+VARFP(offline, 0, 0, 1, { getuserinfo_(false); });
 
 static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
@@ -1174,6 +1162,10 @@ VARP(curltimeout, 1, 5, 60);
 
 char* web_get(char *targetUrl, bool debug)
 {
+	if (offline) {
+		if (debug) conoutf(CON_ERROR, "cannot make web request in offline mode");
+		return "";
+	}
 	CURL* curl;
 	CURLcode res;
 
@@ -1214,7 +1206,7 @@ char* web_get(char *targetUrl, bool debug)
 
 	// check for errors */
 	if (res != CURLE_OK) {
-		conoutf(CON_ERROR, "curl_easy_perform() failed: %s", curl_easy_strerror(res));
+		if (debug) conoutf(CON_ERROR, "curl_easy_perform() failed: %s", curl_easy_strerror(res));
 		return "";
 	}
 	else {
@@ -1241,10 +1233,16 @@ void testcurl_(char* targetUrl) {
 COMMANDN(testcurl, testcurl_, "s");
 
 void getuserinfo_(bool debug) {
+	if (offline) return; // don't waste time trying to check everything if we are offline.
 	if (debug) conoutf(CON_DEBUG, __gametoken);
 	oldstring apiurl;
 	formatstring(apiurl, "%s/game/get/userinfo?id=1&token=%s", HNAPI, __gametoken);
 	char* thing = web_get(apiurl, debug);
+	if (!thing[0]) {
+		conoutf(CON_ERROR, "no data recieved from server, switching to offline mode");
+		offline = 1;
+		return; 
+	}
 	if (debug) conoutf(CON_DEBUG, thing);
 	cJSON *json = cJSON_Parse(thing); // fix on linux, makefile doesn't work.
 
@@ -1267,7 +1265,7 @@ void getuserinfo_(bool debug) {
 		}
 	}
 	else {
-		conoutf(CON_ERROR, "malformed JSON recieved from server");
+		if (debug) conoutf(CON_ERROR, "malformed JSON recieved from server");
 	}
 }
 
@@ -1325,6 +1323,7 @@ int main(int argc, char **argv)
         logoutf("Setting log file: %s", file);
         break;
     }
+
     execfile("init.cfg", false);
     for(int i = 1; i<argc; i++)
     {
@@ -1444,7 +1443,10 @@ int main(int argc, char **argv)
     initing = NOT_INITING;
 
 	#ifdef CURLENABLED
-		if (strcmp(__gametoken,"")) { getuserinfo_(false); }
+		if (strcmp(__gametoken,"")) {
+			renderprogress(0, "connecting to auth server...");
+			getuserinfo_(false); 
+		}
 	#endif
 
     logoutf("init: render");
@@ -1456,11 +1458,9 @@ int main(int argc, char **argv)
 
     identflags |= IDF_PERSIST;
 
-	#ifdef WIN32
-		logoutf("init: discord");
-		discord::initDiscord();
-		discord::updatePresence(discord::D_MENU);
-	#endif
+	logoutf("init: discord");
+	discord::initDiscord();
+	discord::updatePresence(discord::D_MENU);
 
     logoutf("init: mainloop");
 
@@ -1524,9 +1524,7 @@ int main(int argc, char **argv)
         inbetweenframes = false;
 		if (mainmenu) {
 			gl_drawmainmenu(); 
-			#ifdef WIN32
-				discord::updatePresence(discord::D_MENU);
-			#endif
+			discord::updatePresence(discord::D_MENU);
 		}
         else gl_drawframe();
 		//gl_drawframe();

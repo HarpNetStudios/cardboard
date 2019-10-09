@@ -270,6 +270,8 @@ namespace game
         f->printf("name %s\n", escapestring(player1->name));
     }
 
+	VAR(allowedit, 0, 0, 1);
+
     bool allowedittoggle()
     {
         if(editmode) return true;
@@ -278,6 +280,11 @@ namespace game
             conoutf(CON_ERROR, "editing in multiplayer requires coop edit mode (1)");
             return false;
         }
+		if (!allowedit && !m_edit)
+		{
+			conoutf(CON_ERROR, "editing requires allowedit to be set to 1");
+			return false;
+		}
         if(identexists("allowedittoggle") && !execute("allowedittoggle"))
             return false;
         return true;

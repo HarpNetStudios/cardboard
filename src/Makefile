@@ -44,7 +44,7 @@ override WINDRES+= -F pe-i386
 endif
 CLIENT_INCLUDES= $(INCLUDES) -Iinclude
 STD_LIBS= -static-libgcc -static-libstdc++
-CLIENT_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lSDL2 -lSDL2_image -lSDL2_mixer -lzlib1 -lopengl32 -lenet -lws2_32 -lwinmm
+CLIENT_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lSDL2 -lSDL2_image -lSDL2_mixer -lzlib1 -lopengl32 -lenet -lws2_32 -lwinmm -lcurl
 else
 ifneq (,$(findstring DARWIN,$(PLATFORM)))
 ifneq (,$(findstring CROSS,$(PLATFORM)))
@@ -63,10 +63,10 @@ override CXX+= -arch x86_64 -mmacosx-version-min=$(OSXMIN)
 CLIENT_INCLUDES= $(INCLUDES) -Iinclude
 CLIENT_LIBS= -Fxcode/Frameworks -framework SDL2 -framework SDL2_image
 CLIENT_LIBS+= -framework SDL2_mixer -framework CoreAudio -framework AudioToolbox
-CLIENT_LIBS+= -framework AudioUnit -framework OpenGL -framework Cocoa -lz -Lenet -lenet
+CLIENT_LIBS+= -framework AudioUnit -framework OpenGL -framework Cocoa -lz -Lenet -lenet -lcurl
 else
 CLIENT_INCLUDES= $(INCLUDES) -I/usr/X11R6/include `sdl2-config --cflags`
-CLIENT_LIBS= -Lenet -lenet -L/usr/X11R6/lib -lX11 `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lz -lGL
+CLIENT_LIBS= -Lenet -lenet -L/usr/X11R6/lib -lX11 `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lz -lGL -lcurl
 endif
 endif
 ifeq ($(PLATFORM),LINUX)
@@ -76,6 +76,7 @@ ifneq (,$(findstring GNU,$(PLATFORM)))
 CLIENT_LIBS+= -lrt
 endif
 endif
+CLIENT_LIBS+= -lpthread lib/libdiscord-rpc.a
 CLIENT_OBJS= \
 	shared/crypto.o \
 	shared/geom.o \
@@ -83,6 +84,7 @@ CLIENT_OBJS= \
 	shared/stream.o \
 	shared/tools.o \
 	shared/zip.o \
+	shared/cJSON/cJSON.o \
 	engine/3dgui.o \
 	engine/bih.o \
 	engine/blend.o \
@@ -122,6 +124,7 @@ CLIENT_OBJS= \
 	engine/worldio.o \
 	fpsgame/ai.o \
 	fpsgame/client.o \
+	fpsgame/discord.o \
 	fpsgame/entities.o \
 	fpsgame/fps.o \
 	fpsgame/monster.o \
@@ -136,17 +139,18 @@ CLIENT_PCH= shared/cube.h.gch engine/engine.h.gch fpsgame/game.h.gch
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
-SERVER_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm
-MASTER_LIBS= $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm
+SERVER_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm -lcurl
+MASTER_LIBS= $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm -lcurl
 else
 SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
-SERVER_LIBS= -Lenet -lenet -lz
+SERVER_LIBS= -Lenet -lenet -lz -lcurl
 MASTER_LIBS= $(SERVER_LIBS)
 endif
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
+	shared/cJSON/cJSON.o \
 	engine/command-standalone.o \
 	engine/server-standalone.o \
 	engine/worldio-standalone.o \
@@ -157,6 +161,7 @@ MASTER_OBJS= \
 	shared/crypto-standalone.o \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
+	shared/cJSON/cJSON.o \
 	engine/command-standalone.o \
 	engine/master-standalone.o
 
@@ -262,6 +267,7 @@ shared/tools.o: shared/iengine.h shared/igame.h
 shared/zip.o: shared/cube.h shared/tools.h shared/geom.h shared/ents.h
 shared/zip.o: shared/command.h shared/glexts.h shared/glemu.h
 shared/zip.o: shared/iengine.h shared/igame.h
+shared/cJSON/cJSON.o: shared/cJSON/cJSON.h
 engine/3dgui.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/3dgui.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/3dgui.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
