@@ -22,7 +22,6 @@ for:
   artifacts:
   - path: src/vcpp/crimson_alpha_win_setup.exe
     name: Install
-for:
 -
   matrix:
     only:
