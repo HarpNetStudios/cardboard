@@ -432,7 +432,9 @@ struct fpsstate
 
     void respawn()
     {
-		disablezoom();
+		#ifndef STANDALONE
+			disablezoom();
+		#endif
         health = maxhealth;
         quadmillis = 0;
 		loopi(NUMGUNS) gunwait[i] = 0;
