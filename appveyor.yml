@@ -6,7 +6,7 @@ configuration:
 - Debug
 - Release
 platform:
-- x86
+- Win32
 - x64
 shallow_clone: true
 build:
