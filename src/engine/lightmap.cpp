@@ -122,7 +122,7 @@ void setsunlightdir()
 entity sunlightent;
 void setupsunlight()
 {
-    memset(&sunlightent, 0, sizeof(sunlightent));
+	memclear(sunlightent);
     sunlightent.type = ET_LIGHT;
     sunlightent.attr1 = 0;
     sunlightent.attr2 = int(sunlightcolor.x*sunlightscale);
@@ -748,7 +748,7 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
         offsets1[i] = vec(xstep1).mul(aacoords[i][0]).add(vec(ystep1).mul(aacoords[i][1]));
         offsets2[i] = vec(xstep2).mul(aacoords[i][0]).add(vec(ystep2).mul(aacoords[i][1]));
     }
-    if((w->type&LM_TYPE) == LM_BUMPMAP0) memset(w->raydata, 0, (LM_MAXW + 4)*(LM_MAXH + 4)*sizeof(vec));
+    if((w->type&LM_TYPE) == LM_BUMPMAP0) memclear(w->raydata, (LM_MAXW + 4) * (LM_MAXH + 4));
 
     origin1.sub(vec(ystep1).add(xstep1).mul(blurlms));
     origin2.sub(vec(ystep2).add(xstep2).mul(blurlms));
@@ -1453,7 +1453,7 @@ static lightmapinfo *setupsurfaces(lightmapworker *w, lightmaptask &task)
     surfaceinfo surfaces[6];
     vertinfo litverts[6*2*MAXFACEVERTS];
     int numlitverts = 0;
-    memset(surfaces, 0, sizeof(surfaces));
+	memclear(surfaces);
     loopi(6)
     {
         int usefaces = usefacemask&0xF;

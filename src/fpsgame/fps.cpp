@@ -4,10 +4,16 @@ namespace game
 {
 	char* gametitle = "Project Crimson";
 	char* gamestage = "Alpha";
-	char* gameversion = "2.0pre3";
+	char* gameversion = "2.0pre4";
 	
 	// this doesn't work for some reason, fix later -Y
-	//ICOMMAND(version, "", (), { defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);  stringret(vers); })
+	ICOMMAND(version, "", (), { 
+		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion); 
+		int len = strlen(vers);
+		char* k = newstring(len);
+		filtertext(k, vers, true, false, len);
+		stringret(k);
+	})
 
 	bool intermission = false;
 	int maptime = 0, maprealtime = 0, maplimit = -1;
@@ -34,7 +40,8 @@ namespace game
 	void togglespacepack()
 	{
 		if (!isconnected()) return;
-		if (!m_edit) return;
+		if (!spacepackallowed) return;
+		else if (!m_edit) return;
 		if (player1->state != CS_ALIVE && player1->state != CS_DEAD && player1->spacepack != true) return;
 		if (player1->state == CS_ALIVE) // only allow spacepack toggle when alive 
 			player1->spacepack = !player1->spacepack;
@@ -953,6 +960,17 @@ namespace game
     VARP(showvel, 0, 1, 1);
 	VARP(healthbar, 0, 1, 1);
 
+	void drawspacepack(fpsent *d) 
+	{
+		int icon;
+		
+		if(d->spacepack) icon = HICON_SPACEPACK;
+		else icon = HICON_SPACEPACK_OFF;
+		if(d->spacepack && d->spaceclip) icon = HICON_SPACEPACK_CLIP;
+
+		drawicon(icon, HICON_X + 6 * HICON_STEP, HICON_Y);
+	}
+
     void drawhudicons(fpsent *d)
     {
         pushhudmatrix();
@@ -977,11 +995,11 @@ namespace game
 
         pophudmatrix();
 
-        //drawicon(HICON_HEALTH, HICON_X, HICON_Y);
+        if(!healthbar) drawicon(HICON_HEALTH, HICON_X, HICON_Y);
         if(d->state!=CS_DEAD)
         {
             drawicon(HICON_FIST+d->gunselect, HICON_X + 4*HICON_STEP, HICON_Y);
-            if(d->quadmillis) drawicon(HICON_QUAD, HICON_X + 3*HICON_STEP, HICON_Y);
+			if(spacepackallowed) drawspacepack(d);
         }
     }
 

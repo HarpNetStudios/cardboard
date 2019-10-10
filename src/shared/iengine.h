@@ -239,6 +239,7 @@ extern void renderentarrow(const extentity &e, const vec &dir, float radius);
 extern void renderentattachment(const extentity &e);
 extern void renderentsphere(const extentity &e, float radius);
 extern void renderentring(const extentity &e, float radius, int axis = 0);
+extern int spacepackallowed;
 
 // main
 extern void fatal(const char *s, ...) PRINTFARGS(1, 2);

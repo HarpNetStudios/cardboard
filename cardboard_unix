@@ -1,15 +1,15 @@
 #!/bin/sh
-# SAUER_DATA should refer to the directory in which Sauerbraten data files are placed.
-#SAUER_DATA=~/sauerbraten
-#SAUER_DATA=/usr/local/sauerbraten
-SAUER_DATA=.
+# CARD_DATA should refer to the directory in which Project Crimson data files are placed.
+#CARD_DATA=~/cardboard
+#CARD_DATA=/usr/local/cardboard
+CARD_DATA=.
 
-# SAUER_BIN should refer to the directory in which Sauerbraten executable files are placed.
-SAUER_BIN=${SAUER_DATA}/bin_unix
+# CARD_BIN should refer to the directory in which Project Crimson executable files are placed.
+CARD_BIN=${CARD_DATA}/bin_unix
 
-# SAUER_OPTIONS contains any command line options you would like to start Sauerbraten with.
-#SAUER_OPTIONS="-f"
-SAUER_OPTIONS="-q${HOME}/.cardboard"
+# CARD_OPTIONS contains any command line options you would like to start Project Crimson with.
+#CARD_OPTIONS="-f"
+CARD_OPTIONS="-q${HOME}/.cardboard"
 
 # SYSTEM_NAME should be set to the name of your operating system.
 #SYSTEM_NAME=Linux
@@ -44,16 +44,16 @@ x86_64|amd64)
   ;;
 esac
 
-if [ -x ${SAUER_BIN}/native_client ]
+if [ -x ${CARD_BIN}/native_client ]
 then
   SYSTEM_NAME=native_
   MACHINE_NAME=
 fi
 
-if [ -x ${SAUER_BIN}/${SYSTEM_NAME}${MACHINE_NAME}client ]
+if [ -x ${CARD_BIN}/${SYSTEM_NAME}${MACHINE_NAME}client ]
 then
-  cd ${SAUER_DATA}
-  exec ${SAUER_BIN}/${SYSTEM_NAME}${MACHINE_NAME}client ${SAUER_OPTIONS} "$@"
+  cd ${CARD_DATA}
+  exec ${CARD_BIN}/${SYSTEM_NAME}${MACHINE_NAME}client ${CARD_OPTIONS} "$@"
 else
   echo "Your platform does not have a pre-compiled Cardboard Engine client."
   echo "Please follow the following steps to build a native client:"

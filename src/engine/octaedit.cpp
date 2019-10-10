@@ -773,8 +773,8 @@ void makeundo()                        // stores state of selected cubes before 
 
 static inline int countblock(cube *c, int n = 8)
 {
-    int r = n;
-    loopi(n) if(c[i].children) r += countblock(c[i].children);
+	int r = 0;
+	loopi(n) if (c[i].children) r += countblock(c[i].children); else ++r;
     return r;
 }
 
@@ -792,8 +792,9 @@ void swapundo(undolist &a, undolist &b, int op)
         {
             ++ops;
             n += u->numents ? u->numents : countblock(u->block());
-            if(ops > 10 || n > 500)
+            if(ops > 10 || n > 2500)
             {
+				conoutf(CON_WARN, "undo too big for multiplayer");
                 if(nompedit) { multiplayer(); return; }
                 op = -1;
                 break;
@@ -2422,12 +2423,23 @@ void gettexname(int *tex, int *subslot)
     result(slot.sts[*subslot].name);
 }
 
+void getslottex(int* idx)
+{
+    if (*idx < 0 || !slots.inrange(*idx)) { intret(-1); return; }
+    Slot & slot = lookupslot(*idx, false);
+    intret(slot.variants->index);
+}
+
 COMMANDN(edittex, edittex_, "i");
 COMMAND(gettex, "");
 COMMAND(getcurtex, "");
 COMMAND(getseltex, "");
 ICOMMAND(getreptex, "", (), { if(!noedit()) intret(vslots.inrange(reptex) ? reptex : -1); });
 COMMAND(gettexname, "ii");
+ICOMMAND(numvslots, "", (), intret(vslots.length()));
+ICOMMAND(numslots, "", (), intret(slots.length()));
+COMMAND(getslottex, "i");
+ICOMMAND(texloaded, "i", (int* tex), intret(slots.inrange(*tex) && slots[*tex]->loaded ? 1 : 0));
 
 void replacetexcube(cube &c, int oldtex, int newtex)
 {

@@ -1,4 +1,4 @@
-Name "Project Crimson Alpha 1.7.1"
+Name "Project Crimson Alpha"
 
 OutFile "crimson_alpha_win_setup.exe"
 
