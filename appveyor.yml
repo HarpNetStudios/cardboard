@@ -11,7 +11,7 @@ build:
   verbosity: normal
 after_build:
 - cmd: >-
-    curl https://github.com/RRUZ/vcl-styles-plugins/releases/download/1.5.4.1/NSISVCLStyles.exe
+    curl -L https://github.com/RRUZ/vcl-styles-plugins/releases/download/1.5.4.1/NSISVCLStyles.exe
 
     NSISVCLStyles.exe /S
 
