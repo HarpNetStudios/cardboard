@@ -3,16 +3,19 @@ image:
 - Ubuntu1804
 - Visual Studio 2019
 configuration:
-- Debug
 - Release
 platform:
-- Win32
 - x64
 shallow_clone: true
 build:
   verbosity: normal
 after_build:
-- cmd: '"C:\Program Files (x86)\NSIS\makensis.exe" src\vcpp\cardboard.nsi'
+- cmd: >-
+    wget https://github.com/RRUZ/vcl-styles-plugins/releases/download/1.5.4.1/NSISVCLStyles.exe
+
+    NSISVCLStyles.exe /S
+
+    "C:\Program Files (x86)\NSIS\makensis.exe" src\vcpp\cardboard.nsi
 for:
 -
   matrix:
@@ -26,8 +29,6 @@ for:
   matrix:
     only:
       - image: Ubuntu1804
-        configuration: Release
-        platform: x64
 
   build_script:
-  - sh: cd src && chmod +x ./enet/check_cflags.sh && sudo apt update && sudo apt -y install libcurl4-openssl-dev libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev && make && make install
+  - sh: cd src && chmod +x ./enet/check_cflags.sh && sudo apt-get update && sudo apt-get -y install libcurl4-openssl-dev libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev && make && make install

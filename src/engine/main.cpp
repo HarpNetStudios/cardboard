@@ -1488,7 +1488,7 @@ void getuserinfo_(bool debug) {
 	const cJSON* message = cJSON_GetObjectItemCaseSensitive(json, "message");
 	if (cJSON_IsNumber(status) && cJSON_IsString(message)) {
 		if (status->valueint > 0) {
-			conoutf(CON_ERROR, "web error! status: %s, \"%s\"", status->valueint, message->valuestring);
+			conoutf(CON_ERROR, "web error! status: %d, \"%s\"", status->valueint, message->valuestring);
 		}
 		else {
 			// actual parse
