@@ -26,6 +26,8 @@ for:
   matrix:
     only:
       - image: Ubuntu1804
+        configuration: Release
+        platform: x64
 
   build_script:
   - sh: cd src && chmod +x ./enet/check_cflags.sh && sudo apt update && sudo apt -y install libcurl4-openssl-dev libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev && make && make install

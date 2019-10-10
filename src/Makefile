@@ -76,7 +76,8 @@ ifneq (,$(findstring GNU,$(PLATFORM)))
 CLIENT_LIBS+= -lrt
 endif
 endif
-CLIENT_LIBS+= -lpthread lib/libdiscord-rpc.a
+# commented out until i can get the .a file from my VM.
+#CLIENT_LIBS+= -lpthread lib/libdiscord-rpc.a
 CLIENT_OBJS= \
 	shared/crypto.o \
 	shared/geom.o \
