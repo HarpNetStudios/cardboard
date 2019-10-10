@@ -28,4 +28,4 @@ for:
       - image: Ubuntu1804
 
   build_script:
-  - sh: cd src && make && make install
+  - sh: cd src && chmod +x ./enet/check_cflags.sh && make && make install
