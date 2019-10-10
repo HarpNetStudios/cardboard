@@ -22,8 +22,10 @@ void cleanup()
     #ifdef __APPLE__
         if(screen) SDL_SetWindowFullscreen(screen, 0);
     #endif
-	discord::updatePresence(discord::D_QUITTING);
-	Discord_Shutdown();
+	#ifdef DISCORD
+		discord::updatePresence(discord::D_QUITTING);
+		Discord_Shutdown();
+	#endif
     SDL_Quit();
 }
 
@@ -31,8 +33,10 @@ extern void writeinitcfg();
 
 void quit()                     // normal exit
 {
-	discord::updatePresence(discord::D_QUITTING);
-	Discord_Shutdown();
+	#ifdef DISCORD
+		discord::updatePresence(discord::D_QUITTING);
+		Discord_Shutdown();
+	#endif
     writeinitcfg();
     writeservercfg();
     abortconnect();
@@ -69,7 +73,9 @@ void fatal(const char *s, ...)    // failure exit
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Cardboard Engine fatal error", msg, NULL);
         }
     }
-	Discord_Shutdown();
+	#ifdef DISCORD
+		Discord_Shutdown();
+	#endif
     exit(EXIT_FAILURE);
 }
 
@@ -1000,7 +1006,9 @@ void resetgl()
     reloadshaders();
     reloadtextures();
     initlights();
-	discord::updatePresence(discord::D_MENU);
+	#ifdef DISCORD
+		discord::updatePresence(discord::D_MENU);
+	#endif
     allchanged(true);
 }
 
@@ -1686,10 +1694,11 @@ int main(int argc, char **argv)
     initdecals();
 
     identflags |= IDF_PERSIST;
-
-	logoutf("init: discord");
-	discord::initDiscord();
-	discord::updatePresence(discord::D_MENU);
+	#ifdef DISCORD
+		logoutf("init: discord");
+		discord::initDiscord();
+		discord::updatePresence(discord::D_MENU);
+	#endif
 
     logoutf("init: mainloop");
 
@@ -1753,7 +1762,9 @@ int main(int argc, char **argv)
         inbetweenframes = false;
 		if (mainmenu) {
 			gl_drawmainmenu(); 
-			discord::updatePresence(discord::D_MENU);
+			#ifdef DISCORD
+				discord::updatePresence(discord::D_MENU);
+			#endif
 		}
         else gl_drawframe();
 		//gl_drawframe();

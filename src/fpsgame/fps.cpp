@@ -303,7 +303,9 @@ namespace game
 				}
 				else if (cmode) cmode->checkitems(player1);
 			}
-			discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING ), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
+			#ifdef DISCORD
+				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING ), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
+			#endif
 		}
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }

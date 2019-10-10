@@ -4,6 +4,8 @@
 #include "engine.h"
 #include "cube.h"
 
+#ifdef DISCORD
+
 namespace discord
 {
 	void updatePresence(int gamestate, const char* modename, oldstring playername, int playermodel)
@@ -169,3 +171,4 @@ namespace discord
 		Discord_Initialize("623616609952464936", &handlers, 1, "0");
 	}
 }
+#endif

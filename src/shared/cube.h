@@ -52,7 +52,17 @@
   #endif
 #endif
 
+#ifndef CURLENABLED
+#define CURLENABLED
+#endif
+
 #ifdef WIN32
+#ifndef DISCORD
+#define DISCORD
+#endif
+#endif
+
+#ifdef DISCORD
 #include <discord_rpc.h>
 #endif
 

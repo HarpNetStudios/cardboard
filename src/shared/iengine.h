@@ -581,6 +581,7 @@ extern void g3d_cursorpos(float &x, float &y);
 extern void g3d_resetcursor();
 extern void g3d_limitscale(float scale);
 
+#ifdef DISCORD
 // discord
 namespace discord
 {
@@ -595,6 +596,7 @@ namespace discord
 		D_QUITTING,
 	};
 }
+#endif
 
 // lang 
 extern char* langtest(char* index, char* lang);
