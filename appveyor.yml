@@ -28,4 +28,4 @@ for:
       - image: Ubuntu1804
 
   build_script:
-  - sh: cd src && chmod +x ./enet/check_cflags.sh && apt update && apt install libcurl4-openssl-dev libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev && make && make install
+  - sh: cd src && chmod +x ./enet/check_cflags.sh && sudo apt update && sudo apt install libcurl4-openssl-dev libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev && make && make install
