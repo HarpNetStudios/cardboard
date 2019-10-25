@@ -219,8 +219,6 @@ namespace game
         {
             renderplayer(player1, getplayermodelinfo(player1), teamskins || m_teammode ? (strcmp(player1->team, "red") ? 1 : 2) : 0, 1, mainpass);
         }
-        rendermonsters();
-        rendermovables();
         entities::renderentities();
         renderbouncers();
         renderprojectiles();
@@ -429,7 +427,6 @@ namespace game
         preloadplayermodel();
         preloadsounds();
         entities::preloadentities();
-        if(m_sp) preloadmonsters();
     }
 
 }

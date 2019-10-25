@@ -42,7 +42,6 @@
         putint(q, ci->state.frags);
         putint(q, ci->state.flags);
         putint(q, ci->state.deaths);
-        putint(q, ci->state.teamkills);
         putint(q, ci->state.damage*100/max(ci->state.shotdamage,1));
         putint(q, ci->state.health);
         putint(q, ci->state.gunselect);

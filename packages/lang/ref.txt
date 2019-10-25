@@ -1,0 +1,342 @@
+English (US)
+localized name (US)
+Yellowberry
+Please wait...
+Loading...
+Calculating
+Connecting to auth server...
+Confirm
+Yes
+No
+OK
+Cancel
+Press any key
+Game token
+Enter your game token here. Confused on where to find it?
+Go to ^fs^f3https://hnss.gq/gametoken ^frfor more info!
+Game token:
+Play offline
+OFFLINE MODE
+Online Mode
+Main menu
+Name:
+Player:
+Connect to alpha server
+Multiplayer
+Editing
+Switch team
+Toggle spectator
+Options
+Master options
+Bot match
+Vote game mode / map
+Disconnect
+About
+Quit
+Setup
+Player Model
+First person
+Third person
+Distance:
+Up:
+Side:
+Rifle trail color
+Blood color
+Master options
+Claim master
+Relinquish master
+Mastermode:
+Open (0)
+Veto (1)
+Locked (2)
+Private (3)
+Kick
+Toggle spectator
+Switch team
+Give master
+Take master
+Bot match
+You must disconnect from the current multiplayer game before starting a bot match.
+Bot amount
+Bot minimum skill
+Bot maximum skill
+Start match...
+Servers
+Update from master server
+Search LAN
+Auto-update
+Auto-sort
+Sort servers
+Gamemode
+Load
+Save
+Execute
+Copy
+Paste
+Select
+Clear
+Notepad
+Paste buffer
+Scratchpad
+Editing
+Materials...
+Toggle edit mode
+Deselect
+Passthrough
+Copy
+Paste
+Entities
+Drop entities...
+Mapmodels...
+Lights...
+Teleport...
+Triggers...
+Keys
+Flip/mirror cube (X)
+Undo (Z, U)
+Redo (I)
+Delete (BACKSPACE)
+Texture palette (F2)
+Edit entity GUI (F3)
+Mapmodels list (F4)
+Select all in box (keypad ENTER)
+Select all matching (N)
+Center view on ent (COMMA + scroll)
+Edit entity console (PERIOD)
+Toggle heightmap tex (MMB in heightmapmode)
+Toggle outline (7)
+Toggle wireframe (8)
+Scroll
+Push/pull selection (scroll wheel only)
+Push the face of a cube (hold F + scroll wheel)
+Change gridsize (hold G + scroll wheel)
+Change textures (hold Y + scroll wheel)
+Rotate (hold R + scroll wheel)
+Push corner with cursor (hold Q + scroll wheel)
+Push/pull heightmap (hold LALT + scroll wheel)
+Change heightmap brush (hold B + scroll wheel)
+Lighting
+calclight 1 (slow: 8xAA)
+calclight -1 (quick: no AA, no model shadows)
+patchlight
+fullbright
+lightprecision (default: 32)
+lighterror (default: 8)
+lightthreads (CPU threads/cores) (default: 0)
+Blend
+Blend paint mode:
+Off (keypad 0)
+Replace (keypad 1)
+Dig (keypad 2)
+Fill (keypad 3)
+Inverted dig (keypad 4)
+Inverted fill (keypad 5)
+Paint blendmap (MOUSE1)
+Change blend brush (scroll wheel)
+Rotate blend brush (MOUSE2)
+Clear entire blendmap ('clearblendmap' command)
+Clear blendmap in selection ('clearblendmapsel' command)
+Map
+Save map:
+Reload map
+New map (default size: 12)
+Increase mapsize (2x)
+Max undo size (default: 5 MB)
+Optimize geometry
+Set map title/author
+Skyboxes
+Config
+Skybox
+Materials
+Show material volumes
+Drop entities
+To the floor
+On selection
+To the floor at selection
+At current position
+Entity snap-to-grid
+Entity selection
+New light
+Create selected light
+Color:
+Bright
+White
+Blue
+Red
+Green
+Yellow
+Purple
+Turquoise
+Teleport
+Post effects
+Rifle trail color
+Set color
+Old color: 
+New color: 
+Blood color
+Set color
+Old color: 
+New color: 
+Game
+Multiplayer
+Display
+Resolution
+Graphics
+Audio
+Mouse
+Music
+Input
+Console
+Autoexec
+Quick edit
+Maps
+Shadow
+CTF
+Parkour
+Custom maps
+Show FPS
+Unlimited FPS
+Wall clock
+24 hour
+Seconds
+2D menus
+Show scoreboard at death
+Damage screen
+Damage compass
+HUD guns
+Sway
+Muzzle flash
+Muzzle light
+Blood
+Ragdoll deaths
+Keep after respawn
+Hide dead players
+Ragdoll velocity multiplier
+Restore defaults (clears ALL settings)
+Display
+Screen resolution
+Graphics settings
+Vertical sync
+Fullscreen
+Gamma (default: 100)
+FSAA (default: -1)
+Z-Buffer Depth (default: 0)
+Anisotropic Filtering (default: 0)
+Bilinear Filtering
+Trilinear Filtering (mipmaps)
+Audio
+Sound volume
+Music volume
+Sound channels
+Sound frequency
+Sound buffer length
+Mouse
+Invert mouse
+Mouse sensitivity:
+Mouse UI sensitivity:
+Crosshair:
+Crosshair size:
+Hit sound
+Crosshair color effects
+Show teammates
+Show hits
+Controls
+(Basic keybinds, for anything more use the 'bind' command)
+Select action to bind and press desired keys (ESC when done):
+Console
+Chat console
+Console size (lines)
+Console filter:
+Full console size (percent of screen)
+Full console filter:
+Important information
+Warnings
+Errors
+Init messages
+Script messages
+Chat
+Team chat
+Game events
+Self frags
+Other player frags
+Team kills
+Game
+Field of view (default: 100)
+Custom
+Performance key: ^f0fast^f~, ^f2moderate^f~, ^f3slow and pretty^f~
+Shaders     
+^f0OFF
+^f0Low detail
+^f2High detail
+Water       
+^f2Refraction
+^f3Reflection
+^f0Caustics
+^f0Animation
+Waterfalls      
+^f2Refraction
+^f0Reflection
+^f3Soft shadows 
+^f2Medium quality
+^f3High quality
+^f0Blob shadows
+^f3Glare            
+^f2Subtle
+^f2Glowy
+^f3Soft
+^f3Intense
+^f3Glare
+^f3Motion blur  
+^f3Subtle
+^f3Moderate
+^f3Intense
+^f3Grass            
+^f2Quick fade
+^f2Moderate fade
+^f3Slow fade
+^f0Dynamic lights   
+^f0Medium quality
+^f2High quality
+^f0Soft particles   
+^f0Low quality
+^f2Medium quality
+^f3High quality
+^f0Glass reflection
+^f0Decals       
+^f0Quick fade
+^f2Slow fade
+^f0Fix t-joints (world sparklies)
+Textures        
+^f0Low quality
+^f0Medium quality
+^f2High quality
+Models      
+^f0Lighting
+^f0Reflection
+^f0Glow
+^f2Bumpmap
+Graphics
+Forward
+Backward
+Left
+Right
+Jump
+Attack
+Toggle zoom
+Chat
+Team chat
+Show scores
+Command
+Screenshot
+Edit mode
+Melee
+SMG
+Shotgun
+Sniper
+Chaingun
+Rocket
+Grenade
+Last weapon
+Drop flag
+Add bot
+Remove bot

@@ -71,6 +71,8 @@
 #include <cJSON/cJSON.h>
 #include <zlib.h>
 
+#include "translate.h"
+
 #include "tools.h"
 #include "geom.h"
 #include "ents.h"

@@ -11,6 +11,8 @@ extern int globalgamestate;             // game state, set by and for discord
 
 #define HNAPI "harpnetstudios.com/hnid/api/v1"
 
+#define DEVBUILD 1
+
 enum
 {
     MATF_INDEX_SHIFT  = 0,
@@ -34,16 +36,18 @@ enum // cube empty-space materials
     MAT_NOCLIP    = 1 << MATF_CLIP_SHIFT,  // collisions always treat cube as empty
     MAT_CLIP      = 2 << MATF_CLIP_SHIFT,  // collisions always treat cube as solid
     MAT_GAMECLIP  = 3 << MATF_CLIP_SHIFT,  // game specific clip material
+	MAT_SPACECLIP = 4 << MATF_CLIP_SHIFT,  // disables spacepack
 
     MAT_DEATH     = 1 << MATF_FLAG_SHIFT,  // force player suicide
-	MAT_SPACECLIP = 2 << MATF_FLAG_SHIFT,  // disables spacepack
-    MAT_ALPHA     = 4 << MATF_FLAG_SHIFT   // alpha blended
+    MAT_ALPHA     = 4 << MATF_FLAG_SHIFT,  // alpha blended
+	MAT_JUMPRESET = 8 << MATF_FLAG_SHIFT,  // resets double jump
 };
 
 #define isliquid(mat) ((mat)==MAT_WATER || (mat)==MAT_LAVA)
 #define isclipped(mat) ((mat)==MAT_GLASS)
 #define isdeadly(mat) ((mat)==MAT_LAVA)
 #define isspaceclip(mat) ((mat)==MAT_SPACECLIP)
+#define isjumpreset(mat) ((mat)==MAT_JUMPRESET)
 
 extern void lightent(extentity &e, float height = 8.0f);
 extern void lightreaching(const vec &target, vec &color, vec &dir, bool fast = false, extentity *e = 0, float ambient = 0.4f);
@@ -597,10 +601,6 @@ namespace discord
 	};
 }
 #endif
-
-// lang 
-extern char* langtest(char* index, char* lang);
-extern char* langtest(char* index);
 
 // zip 
 extern bool addzip(const char* name, const char* mount, const char* strip, bool internal);

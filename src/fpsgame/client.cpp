@@ -135,11 +135,9 @@ namespace game
     {
         conoutf("your name is: %s", colorname(player1));
     }
-    ICOMMAND(name, "", ()/*"sN", (char *s, int *numargs)*/,
+    ICOMMAND(name, "", (),
     {
-        /*if(*numargs > 0) switchname(s);
-        else if(!*numargs) printname();
-        else */result(colorname(player1));
+        result(colorname(player1));
     });
     ICOMMAND(getname, "", (), result(player1->name));
 
@@ -587,9 +585,6 @@ namespace game
     ICOMMANDS("m_demo", "i", (int *mode), { int gamemode = *mode; intret(m_demo); });
     ICOMMANDS("m_edit", "i", (int *mode), { int gamemode = *mode; intret(m_edit); });
     ICOMMANDS("m_lobby", "i", (int *mode), { int gamemode = *mode; intret(m_lobby); });
-    ICOMMANDS("m_sp", "i", (int *mode), { int gamemode = *mode; intret(m_sp); });
-    ICOMMANDS("m_dmsp", "i", (int *mode), { int gamemode = *mode; intret(m_dmsp); });
-    ICOMMANDS("m_classicsp", "i", (int *mode), { int gamemode = *mode; intret(m_classicsp); });
     ICOMMANDS("m_parkour", "i", (int *mode), { int gamemode = *mode; intret(m_parkour); });
 	ICOMMANDS("m_grenade", "i", (int *mode), { int gamemode = *mode; intret(m_grenade); });
 	ICOMMANDS("m_gun", "i", (int *mode), { int gamemode = *mode; intret(m_gun); });
@@ -1325,8 +1320,6 @@ namespace game
                 int val = clamp(getint(p), 10, 1000), cn = getint(p);
                 fpsent *a = cn >= 0 ? getclient(cn) : NULL;
                 if(!demopacket) gamespeed = val;
-                extern int slowmosp;
-                if(m_sp && slowmosp) break;
                 if(a) conoutf("%s set gamespeed to %d", colorname(a), val);
                 else conoutf("gamespeed is %d", val);
                 break;
@@ -1433,6 +1426,9 @@ namespace game
                 copystring(d->name, text, MAXNAMELEN+1);
                 getstring(text, p);
                 filtertext(d->team, text, false, false, MAXTEAMLEN);
+				getstring(text, p);
+				copystring(d->tags, text, MAXNAMELEN+1);
+				d->tagfetch = true;
                 d->playermodel = getint(p);
                 break;
             }
@@ -1562,12 +1558,11 @@ namespace game
 
             case N_DIED:
             {
-                int vcn = getint(p), acn = getint(p), frags = getint(p), tfrags = getint(p), gun = getint(p);
+                int vcn = getint(p), acn = getint(p), frags = getint(p), gun = getint(p), special = getint(p);
                 fpsent *victim = getclient(vcn),
                        *actor = getclient(acn);
                 if(!actor) break;
                 actor->frags = frags;
-                if(m_teammode) setteaminfo(actor->team, tfrags);
 				extern int hidefrags;
 				if (actor != player1 && (!cmode || !cmode->hidefrags() || !hidefrags))
                 {
@@ -1575,7 +1570,7 @@ namespace game
                     particle_textcopy(actor->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
                 }
                 if(!victim) break;
-                killed(victim, actor, gun);
+                killed(victim, actor, gun, special);
                 break;
             }
 
@@ -1909,14 +1904,6 @@ namespace game
             #include "ctf.h"
             #include "collect.h"
             #undef PARSEMESSAGES
-
-            case N_ANNOUNCE:
-            {
-                int t = getint(p);
-                if     (t==I_QUAD)  { playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);  conoutf(CON_GAMEINFO, "\f2quad damage will spawn in 10 seconds!"); }
-                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); conoutf(CON_GAMEINFO, "\f2+100 health will spawn in 10 seconds!"); }
-                break;
-            }
 
             case N_NEWMAP:
             {

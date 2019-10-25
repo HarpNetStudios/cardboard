@@ -4,11 +4,11 @@ namespace game
 {
 	char* gametitle = "Project Crimson";
 	char* gamestage = "Alpha";
-	char* gameversion = "2.0pre4";
-	
+	char* gameversion = "2.0pre5";
+
 	// this doesn't work for some reason, fix later -Y
-	ICOMMAND(version, "", (), { 
-		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion); 
+	ICOMMAND(version, "", (), {
+		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
 		int len = strlen(vers);
 		char* k = newstring(len);
 		filtertext(k, vers, true, false, len);
@@ -43,7 +43,7 @@ namespace game
 		if (!spacepackallowed) return;
 		else if (!m_edit) return;
 		if (player1->state != CS_ALIVE && player1->state != CS_DEAD && player1->spacepack != true) return;
-		if (player1->state == CS_ALIVE) // only allow spacepack toggle when alive 
+		if (player1->state == CS_ALIVE) // only allow spacepack toggle when alive
 			player1->spacepack = !player1->spacepack;
 	}
 	COMMAND(togglespacepack, "");
@@ -96,12 +96,6 @@ namespace game
 
 	void resetgamestate()
 	{
-		if (m_classicsp)
-		{
-			clearmovables();
-			clearmonsters();                 // all monsters back at their spawns for editing
-			entities::resettriggers();
-		}
 		clearprojectiles();
 		clearbouncers();
 	}
@@ -248,18 +242,6 @@ namespace game
         }
     }
 
-    VARFP(slowmosp, 0, 0, 1, { if(m_sp && !slowmosp) server::forcegamespeed(100); });
-
-    void checkslowmo()
-    {
-        static int lastslowmohealth = 0;
-        server::forcegamespeed(intermission ? 100 : clamp(player1->health, 25, 200));
-        if(player1->health<player1->maxhealth && lastmillis-max(maptime, lastslowmohealth)>player1->health*player1->health/2)
-        {
-            lastslowmohealth = lastmillis;
-            player1->health++;
-        }
-    }
 
     void updateworld()        // main game update loop
     {
@@ -277,8 +259,6 @@ namespace game
         ai::update();
         moveragdolls();
         gets2c();
-        updatemovables(curtime);
-        updatemonsters(curtime);
 		if (connected)
 		{
 			if (player1->state == CS_DEAD)
@@ -296,12 +276,7 @@ namespace game
 				moveplayer(player1, 10, true);
 				swayhudgun(curtime);
 				entities::checkitems(player1);
-				if (m_sp)
-				{
-					if (slowmosp) checkslowmo();
-					if (m_classicsp) entities::checktriggers();
-				}
-				else if (cmode) cmode->checkitems(player1);
+				if (cmode) cmode->checkitems(player1);
 			}
 			#ifdef DISCORD
 				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING ), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
@@ -339,13 +314,7 @@ namespace game
                 return;
             }
             if(lastmillis < player1->lastpain + spawnwait) return;
-            if(m_dmsp) { changemap(clientmap, gamemode); return; }    // if we die in SP we try the same map again
             respawnself();
-            if(m_classicsp)
-            {
-                conoutf(CON_GAMEINFO, "\f2You wasted another life! The monsters stole some ammo...");
-                loopi(NUMGUNS) if(i!=GUN_SMG && (player1->ammo[i] = savedammo[i]) > 5) player1->ammo[i] = max(player1->ammo[i]/3, 5);
-            }
         }
     }
 
@@ -402,8 +371,6 @@ namespace game
 
 		ai::damaged(d, actor);
 
-        if(m_sp && slowmosp && d==player1 && d->health < 1) d->health = 1;
-
         if(d->health<=0) { if(local) killed(d, actor, gun); }
         else if(d==h) playsound(S_PAIN6);
         else playsound(S_PAIN1+rnd(5), &d->o);
@@ -442,7 +409,7 @@ namespace game
 
     VARP(verbosekill, 0, 0, 1);
 
-    void killed(fpsent *d, fpsent *actor, int gun)
+    void killed(fpsent *d, fpsent *actor, int gun, int special)
     {
         if(d->state==CS_EDITING)
         {
@@ -455,68 +422,53 @@ namespace game
 
         fpsent *h = followingplayer();
         if(!h) h = player1;
-        int contype = d==h || actor==h ? CON_FRAG_SELF : CON_FRAG_OTHER;
-        const char *dname = "", *aname = "";
-        if(m_teammode && teamcolorfrags)
-        {
-            dname = teamcolorname(d, "you");
-            aname = teamcolorname(actor, "you");
-        }
-        else
-        {
-            dname = colorname(d, NULL, "", "", "you");
-            aname = colorname(actor, NULL, "", "", "you");
-        }
-        if(verbosekill)
-        {
-            if(actor->type==ENT_AI)
-                conoutf(contype, "\f2%s\f2 got killed by %s with %s!", dname, aname, getweaponname(gun));
-            else if(d==actor || actor->type==ENT_INANIMATE)
-                conoutf(contype, "\f2%s\f2 suicided%s", dname, d==player1 ? "!" : "");
-            #if 0
-            else if(isteam(d->team, actor->team))
-            {
-                contype |= CON_TEAMKILL;
-                if(actor==player1) conoutf(contype, "\f6%s\f26 fragged a teammate (%s)", aname, dname);
-                else if(d==player1) conoutf(contype, "\f6%s\f6 got fragged by a teammate (%s)", dname, aname);
-                else conoutf(contype, "\f2%s\f2 fragged a teammate (%s)", aname, dname);
-            }
-            #endif
-            else
-            {
-                if(d==player1) conoutf(contype, "\f2%s\f2 got fragged by %s with %s", dname, aname, getweaponname(gun));
-                else conoutf(contype, "\f2%s\f2 fragged %s with %s", aname, dname, getweaponname(gun));
-            }
-        }
-        else
-        {
-            if(actor->type==ENT_AI)
-                conoutf(contype, "\f2%s\f2 -> %s -> %s\f2!", dname, getweaponname(gun), aname);
-            else if(d==actor || actor->type==ENT_INANIMATE)
-                conoutf(contype, "\f2world -> %s\f2", dname);
-            #if 0
-            else if(isteam(d->team, actor->team))
-            {
-                contype |= CON_TEAMKILL;
-				if (actor == player1) conoutf(contype, "\f6%s\f6 fragged a teammate (%s\f6)", aname, dname);
-				else if (d == player1) conoutf(contype, "\f6%s\f6 got fragged by a teammate (%s\f6)", dname, aname);
-				else conoutf(contype, "\f2%s\f2 fragged a teammate (%s\f2)", aname, dname);
-            }
-            #endif
-            else
-                conoutf(contype, "\f2%s\f2 -> %s -> %s\f2", aname, getweaponname(gun), dname);
-        }
-		if (d != actor) {
-			if (m_gun)
+		if(special != -1) {
+			int contype = d==h || actor==h ? CON_FRAG_SELF : CON_FRAG_OTHER;
+			const char *hs = " \f3(headshot)";
+			const char *dname = "", *aname = "";
+			if(m_teammode && teamcolorfrags)
 			{
-				if (actor->frags >= 12) { intermission = true; if (cmode) cmode->gameover(); addmsg(N_FORCEINTERMISSION); }
-				//loopi(GUN_GL-GUN_FIST+1) actor->ammo[i] = 0;
-				int currentgun = clamp(int(floor(actor->frags / 2))+1, GUN_SMG, GUN_GL);
-				conoutf("gun should be %d", currentgun);
-				//actor->ammo[currentgun] = (itemstats[currentgun - GUN_SMG].add * 2);
-				actor->attacking = false;
-				actor->secattacking = false;
-				actor->gunselect = currentgun;
+				dname = teamcolorname(d, "you");
+				aname = teamcolorname(actor, "you");
+			}
+			else
+			{
+				dname = colorname(d, NULL, "", "", "you");
+				aname = colorname(actor, NULL, "", "", "you");
+			}
+			if(verbosekill)
+			{
+				if(actor->type==ENT_AI)
+					conoutf(contype, "\f2%s\f2 got killed by %s with %s%s!", dname, aname, getweaponname(gun), special?hs:"");
+				else if(d==actor)
+					conoutf(contype, "\f2%s\f2 suicided%s", dname, d==player1 ? "!" : "");
+				else
+				{
+					if(d==player1) conoutf(contype, "\f2%s\f2 got fragged by %s with %s%s!", dname, aname, getweaponname(gun), special?hs:"");
+					else conoutf(contype, "\f2%s\f2 fragged %s with %s%s!", aname, dname, getweaponname(gun), special?hs:"");
+				}
+			}
+			else
+			{
+				if(actor->type==ENT_AI)
+					conoutf(contype, "\f2%s\f2 -> %s -> %s%s", dname, getweaponname(gun), aname, special?hs:"");
+				else if(d==actor)
+					conoutf(contype, "\f2world -> %s", dname);
+				else
+					conoutf(contype, "\f2%s\f2 -> %s -> %s%s", aname, getweaponname(gun), dname, special?hs:"");
+			}
+			if (d != actor) {
+				if (m_gun)
+				{
+					if (actor->frags >= 12) { intermission = true; if (cmode) cmode->gameover(); addmsg(N_FORCEINTERMISSION); }
+					//loopi(GUN_GL-GUN_FIST+1) actor->ammo[i] = 0;
+					int currentgun = clamp(int(floor(actor->frags / 2))+1, (int)GUN_SMG, (int)GUN_GL);
+					conoutf("gun should be %d", currentgun);
+					//actor->ammo[currentgun] = (itemstats[currentgun - GUN_SMG].add * 2);
+					actor->attacking = false;
+					actor->secattacking = false;
+					actor->gunselect = currentgun;
+				}
 			}
 		}
 		deathstate(d);
@@ -543,7 +495,6 @@ namespace game
             else conoutf(CON_GAMEINFO, "\f2player frags: %d, deaths: %d, kdr: %.2f", player1->frags, player1->deaths, (float)player1->frags/player1->deaths);
             int accuracy = (player1->totaldamage*100)/max(player1->totalshots, 1);
             if(!m_parkour) conoutf(CON_GAMEINFO, "\f2player total damage dealt: %d, damage wasted: %d, accuracy(%%): %d", player1->totaldamage, player1->totalshots-player1->totaldamage, accuracy);
-            if(m_sp) spsummary(accuracy);
 
             showscores(true);
             disablezoom();
@@ -695,9 +646,6 @@ namespace game
 
     void startgame()
     {
-        clearmovables();
-        clearmonsters();
-
         clearprojectiles();
         clearbouncers();
         clearragdolls();
@@ -770,7 +718,6 @@ namespace game
 
     void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material)
     {
-        if(d->type==ENT_INANIMATE) return;
         if     (waterlevel>0) { if(material!=MAT_LAVA) playsound(S_SPLASH1, d==player1 ? NULL : &d->o); }
         else if(waterlevel<0) playsound(material==MAT_LAVA ? S_BURN : S_SPLASH2, d==player1 ? NULL : &d->o);
         if     (floorlevel>0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_JUMP, d); }
@@ -779,11 +726,7 @@ namespace game
 
     void dynentcollide(physent *d, physent *o, const vec &dir)
     {
-        switch(d->type)
-        {
-            case ENT_AI: if(dir.z > 0) stackmonster((monster *)d, o); break;
-            case ENT_INANIMATE: if(dir.z > 0) stackmovable((movable *)d, o); break;
-        }
+		// nothing here
     }
 
     void msgsound(int n, physent *d)
@@ -801,15 +744,13 @@ namespace game
         }
     }
 
-    int numdynents() { return players.length()+monsters.length()+movables.length(); }
+	int numdynents() { return players.length(); }
 
     dynent *iterdynents(int i)
     {
         if(i<players.length()) return players[i];
-        i -= players.length();
-        if(i<monsters.length()) return (dynent *)monsters[i];
-        i -= monsters.length();
-        if(i<movables.length()) return (dynent *)movables[i];
+
+
         return NULL;
     }
 
@@ -877,7 +818,7 @@ namespace game
     }
 
 	VARP(teamsounds, 0, 1, 1);
-	
+
 	void teamsound(bool sameteam, int n, const vec* loc)
 	{
 		playsound(n, loc, NULL, teamsounds ? (m_teammode && sameteam ? SND_USE_ALT : SND_NO_ALT) : 0);
@@ -901,8 +842,7 @@ namespace game
                 if(pl->suicided!=seq) { addmsg(N_SUICIDE, "rc", pl); pl->suicided = seq; }
             }
         }
-        else if(d->type==ENT_AI) suicidemonster((monster *)d);
-        else if(d->type==ENT_INANIMATE) suicidemovable((movable *)d);
+
     }
     ICOMMAND(suicide, "", (), suicide(player1));
     ICOMMAND(kill, "", (), suicide(player1));
@@ -911,7 +851,8 @@ namespace game
 
     void drawicon(int icon, float x, float y, float sz)
     {
-        settexture("packages/hud/items.png");
+		defformatstring(iconmap, "packages/hud/items%d.png", (int)(icon/16));
+        settexture(iconmap);
         float tsz = 0.25f, tx = tsz*(icon%4), ty = tsz*(icon/4);
         gle::defvertex(2);
         gle::deftexcoord0();
@@ -925,16 +866,16 @@ namespace game
 
     void drawhealth(fpsent *d, bool isinsta = false, float tx = 0, float ty = 0, float tw = 1, float th = 1)
     {
-        float barh = 200, bary = ((HICON_TEXTY/2)-barh)+HICON_SIZE*.75;
+        float barh = 150, barw = ((HICON_TEXTY/2)-barh)+HICON_SIZE*.75;
         float h = d->state==CS_DEAD ? 0 : (d->health*barh)/(m_insta == true ? 1 : d->maxhealth), w = HICON_SIZE*.75;
         float x = (HICON_X/2), y = ((HICON_TEXTY/2)-h)+HICON_SIZE*.75;
 
         settexture("packages/hud/health_bar_back.png", 3);
         gle::begin(GL_TRIANGLE_STRIP);
-        gle::attribf(x,   bary);   gle::attribf(tx,      ty);
-        gle::attribf(x+w, bary);   gle::attribf(tx + tw, ty);
-        gle::attribf(x,   bary+barh); gle::attribf(tx,      ty + th);
-        gle::attribf(x+w, bary+barh); gle::attribf(tx + tw, ty + th);
+        gle::attribf(x,   barw);   gle::attribf(tx,      ty);
+        gle::attribf(x+w, barw);   gle::attribf(tx + tw, ty);
+        gle::attribf(x,   barw+barh); gle::attribf(tx,      ty + th);
+        gle::attribf(x+w, barw+barh); gle::attribf(tx + tw, ty + th);
         gle::end();
 
         settexture("packages/hud/health_bar.png", 3);
@@ -962,15 +903,15 @@ namespace game
     VARP(showvel, 0, 1, 1);
 	VARP(healthbar, 0, 1, 1);
 
-	void drawspacepack(fpsent *d) 
+	void drawspacepack(fpsent *d)
 	{
 		int icon;
-		
+
 		if(d->spacepack) icon = HICON_SPACEPACK;
 		else icon = HICON_SPACEPACK_OFF;
 		if(d->spacepack && d->spaceclip) icon = HICON_SPACEPACK_CLIP;
 
-		drawicon(icon, HICON_X + 6 * HICON_STEP, HICON_Y);
+		drawicon(icon, HICON_X + (healthbar ? 5 : 6) * HICON_STEP, HICON_Y);
 	}
 
     void drawhudicons(fpsent *d)
@@ -981,18 +922,18 @@ namespace game
 
         if(healthbar) drawhealth(d);
 
-        draw_textf("%d", (HICON_X + HICON_SIZE + HICON_SPACE+20)/2, HICON_TEXTY/2, d->state==CS_DEAD ? 0 : d->health);
+        draw_textf("%d", (HICON_X + ( healthbar ? 0 : (HICON_SIZE + HICON_SPACE + 20)))/2, HICON_TEXTY/2, d->state==CS_DEAD ? 0 : d->health);
         if(d->state!=CS_DEAD)
         {
-            if(!m_bottomless)
+			if(!m_bottomless)
             {
-                draw_textf("%d", (HICON_X + 4*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->ammo[d->gunselect]);
+                draw_textf("%d", (HICON_X + (healthbar ? 3 : 4)*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->ammo[d->gunselect]);
             }
             else
             {
-                draw_textf("INF", (HICON_X + 4*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2);
+                draw_textf("INF", (HICON_X + (healthbar ? 3 : 4)*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2);
             }
-            if(showvel) draw_textf("%d", (HICON_X + ammohud+2*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, (int)d->vel.magnitude());
+            if(showvel) draw_textf("V:%d", (HICON_X + ammohud+(healthbar ? 1 : 2)*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, (int)d->vel.magnitude());
         }
 
         pophudmatrix();
@@ -1000,7 +941,12 @@ namespace game
         if(!healthbar) drawicon(HICON_HEALTH, HICON_X, HICON_Y);
         if(d->state!=CS_DEAD)
         {
-            drawicon(HICON_FIST+d->gunselect, HICON_X + 4*HICON_STEP, HICON_Y);
+			if(d->gunselect==GUN_FIST)
+			{
+				drawicon((d->jumpstate == 2 ? HICON_FIST_OFF : HICON_FIST), HICON_X + (healthbar ? 3 : 4) * HICON_STEP, HICON_Y);
+			}
+			else drawicon(HICON_FIST + d->gunselect, HICON_X + (healthbar ? 3 : 4) * HICON_STEP, HICON_Y);
+            
 			if(spacepackallowed) drawspacepack(d);
         }
     }
@@ -1013,25 +959,25 @@ namespace game
 	VARP(gameclockalign, -1, 1, 1);
 	FVARP(gameclockx, 0, 0.765f, 1);
 	FVARP(gameclocky, 0, 0.015f, 1);
-	
+
 	void drawgameclock(int w, int h)
 	{
 		int secs = max(maplimit - lastmillis, 0) / 1000, mins = secs / 60;
 		secs %= 60;
-		
+
 		defformatstring(buf, "%d:%02d", mins, secs);
 		int tw = 0, th = 0;
 		text_bounds(buf, tw, th);
-		
+
 		vec2 offset = vec2(gameclockx, gameclocky).mul(vec2(w, h).div(gameclockscale));
 		if (gameclockalign == 1) offset.x -= tw;
 		else if (gameclockalign == 0) offset.x -= tw / 2.0f;
 		offset.y -= th / 2.0f;
-		
+
 		pushhudmatrix();
 		hudmatrix.scale(gameclockscale, gameclockscale, 1);
 		flushhudmatrix();
-		
+
 		int color = mins < 1 ? gameclocklowcolour : gameclockcolour;
 		draw_text(buf, int(offset.x), int(offset.y), (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, gameclockalpha);
 

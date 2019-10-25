@@ -47,6 +47,8 @@ void quit()                     // normal exit
     exit(EXIT_SUCCESS);
 }
 
+ICOMMAND(random, "i", (int seed), intret(rnd(seed)));
+
 void fatal(const char *s, ...)    // failure exit
 {
     static int errors = 0;
@@ -1489,6 +1491,11 @@ void getuserinfo_(bool debug) {
 	if (cJSON_IsNumber(status) && cJSON_IsString(message)) {
 		if (status->valueint > 0) {
 			conoutf(CON_ERROR, "web error! status: %d, \"%s\"", status->valueint, message->valuestring);
+			if (!strcmp(message->valuestring, "no token found") || !strcmp(message->valuestring, "malformed token")) {
+				__gametoken = "";
+				offline = 1;
+				return;
+			}
 		}
 		else {
 			// actual parse
@@ -1521,15 +1528,12 @@ void setgametoken(const char* token) {
 	#endif
 }
 
-ICOMMAND(gametoken, "sN", (char* s, int* numargs),
+ICOMMAND(gametoken, "s", (char* s),
 {
-	if (*numargs > 0) setgametoken(s);
-	else if (!*numargs) return;
-	else result(__gametoken);
+	setgametoken(s);
 });
 
 ICOMMAND(getgametoken, "", (), result(__gametoken));
-
 
 int globalgamestate = -1;
 
@@ -1637,7 +1641,8 @@ int main(int argc, char **argv)
     if(!notexture) fatal("could not find core textures (are you running in the right directory?)");
 
     logoutf("init: console");
-    if(!execfile("data/stdlib.cfg", false)) fatal("cannot find data files (are you running in the right directory?)");   // this is the first config file we load.
+	if(!execfile("data/stdlib.cfg", false)) fatal("cannot find data files (are you running in the right directory?)"); // this is the first config file we load.
+    if(!execfile("data/lang.cfg", false)) fatal("cannot find lang config"); // after this point in execution, translations are safe to use.
     if(!execfile("data/font.cfg", false)) fatal("cannot find font definitions");
     if(!setfont("default")) fatal("no default font specified");
 
@@ -1656,7 +1661,7 @@ int main(int argc, char **argv)
     execfile("data/keymap.cfg");
     execfile("data/stdedit.cfg");
     execfile("data/sounds.cfg");
-    execfile("data/menus.cfg");
+    execfile("data/menus.cfg"); 
     execfile("data/heightmap.cfg");
     execfile("data/blendbrush.cfg");
     defformatstring(gamecfgname, "data/game_%s.cfg", game::gameident());
@@ -1681,7 +1686,7 @@ int main(int argc, char **argv)
 
 	#ifdef CURLENABLED
 		if (strcmp(__gametoken,"")) {
-			renderprogress(0, "connecting to auth server...");
+			renderprogress(0, getTranslation("progress.auth.connect"));
 			getuserinfo_(false); 
 		}
 	#endif
@@ -1734,8 +1739,6 @@ int main(int argc, char **argv)
 		lastmillis += curtime;
         totalmillis = millis;
         updatetime();
-
-		//conoutf(CON_WARN, langtest("Korshårstorlek:")); // i sure do love handling unicode characters
 
 		//SDL_SetWindowTitle(screen, SDL_GetWindowTitle(screen));
 

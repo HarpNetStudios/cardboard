@@ -15,26 +15,10 @@ namespace entities
         if(ver <= 30) switch(e.type)
         {
             case FLAG:
-            case MONSTER:
             case TELEDEST:
-            case RESPAWNPOINT:
-            case BOX:
-            case BARREL:
-            case PLATFORM:
-            case ELEVATOR:
-                e.attr1 = (int(e.attr1)+180)%360;
                 break;
         }
-        if(ver <= 31) switch(e.type)
-        {
-            case BOX:
-            case BARREL:
-            case PLATFORM:
-            case ELEVATOR:
-                int yaw = (int(e.attr1)%360 + 360)%360 + 7;
-                e.attr1 = yaw - yaw%15;
-                break;
-        }
+
     }
 
 #ifndef STANDALONE
@@ -48,15 +32,15 @@ namespace entities
     const char *itemname(int i)
     {
         int t = ents[i]->type;
-        if(t<I_SMG || t>I_QUAD) return NULL;
-        return itemstats[t-I_SMG].name;
+        if(t<I_AMMO || t>I_HEALTH) return NULL;
+        return itemstats[t-I_AMMO].name;
     }
 
     int itemicon(int i)
     {
         int t = ents[i]->type;
-        if(t<I_SMG || t>I_QUAD) return -1;
-        return itemstats[t-I_SMG].icon;
+        if(t<I_AMMO || t>I_HEALTH) return -1;
+        return itemstats[t-I_AMMO].icon;
     }
 
     const char *entmdlname(int type)
@@ -65,11 +49,11 @@ namespace entities
         {
             NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
             NULL, NULL, NULL, NULL, NULL, NULL,
-            NULL, NULL, NULL, NULL, "quad", NULL,
+            NULL, NULL, NULL, NULL, NULL, NULL,
             NULL, NULL,
-            "carrot",
+            NULL,
             NULL, NULL,
-            "checkpoint",
+            NULL,
             NULL, NULL,
             NULL, NULL,
             NULL
@@ -93,14 +77,7 @@ namespace entities
         {
             switch(i)
             {
-                case I_SHELLS: case I_BULLETS: case I_ROCKETS: case I_ROUNDS: case I_GRENADES: case I_SMG:
-                    if(m_noammo) continue;
-                    break;
-                case I_HEALTH: case I_BOOST: case I_QUAD:
-                    if(m_noitems) continue;
-                    break;
-                case CARROT: case RESPAWNPOINT:
-                    if(!m_classicsp) continue;
+                case I_AMMO: case I_HEALTH:
                     break;
             }
             const char *mdl = entmdlname(i);
@@ -129,15 +106,11 @@ namespace entities
             int revs = 10;
             switch(e.type)
             {
-                case CARROT:
-                case RESPAWNPOINT:
-                    if(e.attr2) revs = 1;
-                    break;
                 case TELEPORT:
                     if(e.attr2 < 0) continue;
                     break;
                 default:
-                    if(!e.spawned() || e.type < I_SMG || e.type > I_QUAD) continue;
+                    if(!e.spawned() || e.type < I_AMMO || e.type > I_HEALTH) continue;
             }
             const char *mdlname = entmodel(e);
             if(mdlname)
@@ -149,17 +122,17 @@ namespace entities
         }
     }
 
-    void addammo(int type, int &v, bool local)
+    void addammo(int *v, bool local)
     {
-        itemstat &is = itemstats[type-I_SMG];
-        v += is.add;
-        if(v>is.max) v = is.max;
+        itemstat &is = itemstats[I_AMMO];
+		loopi(6) v[i+1] += guns[i+1].ammoadd;
+		loopi(6) if(v[i+1]>is.max) v[i+1] = guns[i+1].ammomax;
         if(local) msgsound(is.sound);
     }
 
-    void repammo(fpsent *d, int type, bool local)
+    void repammo(fpsent *d, bool local)
     {
-        addammo(type, d->ammo[type-I_SMG+GUN_SMG], local);
+        addammo(d->ammo, local);
     }
 
     // these two functions are called when the server acknowledges that you really
@@ -169,29 +142,17 @@ namespace entities
     {
         if(!ents.inrange(n)) return;
         int type = ents[n]->type;
-        if(type<I_SMG || type>I_QUAD) return;
+        if(type<I_AMMO || type>I_HEALTH) return;
         ents[n]->clearspawned();
         if(!d) return;
-        itemstat &is = itemstats[type-I_SMG];
+        itemstat &is = itemstats[type-I_HEALTH];
         if(d!=player1 || isthirdperson())
         {
             //particle_text(d->abovehead(), is.name, PART_TEXT, 2000, 0xFFC864, 4.0f, -8);
             particle_icon(d->abovehead(), is.icon%4, is.icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
         }
-        playsound(itemstats[type-I_SMG].sound, d!=player1 ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
+        playsound(itemstats[type-I_HEALTH].sound, d!=player1 ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
         d->pickup(type);
-        if(d==player1) switch(type)
-        {
-            case I_BOOST:
-                conoutf(CON_GAMEINFO, "\f2you have a permanent +100 health bonus! (%d)", d->maxhealth);
-                playsound(S_V_BOOST, NULL, NULL, 0, 0, 0, -1, 0, 3000);
-                break;
-
-            case I_QUAD:
-                conoutf(CON_GAMEINFO, "\f2you got the quad!");
-                playsound(S_V_QUAD, NULL, NULL, 0, 0, 0, -1, 0, 3000);
-                break;
-        }
     }
 
     // these functions are called when the client touches the item
@@ -251,7 +212,7 @@ namespace entities
         }
     }
 
-    void teleport(int n, fpsent *d)     // also used by monsters
+    void teleport(int n, fpsent *d)
     {
         int e = -1, tag = ents[n]->attr1, beenhere = -1;
         for(;;)
@@ -307,14 +268,6 @@ namespace entities
                 break;
             }
 
-            case RESPAWNPOINT:
-                if(d!=player1) break;
-                if(n==respawnent) break;
-                respawnent = n;
-                conoutf(CON_GAMEINFO, "\f2respawn point set!");
-                playsound(S_V_RESPAWNPOINT);
-                break;
-
             case JUMPPAD:
             {
                 if(d->lastpickup==ents[n]->type && lastmillis-d->lastpickupmillis<300) break;
@@ -340,7 +293,7 @@ namespace entities
         {
             extentity &e = *ents[i];
             if(e.type==NOTUSED) continue;
-            if(!e.spawned() && e.type!=TELEPORT && e.type!=JUMPPAD && e.type!=RESPAWNPOINT) continue;
+            if(!e.spawned() && e.type!=TELEPORT && e.type!=JUMPPAD) continue;
             float dist = e.o.dist(o);
             if(dist<(e.type==TELEPORT ? 16 : 12)) trypickup(i, d);
         }
@@ -359,7 +312,7 @@ namespace entities
     void putitems(packetbuf &p)            // puts items in network stream and also spawns them locally
     {
         putint(p, N_ITEMLIST);
-        loopv(ents) if(ents[i]->type>=I_SMG && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SMG || ents[i]->type>I_GRENADES))
+        loopv(ents) if(ents[i]->type==I_AMMO && (!m_noammo || ents[i]->type!=I_AMMO))
         {
             putint(p, i);
             putint(p, ents[i]->type);
@@ -372,9 +325,9 @@ namespace entities
     void spawnitems(bool force)
     {
         if(m_noitems) return;
-        loopv(ents) if(ents[i]->type>=I_SMG && ents[i]->type<=I_QUAD && (!m_noammo || ents[i]->type<I_SMG || ents[i]->type>I_GRENADES))
+        loopv(ents) if(ents[i]->type==I_AMMO && (!m_noammo || ents[i]->type!=I_AMMO))
         {
-            ents[i]->setspawned(force || m_sp || !server::delayspawn(ents[i]->type));
+            ents[i]->setspawned(force || !server::delayspawn(ents[i]->type));
         }
     }
 
@@ -557,7 +510,6 @@ namespace entities
                     e.lasttrigger = lastmillis;
                     setuptriggerflags(e);
                     if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
-                    if(checktriggertype(e.attr3, TRIG_ENDSP)) endsp(false);
                     if(e.attr4) doleveltrigger(e.attr4, 1);
                     break;
                 case TRIGGERED:
@@ -580,7 +532,6 @@ namespace entities
                     e.lasttrigger = lastmillis;
                     setuptriggerflags(e);
                     if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
-                    if(checktriggertype(e.attr3, TRIG_ENDSP)) endsp(false);
                     if(e.attr4) doleveltrigger(e.attr4, 0);
                     break;
             }
@@ -604,19 +555,8 @@ namespace entities
         switch(e.type)
         {
             case FLAG:
-            case BOX:
-            case BARREL:
-            case PLATFORM:
-            case ELEVATOR:
-                e.attr5 = e.attr4;
-                e.attr4 = e.attr3;
             case TELEDEST:
                 e.attr3 = e.attr2;
-            case MONSTER:
-                e.attr2 = e.attr1;
-            case RESPAWNPOINT:
-                e.attr1 = (int)player1->yaw;
-                break;
         }
     }
 
@@ -637,19 +577,7 @@ namespace entities
                 break;
 
             case FLAG:
-            case MONSTER:
             case TELEDEST:
-            case RESPAWNPOINT:
-            case BOX:
-            case BARREL:
-            case PLATFORM:
-            case ELEVATOR:
-            {
-                vec dir;
-                vecfromyawpitch(e.attr1, 0, 1, 0, dir);
-                renderentarrow(e, dir, 4);
-                break;
-            }
             case MAPMODEL:
                 if(validtrigger(e.attr3)) renderentring(e, checktriggertype(e.attr3, TRIG_COLLIDE) ? 20 : 12);
                 break;
@@ -670,8 +598,8 @@ namespace entities
             "smg", "shells", "riflerounds", "bullets", "rockets",  "grenades",
             "health", "healthboost", "placeholder", "placeholder2", "quaddamage",
             "teleport", "teledest",
-            "monster", "carrot", "jumppad",
-            "base", "respawnpoint",
+            "placeholder3", "placeholder4", "jumppad",
+            "base", "placeholder5",
             "box", "barrel",
             "platform", "elevator",
             "flag",

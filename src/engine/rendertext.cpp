@@ -232,7 +232,7 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
 			case '8': color = bvec(  0, 255, 255); break;   // cyan
 			case '9': color = bvec(  0,   0,   0); break;   // black as my soul -Y
 			case 'a': color = bvec(255,  36,   0); break;   // hn scarlet
-			//case 'b':
+			case 'b': color = bvec(  0, 148, 255); break;   // celeb blue
 			//case 'c':
 			//case 'd':
 			//case 'e':

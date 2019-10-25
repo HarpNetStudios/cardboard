@@ -483,13 +483,13 @@ bool ellipseboxcollide(physent *d, const vec &dir, const vec &o, const vec &cent
         }
         if(yo.z < 0)
         {
-            if(dir.iszero() || (dir.z > 0 && (d->type>=ENT_INANIMATE || below >= d->zmargin-(d->eyeheight+d->aboveeye)/4.0f)))
+            if(dir.iszero() || (dir.z > 0 && (d->type>=ENT_CAMERA || below >= d->zmargin-(d->eyeheight+d->aboveeye)/4.0f)))
             {
                 collidewall = vec(0, 0, -1);
                 return true;
             }
         }
-        else if(dir.iszero() || (dir.z < 0 && (d->type>=ENT_INANIMATE || above >= d->zmargin-(d->eyeheight+d->aboveeye)/3.0f)))
+        else if(dir.iszero() || (dir.z < 0 && (d->type>=ENT_CAMERA || above >= d->zmargin-(d->eyeheight+d->aboveeye)/3.0f)))
         {
             collidewall = vec(0, 0, 1);
             return true;
@@ -522,13 +522,13 @@ bool ellipsecollide(physent *d, const vec &dir, const vec &o, const vec &center,
         }
         if(d->o.z < yo.z)
         {
-            if(dir.iszero() || (dir.z > 0 && (d->type>=ENT_INANIMATE || below >= d->zmargin-(d->eyeheight+d->aboveeye)/4.0f)))
+            if(dir.iszero() || (dir.z > 0 && (d->type>=ENT_CAMERA || below >= d->zmargin-(d->eyeheight+d->aboveeye)/4.0f)))
             {
                 collidewall = vec(0, 0, -1);
                 return true;
             }
         }
-        else if(dir.iszero() || (dir.z < 0 && (d->type>=ENT_INANIMATE || above >= d->zmargin-(d->eyeheight+d->aboveeye)/3.0f)))
+        else if(dir.iszero() || (dir.z < 0 && (d->type>=ENT_CAMERA || above >= d->zmargin-(d->eyeheight+d->aboveeye)/3.0f)))
         {
             collidewall = vec(0, 0, 1);
             return true;
@@ -640,7 +640,7 @@ static inline bool plcollide(physent *d, const vec &dir, physent *o)
     }
 }
 
-bool plcollide(physent *d, const vec &dir, bool insideplayercol)    // collide with player or monster
+bool plcollide(physent *d, const vec &dir, bool insideplayercol)    // collide with player
 {
     if(d->type==ENT_CAMERA || d->state!=CS_ALIVE) return false;
     int lastinside = collideinside;
@@ -1251,13 +1251,13 @@ void falling(physent *d, vec &dir, const vec &floor)
 
 void landing(physent *d, vec &dir, const vec &floor, bool collided)
 {
-#if 0
+	/*
     if(d->physstate == PHYS_FALL)
     {
         d->timeinair = 0;
         if(dir.z < 0.0f) dir.z = d->vel.z = 0.0f;
     }
-#endif
+	*/
     switchfloor(d, dir, floor);
     d->timeinair = 0;
     if((d->physstate!=PHYS_STEP_UP && d->physstate!=PHYS_STEP_DOWN) || !collided)
@@ -1312,7 +1312,7 @@ bool move(physent *d, vec &dir)
     bool collided = false, slidecollide = false;
     vec obstacle;
     d->o.add(dir);
-    if(collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_INANIMATE) && collide(d, vec(0, 0, 0), 0, false)))
+    if(collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_CAMERA) && collide(d, vec(0, 0, 0), 0, false)))
     {
         obstacle = collidewall;
         /* check to see if there is an obstacle that would prevent this one from being used as a floor (or ceiling bump) */
@@ -1360,8 +1360,7 @@ bool move(physent *d, vec &dir)
     if(slide || (!collided && floor.z > 0 && floor.z < WALLZ))
     {
         slideagainst(d, dir, slide ? obstacle : floor, found, slidecollide);
-        //if(d->type == ENT_AI || d->type == ENT_INANIMATE)
-        d->blocked = true;
+        if(d->type == ENT_AI) d->blocked = true;
     }
     if(found) landing(d, dir, floor, collided);
     else falling(d, dir, floor);
@@ -1374,7 +1373,7 @@ bool spacemove(physent *d, vec &dir)
     bool collided = false, slidecollide = false;
     vec obstacle;
     d->o.add(dir);
-    if(collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_INANIMATE) && collide(d, vec(0, 0, 0), 0, false)))
+    if(collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_CAMERA) && collide(d, vec(0, 0, 0), 0, false)))
     {
         obstacle = collidewall;
         /* check to see if there is an obstacle that would prevent this one from being used as a floor (or ceiling bump) */
@@ -1422,8 +1421,7 @@ bool spacemove(physent *d, vec &dir)
     if(slide || (!collided && floor.z > 0 && floor.z < WALLZ))
     {
         slideagainst(d, dir, slide ? obstacle : floor, found, slidecollide);
-        //if(d->type == ENT_AI || d->type == ENT_INANIMATE)
-        d->blocked = true;
+        if(d->type == ENT_AI) d->blocked = true;
     }
     if(found) landing(d, dir, floor, collided);
     else falling(d, dir, floor);
@@ -1643,6 +1641,9 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
             pl->vel.z = max(pl->vel.z, JUMPVEL);
         }
     }
+
+	//conoutf(CON_DEBUG, "jumpstate: %d", pl->jumpstate);
+
     if(pl->spacepack && !pl->spaceclip)
     {
         if(pl->jumping && allowmove)
@@ -1668,18 +1669,24 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
             pl->vel.z = max(pl->vel.z, JUMPVEL); // physics impulse upwards
             if(water) { pl->vel.x /= 8.0f; pl->vel.y /= 8.0f; } // dampen velocity change even harder, gives correct water feel
 
+			pl->jumpstate = 1;
+
             game::physicstrigger(pl, local, 1, 0);
         }
     }
-    else if(pl->jumpstate == 1 && pl->candouble)
+    if(pl->jumpstate == 1 && pl->candouble)
     {
-		pl->falling.z = 0; // set back gravity to 0, so you can jump again
-		pl->vel.z = max(pl->vel.z, pl->vel.z + (JUMPVEL/2)); // physics impulse upwards
-		if(water) { pl->vel.x /= 16.0f; pl->vel.y /= 16.0f; } // dampen velocity change even harder, gives correct water feel
+		if (pl->jumping) {
+			pl->falling.z = 0; // set back gravity to 0, so you can jump again
+			pl->vel.z = max(pl->vel.z, pl->vel.z + (JUMPVEL / 2)); // physics impulse upwards
+			if (water) { pl->vel.x /= 16.0f; pl->vel.y /= 16.0f; } // dampen velocity change even harder, gives correct water feel
 
-		pl->jumpstate++;
+			pl->jumpstate = 2;
 
-		game::physicstrigger(pl, local, 1, 0);
+			game::physicstrigger(pl, local, 1, 0);
+		}
+
+		pl->jumping = false;
 	}
 
     if(!(floating || (pl->spacepack && !pl->spaceclip)) && pl->physstate == PHYS_FALL) {
@@ -1748,8 +1755,8 @@ void modifygravity(physent *pl, bool water, int curtime)
     }
 }
 
-// main physics routine, moves a player/monster for a curtime step
-// moveres indicated the physics precision (which is lower for monsters and multiplayer prediction)
+// main physics routine, moves a player for a curtime step
+// moveres indicated the physics precision (which is lower for multiplayer prediction)
 // local is false for multiplayer prediction
 
 bool moveplayer(physent* pl, int moveres, bool local, int curtime)
@@ -1835,6 +1842,10 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 	{
 		//if(pl->spacepack) conoutf("\f3spaceclip");
 		pl->spaceclip = true;	
+	}
+	if (pl->state == CS_ALIVE && (material & MAT_JUMPRESET)) //JUMPRESET allows another double jump
+	{
+		if(pl->jumpstate == 2) pl->jumpstate = 1;
 	}
 	else if (pl->state == CS_ALIVE && !(material & MAT_SPACECLIP) && pl->spaceclip) {
 		pl->spaceclip = !pl->spaceclip;
@@ -2128,7 +2139,7 @@ ICOMMAND(jump,   "D", (int *down), {
          {
              player->jumping = *down!=0;
              if(*down != 0)
-                player->jumpstate++;
+                player->jumpstate = min(player->jumpstate++, 2);
          }
          });
 ICOMMAND(attack, "D", (int *down), { game::doattack(*down!=0); });

@@ -1040,7 +1040,7 @@ void loadskin(const char *dir, const char *altdir, Texture *&skin, Texture *&mas
     tryload(masks, NULL, NULL, "masks");
 }
 
-// convenient function that covers the usual anims for players/monsters/npcs
+// convenient function that covers the usual anims for players/npcs
 
 VAR(animoverride, -1, 0, NUMANIMS-1);
 VAR(testanims, 0, 0, 1);
@@ -1112,8 +1112,6 @@ void setbbfrommodel(dynent *d, const char *mdl)
     if(!m) return;
     vec center, radius;
     m->collisionbox(center, radius);
-    if(d->type==ENT_INANIMATE && !m->ellipsecollide)
-        d->collidetype = COLLIDE_OBB;
     d->xradius   = radius.x + fabs(center.x);
     d->yradius   = radius.y + fabs(center.y);
     d->radius    = d->collidetype==COLLIDE_OBB ? sqrtf(d->xradius*d->xradius + d->yradius*d->yradius) : max(d->xradius, d->yradius);

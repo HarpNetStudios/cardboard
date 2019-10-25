@@ -53,12 +53,13 @@ namespace server
         int lifesequence;
         int rays;
         float dist;
+		int headshot;
         vec dir;
     };
 
     struct shotevent : timedevent
     {
-        int id, gun;
+		int id, gun, headshot;
         vec from, to;
         vector<hitinfo> hits;
 
@@ -121,7 +122,7 @@ namespace server
         int lastdeath, deadflush, lastspawn, lifesequence;
         int lastshot;
         projectilestate<8> rockets, grenades;
-        int frags, flags, deaths, teamkills, shotdamage, damage, tokens;
+        int frags, flags, deaths, shotdamage, damage, tokens;
         int lasttimeplayed, timeplayed;
         float effectiveness;
 
@@ -146,7 +147,7 @@ namespace server
 
             timeplayed = 0;
             effectiveness = 0;
-            frags = flags = deaths = teamkills = shotdamage = damage = tokens = 0;
+            frags = flags = deaths = shotdamage = damage = tokens = 0;
 
             lastdeath = 0;
 
@@ -175,7 +176,7 @@ namespace server
     {
         uint ip;
         oldstring name;
-        int maxhealth, frags, flags, deaths, teamkills, shotdamage, damage;
+        int maxhealth, frags, flags, deaths, shotdamage, damage;
         int timeplayed;
         float effectiveness;
 
@@ -185,7 +186,6 @@ namespace server
             frags = gs.frags;
             flags = gs.flags;
             deaths = gs.deaths;
-            teamkills = gs.teamkills;
             shotdamage = gs.shotdamage;
             damage = gs.damage;
             timeplayed = gs.timeplayed;
@@ -199,7 +199,6 @@ namespace server
             gs.frags = frags;
             gs.flags = flags;
             gs.deaths = deaths;
-            gs.teamkills = teamkills;
             gs.shotdamage = shotdamage;
             gs.damage = damage;
             gs.timeplayed = timeplayed;
@@ -212,7 +211,7 @@ namespace server
     struct clientinfo
     {
         int clientnum, ownernum, connectmillis, sessionid, overflow;
-        oldstring name, team, mapvote;
+        oldstring name, team, tags, mapvote;
         int playermodel;
         int modevote;
         int privilege;
@@ -625,82 +624,6 @@ namespace server
 	});
     SVAR(servermotd, "");
 
-    struct teamkillkick
-    {
-        int modes, limit, ban;
-
-        bool match(int mode) const
-        {
-            return (modes&(1<<(mode-STARTGAMEMODE)))!=0;
-        }
-
-        bool includes(const teamkillkick &tk) const
-        {
-            return tk.modes != modes && (tk.modes & modes) == tk.modes;
-        }
-    };
-    vector<teamkillkick> teamkillkicks;
-
-    void teamkillkickreset()
-    {
-        teamkillkicks.setsize(0);
-    }
-
-    void addteamkillkick(char *modestr, int *limit, int *ban)
-    {
-        vector<char *> modes;
-        explodelist(modestr, modes);
-        teamkillkick &kick = teamkillkicks.add();
-        kick.modes = genmodemask(modes);
-        kick.limit = *limit;
-        kick.ban = *ban > 0 ? *ban*60000 : (*ban < 0 ? 0 : 30*60000);
-        modes.deletearrays();
-    }
-
-    COMMAND(teamkillkickreset, "");
-    COMMANDN(teamkillkick, addteamkillkick, "sii");
-
-    struct teamkillinfo
-    {
-        uint ip;
-        int teamkills;
-    };
-    vector<teamkillinfo> teamkills;
-    bool shouldcheckteamkills = false;
-
-    void addteamkill(clientinfo *actor, clientinfo *victim, int n)
-    {
-        if(!m_timed || actor->state.aitype != AI_NONE || actor->local || actor->privilege || (victim && victim->state.aitype != AI_NONE)) return;
-        shouldcheckteamkills = true;
-        uint ip = getclientip(actor->clientnum);
-        loopv(teamkills) if(teamkills[i].ip == ip)
-        {
-            teamkills[i].teamkills += n;
-            return;
-        }
-        teamkillinfo &tk = teamkills.add();
-        tk.ip = ip;
-        tk.teamkills = n;
-    }
-
-    void checkteamkills()
-    {
-        teamkillkick *kick = NULL;
-        if(m_timed) loopv(teamkillkicks) if(teamkillkicks[i].match(gamemode) && (!kick || kick->includes(teamkillkicks[i])))
-            kick = &teamkillkicks[i];
-        if(kick) loopvrev(teamkills)
-        {
-            teamkillinfo &tk = teamkills[i];
-            if(tk.teamkills >= kick->limit)
-            {
-                if(kick->ban > 0) addban(tk.ip, kick->ban);
-                kickclients(tk.ip);
-                teamkills.removeunordered(i);
-            }
-        }
-        shouldcheckteamkills = false;
-    }
-
     void *newclientinfo() { return new clientinfo; }
     void deleteclientinfo(void *ci) { delete (clientinfo *)ci; }
 
@@ -851,25 +774,17 @@ namespace server
     collectservmode collectmode;
     servmode *smode = NULL;
 
-    bool canspawnitem(int type) { return !m_noitems && (type>=I_SMG && type<=I_QUAD && (!m_noammo || type<I_SMG || type>I_GRENADES)); }
+    bool canspawnitem(int type) { return !m_noitems && (type==I_AMMO && (!m_noammo || type!=I_AMMO)); }
 
     int spawntime(int type)
     {
-        if(m_classicsp) return INT_MAX;
         int np = numclients(-1, true, false);
         np = np<3 ? 4 : (np>4 ? 2 : 3);         // spawn times are dependent on number of players
         int sec = 0;
         switch(type)
         {
-            case I_SHELLS:
-            case I_BULLETS:
-            case I_ROCKETS:
-            case I_ROUNDS:
-            case I_GRENADES:
-            case I_SMG: sec = np*4; break;
+            case I_AMMO: sec = np*4; break;
             case I_HEALTH: sec = np*5; break;
-            case I_BOOST: sec = 60; break;
-            case I_QUAD: sec = 70; break;
         }
         return sec*1000;
     }
@@ -878,9 +793,6 @@ namespace server
     {
         switch(type)
         {
-            case I_BOOST:
-            case I_QUAD:
-                return true;
             default:
                 return false;
         }
@@ -1507,7 +1419,7 @@ namespace server
         }
 
         uchar operator[](int msg) const { return msg >= 0 && msg < NUMMSG ? msgmask[msg] : 0; }
-    } msgfilter(-1, N_CONNECT, N_SERVINFO, N_INITCLIENT, N_WELCOME, N_MAPCHANGE, N_SERVMSG, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX, N_DIED, N_SPAWNSTATE, N_FORCEDEATH, N_TEAMINFO, N_ITEMACC, N_ITEMSPAWN, N_TIMEUP, N_CDIS, N_CURRENTMASTER, N_PONG, N_RESUME, N_BASESCORE, N_BASEINFO, N_BASEREGEN, N_ANNOUNCE, N_SENDDEMOLIST, N_SENDDEMO, N_DEMOPLAYBACK, N_SENDMAP, N_DROPFLAG, N_SCOREFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_CLIENT, N_AUTHCHAL, N_INITAI, N_EXPIRETOKENS, N_DROPTOKENS, N_STEALTOKENS, N_DEMOPACKET, -2, N_REMIP, N_NEWMAP, N_GETMAP, N_SENDMAP, N_CLIPBOARD, -3, N_EDITENT, N_EDITF, N_EDITT, N_EDITM, N_FLIP, N_COPY, N_PASTE, N_ROTATE, N_REPLACE, N_DELCUBE, N_EDITVAR, N_EDITVSLOT, N_UNDO, N_REDO, -4, N_POS, NUMMSG),
+    } msgfilter(-1, N_CONNECT, N_SERVINFO, N_INITCLIENT, N_WELCOME, N_MAPCHANGE, N_SERVMSG, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX, N_DIED, N_SPAWNSTATE, N_FORCEDEATH, N_TEAMINFO, N_ITEMACC, N_ITEMSPAWN, N_TIMEUP, N_CDIS, N_CURRENTMASTER, N_PONG, N_RESUME, N_BASESCORE, N_BASEINFO, N_BASEREGEN, N_SENDDEMOLIST, N_SENDDEMO, N_DEMOPLAYBACK, N_SENDMAP, N_DROPFLAG, N_SCOREFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_CLIENT, N_AUTHCHAL, N_INITAI, N_EXPIRETOKENS, N_DROPTOKENS, N_STEALTOKENS, N_DEMOPACKET, -2, N_REMIP, N_NEWMAP, N_GETMAP, N_SENDMAP, N_CLIPBOARD, -3, N_EDITENT, N_EDITF, N_EDITT, N_EDITM, N_FLIP, N_COPY, N_PASTE, N_ROTATE, N_REPLACE, N_DELCUBE, N_EDITVAR, N_EDITVSLOT, N_UNDO, N_REDO, -4, N_POS, NUMMSG),
       connectfilter(-1, N_CONNECT, -2, N_AUTHANS, -3, N_PING, NUMMSG);
 
     int checktype(int type, clientinfo *ci)
@@ -1759,6 +1671,7 @@ namespace server
             putint(p, ci->clientnum);
             sendstring(ci->name, p);
             sendstring(ci->team, p);
+			sendstring(ci->tags, p);
             putint(p, ci->playermodel);
         }
     }
@@ -1957,8 +1870,6 @@ namespace server
         copystring(smapname, s);
         loaditems();
         scores.shrink(0);
-        shouldcheckteamkills = false;
-        teamkills.shrink(0);
         loopv(clients)
         {
             clientinfo *ci = clients[i];
@@ -2126,7 +2037,7 @@ namespace server
 
     void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(); }
 
-	void dodamage(clientinfo* target, clientinfo* actor, int damage, int gun, const vec& hitpush = vec(0, 0, 0))
+	void dodamage(clientinfo* target, clientinfo* actor, int damage, int gun, const vec& hitpush, bool special)
 	{
 		gamestate& ts = target->state;
 		if(!m_parkour) ts.dodamage(damage);
@@ -2153,16 +2064,11 @@ namespace server
             }
             teaminfo *t = m_teammode ? teaminfos.access(actor->team) : NULL;
             if(t) t->frags += fragvalue;
-            sendf(-1, 1, "ri6", N_DIED, target->clientnum, actor->clientnum, actor->state.frags, t ? t->frags : 0, gun);
+            sendf(-1, 1, "ri6", N_DIED, target->clientnum, actor->clientnum, actor->state.frags, gun, special);
             target->position.setsize(0);
             if(smode) smode->died(target, actor);
             ts.state = CS_DEAD;
             ts.lastdeath = gamemillis;
-            if(actor!=target && isteam(actor->team, target->team))
-            {
-                actor->state.teamkills++;
-                addteamkill(actor, target, 1);
-            }
             ts.deadflush = ts.lastdeath + DEATHMILLIS;
             // don't issue respawn yet until DEATHMILLIS has elapsed
             //ts.respawn();
@@ -2178,7 +2084,7 @@ namespace server
         ci->state.deaths++;
         teaminfo *t = m_teammode ? teaminfos.access(ci->team) : NULL;
         if(t) t->frags += fragvalue;
-        sendf(-1, 1, "ri6", N_DIED, ci->clientnum, ci->clientnum, gs.frags, t ? t->frags : 0, -1);
+        sendf(-1, 1, "ri6", N_DIED, ci->clientnum, ci->clientnum, gs.frags, -1, 0);
         ci->position.setsize(0);
         if(smode) smode->died(ci, NULL);
         gs.state = CS_DEAD;
@@ -2223,14 +2129,7 @@ namespace server
             damage = int(damage*(1-h.dist/EXP_DISTSCALE/guns[gun].exprad));
             if(!(m_parkour || target==ci))
             {
-                if (!m_teammode)
-                {
-                    dodamage(target, ci, damage, gun, h.dir);
-                }
-                else if(strcmp(target->team, ci->team))
-                {
-                    dodamage(target, ci, damage, gun, h.dir);
-                }
+				if(!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.dir, h.headshot);
             }
         }
     }
@@ -2271,8 +2170,7 @@ namespace server
                     if(gs.quadmillis) damage *= 4;
                     if(!m_parkour || target!=ci) // Why isn't mean the same as line 2230? Why is C/C++ retarded? -Y 10/06/18
                     {
-                        if (!m_teammode) dodamage(target, ci, damage, gun, h.dir);
-                        else if(strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.dir);
+						if (!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.dir, h.headshot);
                     }
                 }
                 break;
@@ -2372,10 +2270,6 @@ namespace server
                             sents[i].spawned = true;
                             sendf(-1, 1, "ri2", N_ITEMSPAWN, i);
                         }
-                        else if(sents[i].spawntime<=10000 && oldtime>10000 && (sents[i].type==I_QUAD || sents[i].type==I_BOOST))
-                        {
-                            sendf(-1, 1, "ri2", N_ANNOUNCE, sents[i].type);
-                        }
                     }
                 }
                 aiman::checkai();
@@ -2397,8 +2291,6 @@ namespace server
                 else c.scheduleexceeded();
             }
         }
-
-        if(shouldcheckteamkills) checkteamkills();
 
         if(shouldstep && !gamepaused)
         {
@@ -3110,9 +3002,10 @@ namespace server
                     hit.lifesequence = getint(p);
                     hit.dist = getint(p)/DMF;
                     hit.rays = getint(p);
+					hit.headshot = getint(p);
                     loopk(3) hit.dir[k] = getint(p)/DNF;
                 }
-                if(cq)
+				if(cq)
                 {
                     cq->addevent(shot);
                     cq->setpushed();
@@ -3137,6 +3030,7 @@ namespace server
                     hit.lifesequence = getint(p);
                     hit.dist = getint(p)/DMF;
                     hit.rays = getint(p);
+					hit.headshot = getint(p);
                     loopk(3) hit.dir[k] = getint(p)/DNF;
                 }
                 if(cq) cq->addevent(exp);

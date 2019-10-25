@@ -227,17 +227,17 @@ static void mountzip(ziparchive &arch, vector<zipfile> &files, const char *mount
             }
             break;
         }
-        const char *foundogz = strstr(f.name, ".cmr");
-        if(foundogz)
+        const char *foundcmr = strstr(f.name, ".cmr");
+        if(foundcmr)
         {
-            const char *ogzdir = foundogz;
-            while(--ogzdir >= f.name && *ogzdir != PATHDIV);
-            if(ogzdir < f.name || checkprefix(files, f.name, ogzdir + 1 - f.name))
+            const char *cmrdir = foundcmr;
+            while(--cmrdir >= f.name && *cmrdir != PATHDIV);
+            if(cmrdir < f.name || checkprefix(files, f.name, cmrdir + 1 - f.name))
             {
-                if(ogzdir >= f.name)
+                if(cmrdir >= f.name)
                 {
                     stripdir = f.name;
-                    striplen = ogzdir + 1 - f.name;
+                    striplen = cmrdir + 1 - f.name;
                 }
                 if(!mountdir) mountdir = "packages/base/";
                 break;

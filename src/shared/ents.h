@@ -1,4 +1,4 @@
-// this file defines static map entities ("entity") and dynamic entities (players/monsters, "dynent")
+// this file defines static map entities ("entity") and dynamic entities (players, "dynent")
 // the gamecode extends these types to add game specific functionality
 
 // ET_*: the only static entity types dictated by the engine... rest are gamecode dependent

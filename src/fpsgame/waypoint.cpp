@@ -620,7 +620,7 @@ namespace ai
                     addwaypoint(e.o);
                     break;
                 default:
-                    if(e.type >= I_SHELLS && e.type <= I_QUAD) addwaypoint(e.o);
+                    if(e.type >= I_HEALTH && e.type <= I_AMMO) addwaypoint(e.o);
                     break;
             }
         }

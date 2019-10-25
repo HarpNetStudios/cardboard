@@ -76,7 +76,9 @@ VARP(connectport, 0, 0, 0xFFFF);
 void connectserv(const char *servername, int serverport, const char *serverpassword)
 {  
 	#ifdef CURLENABLED
-		if (offline == 1) { conoutf("\f3cannot connect to servers in offline mode"); return; }
+		#ifndef DEVBUILD	
+			if (offline == 1) { conoutf("\f3cannot connect to servers in offline mode"); return; }
+		#endif
 		getuserinfo_(false);
 	#endif
 	globalgamestate = -1;

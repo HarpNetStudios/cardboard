@@ -157,7 +157,8 @@ const struct material
     {"gameclip", MAT_GAMECLIP},
     {"death", MAT_DEATH},
     {"alpha", MAT_ALPHA},
-	{"spaceclip", MAT_SPACECLIP}
+	{"spaceclip", MAT_SPACECLIP},
+	{"jumpreset", MAT_JUMPRESET}
 };
 
 int findmaterial(const char *name)
@@ -177,7 +178,7 @@ const char *findmaterialname(int mat)
    
 const char *getmaterialdesc(int mat, const char *prefix)
 {
-    static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA, MAT_SPACECLIP };
+    static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA, MAT_SPACECLIP, MAT_JUMPRESET };
     static oldstring desc;
     desc[0] = '\0';
     loopi(sizeof(matmasks)/sizeof(matmasks[0])) if(mat&matmasks[i])
@@ -223,7 +224,7 @@ void genmatsurfs(const cube &c, const ivec &co, int size, vector<materialsurface
 {
     loopi(6)
     {
-        static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA, MAT_SPACECLIP };
+        static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA, MAT_SPACECLIP, MAT_JUMPRESET };
         loopj(sizeof(matmasks)/sizeof(matmasks[0]))
         {
             int matmask = matmasks[j];
@@ -469,7 +470,7 @@ void setupmaterials(int start, int len)
     if(hasmat&(0xF<<MAT_GLASS)) useshaderbyname("glass");
 }
 
-VARP(showmat, 0, 1, 1);
+VARP(showmat, 0, 1, 2);
 
 static int sortdim[3];
 static ivec sortorigin;
@@ -527,7 +528,7 @@ void sortmaterials(vector<materialsurface *> &vismats)
         loopi(va->matsurfs)
         {
             materialsurface &m = va->matbuf[i];
-            if(!editmode || !showmat || drawtex)
+            if((!editmode && !showmat == 1) || drawtex)
             {
                 int matvol = m.material&MATF_VOLUME;
                 if(matvol==MAT_WATER && (m.orient==O_TOP || (refracting<0 && reflectz>worldsize))) { i += m.skip; continue; }
@@ -565,6 +566,7 @@ void rendermatgrid(vector<materialsurface *> &vismats)
                 case MAT_DEATH:     color = bvec(40, 40, 40); break; // black
                 case MAT_ALPHA:     color = bvec(85,  0, 85); break; // pink
 				case MAT_SPACECLIP: color = bvec(60, 60, 60); break; // gray
+				case MAT_JUMPRESET: color = bvec(255, 0,  0); break; // very red
                 default:continue;
             }
             gle::color(color);
@@ -657,7 +659,7 @@ void rendermaterials()
     GLOBALPARAM(camera, camera1->o);
 
     int lastfogtype = 1;
-    if(editmode && showmat && !drawtex)
+    if(((editmode && showmat == 1) || (showmat == 2)) && !drawtex)
     {
         glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
         glEnable(GL_BLEND); blended = true;
@@ -681,6 +683,7 @@ void rendermaterials()
                     case MAT_DEATH:     color = bvec(192, 192, 192); break; // black
                     case MAT_ALPHA:     color = bvec(  0, 255,   0); break; // pink
 					case MAT_SPACECLIP: color = bvec(230, 230, 230); break; // gray
+					case MAT_JUMPRESET: color = bvec(  0, 127, 127); break; // very red
                     default: continue;
                 }
                 gle::color(color);
@@ -893,7 +896,7 @@ void rendermaterials()
     if(blended) glDisable(GL_BLEND);
     if(!lastfogtype) resetfogcolor();
     extern int wireframe;
-    if(editmode && showmat && !drawtex && !wireframe)
+    if(((editmode && showmat == 1) || (showmat == 2)) && !drawtex && !wireframe) // COOP EDIT ONLY
     {
         foggednotextureshader->set();
         rendermatgrid(vismats);

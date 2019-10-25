@@ -190,12 +190,24 @@
 		<Unit filename="../fpsgame/server.cpp" />
 		<Unit filename="../fpsgame/waypoint.cpp" />
 		<Unit filename="../fpsgame/weapon.cpp" />
+		<Unit filename="../shared/cJSON/cJSON.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../shared/cJSON/cJSON.h" />
 		<Unit filename="../shared/command.h" />
 		<Unit filename="../shared/crypto.cpp" />
 		<Unit filename="../shared/cube.h">
 			<Option compile="1" />
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="../shared/curl/curl.h" />
+		<Unit filename="../shared/curl/curlver.h" />
+		<Unit filename="../shared/curl/easy.h" />
+		<Unit filename="../shared/curl/mprintf.h" />
+		<Unit filename="../shared/curl/multi.h" />
+		<Unit filename="../shared/curl/stdcheaders.h" />
+		<Unit filename="../shared/curl/system.h" />
+		<Unit filename="../shared/curl/typecheck-gcc.h" />
 		<Unit filename="../shared/ents.h" />
 		<Unit filename="../shared/geom.cpp" />
 		<Unit filename="../shared/geom.h" />

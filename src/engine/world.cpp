@@ -1149,7 +1149,7 @@ int findentity(int type, int index, int attr1, int attr2)
 
 int spawncycle = -1;
 
-void findplayerspawn(dynent *d, int forceent, int tag)   // place at random spawn. also used by monsters!
+void findplayerspawn(dynent *d, int forceent, int tag)   // place at random spawn.
 {
 	//conoutf("tag: %d", tag);
     int pick = forceent;

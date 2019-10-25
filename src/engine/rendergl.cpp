@@ -2186,7 +2186,9 @@ VARP(showfpsrange, 0, 0, 1);
 VAR(showeditstats, 0, 0, 1);
 VAR(statrate, 1, 200, 1000);
 
-FVARP(conscale, 1e-3f, 0.33f, 1e3f);
+FVARP(conscale, 1e-3f, 0.275f, 1e3f);
+
+VARP(showversion, 0, 1, 1);
 
 void gl_drawhud()
 {
@@ -2250,13 +2252,21 @@ void gl_drawhud()
     int conw = int(w/conscale), conh = int(h/conscale), abovehud = conh - FONTH, limitgui = abovehud;
     if(!hidehud && !mainmenu)
     {
-        if(!mainmenu)
-        {
-            pushhudmatrix();
-            hudmatrix.scale(conscale, conscale, 1);
-            flushhudmatrix();
+		if (!mainmenu)
+		{
+			pushhudmatrix();
+			hudmatrix.scale(conscale, conscale, 1);
+			flushhudmatrix();
+			if (showversion)
+			{
+				oldstring versioninfo;
+				formatstring(versioninfo, "\fa%s %s %s (%s)", game::gametitle, game::gamestage, game::gameversion, __DATE__);
 
-            draw_textf("\f3%s %s %s (%s)", conw-18*FONTH, 20, game::gametitle, game::gamestage, game::gameversion, __DATE__); //abovehud-FONTH*4
+				int vw, vh;
+				text_bounds(versioninfo, vw, vh);
+
+				draw_textf(versioninfo, conw - vw - FONTW, 20); //abovehud-FONTH*4
+			}
             if(!hidestats)
             {
                 int roffset = 0;

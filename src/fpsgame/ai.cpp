@@ -116,7 +116,7 @@ namespace ai
         {
             if(lastmillis >= d->ai->lastaimrnd)
             {
-                const int aiskew[NUMGUNS] = { 1, 10, 50, 5, 20, 1, 100, 10, 10, 10, 1, 1 };
+                const int aiskew[NUMGUNS] = { 1, 10, 50, 5, 20, 1, 100 };
                 #define rndaioffset(r) ((rnd(int(r*aiskew[d->gunselect]*2)+1)-(r*aiskew[d->gunselect]))*(1.f/float(max(d->skill, 1))))
                 loopk(3) d->ai->aimrnd[k] = rndaioffset(e->radius);
                 int dur = (d->skill+10)*10;
@@ -265,7 +265,7 @@ namespace ai
 
     bool badhealth(fpsent *d)
     {
-        if(d->skill <= 100) return d->health <= (111-d->skill)/4;
+        if(d->skill*10 <= 1000) return d->health <= (1110-d->skill*10)/4;
         return false;
     }
 
@@ -413,13 +413,11 @@ namespace ai
             case I_HEALTH:
                 if(d->health < min(d->skill, 75)) score = 1e3f;
                 break;
-            case I_QUAD: score = 1e3f; break;
-            case I_BOOST: score = 1e2f; break;
             default:
             {
-                if(e.type >= I_SMG && e.type <= I_GRENADES && !d->hasmaxammo(e.type))
+                if(e.type == I_AMMO && !d->hasmaxammo(e.type))
                 {
-                    int gun = e.type - I_SMG + GUN_SMG;
+					int gun = e.type;// - I_SMG + GUN_SMG;
                     // go get a weapon upgrade
                     if(gun == d->ai->weappref) score = 1e8f;
                     else if(isgoodammo(gun)) score = hasgoodammo(d) ? 1e2f : 1e4f;
@@ -483,13 +481,13 @@ namespace ai
         interests.setsize(0);
         if(!m_noitems)
         {
-            if((!m_noammo && !hasgoodammo(d)) || d->health < min(d->skill - 15, 75))
+            if((!m_noammo && !hasgoodammo(d)) || d->health < min(d->skill*10 - 150, 750))
                 items(d, b, interests);
             else
             {
                 static vector<int> nearby;
                 nearby.setsize(0);
-                findents(I_SMG, I_QUAD, false, d->feetpos(), vec(32, 32, 24), nearby);
+                findents(I_HEALTH, I_AMMO, false, d->feetpos(), vec(32, 32, 24), nearby);
                 loopv(nearby)
                 {
                     int id = nearby[i];
@@ -588,7 +586,7 @@ namespace ai
 
     void itemspawned(int ent)
     {
-        if(entities::ents.inrange(ent) && entities::ents[ent]->type >= I_SMG && entities::ents[ent]->type <= I_QUAD)
+        if(entities::ents.inrange(ent) && entities::ents[ent]->type >= I_HEALTH && entities::ents[ent]->type <= I_AMMO)
         {
             loopv(players) if(players[i] && players[i]->ai && players[i]->aitype == AI_BOT && players[i]->canpickup(entities::ents[ent]->type))
             {
@@ -596,12 +594,11 @@ namespace ai
                 bool wantsitem = false;
                 switch(entities::ents[ent]->type)
                 {
-                    case I_BOOST: case I_HEALTH: wantsitem = badhealth(d); break;
-                    case I_QUAD: break;
+                    case I_HEALTH: wantsitem = badhealth(d); break;
+					case I_AMMO:
                     default:
                     {
-                        itemstat &is = itemstats[entities::ents[ent]->type-I_SMG];
-                        wantsitem = isgoodammo(is.info) && d->ammo[is.info] <= (d->ai->weappref == is.info ? is.add : is.add/2);
+						loopi(6) wantsitem = !wantsitem && d->ammo[i+1] <= (d->ai->weappref == i+1 ? guns[i+1].ammoadd : guns[i+1].ammoadd / 2);
                         break;
                     }
                 }
@@ -689,7 +686,7 @@ namespace ai
                 if(entities::ents.inrange(b.target))
                 {
                     extentity &e = *(extentity *)entities::ents[b.target];
-                    if(!e.spawned() || e.type < I_SMG || e.type > I_GRENADES || d->hasmaxammo(e.type)) return 0;
+                    if(!e.spawned() || e.type != I_AMMO || d->hasmaxammo(e.type)) return 0;
                     //if(d->feetpos().squaredist(e.o) <= CLOSEDIST*CLOSEDIST)
                     //{
                     //    b.idle = 1;
