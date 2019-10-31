@@ -630,46 +630,36 @@ static bool lumelsample(const vec &sample, int aasample, int stride)
     return false;
 }
 
-static void calcskylight(lightmapworker *w, const vec &o, const vec &normal, float tolerance, uchar *skylight, int flags = RAY_ALPHAPOLY, extentity *t = NULL)
+FVARR(skylightrange, 0.0f, 128.0f, 1e15f);
+VARR(skylightsamples, 16, 64, 128);
+static void calcskylight(lightmapworker* const w, const vec& o, const vec& normal, float tolerance, uchar* skylight, int flags = RAY_ALPHAPOLY, extentity* t = NULL)
 {
-    static const vec rays[17] =
-    {
-        vec(cosf(21*RAD)*cosf(50*RAD), sinf(21*RAD)*cosf(50*RAD), sinf(50*RAD)),
-        vec(cosf(111*RAD)*cosf(50*RAD), sinf(111*RAD)*cosf(50*RAD), sinf(50*RAD)),
-        vec(cosf(201*RAD)*cosf(50*RAD), sinf(201*RAD)*cosf(50*RAD), sinf(50*RAD)),
-        vec(cosf(291*RAD)*cosf(50*RAD), sinf(291*RAD)*cosf(50*RAD), sinf(50*RAD)),
-
-        vec(cosf(66*RAD)*cosf(70*RAD), sinf(66*RAD)*cosf(70*RAD), sinf(70*RAD)),
-        vec(cosf(156*RAD)*cosf(70*RAD), sinf(156*RAD)*cosf(70*RAD), sinf(70*RAD)),
-        vec(cosf(246*RAD)*cosf(70*RAD), sinf(246*RAD)*cosf(70*RAD), sinf(70*RAD)),
-        vec(cosf(336*RAD)*cosf(70*RAD), sinf(336*RAD)*cosf(70*RAD), sinf(70*RAD)),
-       
-        vec(0, 0, 1),
-
-        vec(cosf(43*RAD)*cosf(60*RAD), sinf(43*RAD)*cosf(60*RAD), sinf(60*RAD)),
-        vec(cosf(133*RAD)*cosf(60*RAD), sinf(133*RAD)*cosf(60*RAD), sinf(60*RAD)),
-        vec(cosf(223*RAD)*cosf(60*RAD), sinf(223*RAD)*cosf(60*RAD), sinf(60*RAD)),
-        vec(cosf(313*RAD)*cosf(60*RAD), sinf(313*RAD)*cosf(60*RAD), sinf(60*RAD)),
-
-        vec(cosf(88*RAD)*cosf(80*RAD), sinf(88*RAD)*cosf(80*RAD), sinf(80*RAD)),
-        vec(cosf(178*RAD)*cosf(80*RAD), sinf(178*RAD)*cosf(80*RAD), sinf(80*RAD)),
-        vec(cosf(268*RAD)*cosf(80*RAD), sinf(268*RAD)*cosf(80*RAD), sinf(80*RAD)),
-        vec(cosf(358*RAD)*cosf(80*RAD), sinf(358*RAD)*cosf(80*RAD), sinf(80*RAD)),
-
-    };
+	static vec rays[128];
+	static int lastsamples = 0;
+	if (normal.iszero()) return;
+	if (lastsamples != skylightsamples) loopi(skylightsamples) // generate uniform random rays in a sphere
+	{
+		float t = rndscale(PI2);
+		float z = rndscale(2) - 1;
+		float r = sqrtf(1.0f - z * z);
+		rays[i].x = r * cosf(t);
+		rays[i].y = r * sinf(t);
+		rays[i].z = z;
+	}
+	lastsamples = skylightsamples;
     flags |= RAY_SHADOW;
     if(skytexturelight) flags |= RAY_SKIPSKY;
-    int hit = 0;
-    if(w) loopi(17) 
+	float hit = 0.0f;
+	loopi(skylightsamples)
     {
-        if(normal.dot(rays[i])>=0 && shadowray(w->shadowraycache, vec(rays[i]).mul(tolerance).add(o), rays[i], 1e16f, flags, t)>1e15f) hit++;
-    }
-    else loopi(17) 
-    {
-        if(normal.dot(rays[i])>=0 && shadowray(vec(rays[i]).mul(tolerance).add(o), rays[i], 1e16f, flags, t)>1e15f) hit++;
+		vec ray(rays[i]);
+		if (normal.dot(ray) < 0) ray.neg();
+		float test = w ? shadowray(w->shadowraycache, vec(ray).mul(tolerance).add(o), ray, 1e16f, flags, t)
+			: shadowray(w->shadowraycache, vec(ray).mul(tolerance).add(o), ray, 1e16f, flags, t);
+		hit += min(test, skylightrange) / skylightrange;
     }
 
-    loopk(3) skylight[k] = uchar(ambientcolor[k] + (max(skylightcolor[k], ambientcolor[k]) - ambientcolor[k])*hit/17.0f);
+	loopk(3) skylight[k] = uchar(ambientcolor[k] + (max(skylightcolor[k], ambientcolor[k]) - ambientcolor[k]) * hit / skylightsamples);
 }
 
 static inline bool hasskylight()

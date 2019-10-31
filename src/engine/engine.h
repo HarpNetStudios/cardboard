@@ -11,6 +11,7 @@
 #include "bih.h"
 #include "texture.h"
 #include "model.h"
+#include "irc.h"
 
 extern dynent *player;
 extern physent *camera1;                // special ent that acts as camera, same object as player1 in FPS mode
@@ -405,6 +406,7 @@ extern void checksleep(int millis);
 extern void clearsleep(bool clearoverrides = true);
 
 // console
+extern bool consoleprompt();
 extern void processtextinput(const char *str, int len);
 extern void processkey(int code, bool isdown);
 extern int rendercommand(int x, int y, int w);
@@ -437,6 +439,21 @@ extern bool initwarning(const char *desc, int level = INIT_RESET, int type = CHA
 
 extern bool grabinput, minimized;
 
+namespace rawinput
+{
+	extern bool enabled;
+	extern int debugrawmouse;
+	void pick(const char* name);
+	void release();
+	void flush();
+}
+
+namespace joystick
+{
+	void handleevent(const SDL_Event& e);
+	void release();
+}
+
 extern void pushevent(const SDL_Event &e);
 extern bool interceptkey(int sym);
 
@@ -463,6 +480,7 @@ extern void clearchanges(int type);
 
 // physics
 extern void mousemove(int dx, int dy);
+extern void joymove(float dx, float dy);
 extern bool overlapsdynent(const vec &o, float radius);
 extern void rotatebb(vec &center, vec &radius, int yaw);
 extern float shadowray(const vec &o, const vec &ray, float radius, int mode, extentity *t = NULL);
@@ -589,15 +607,6 @@ extern void renderblendbrush();
 extern bool loadblendmap(stream *f, int info);
 extern void saveblendmap(stream *f);
 extern uchar shouldsaveblendmap();
-
-// recorder
-
-namespace recorder
-{
-    extern void stop();
-    extern void capture(bool overlay = true);
-    extern void cleanup();
-}
 
 #endif
 

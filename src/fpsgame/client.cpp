@@ -609,11 +609,12 @@ namespace game
     }
     ICOMMAND(map, "s", (char *name), changemap(name));
 
-    void forceintermission()
+	void voterestart(int* favor)
     {
-        if(!remote && !hasnonlocalclients()) server::startintermission();
-        else addmsg(N_FORCEINTERMISSION, "r");
-    }
+		if (!remote && *favor) server::restartgame();
+		else if (player1->state != CS_SPECTATOR || player1->privilege) addmsg(N_RESTARTVOTE, "ri", *favor);
+	}
+	COMMAND(voterestart, "i");
 
     void forceedit(const char *name)
     {
@@ -955,8 +956,10 @@ namespace game
     {
         putint(q, N_POS);
         putuint(q, d->clientnum);
-        // 3 bits phys state, 1 bit life sequence, 2 bits move, 2 bits strafe
-        uchar physstate = d->physstate | ((d->lifesequence&1)<<3) | ((d->move&3)<<4) | ((d->strafe&3)<<6);
+        // 3 bits phys state, 1 bit life sequence, 4 bits unused
+		uchar physstate
+			= d->physstate
+			| ((d->lifesequence & 1) << 3);
         q.put(physstate);
         ivec o = ivec(vec(d->o.x, d->o.y, d->o.z-d->eyeheight).mul(DMF));
         uint vel = min(int(d->vel.magnitude()*DVELF), 0xFFFF), fall = min(int(d->falling.magnitude()*DVELF), 0xFFFF);
@@ -1004,6 +1007,8 @@ namespace game
                 q.put((falldir>>8)&0xFF);
             }
         }
+		putint(q, int(d->fmove* DNF));
+		putint(q, int(d->fstrafe* DNF));
     }
 
     void sendposition(fpsent *d, bool reliable)
@@ -1121,7 +1126,7 @@ namespace game
         const float dz = player1->o.z-d->o.z;
         const float rz = player1->aboveeye+d->eyeheight;
         const float fx = (float)fabs(dx), fy = (float)fabs(dy), fz = (float)fabs(dz);
-        if(fx<r && fy<r && fz<rz && player1->state!=CS_SPECTATOR && d->state!=CS_DEAD)
+        if(fx<r && fy<r && fz<rz && !spectating(player1) && d->state!=CS_DEAD)
         {
             if(fx<fy) d->o.y += dy<0 ? r-fy : -(r-fy);  // push aside
             else      d->o.x += dx<0 ? r-fx : -(r-fx);
@@ -1170,6 +1175,8 @@ namespace game
                     falling.mul(mag/DVELF);
                 }
                 else falling = vec(0, 0, 0);
+				float fmove = getint(p) / DNF;
+				float fstrafe = getint(p) / DNF;
                 int seqcolor = (physstate>>3)&1;
                 fpsent *d = getclient(cn);
                 if(!d || d->lifesequence < 0 || seqcolor!=(d->lifesequence&1) || d->state==CS_DEAD) continue;
@@ -1177,8 +1184,8 @@ namespace game
                 d->yaw = yaw;
                 d->pitch = pitch;
                 d->roll = roll;
-                d->move = (physstate>>4)&2 ? -1 : (physstate>>4)&1;
-                d->strafe = (physstate>>6)&2 ? -1 : (physstate>>6)&1;
+				d->fmove = fmove;
+				d->fstrafe = fstrafe;
                 vec oldpos(d->o);
                 d->o = o;
                 d->o.z += d->eyeheight;
@@ -1362,6 +1369,14 @@ namespace game
                 conoutf(CON_TEAMCHAT, "%s:\f1 %s", colorname(t), text);
                 break;
             }
+
+			case N_RESTARTGAME:
+			{
+				// dont startgame(), it loads map
+				entities::spawnitems();
+				startgame();
+				break;
+			}
 
             case N_MAPCHANGE:
                 getstring(text, p);

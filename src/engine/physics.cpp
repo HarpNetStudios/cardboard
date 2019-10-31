@@ -1212,7 +1212,7 @@ bool trystepdown(physent *d, vec &dir, float step, float xy, float z, bool init 
 
 bool trystepdown(physent *d, vec &dir, bool init = false)
 {
-    if((!d->move && !d->strafe) || !game::allowmove(d)) return false;
+    if(!d->tryingtomove() || !game::allowmove(d)) return false;
     vec old(d->o);
     d->o.z -= STAIRHEIGHT;
     d->zmargin = -STAIRHEIGHT;
@@ -1598,6 +1598,43 @@ void vecfromyawpitch(float yaw, float pitch, int move, int strafe, vec &m)
     }
 }
 
+FVARP(joyminthreshold, 0.0f, 0.05f, 1.0f);
+FVARP(joymaxthreshold, 0.0f, 1.0f, 1.0f);
+
+void vecfrommovement(float yaw, float pitch, float move, float strafe, vec& m)
+{
+	if (move)
+	{
+		m.x = move * -sinf(RAD * yaw);
+		m.y = move * cosf(RAD * yaw);
+	}
+	else m.x = m.y = 0;
+
+	if (pitch)
+	{
+		m.x *= cosf(RAD * pitch);
+		m.y *= cosf(RAD * pitch);
+		m.z = move * sinf(RAD * pitch);
+	}
+	else m.z = 0;
+
+	if (strafe)
+	{
+		m.x += strafe * cosf(RAD * yaw);
+		m.y += strafe * sinf(RAD * yaw);
+	}
+
+	const float mag = m.magnitude();
+	if (mag <= joyminthreshold || joyminthreshold >= joymaxthreshold)
+	{
+		m = vec(0.0f);
+		return;
+	}
+	const float scaledmag =
+		(mag - joyminthreshold)
+		/ (joymaxthreshold - joyminthreshold);
+	m.mul(min(1.0f, scaledmag) / mag);
+}
 
 void vectoyawpitch(const vec &v, float &yaw, float &pitch)
 {
@@ -1644,7 +1681,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 
 	//conoutf(CON_DEBUG, "jumpstate: %d", pl->jumpstate);
 
-    if(pl->spacepack && !pl->spaceclip)
+    else if(pl->spacepack && !pl->spaceclip)
     {
         if(pl->jumping && allowmove)
 		{
@@ -1694,9 +1731,15 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 	}
 
     vec m(0.0f, 0.0f, 0.0f);
-    if((pl->move || pl->strafe) && allowmove)
+    if(pl->tryingtomove() && allowmove)
     {
-        vecfromyawpitch(pl->yaw, (pl->spacepack && !pl->spaceclip) || floating || water || pl->type==ENT_CAMERA ? pl->pitch : 0, pl->move, pl->strafe, m);
+		vecfrommovement
+		(pl->yaw
+			, (pl->spacepack && !pl->spaceclip) || floating || water || pl->type == ENT_CAMERA ? pl->pitch : 0
+			, pl->fmove
+			, pl->fstrafe
+			, m
+		);
 
         if((!floating || !pl->spacepack) && pl->physstate >= PHYS_SLOPE)
         {
@@ -1711,14 +1754,14 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
     }
 
     vec d(m);
-    d.mul(pl->maxspeed);
+    d.mul(pl->maxspeed); // TODO: joystick analog movement speed 
     if(pl->type==ENT_PLAYER)
     {
         if(floating)
         {
             if(pl==player) d.mul(floatspeed/100.0f);
         }
-        //else if(!water && allowmove) d.mul((pl->move && !pl->strafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
+        //else if(!water && allowmove) d.mul((pl->fmove && !pl->fstrafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
 		else if (!water && allowmove) d.mul(1.3f * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
     }
 	calcfric(pl, local, water, floating, curtime, d);
@@ -1736,7 +1779,7 @@ void modifygravity(physent *pl, bool water, int curtime)
         g.normalize();
         g.mul(gravity*secs);
     }
-    if(!water || !game::allowmove(pl) || (!pl->move && !pl->strafe))
+    if(!water || !game::allowmove(pl) || !pl->tryingtomove())
     {
         if (!pl->spacepack || pl->spaceclip) pl->falling.add(g);
     }
@@ -1774,7 +1817,7 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 	modifyvelocity(pl, local, water, floating, curtime);
 
 	vec d(pl->vel);
-	if ((!floating || !ispack) && water && !editmode) d.mul(0.5f);
+	if (!floating && water && !editmode) d.mul(0.5f);
 	d.add(pl->falling);
 	d.mul(secs);
 
@@ -1822,7 +1865,7 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 
 	// automatically apply smooth roll when strafing
 
-	if (pl->strafe && maxroll) pl->roll = clamp(pl->roll - pow(clamp(1.0f + pl->strafe * pl->roll / maxroll, 0.0f, 1.0f), 0.33f) * pl->strafe * curtime * straferoll, -maxroll, maxroll);
+	if (pl->fstrafe && maxroll) pl->roll = clamp(pl->roll - pow(clamp(1.0f + pl->fstrafe * pl->roll / maxroll, 0.0f, 1.0f), 0.33f) * pl->fstrafe * curtime * straferoll, -maxroll, maxroll);
 	else pl->roll *= curtime == PHYSFRAMETIME ? faderoll : pow(faderoll, curtime / float(PHYSFRAMETIME));
 
 	// play sounds on water transitions if not in edit mode
@@ -2129,10 +2172,10 @@ bool moveplatform(physent *p, const vec &dir)
 
 #define dir(name,v,d,s,os) ICOMMAND(name, "D", (int *down), { player->s = *down!=0; player->v = player->s ? d : (player->os ? -(d) : 0); });
 
-dir(backward, move,   -1, k_down,  k_up);
-dir(forward,  move,    1, k_up,    k_down);
-dir(left,     strafe,  1, k_left,  k_right);
-dir(right,    strafe, -1, k_right, k_left);
+dir(backward, fmove,   -1.0f, k_down,  k_up);
+dir(forward,  fmove,    1.0f, k_up,    k_down);
+dir(left,     fstrafe,  1.0f, k_left,  k_right);
+dir(right,    fstrafe, -1.0f, k_right, k_left);
 
 ICOMMAND(jump,   "D", (int *down), {
          if(!*down || game::canjump())

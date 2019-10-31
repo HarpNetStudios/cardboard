@@ -65,6 +65,11 @@ int rendercommand(int x, int y, int w)
     return height;
 }
 
+bool consoleprompt() // is the console command prompt open?
+{
+	return commandmillis >= 0;
+}
+
 VARP(consize, 0, 5, 100);
 VARP(miniconsize, 0, 5, 100);
 VARP(miniconwidth, 0, 40, 100);
@@ -149,9 +154,9 @@ int renderconsole(int w, int h, int abovehud)                   // render buffer
     extern void consolebox(int x1, int y1, int x2, int y2);
     if(fullconsole) consolebox(conpad, conpad, conwidth+conpad+2*conoff, conheight+conpad+2*conoff);
     
-    int y = drawconlines(conskip, fullconsole ? 0 : confade, conwidth, conheight, conpad+conoff, fullconsole ? fullconfilter : confilter);
+    int y = drawconlines(conskip, fullconsole ? 0 : confade, conwidth, conheight, conpad+conoff, fullconsole ? fullconfilter : confilter&(~CON_IRC));
     if(!fullconsole && (miniconsize && miniconwidth))
-        drawconlines(miniconskip, miniconfade, (miniconwidth*(w - 2*(conpad + conoff)))/100, min(FONTH*miniconsize, abovehud - y), conpad+conoff, miniconfilter, abovehud, -1);
+        drawconlines(miniconskip, miniconfade, (miniconwidth*(w - 2*(conpad + conoff)))/100, min(FONTH*miniconsize, abovehud - y), conpad+conoff, miniconfilter|CON_IRC, abovehud, -1);
     return fullconsole ? conheight + 2*(conpad + conoff) : y;
 }
 
@@ -398,7 +403,7 @@ void execbind(keym &k, bool isdown)
         if(!mainmenu)
         {
             if(editmode) state = keym::ACTION_EDITING;
-            else if(player->state==CS_SPECTATOR) state = keym::ACTION_SPECTATOR;
+            else if(game::spectating(player)) state = keym::ACTION_SPECTATOR;
         }
         char *&action = k.actions[state][0] ? k.actions[state] : k.actions[keym::ACTION_DEFAULT];
         keyaction = action;
@@ -432,6 +437,49 @@ bool consoleinput(const char *str, int len)
     return true;
 }
 
+void killforward(int count)
+{
+	int len = (int)strlen(commandbuf);
+	if (commandpos < 0) return;
+	memmove(&commandbuf[commandpos], &commandbuf[commandpos + count], len - commandpos);
+	resetcomplete();
+	if (commandpos >= len - count) commandpos = -1;
+}
+void killbackward(int count)
+{
+	int len = (int)strlen(commandbuf), i = commandpos >= 0 ? commandpos : len;
+	if (i < 1) return;
+	memmove(&commandbuf[i - count], &commandbuf[i], len - i + 1);
+	resetcomplete();
+	if (commandpos > 0) commandpos -= count;
+	else if (!commandpos && len <= 1) commandpos = -1;
+}
+inline bool wordpart(char c)
+{
+	return
+		(c >= 'a' && c <= 'z') ||
+		(c >= 'A' && c <= 'Z') ||
+		(c >= '0' && c <= '9');
+}
+int wordforward(const int start)
+{
+	int i = start;
+	for (; commandbuf[i] && !wordpart(commandbuf[i]); i++);
+	for (; commandbuf[i] && wordpart(commandbuf[i]); i++);
+	return i;
+}
+inline int commandindex()
+{
+	return commandpos >= 0 ? commandpos : strlen(commandbuf);
+}
+int wordbackward(const int start)
+{
+	int i = max(0, start - 1);
+	for (; i > 0 && !wordpart(commandbuf[i]); i--);
+	for (; i > 0 && wordpart(commandbuf[i]); i--);
+	return min(start, i + 1);
+}
+
 bool consolekey(int code, bool isdown)
 {
     if(commandmillis < 0) return false;
@@ -441,6 +489,7 @@ bool consolekey(int code, bool isdown)
     #else
         #define MOD_KEYS (KMOD_LCTRL|KMOD_RCTRL)
     #endif
+	const SDL_Keymod modifier = SDL_GetModState();
 
     if(isdown)
     {
@@ -460,32 +509,37 @@ bool consolekey(int code, bool isdown)
 
             case SDLK_DELETE:
             {
-                int len = (int)strlen(commandbuf);
-                if(commandpos<0) break;
-                memmove(&commandbuf[commandpos], &commandbuf[commandpos+1], len - commandpos);
-                resetcomplete();
-                if(commandpos>=len-1) commandpos = -1;
+				if (modifier & KMOD_ALT)
+				{
+					int word = wordforward(commandpos);
+					if (word > 0) killforward(word - commandpos);
+				}
+				else killforward(1);
                 break;
             }
 
             case SDLK_BACKSPACE:
             {
-                int len = (int)strlen(commandbuf), i = commandpos>=0 ? commandpos : len;
-                if(i<1) break;
-                memmove(&commandbuf[i-1], &commandbuf[i], len - i + 1);
-                resetcomplete();
-                if(commandpos>0) commandpos--;
-                else if(!commandpos && len<=1) commandpos = -1;
+				if (modifier & KMOD_ALT)
+				{
+					const int start = commandindex();
+					int back = start - wordbackward(start);
+					if (back > 0) killbackward(back);
+				}
+				else killbackward(1);
                 break;
             }
 
             case SDLK_LEFT:
-                if(commandpos>0) commandpos--;
+                if(modifier&KMOD_ALT) commandpos = wordbackward(commandindex());
+                else if(commandpos>0) commandpos--;
                 else if(commandpos<0) commandpos = (int)strlen(commandbuf)-1;
                 break;
 
             case SDLK_RIGHT:
-                if(commandpos>=0 && ++commandpos>=(int)strlen(commandbuf)) commandpos = -1;
+                if(modifier&KMOD_ALT) commandpos = wordforward(commandpos);
+                else if(commandpos>=0) commandpos++;
+                if(commandpos >= (int)strlen(commandbuf)) commandpos = -1;
                 break;
 
             case SDLK_UP:
@@ -506,8 +560,11 @@ bool consolekey(int code, bool isdown)
                 break;
 
             case SDLK_v:
-                if(SDL_GetModState()&MOD_KEYS) pasteconsole();
-                break;
+				if (modifier & MOD_KEYS)
+				{
+					pasteconsole();
+					break;
+				}
         }
     }
     else
@@ -609,12 +666,14 @@ struct filesval
     filesval(int type, const char *dir, const char *ext) : type(type), dir(newstring(dir)), ext(ext && ext[0] ? newstring(ext) : NULL), millis(-1) {}
     ~filesval() { DELETEA(dir); DELETEA(ext); files.deletearrays(); }
 
+	static bool comparefiles(const char* x, const char* y) { return strcmp(x, y) < 0; }
+
     void update()
     {
         if(type!=FILES_DIR || millis >= commandmillis) return;
         files.deletearrays();        
         listfiles(dir, ext, files);
-        files.sort();
+        files.sort(comparefiles);
         loopv(files) if(i && !strcmp(files[i], files[i-1])) delete[] files.remove(i--);
         millis = totalmillis;
     }

@@ -75,7 +75,7 @@ struct physent                                  // base entity type, can be affe
     int jumpstate;								// state of the jump, 1 for single, 2 for double
     bool candouble;								// used to see if the player can double jump
 	bool spacepack, spaceclip;					// used to see if the player can activate spacepack
-    char move, strafe;
+    float fmove, fstrafe;
 
     uchar physstate;                            // one of PHYS_* above
     uchar state, editstate;                     // one of CS_* above
@@ -107,7 +107,7 @@ struct physent                                  // base entity type, can be affe
 		spacepack = false;
 		spaceclip = false;
 		jumpstate = 0;
-        strafe = move = 0;
+        fstrafe = fmove = 0.0f;
         physstate = PHYS_FALL;
         vel = falling = vec(0, 0, 0);
         floor = vec(0, 0, 1);
@@ -117,6 +117,7 @@ struct physent                                  // base entity type, can be affe
     vec headpos(float offset = 0) const { return vec(o).add(vec(0, 0, offset)); }
 
     bool maymove() const { return timeinair || physstate < PHYS_FLOOR || vel.squaredlen() > 1e-4f || deltapos.squaredlen() > 1e-4f; }
+	bool tryingtomove() const { return fmove != 0.0f || fstrafe != 0.0f; }
 };
 
 enum
@@ -222,7 +223,7 @@ struct dynent : physent                         // animated characters, or chara
     void stopmoving()
     {
         k_left = k_right = k_up = k_down = jumping = false;
-        move = strafe = 0;
+        fmove = fstrafe = 0.0f;
     }
 
     void reset()

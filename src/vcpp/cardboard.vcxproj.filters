@@ -67,9 +67,6 @@
     <ClCompile Include="..\engine\menus.cpp">
       <Filter>engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\movie.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\engine\normal.cpp">
       <Filter>engine</Filter>
     </ClCompile>
@@ -173,6 +170,15 @@
       <Filter>shared</Filter>
     </ClCompile>
     <ClCompile Include="..\engine\translate.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\raw.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\joy.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\irc.cpp">
       <Filter>engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -301,6 +307,9 @@
       <Filter>fpsgame</Filter>
     </ClInclude>
     <ClInclude Include="..\engine\translate.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\irc.h">
       <Filter>engine</Filter>
     </ClInclude>
   </ItemGroup>

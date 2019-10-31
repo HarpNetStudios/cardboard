@@ -28,6 +28,17 @@ namespace server
 
     static const int DEATHMILLIS = 300;
 
+	struct serverevent // server-wide event scheduled for a specific time
+	{
+		int millis;
+		void (*action)();
+		void flush() { (action)(); }
+	};
+	namespace serverevents
+	{
+		void add(void (*action)(), int future = 0);
+	}
+
     struct clientinfo;
 
     struct gameevent
@@ -214,6 +225,7 @@ namespace server
         oldstring name, team, tags, mapvote;
         int playermodel;
         int modevote;
+		bool restartvote;
         int privilege;
         bool connected, local, timesync;
         int gameoffset, lastevent, pushed, exceeded;
@@ -285,10 +297,9 @@ namespace server
             return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange();
         }
 
-        void mapchange()
+        void gamerestart()
         {
-            mapvote[0] = 0;
-            modevote = INT_MAX;
+			restartvote = false;
             state.reset();
             events.deletecontents();
             overflow = 0;
@@ -296,11 +307,18 @@ namespace server
             lastevent = 0;
             exceeded = 0;
             pushed = 0;
-            clientmap[0] = '\0';
-            mapcrc = 0;
             warned = false;
             gameclip = false;
         }
+
+		void mapchange()
+		{
+			mapvote[0] = 0;
+			modevote = INT_MAX;
+			clientmap[0] = '\0';
+			mapcrc = 0;
+			gamerestart();
+		}
 
         void reassign()
         {
@@ -394,6 +412,33 @@ namespace server
     enet_uint32 lastsend = 0;
     int mastermode = MM_OPEN, mastermask = MM_PRIVSERV;
     stream *mapdata = NULL;
+
+	namespace serverevents
+	{
+		vector<serverevent> events;
+		void add(void (*action)(), int future)
+		{
+			serverevent& ev = events.add();
+			ev.millis = gamemillis + future;
+			ev.action = action;
+		}
+		void process()
+		{
+			loopv(events)
+			{
+				serverevent& ev = events[i];
+				if (gamemillis > ev.millis)
+				{
+					if (ev.millis > 0) ev.flush();
+					events.remove(i--);
+				}
+			}
+		}
+		void invalidate()
+		{
+			loopv(events) events[i].millis = -1;
+		}
+	}
 
     vector<uint> allowedips;
     vector<ban> bannedips;
@@ -1439,16 +1484,17 @@ namespace server
             }
             if(ci->local) return type;
         }
-        switch(msgfilter[type])
+		// only allow edit messages in coop-edit mode
+		if (type >= N_EDITENT && type <= N_EDITVAR && !m_edit) return -1;
+		// server only messages
+		static const int servtypes[] = { N_SERVINFO, N_INITCLIENT, N_WELCOME, N_MAPCHANGE, N_SERVMSG, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX, N_DIED, N_SPAWNSTATE, N_FORCEDEATH, N_TEAMINFO, N_ITEMACC, N_ITEMSPAWN, N_TIMEUP, N_CDIS, N_CURRENTMASTER, N_PONG, N_RESUME, N_BASESCORE, N_BASEINFO, N_BASEREGEN, N_SENDDEMOLIST, N_SENDDEMO, N_DEMOPLAYBACK, N_SENDMAP, N_DROPFLAG, N_SCOREFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_CLIENT, N_AUTHCHAL, N_INITAI, N_EXPIRETOKENS, N_DROPTOKENS, N_STEALTOKENS, N_DEMOPACKET };
+		if (ci)
         {
-            // server-only messages
-            case 1: return ci ? -1 : type;
-            // only allowed in coop-edit
-            case 2: if(m_edit) break; return -1;
-            // only allowed in coop-edit, no overflow check
-            case 3: return m_edit ? type : -1;
-            // no overflow check
-            case 4: return type;
+			loopi(sizeof(servtypes) / sizeof(int)) if (type == servtypes[i]) return -1;
+			if (type < N_EDITENT || type > N_EDITVAR || !m_edit)
+			{
+				if (type != N_POS && ++ci->overflow >= 200) return -2;
+			}
         }
         if(ci && ++ci->overflow >= 200) return -2;
         return type;
@@ -1854,12 +1900,54 @@ namespace server
         notgotitems = false;
     }
 
+	void restartgame()
+	{
+		stopdemo();
+		pausegame(false);
+		changegamespeed(100);
+		if (smode) smode->cleanup();
+		serverevents::invalidate();
+
+		sendf(-1, 1, "ri", N_RESTARTGAME);
+
+		gamemillis = 0;
+		interm = 0;
+		nextexceeded = 0;
+		scores.shrink(0);
+		loopv(clients)
+		{
+			clientinfo* ci = clients[i];
+			ci->state.timeplayed += lastmillis - ci->state.lasttimeplayed;
+		}
+		if (m_timed) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis) / 1000, 1) : 0);
+		loopv(clients)
+		{
+			clientinfo* ci = clients[i];
+			ci->gamerestart();
+			ci->state.lasttimeplayed = lastmillis;
+			if (m_mp(gamemode) && ci->state.state != CS_SPECTATOR) sendspawn(ci);
+		}
+
+		if (m_demo)
+		{
+			if (clients.length()) setupdemoplayback();
+		}
+		else if (demonextmatch)
+		{
+			demonextmatch = false;
+			setupdemorecord();
+		}
+
+		if (smode) smode->setup();
+	}
+
     void changemap(const char *s, int mode)
     {
         stopdemo();
         pausegame(false);
         changegamespeed(100);
         if(smode) smode->cleanup();
+		serverevents::invalidate();
         aiman::clearai();
 
         gamemode = mode;
@@ -1918,6 +2006,12 @@ namespace server
         if(smode) smode->setup();
     }
 
+	void restartgamein(const int seconds)
+	{
+		const int future = seconds * 1000;
+		serverevents::add(&restartgame, future);
+	}
+
     void rotatemap(bool next)
     {
         if(!maprotations.inrange(curmaprotation))
@@ -1935,6 +2029,18 @@ namespace server
         changemap(rot.map, rot.findmode(gamemode));
     }
 
+	void checkrestartvotes()
+	{
+		loopv(clients)
+		{
+			clientinfo* ci = clients[i];
+			if (ci->state.aitype != AI_NONE || (ci->state.state == CS_SPECTATOR && !ci->privilege && !ci->local))
+				continue;
+			if (!ci->restartvote) return;
+		}
+		restartgamein(5);
+	}
+
     struct votecount
     {
         char *map;
@@ -1943,7 +2049,7 @@ namespace server
         votecount(char *s, int n) : map(s), mode(n), count(0) {}
     };
 
-    void checkvotes(bool force = false)
+    void checkmapvotes(bool force = false)
     {
         vector<votecount> votes;
         int maxvotes = 0;
@@ -1991,7 +2097,24 @@ namespace server
         changemap(map, mode);
     }
 
-    void vote(const char *map, int reqmode, int sender)
+	void restartvote(int favor, int sender)
+	{
+		clientinfo* ci = getinfo(sender);
+		if (!ci || (ci->state.state == CS_SPECTATOR && !ci->privilege && !ci->local)) return;
+		ci->restartvote = favor;
+		if (favor && (ci->local || (ci->privilege && mastermode >= MM_VETO)))
+		{
+			sendservmsgf("%s forced restart", colorname(ci));
+			
+		}
+		else
+		{
+			sendservmsgf("%s %ss restarting the game", colorname(ci), favor ? "favor" : "oppose");
+			checkrestartvotes();
+		}
+	}
+
+	void mapvote(const char* map, int reqmode, int sender)
     {
         clientinfo *ci = getinfo(sender);
         if(!ci || (ci->state.state==CS_SPECTATOR && !ci->privilege && !ci->local) || (!ci->local && !m_mp(reqmode))) return;
@@ -2020,7 +2143,7 @@ namespace server
         else
         {
             sendservmsgf("%s suggests %s on map %s (select map to vote)", colorname(ci), modename(reqmode), map[0] ? map : "[new map]");
-            checkvotes();
+            checkmapvotes();
         }
     }
 
@@ -2225,6 +2348,7 @@ namespace server
             if(curtime>0 && ci->state.quadmillis) ci->state.quadmillis = max(ci->state.quadmillis-curtime, 0);
             flushevents(ci, gamemillis);
         }
+		serverevents::process();
     }
 
     void cleartimedevents(clientinfo *ci)
@@ -2260,7 +2384,7 @@ namespace server
                 processevents();
                 if(curtime)
                 {
-                    loopv(sents) if(sents[i].spawntime) // spawn entities when timer reached
+                    loopv(sents) if(sents[i].spawntime > 0) // spawn entities when timer reached
                     {
                         int oldtime = sents[i].spawntime;
                         sents[i].spawntime -= curtime;
@@ -2299,7 +2423,7 @@ namespace server
             {
                 if(demorecord) enddemorecord();
                 interm = -1;
-                checkvotes(true);
+                checkmapvotes(true);
             }
         }
 
@@ -2830,6 +2954,8 @@ namespace server
                     p.get(); if(flags&(1<<5)) p.get();
                     if(flags&(1<<6)) loopk(2) p.get();
                 }
+				getint(p); // ignore move
+				getint(p); // ignore strafe
                 if(cp)
                 {
                     if((!ci->local || demorecord || hasnonlocalclients()) && (cp->state.state==CS_ALIVE || cp->state.state==CS_EDITING))
@@ -3105,13 +3231,20 @@ namespace server
                 break;
             }
 
+			case N_RESTARTVOTE:
+			{
+				int favor = getint(p);
+				restartvote(favor, sender);
+				break;
+			}
+
             case N_MAPVOTE:
             {
                 getstring(text, p);
                 filtertext(text, text, false);
                 fixmapname(text);
                 int reqmode = getint(p);
-                vote(text, reqmode, sender);
+                mapvote(text, reqmode, sender);
                 break;
             }
 
@@ -3238,10 +3371,25 @@ namespace server
                 clientinfo *spinfo = (clientinfo *)getclientinfo(spectator); // no bots
                 if(!spinfo || !spinfo->connected || (spinfo->state.state==CS_SPECTATOR ? val : !val)) break;
 
-                if(spinfo->state.state!=CS_SPECTATOR && val) forcespectator(spinfo);
-                else if(spinfo->state.state==CS_SPECTATOR && !val) unspectate(spinfo);
-
-                if(cq && cq != ci && cq->ownernum != ci->clientnum) cq = NULL;
+				if (spinfo->state.state != CS_SPECTATOR && val)
+				{
+					if (spinfo->state.state == CS_ALIVE) suicide(spinfo);
+					if (smode) smode->leavegame(spinfo);
+					spinfo->state.state = CS_SPECTATOR;
+					spinfo->state.timeplayed += lastmillis - spinfo->state.lasttimeplayed;
+					if (!spinfo->local && !spinfo->privilege) aiman::removeai(spinfo);
+				}
+				else if (spinfo->state.state == CS_SPECTATOR && !val)
+				{
+					spinfo->state.state = CS_DEAD;
+					spinfo->state.respawn();
+					spinfo->state.lasttimeplayed = lastmillis;
+					aiman::addclient(spinfo);
+					if (spinfo->clientmap[0] || spinfo->mapcrc) checkmaps();
+					if (smode) smode->entergame(spinfo);
+				}
+				sendf(-1, 1, "ri3", N_SPECTATOR, spectator, val);
+				if (!val && !hasmap(spinfo)) rotatemap(true);
                 break;
             }
 

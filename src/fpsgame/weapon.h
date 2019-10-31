@@ -16,5 +16,5 @@ guns[NUMGUNS] =
 	{ S_RIFLE,    1500,  900, 1800,   0,   0, 30, 2048,  1,  80,  5,  15,  0,    0, "rifle",           "rifle",  0, false, 10 },
 	{ S_CG,        100,  150,  350, 100,   0, 10,  512,  1,  80, 20,  60,  0,    0, "chaingun",        "chaing", 0,  true, 10 },
 	{ S_RLFIRE,    800, 1200,    0,   0, 320, 10, 1024,  1, 160,  5,  15, 40,    0, "rocketlauncher",  "rocket", 0,  true, 10 },
-	{ S_FLAUNCH,  1000,  900,    0,   0, 200, 10, 1024,  1, 250, 10,  30, 45, 1500, "grenadelauncher", "gl",     0,  true, 10 }
+	{ S_FLAUNCH,  1000,  900,    0,   0, 200, 10, 1024,  1, 250, 10,  30, 45, 2000, "grenadelauncher", "gl",     0,  true, 10 }
 };

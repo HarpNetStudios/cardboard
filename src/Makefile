@@ -97,17 +97,19 @@ CLIENT_OBJS= \
 	engine/dynlight.o \
 	engine/glare.o \
 	engine/grass.o \
+	engine/irc.o \
 	engine/lightmap.o \
 	engine/main.o \
 	engine/material.o \
 	engine/menus.o \
-	engine/movie.o \
 	engine/normal.o	\
 	engine/octa.o \
 	engine/octaedit.o \
 	engine/octarender.o \
 	engine/physics.o \
 	engine/pvs.o \
+	engine/raw.o \
+	engine/joy.o \
 	engine/rendergl.o \
 	engine/rendermodel.o \
 	engine/renderparticles.o \
@@ -322,6 +324,10 @@ engine/grass.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/grass.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/grass.o: engine/lightmap.h engine/bih.h engine/texture.h
 engine/grass.o: engine/model.h
+engine/irc.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
+engine/irc.o: shared/ents.h shared/command.h shared/iengine.h shared/igame.h
+engine/irc.o: engine/world.h engine/octa.h engine/lightmap.h engine/bih.h
+engine/irc.o: engine/texture.h engine/model.h engine/varray.h
 engine/lightmap.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/lightmap.o: shared/ents.h shared/command.h shared/glexts.h
 engine/lightmap.o: shared/glemu.h shared/iengine.h shared/igame.h
@@ -341,11 +347,6 @@ engine/menus.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/menus.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/menus.o: engine/lightmap.h engine/bih.h engine/texture.h
 engine/menus.o: engine/model.h
-engine/movie.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
-engine/movie.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
-engine/movie.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
-engine/movie.o: engine/lightmap.h engine/bih.h engine/texture.h
-engine/movie.o: engine/model.h
 engine/normal.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/normal.o: shared/ents.h shared/command.h shared/glexts.h
 engine/normal.o: shared/glemu.h shared/iengine.h shared/igame.h
@@ -376,6 +377,10 @@ engine/pvs.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/pvs.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/pvs.o: engine/lightmap.h engine/bih.h engine/texture.h engine/model.h
 engine/rendergl.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
+
+engine/raw.o: engine/engine.h shared/tools.h shared/geom.h
+engine/joy.o: engine/engine.h shared/tools.h shared/geom.h
+
 engine/rendergl.o: shared/ents.h shared/command.h shared/glexts.h
 engine/rendergl.o: shared/glemu.h shared/iengine.h shared/igame.h
 engine/rendergl.o: engine/world.h engine/octa.h engine/lightmap.h

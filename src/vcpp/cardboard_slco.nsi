@@ -1,3 +1,5 @@
+RequestExecutionLevel user
+
 Name "Project Crimson Alpha 1.2.0"
 
 OutFile "crimson_alpha_1_2_0_win_setup_SLCOPUB.exe"
@@ -22,7 +24,7 @@ Section "Project Crimson Alpha (required)"
 
   SetOutPath $INSTDIR
 
-  File /r /x src /x home /x .vs /x bin_unix /x res /x scripts "..\..\*.*"
+  File /r /x home /x .git /x .vs /x .trash "..\..\*.*"
 
   WriteRegStr HKLM "SOFTWARE\CrimsonAlpha" "Install_Dir" "$INSTDIR"
 
@@ -42,7 +44,7 @@ SectionEnd
 
 Section "Desktop Shortcut"
 
-    CreateShortCut "$DESKTOP\Project Crimson Alpha.lnk" "$INSTDIR\crimson.bat" "" "$INSTDIR\bin64\cardboard-MGW.exe" 0 SW_SHOWMINIMIZED
+    CreateShortCut "$DESKTOP\Project Crimson Alpha.lnk" "$INSTDIR\crimson_msvc.bat" "" "$INSTDIR\bin64\cardboard_msvc.exe" 0 SW_SHOWMINIMIZED
 
 SectionEnd
 
@@ -52,8 +54,8 @@ Section "Start Menu Shortcuts"
 
   SetOutPath "$INSTDIR"
 
-  CreateShortCut "$INSTDIR\Project Crimson Alpha.lnk"                "$INSTDIR\crimson.bat" "" "$INSTDIR\bin64\cardboard-MGW.exe" 0 SW_SHOWMINIMIZED
-  CreateShortCut "$SMPROGRAMS\Project Crimson Alpha\Project Crimson Alpha.lnk" "$INSTDIR\crimson.bat" "" "$INSTDIR\bin64\cardboard-MGW.exe" 0 SW_SHOWMINIMIZED
+  CreateShortCut "$INSTDIR\Project Crimson Alpha.lnk"                "$INSTDIR\crimson_msvc.bat" "" "$INSTDIR\bin64\cardboard_msvc.exe" 0 SW_SHOWMINIMIZED
+  CreateShortCut "$SMPROGRAMS\Project Crimson Alpha\Project Crimson Alpha.lnk" "$INSTDIR\crimson_msvc.bat" "" "$INSTDIR\bin64\cardboard_msvc.exe" 0 SW_SHOWMINIMIZED
   CreateShortCut "$SMPROGRAMS\Project Crimson Alpha\Uninstall.lnk"   "$INSTDIR\uninstall.exe"   "" "$INSTDIR\uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\Project Crimson Alpha\README.lnk"      "$INSTDIR\README.html"     "" "$INSTDIR\README.html" 0
 

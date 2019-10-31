@@ -73,6 +73,17 @@ static inline T clamp(T a, U b, U c)
 {
     return max(T(b), min(a, T(c)));
 }
+template<class T, class U>
+static inline T lerp(T v0, U v1, U t) {
+	return (1 - t) * v0 + t * v1;
+}
+template<class T, class U>
+static inline T map(T x, U in_min, U in_max, U out_min, U out_max)
+{
+	float a = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+	return a;
+}
+
 
 #ifdef __GNUC__
 #define bitscan(mask) (__builtin_ffs(mask)-1)

@@ -578,6 +578,12 @@ namespace entities
 
             case FLAG:
             case TELEDEST:
+			{
+				vec dir;
+				vecfromyawpitch(e.attr1, 0, 1, 0, dir);
+				renderentarrow(e, dir, 4);
+				break;
+			}
             case MAPMODEL:
                 if(validtrigger(e.attr3)) renderentring(e, checktriggertype(e.attr3, TRIG_COLLIDE) ? 20 : 12);
                 break;

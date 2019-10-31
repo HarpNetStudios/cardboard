@@ -7,7 +7,8 @@ extern void cleargamma();
 
 void cleanup()
 {
-    recorder::stop();
+	rawinput::release();
+	joystick::release();
     cleanupserver();
     SDL_ShowCursor(SDL_TRUE);
     SDL_SetRelativeMouseMode(SDL_FALSE);
@@ -968,7 +969,6 @@ void resetgl()
     extern void cleanreflections();
     extern void cleanupglare();
     extern void cleanupdepthfx();
-    recorder::cleanup();
     cleanupva();
     cleanupparticles();
     cleanupdecals();
@@ -1118,7 +1118,8 @@ void checkinput()
 {
     SDL_Event event;
     //int lasttype = 0, lastbut = 0;
-    bool mousemoved = false;
+	bool mousemoved = false;
+	if (rawinput::enabled) rawinput::flush();
     while(events.length() || pollevent(event))
     {
         if(events.length()) event = events.remove(0);
@@ -1190,7 +1191,12 @@ void checkinput()
                 break;
 
             case SDL_MOUSEMOTION:
-                if(grabinput)
+				if (rawinput::debugrawmouse)
+				{
+					conoutf("%d sdl mouse motion (%d, %d)",
+						lastmillis, event.motion.xrel, event.motion.yrel);
+				}
+				if (grabinput && !rawinput::enabled)
                 {
                     int dx = event.motion.xrel, dy = event.motion.yrel;
                     checkmousemotion(dx, dy);
@@ -1202,6 +1208,7 @@ void checkinput()
 
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP:
+				if (rawinput::enabled) break;
                 //if(lasttype==event.type && lastbut==event.button.button) break; // why?? get event twice without it
                 switch(event.button.button)
                 {
@@ -1219,6 +1226,13 @@ void checkinput()
                 if(event.wheel.y > 0) { processkey(-4, true); processkey(-4, false); }
                 else if(event.wheel.y < 0) { processkey(-5, true); processkey(-5, false); }
                 break;
+
+			case SDL_JOYAXISMOTION:
+			case SDL_JOYBALLMOTION:
+			case SDL_JOYHATMOTION:
+			case SDL_JOYBUTTONDOWN:
+			case SDL_JOYBUTTONUP:
+				joystick::handleevent(event);
         }
     }
     if(mousemoved) resetmousemotion();
@@ -1226,7 +1240,6 @@ void checkinput()
 
 void swapbuffers(bool overlay)
 {
-    recorder::capture(overlay);
     gle::disable();
     SDL_GL_SwapWindow(screen);
 }
@@ -1751,6 +1764,7 @@ int main(int argc, char **argv)
         checksleep(lastmillis);
 
         serverslice(false, 0);
+		ircslice();
 
         if(frames) updatefpshistory(elapsedtime);
         frames++;

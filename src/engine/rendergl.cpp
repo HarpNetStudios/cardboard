@@ -734,6 +734,7 @@ void pushhudtranslate(float tx, float ty, float sx, float sy)
     flushhudmatrix();
 }
 
+int vieww = -1, viewh = -1;
 float curfov = 100, curavatarfov = 65, fovy, aspect;
 int farplane;
 VARP(zoominvel, 0, 250, 5000);
@@ -744,41 +745,70 @@ VAR(avatarzoomfov, 10, 25, 60);
 VAR(avatarfov, 10, 65, 150);
 FVAR(avatardepth, 0, 0.5f, 1);
 FVARNP(aspect, forceaspect, 0, 0, 1e3f);
+VAR(headachefov, 0, 0, 1);
 
-static float zoomprogress = 0;
-VAR(zoom, -1, 0, 1);
+static int zoommillis = 0;
+VARF(zoom, -1, 0, 1,
+	if (zoom) zoommillis = totalmillis;
+);
 
 void disablezoom()
 {
     zoom = 0;
-    zoomprogress = 0;
+	zoommillis = totalmillis;
 }
 
 void computezoom()
 {
-    if(!zoom) { zoomprogress = 0; curfov = fov; curavatarfov = avatarfov; return; }
-    if(zoom > 0) zoomprogress = zoominvel ? min(zoomprogress + float(elapsedtime) / zoominvel, 1.0f) : 1;
+	if (headachefov)
+	{
+		const float alt = camera1->o.dist(worldpos);
+		curfov = min(160.0f, atan(fov / alt) * 2 * (180.0f / PI));
+		return;
+	}
+	if (!zoom) { curfov = fov; curavatarfov = avatarfov; return; }
+	if (zoom < 0 && curfov >= fov) { zoom = 0; curfov = fov; curavatarfov = avatarfov; return; } // don't zoom-out if not zoomed-in
+	int zoomvel = zoom > 0 ? zoominvel : zoomoutvel,
+		oldfov = zoom > 0 ? fov : zoomfov,
+		newfov = zoom > 0 ? zoomfov : fov,
+		oldavatarfov = zoom > 0 ? avatarfov : avatarzoomfov,
+		newavatarfov = zoom > 0 ? avatarzoomfov : avatarfov;
+	float t = zoomvel ? float(zoomvel - (totalmillis - zoommillis)) / zoomvel : 0;
+	if (t <= 0)
+	{
+		if (!zoomvel && fabs(newfov - curfov) >= 1)
+		{
+			curfov = newfov;
+			curavatarfov = newavatarfov;
+		}
+		zoom = max(zoom, 0);
+	}
     else
     {
-        zoomprogress = zoomoutvel ? max(zoomprogress - float(elapsedtime) / zoomoutvel, 0.0f) : 0;
-        if(zoomprogress <= 0) zoom = 0;
+		curfov = oldfov * t + newfov * (1 - t);
+		curavatarfov = oldavatarfov * t + newavatarfov * (1 - t);
     }
-    curfov = zoomfov*zoomprogress + fov*(1 - zoomprogress);
-    curavatarfov = avatarzoomfov*zoomprogress + avatarfov*(1 - zoomprogress);
 }
 
 FVARP(zoomsens, 1e-3f, 1, 1000);
 FVARP(zoomaccel, 0, 0, 1000);
 VARP(zoomautosens, 0, 1, 1);
 FVARP(sensitivity, 1e-3f, 3, 1000);
-FVARP(sensitivityscale, 1e-3f, 1, 1000);
-VARP(invmouse, 0, 0, 1);
+FVARP(mouseyaw, -1.0f, 0.022f, 1.0f);
+FVARP(mousepitch, -1.0f, 0.022f, 1.0f);
+VARFP(invmouse, 0, 0, 1,
+	{
+		mousepitch = (invmouse ? -1 : 1) * fabs(mousepitch);
+	});
 FVARP(mouseaccel, 0, 0, 1000);
 
 VAR(thirdperson, 0, 0, 2);
 FVAR(thirdpersondistance, 0, 20, 50);
 FVAR(thirdpersonup, -25, 0, 25);
 FVAR(thirdpersonside, -25, 0, 25);
+
+FVARP(joysens, 0.0f, 100.0f, 500.0f);
+
 physent *camera1 = NULL;
 bool detachedcamera = false;
 bool isthirdperson() { return player!=camera1 || detachedcamera || reflecting; }
@@ -827,21 +857,54 @@ void mousemove(int dx, int dy)
         }
     }
     if(curaccel && curtime && (dx || dy)) cursens += curaccel * sqrtf(dx*dx + dy*dy)/curtime;
-    cursens /= 33.0f*sensitivityscale;
     if ((camera1->pitch >= 90.0f || camera1->pitch <= -90.0f) && (player->spacepack && !player->spaceclip)) {
-		camera1->yaw -= dx * cursens;
+		camera1->yaw -= dx * cursens * mouseyaw;
 	}
 	else {
-		camera1->yaw += dx * cursens;
+		camera1->yaw += dx * cursens * mouseyaw;
 	}
 
-    camera1->pitch -= dy*cursens*(invmouse ? -1 : 1);
+	camera1->pitch -= dy * cursens * mousepitch;
     fixcamerarange();
     if(camera1!=player && !detachedcamera)
     {
         player->yaw = camera1->yaw;
         player->pitch = camera1->pitch;
     }
+}
+
+void joymove(float dx, float dy)
+{
+	if (!game::allowmouselook()) return;
+	float cursens = joysens, curaccel = mouseaccel;
+	if (zoom)
+	{
+		if (zoomautosens)
+		{
+			cursens = float(joysens * zoomfov) / fov;
+			curaccel = float(mouseaccel * zoomfov) / fov;
+		}
+		else
+		{
+			cursens = zoomsens;
+			curaccel = zoomaccel;
+		}
+	}
+	if (curaccel && curtime && (dx || dy)) cursens += curaccel * sqrtf(dx * dx + dy * dy) / curtime;
+	if ((camera1->pitch >= 90.0f || camera1->pitch <= -90.0f) && (player->spacepack && !player->spaceclip)) {
+		camera1->yaw -= dx * cursens * mouseyaw;
+	}
+	else {
+		camera1->yaw += dx * cursens * mouseyaw;
+	}
+
+	camera1->pitch -= dy * cursens * mousepitch;
+	fixcamerarange();
+	if (camera1 != player && !detachedcamera)
+	{
+		player->yaw = camera1->yaw;
+		player->pitch = camera1->pitch;
+	}
 }
 
 void recomputecamera()
@@ -868,7 +931,7 @@ void recomputecamera()
         }
         camera1->reset();
         camera1->type = ENT_CAMERA;
-        camera1->move = -1;
+        camera1->fmove = -1;
         camera1->eyeheight = camera1->aboveeye = camera1->radius = camera1->xradius = camera1->yradius = 2;
 
         matrix3 orient;
@@ -1961,6 +2024,15 @@ void gl_drawframe()
 
     renderparticles(true);
 
+	extern int hidehud;
+	if (editmode && !hidehud)
+	{
+		glDepthMask(GL_FALSE);
+		renderblendbrush();
+		rendereditcursor();
+		glDepthMask(GL_TRUE);
+	}
+
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
 
@@ -2089,10 +2161,16 @@ void drawdamagescreen(int w, int h)
 VAR(hidestats, 0, 0, 1);
 VAR(hidehud, 0, 0, 1);
 
-VARP(crosshairsize, 0, 15, 50);
+VARP(crosshairsize, -1, 15, 50);
 VARP(cursorsize, 0, 30, 50);
 VARP(crosshairfx, 0, 1, 1);
-VARP(crosshaircolors, 0, 1, 1);
+vec xhaircolor(1.0f, 1.0f, 1.0f);
+HVARFP(crosshaircolor, 0, 0xFFFFFF, 0xFFFFFF, {
+		const float factor = 1.0f / 0xff;
+		xhaircolor.x = factor * (crosshaircolor >> 16 & 0xff);
+		xhaircolor.y = factor * (crosshaircolor >> 8 & 0xff);
+		xhaircolor.z = factor * (crosshaircolor & 0xff);
+	});
 
 #define MAXCROSSHAIRS 4
 static Texture *crosshairs[MAXCROSSHAIRS] = { NULL, NULL, NULL, NULL };
@@ -2139,11 +2217,11 @@ void drawcrosshair(int w, int h)
     bool windowhit = g3d_windowhit(true, false);
     if(!windowhit && (hidehud || mainmenu)) return; //(hidehud || player->state==CS_SPECTATOR || player->state==CS_DEAD)) return;
 
-    vec color(1, 1, 1);
-    float cx = 0.5f, cy = 0.5f, chsize;
+	float r = xhaircolor.x, g = xhaircolor.y, b = xhaircolor.z, cx = 0.5f, cy = 0.5f, chsize;
     Texture *crosshair;
     if(windowhit)
     {
+		r = g = b = 1.0f;
         static Texture *cursor = NULL;
         if(!cursor) cursor = textureload("data/guicursor.png", 3, true);
         crosshair = cursor;
@@ -2151,18 +2229,22 @@ void drawcrosshair(int w, int h)
         g3d_cursorpos(cx, cy);
     }
     else
-    {
-        int index = game::selectcrosshair(color);
+	{
+		vec m(1, 1, 1);
+		int index = game::selectcrosshair(m);
         if(index < 0) return;
-        if(!crosshairfx) index = 0;
-        if(!crosshairfx || !crosshaircolors) color = vec(1, 1, 1);
+		if (crosshairfx)
+		{
+			r *= m.r; g *= m.g; b *= m.b;
+		}
+		else index = 0;
         crosshair = crosshairs[index];
         if(!crosshair)
         {
             loadcrosshair(NULL, index);
             crosshair = crosshairs[index];
         }
-        chsize = crosshairsize*w/900.0f;
+        chsize = crosshairsize < 0 ? max(crosshair->w, crosshair->h) : crosshairsize*w/900.0f;
     }
     if(crosshair->type&Texture::ALPHA) glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     else glBlendFunc(GL_ONE, GL_ONE);
@@ -2171,7 +2253,7 @@ void drawcrosshair(int w, int h)
     glBindTexture(GL_TEXTURE_2D, crosshair->id);
 
     hudshader->set();
-    gle::color(color);
+	gle::color(vec(r, g, b));
     hudquad(x, y, chsize, chsize);
 }
 
@@ -2181,6 +2263,7 @@ VARP(wallclocksecs, 0, 0, 1);
 
 static time_t walltime = 0;
 
+VARP(showvel, 0, 1, 1);
 VARP(showfps, 0, 1, 1);
 VARP(showfpsrange, 0, 0, 1);
 VAR(showeditstats, 0, 0, 1);
@@ -2260,7 +2343,7 @@ void gl_drawhud()
 			if (showversion)
 			{
 				oldstring versioninfo;
-				formatstring(versioninfo, "\fa%s %s %s (%s)", game::gametitle, game::gamestage, game::gameversion, __DATE__);
+				formatstring(versioninfo, "\fh%s %s %s (%s)", game::gametitle, game::gamestage, game::gameversion, __DATE__);
 
 				int vw, vh;
 				text_bounds(versioninfo, vw, vh);
@@ -2285,6 +2368,13 @@ void gl_drawhud()
                     else draw_textf("fps %d", conw-5*FONTH, conh-FONTH*3/2, curfps[0]);
                     roffset += FONTH;
                 }
+
+				if (showvel && !editmode)
+				{
+					int speed = (int)camera1->vel.magnitude();
+					draw_textf("%3d cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, speed);
+					roffset += FONTH;
+				}
 
                 if(wallclock)
                 {
@@ -2371,7 +2461,9 @@ void gl_drawhud()
                 pophudmatrix();
             }
         }
-        if(hidestats || (!editmode && !showeditstats))
+
+		bool windowhit = g3d_windowhit(true, false); // don't draw game hud when menu is up
+		if (!windowhit && !consoleprompt() && (hidestats || (!editmode && !showeditstats)))
         {
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             game::gameplayhud(w, h);

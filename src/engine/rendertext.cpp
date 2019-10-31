@@ -221,22 +221,29 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
         else stack[sp] = c;
         switch(c)
         {
-            case '0': color = bvec( 64, 255, 128); break;   // green: player talk
-            case '1': color = bvec( 96, 160, 255); break;   // blue: "echo" command
-            case '2': color = bvec(255, 192,  64); break;   // yellow: gameplay messages 
-            case '3': color = bvec(255,  64,  64); break;   // red: important errors
-            case '4': color = bvec(128, 128, 128); break;   // gray
-            case '5': color = bvec(192,  64, 192); break;   // magenta
-            case '6': color = bvec(255, 128,   0); break;   // orange
-            case '7': color = bvec(255, 255, 255); break;   // white
-			case '8': color = bvec(  0, 255, 255); break;   // cyan
-			case '9': color = bvec(  0,   0,   0); break;   // black as my soul -Y
-			case 'a': color = bvec(255,  36,   0); break;   // hn scarlet
-			case 'b': color = bvec(  0, 148, 255); break;   // celeb blue
-			//case 'c':
-			//case 'd':
-			//case 'e':
-			//case 'f':
+			case 'g': case '0': color = bvec(64, 255, 128); break; // green
+			case 'b': case '1': color = bvec(96, 160, 255); break; // blue
+			case 'y': case '2': color = bvec(255, 192, 64); break; // yellow
+			/*case 'r':*/ case '3': color = bvec(255, 64, 64); break; // red
+			case 'a': case '4': color = bvec(128, 128, 128); break; // grey
+			case 'm': case '5': color = bvec(192, 64, 192); break; // magenta
+			case 'o': case '6': color = bvec(255, 128, 0); break; // orange
+			case 'w': case '7': color = bvec(255, 255, 255); break; // white
+			case 'k': case '8': color = bvec(0, 0, 0); break; // black
+			/*case 'c':*/ case '9': color = bvec(64, 255, 255); break; // cyan
+			case 'v': color = bvec(192, 96, 255); break; // violet
+			case 'p': color = bvec(224, 64, 224); break; // purple
+			case 'n': color = bvec(164, 72, 56); break; // brown
+			case 'G': color = bvec(86, 164, 56); break; // dark green
+			case 'B': color = bvec(56, 64, 172); break; // dark blue
+			case 'Y': color = bvec(172, 172, 0); break; // dark yellow
+			case 'R': color = bvec(172, 56, 56); break; // dark red
+			case 'M': color = bvec(172, 72, 172); break; // dark magenta
+			case 'O': color = bvec(172, 56, 0); break; // dark orange
+			case 'C': color = bvec(48, 172, 172); break; // dark cyan
+			case 'A': case 'd': color = bvec(102, 102, 102); break; // dark grey
+			case 'h': color = bvec(255, 36, 0); break;   // hn scarlet
+			case 'l': color = bvec(0, 148, 255); break;  // celeb blue
             // provided color: everything else
         }
         gle::color(color, a);

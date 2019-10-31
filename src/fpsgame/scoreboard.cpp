@@ -20,6 +20,11 @@ namespace game
         teaminfos.clear();
     }
 
+	void resetteaminfo()
+	{
+		enumerate(teaminfos, teaminfo, t, t.frags = 0);
+	}
+
     void setteaminfo(const char *team, int frags)
     {
         teaminfo *t = teaminfos.access(team);

@@ -1095,7 +1095,7 @@ namespace ai
         }
         else d->ai->becareful = false;
 
-        if(d->ai->dontmove) d->move = d->strafe = 0;
+        if(d->ai->dontmove) d->fmove = d->fstrafe = 0.0f;
         else
         { // our guys move one way.. but turn another?! :)
             const struct aimdir { int move, strafe, offset; } aimdirs[8] =
@@ -1114,8 +1114,8 @@ namespace ai
             while(yaw >= 360.0f) yaw -= 360.0f;
             int r = clamp(((int)floor((yaw+22.5f)/45.0f))&7, 0, 7);
             const aimdir &ad = aimdirs[r];
-            d->move = ad.move;
-            d->strafe = ad.strafe;
+            d->fmove = ad.move;
+            d->fstrafe = ad.strafe;
         }
         findorientation(dp, d->yaw, d->pitch, d->ai->target);
         return result;
@@ -1243,7 +1243,7 @@ namespace ai
             if(d->ragdoll) moveragdoll(d);
             else if(lastmillis-d->lastpain<2000)
             {
-                d->move = d->strafe = 0;
+                d->fmove = d->fstrafe = 0.0f;
                 moveplayer(d, 10, false);
             }
         }
@@ -1355,6 +1355,7 @@ namespace ai
 
     VAR(showwaypoints, 0, 0, 1);
     VAR(showwaypointsradius, 0, 200, 10000);
+	VARP(waypointcolor, 0, 0, 2);
 
     const char *stnames[AI_S_MAX] = {
         "wait", "defend", "pursue", "interest"
@@ -1450,7 +1451,18 @@ namespace ai
                 {
                      int link = w.links[j];
                      if(!link) break;
-                     particle_flare(w.o, waypoints[link].o, 1, PART_STREAK, 0x0000FF);
+					 int color;
+					 switch (waypointcolor) {
+						 case 0:
+							 color = 0x0000FF; break;
+						 case 1:
+							 color = 0x00FF00; break;
+						 case 2:
+							 color = 0xFF0000; break;
+						 default: // should never happen, if your waypoints are white, you seriously broke something. -Y
+							 color = 0xFFFFFF; break;
+					 }
+                     particle_flare(w.o, waypoints[link].o, 1, PART_STREAK, color);
                 }
             }
 
