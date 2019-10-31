@@ -763,7 +763,8 @@ void computezoom()
 	if (headachefov)
 	{
 		const float alt = camera1->o.dist(worldpos);
-		curfov = min(160.0f, atan(fov / alt) * 2 * (180.0f / PI));
+
+		curfov = min(160.0f, (float)(atan(fov / alt) * 2 * (180.0f / PI)));
 		return;
 	}
 	if (!zoom) { curfov = fov; curavatarfov = avatarfov; return; }

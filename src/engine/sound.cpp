@@ -242,6 +242,8 @@ SVARFP(soundtrack, "adwh", {
 	execfile(soundtrackcfgname, false);
 	if (identexists("playsong")) execute("playsong"); 
 	});
+SVARP(_soundtrack_title, "");
+SVARP(_soundtrack_author, "");
 
 static Mix_Chunk *loadwav(const char *name)
 {

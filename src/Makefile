@@ -130,8 +130,6 @@ CLIENT_OBJS= \
 	fpsgame/discord.o \
 	fpsgame/entities.o \
 	fpsgame/fps.o \
-	fpsgame/monster.o \
-	fpsgame/movable.o \
 	fpsgame/render.o \
 	fpsgame/scoreboard.o \
 	fpsgame/server.o \
@@ -185,7 +183,7 @@ default: all
 all: client server
 
 clean:
-	-$(RM) $(CLIENT_PCH) $(CLIENT_OBJS) $(SERVER_MASTER_OBJS) sauer_client sauer_server sauer_master
+	-$(RM) $(CLIENT_PCH) $(CLIENT_OBJS) $(SERVER_MASTER_OBJS) cardboard_client cardboard_server cardboard_master
 
 $(filter-out shared/%,$(CLIENT_PCH)): $(filter shared/%,$(CLIENT_PCH))
 
@@ -206,25 +204,25 @@ $(SERVER_MASTER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 client: $(CLIENT_OBJS)
 	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff
-	$(CXX) $(CXXFLAGS) -o $(WINBIN)/sauerbraten.exe vcpp/mingw.res $(CLIENT_OBJS) $(CLIENT_LIBS)
+	$(CXX) $(CXXFLAGS) -o $(WINBIN)/cardboard_mingw.exe vcpp/mingw.res $(CLIENT_OBJS) $(CLIENT_LIBS)
 
 server: $(SERVER_OBJS)
 	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff
-	$(CXX) $(CXXFLAGS) -o $(WINBIN)/sauer_server.exe vcpp/mingw.res $(SERVER_OBJS) $(SERVER_LIBS)
+	$(CXX) $(CXXFLAGS) -o $(WINBIN)/cardboard_mingw_server.exe vcpp/mingw.res $(SERVER_OBJS) $(SERVER_LIBS)
 
 master: $(MASTER_OBJS)
-	$(CXX) $(CXXFLAGS) -o $(WINBIN)/sauer_master.exe $(MASTER_OBJS) $(MASTER_LIBS)
+	$(CXX) $(CXXFLAGS) -o $(WINBIN)/cardboard_mingw_master.exe $(MASTER_OBJS) $(MASTER_LIBS)
 
 install: all
 else
 client:	libenet $(CLIENT_OBJS)
-	$(CXX) $(CXXFLAGS) -o sauer_client $(CLIENT_OBJS) $(CLIENT_LIBS)
+	$(CXX) $(CXXFLAGS) -o cardboard_client $(CLIENT_OBJS) $(CLIENT_LIBS)
 
 server:	libenet $(SERVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o sauer_server $(SERVER_OBJS) $(SERVER_LIBS)
+	$(CXX) $(CXXFLAGS) -o cardboard_server $(SERVER_OBJS) $(SERVER_LIBS)
 
 master: libenet $(MASTER_OBJS)
-	$(CXX) $(CXXFLAGS) -o sauer_master $(MASTER_OBJS) $(MASTER_LIBS)
+	$(CXX) $(CXXFLAGS) -o cardboard_master $(MASTER_OBJS) $(MASTER_LIBS)
 
 shared/cube2font.o: shared/cube2font.c
 	$(CXX) $(CXXFLAGS) -c -o $@ $< `freetype-config --cflags`
@@ -233,8 +231,8 @@ cube2font: shared/cube2font.o
 	$(CXX) $(CXXFLAGS) -o cube2font shared/cube2font.o `freetype-config --libs` -lz
 
 install: all
-	cp sauer_client	../bin_unix/$(PLATFORM_PREFIX)_client
-	cp sauer_server	../bin_unix/$(PLATFORM_PREFIX)_server
+	cp cardboard_client	../bin_unix/$(PLATFORM_PREFIX)_client
+	cp cardboard_server	../bin_unix/$(PLATFORM_PREFIX)_server
 ifneq (,$(STRIP))
 	$(STRIP) ../bin_unix/$(PLATFORM_PREFIX)_client
 	$(STRIP) ../bin_unix/$(PLATFORM_PREFIX)_server
@@ -327,7 +325,7 @@ engine/grass.o: engine/model.h
 engine/irc.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/irc.o: shared/ents.h shared/command.h shared/iengine.h shared/igame.h
 engine/irc.o: engine/world.h engine/octa.h engine/lightmap.h engine/bih.h
-engine/irc.o: engine/texture.h engine/model.h engine/varray.h
+engine/irc.o: engine/texture.h engine/model.h
 engine/lightmap.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/lightmap.o: shared/ents.h shared/command.h shared/glexts.h
 engine/lightmap.o: shared/glemu.h shared/iengine.h shared/igame.h
@@ -480,14 +478,6 @@ fpsgame/entities.o: fpsgame/ai.h
 fpsgame/fps.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/fps.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 fpsgame/fps.o: shared/iengine.h shared/igame.h fpsgame/ai.h
-fpsgame/monster.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
-fpsgame/monster.o: shared/ents.h shared/command.h shared/glexts.h
-fpsgame/monster.o: shared/glemu.h shared/iengine.h shared/igame.h
-fpsgame/monster.o: fpsgame/ai.h
-fpsgame/movable.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
-fpsgame/movable.o: shared/ents.h shared/command.h shared/glexts.h
-fpsgame/movable.o: shared/glemu.h shared/iengine.h shared/igame.h
-fpsgame/movable.o: fpsgame/ai.h
 fpsgame/render.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/render.o: shared/ents.h shared/command.h shared/glexts.h
 fpsgame/render.o: shared/glemu.h shared/iengine.h shared/igame.h fpsgame/ai.h
