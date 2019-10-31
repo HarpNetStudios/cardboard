@@ -299,16 +299,6 @@ namespace entities
         }
     }
 
-    void checkquad(int time, fpsent *d)
-    {
-        if(d->quadmillis && (d->quadmillis -= time)<=0)
-        {
-            d->quadmillis = 0;
-            playsound(S_PUPOUT, d==player1 ? NULL : &d->o);
-            if(d==player1) conoutf(CON_GAMEINFO, "\f2quad damage is over");
-        }
-    }
-
     void putitems(packetbuf &p)            // puts items in network stream and also spawns them locally
     {
         putint(p, N_ITEMLIST);

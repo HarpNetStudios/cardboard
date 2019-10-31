@@ -1251,7 +1251,6 @@ namespace game
             d->frags = getint(p);
             d->flags = getint(p);
             if(d==player1) getint(p);
-            else d->quadmillis = getint(p);
         }
         d->lifesequence = getint(p);
         d->health = getint(p);
@@ -1421,6 +1420,7 @@ namespace game
                 {
                     getstring(text, p);
                     getstring(text, p);
+					getstring(text, p);
                     getint(p);
                     break;
                 }
@@ -1443,6 +1443,7 @@ namespace game
                 filtertext(d->team, text, false, false, MAXTEAMLEN);
 				getstring(text, p);
 				copystring(d->tags, text, MAXNAMELEN+1);
+				gettags(d); // causes lag on connect, figure out how to not cause lag
 				d->tagfetch = true;
                 d->playermodel = getint(p);
                 break;

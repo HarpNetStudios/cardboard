@@ -576,7 +576,7 @@ namespace game
         {
             projectile &p = projs[i];
             p.offsetmillis = max(p.offsetmillis-time, 0);
-            int qdam = guns[p.gun].damage*(p.owner->quadmillis ? 4 : 1);
+            int qdam = guns[p.gun].damage;
             if(p.owner->type==ENT_AI) qdam /= 4;
             vec dv;
             float dist = p.to.dist(p.o, dv);
@@ -734,7 +734,7 @@ namespace game
                 playsound(sound, d==hudplayer() ? NULL : &d->o);
                 break;
         }
-        if(d->quadmillis && lastmillis-prevaction>200 && !looped) playsound(S_ITEMPUP, d==hudplayer() ? NULL : &d->o);
+        if(lastmillis-prevaction>200 && !looped) playsound(S_ITEMPUP, d==hudplayer() ? NULL : &d->o);
     }
 
     void particletrack(physent *owner, vec &o, vec &d)
@@ -801,7 +801,6 @@ namespace game
     void raydamage(vec &from, vec &to, fpsent *d)
     {
         int qdam = guns[d->gunselect].damage;
-        if(d->quadmillis) qdam *= 4;
         //if(d->type==ENT_AI) qdam /= 4;
         dynent *o;
         float dist;

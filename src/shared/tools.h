@@ -669,8 +669,8 @@ template <class T> struct vector
     void shrink(int i) { ASSERT(i<=ulen); if(isclass<T>::no) ulen = i; else while(ulen>i) drop(); }
     void setsize(int i) { ASSERT(i<=ulen); ulen = i; }
 
-    void deletecontents() { while(!empty()) delete   pop(); }
-    void deletearrays() { while(!empty()) delete[] pop(); }
+	void deletecontents(int n = 0) { while (ulen > n) delete pop(); }
+	void deletearrays(int n = 0) { while (ulen > n) delete[] pop(); }
 
     T *getbuf() { return buf; }
     const T *getbuf() const { return buf; }
@@ -869,6 +869,28 @@ template <class T> struct vector
         loopi(ulen) if(htcmp(key, buf[i])) return i;
         return -1;
     }
+
+	#define UNIQUE(overwrite, cleanup) \
+        for(int i = 1; i < ulen; i++) if(htcmp(buf[i-1], buf[i])) \
+        { \
+            int n = i; \
+            while(++i < ulen) if(!htcmp(buf[n-1], buf[i])) { overwrite; n++; } \
+            cleanup; \
+            break; \
+        }
+    void unique() // contents must be initially sorted
+    {
+        UNIQUE(buf[n] = buf[i], setsize(n));
+    }
+    void uniquedeletecontents()
+    {
+        UNIQUE(swap(buf[n], buf[i]), deletecontents(n));
+    }
+    void uniquedeletearrays()
+    {
+        UNIQUE(swap(buf[n], buf[i]), deletearrays(n));
+    }
+    #undef UNIQUE
 };
 
 template<class H, class E, class K, class T> struct hashbase

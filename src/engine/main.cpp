@@ -846,7 +846,6 @@ static void SetSDLIcon(SDL_Window* window)
 	SDL_FreeSurface(icon);
 }
 
-
 void setupscreen()
 {
     if(glcontext)
@@ -1699,7 +1698,7 @@ int main(int argc, char **argv)
 
 	#ifdef CURLENABLED
 		if (strcmp(__gametoken,"")) {
-			renderprogress(0, getTranslation("progress.auth.connect"));
+			renderprogress(0, "connecting to auth server...");
 			getuserinfo_(false); 
 		}
 	#endif

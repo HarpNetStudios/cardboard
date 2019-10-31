@@ -2902,6 +2902,47 @@ ICOMMAND(loopfiles, "rsse", (ident *id, char *dir, char *ext, uint *body),
     if(files.length()) poparg(*id);
 });
 
+//assume directories don't have extensions - AKA a hack
+ICOMMAND(loopdir, "rse", (ident *id, char *dir, uint *body),
+{
+    if(id->type != ID_ALIAS) return;
+    identstack stack;
+    vector<char *> files;
+    listfiles(dir, NULL, files);
+    files.sort();
+    files.uniquedeletearrays();
+
+    loopvrev(files)
+    {
+        bool redundant = false;
+        if(strstr(files[i], ".")) redundant = true;
+        if(!redundant) loopj(i) if(!strcmp(files[i], files[j]))
+        {
+            redundant = true; break;
+        }
+        if(redundant) { delete[] files.removeunordered(i); continue; }
+    }
+
+    loopv(files)
+    {
+        if(i)
+        {
+            if(id->valtype == VAL_STR) delete[] id->val.s;
+            else id->valtype = VAL_STR;
+            id->val.s = files[i];
+        }
+        else
+        {
+            tagval t;
+            t.setstr(files[i]);
+            pusharg(*id, t, stack);
+            id->flags &= ~IDF_UNKNOWN;
+        }
+        execute(body);
+    }
+    if(files.length()) poparg(*id);
+});
+
 void findfile_(char *name)
 {
     oldstring fname;

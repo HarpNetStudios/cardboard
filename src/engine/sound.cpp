@@ -237,6 +237,11 @@ void startmusic(char *name, char *cmd)
 }
 
 COMMANDN(music, startmusic, "ss");
+SVARFP(soundtrack, "adwh", { 
+	defformatstring(soundtrackcfgname, "packages/music/%s/soundtrack.cfg", soundtrack);
+	execfile(soundtrackcfgname, false);
+	if (identexists("playsong")) execute("playsong"); 
+	});
 
 static Mix_Chunk *loadwav(const char *name)
 {

@@ -1879,7 +1879,7 @@ void drawtextures()
 {
     if(minimized) { deferdrawtextures = true; return; }
     deferdrawtextures = false;
-    genenvmaps();
+    //genenvmaps(); // TODO: fix this shit, damn assertion failed -Y 10/30/19
     drawminimap();
 }
 
@@ -2369,13 +2369,6 @@ void gl_drawhud()
                     roffset += FONTH;
                 }
 
-				if (showvel && !editmode)
-				{
-					int speed = (int)camera1->vel.magnitude();
-					draw_textf("%3d cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, speed);
-					roffset += FONTH;
-				}
-
                 if(wallclock)
                 {
                     if(!walltime) { walltime = time(NULL); walltime -= totalmillis/1000; if(!walltime) walltime++; }
@@ -2394,6 +2387,13 @@ void gl_drawhud()
                         roffset += FONTH;
                     }
                 }
+
+				if (showvel && !editmode)
+				{
+					int speed = (int)camera1->vel.magnitude();
+					draw_textf("%3d cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, speed);
+					roffset += FONTH;
+				}
 
                 if(editmode || showeditstats)
                 {

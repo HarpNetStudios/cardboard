@@ -4,7 +4,7 @@ namespace game
 {
 	char* gametitle = "Project Crimson";
 	char* gamestage = "Alpha";
-	char* gameversion = "2.0rc1";
+	char* gameversion = "2.0rc2";
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
@@ -234,7 +234,6 @@ namespace game
             else if(!intermission)
             {
                 if(lastmillis - d->lastaction[d->gunselect] >= d->gunwait[d->gunselect]) d->gunwait[d->gunselect] = 0;
-                if(d->quadmillis) entities::checkquad(curtime, d);
             }
 
             const int lagtime = totalmillis-d->lastupdate;
@@ -261,10 +260,6 @@ namespace game
 
         physicsframe();
         ai::navigate();
-        if(player1->state != CS_DEAD && !intermission)
-        {
-            if(player1->quadmillis) entities::checkquad(curtime, player1);
-        }
         updateweapons(curtime);
         otherplayers(curtime);
         ai::update();
@@ -589,10 +584,10 @@ namespace game
 
 	VARP(showtags, 0, 1, 1);
 
-	const char* gettags(fpsent* d)
+	const char* gettags(fpsent* d, char* tag)
 	{
 		if (!d->name[0] || !strcmp(d->name, "CardboardPlayer")) return "";
-		if (d->tagfetch) return d->tags;
+		if (d->tagfetch) return *d->tags ? d->tags : tag;
 		copystring(d->tags, "");
 		conoutf(CON_INFO, "\fs\f1getting tags for %s...\fr", d->name);
 		oldstring apiurl;
@@ -1125,14 +1120,6 @@ namespace game
 
     void lighteffects(dynent *e, vec &color, vec &dir)
     {
-#if 0
-        fpsent *d = (fpsent *)e;
-        if(d->state!=CS_DEAD && d->quadmillis)
-        {
-            float t = 0.5f + 0.5f*sinf(2*M_PI*lastmillis/1000.0f);
-            color.y = color.y*(1-t) + t;
-        }
-#endif
     }
 
     bool serverinfostartcolumn(g3d_gui *g, int i)

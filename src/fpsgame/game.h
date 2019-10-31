@@ -349,7 +349,6 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
 struct fpsstate
 {
     int health, maxhealth;
-    int quadmillis;
     int gunselect;
 	int gunwait[NUMGUNS];
     int ammo[NUMGUNS];
@@ -407,7 +406,6 @@ struct fpsstate
 			disablezoom();
 		#endif
         health = maxhealth;
-        quadmillis = 0;
 		loopi(NUMGUNS) gunwait[i] = 0;
         gunselect = GUN_SMG;
         loopi(NUMGUNS) ammo[i] = 0;
@@ -626,7 +624,6 @@ namespace entities
     extern void resettriggers();
     extern void checktriggers();
     extern void checkitems(fpsent *d);
-    extern void checkquad(int time, fpsent *d);
     extern void resetspawns();
     extern void spawnitems(bool force = false);
     extern void putitems(packetbuf &p);
@@ -684,7 +681,7 @@ namespace game
     extern int smoothmove, smoothdist;
 
     extern bool clientoption(const char *arg);
-	extern const char* gettags(fpsent* d);
+	extern const char* gettags(fpsent* d, char *tag = NULL);
     extern fpsent *getclient(int cn);
     extern fpsent *newclient(int cn);
     extern const char *colorname(fpsent *d, const char *name = NULL, const char *prefix = "", const char *suffix = "", const char *alt = NULL);
@@ -771,7 +768,7 @@ namespace game
     struct playermodelinfo
     {
         const char *ffa, *blueteam, *redteam, *hudguns,
-                   *vwep, *quad,
+                   *vwep,
                    *ffaicon, *blueicon, *redicon;
         bool ragdoll;
     };
