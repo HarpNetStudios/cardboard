@@ -122,6 +122,7 @@ CLIENT_OBJS= \
 	engine/shadowmap.o \
 	engine/sound.o \
 	engine/texture.o \
+	engine/translate.o \
 	engine/water.o \
 	engine/world.o \
 	engine/worldio.o \
@@ -449,6 +450,11 @@ engine/texture.o: shared/ents.h shared/command.h shared/glexts.h
 engine/texture.o: shared/glemu.h shared/iengine.h shared/igame.h
 engine/texture.o: engine/world.h engine/octa.h engine/lightmap.h engine/bih.h
 engine/texture.o: engine/texture.h engine/model.h
+engine/translate.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
+engine/translate.o: shared/ents.h shared/command.h shared/glexts.h
+engine/translate.o: shared/glemu.h shared/iengine.h shared/igame.h
+engine/translate.o: engine/world.h engine/octa.h engine/lightmap.h engine/bih.h
+engine/translate.o: engine/translate.h engine/model.h
 engine/water.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/water.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/water.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
@@ -500,15 +506,15 @@ fpsgame/weapon.o: shared/glemu.h shared/iengine.h shared/igame.h fpsgame/ai.h
 
 shared/cube.h.gch: shared/tools.h shared/geom.h shared/ents.h
 shared/cube.h.gch: shared/command.h shared/glexts.h shared/glemu.h
-shared/cube.h.gch: shared/iengine.h shared/igame.h
+shared/cube.h.gch: shared/iengine.h shared/igame.h engine/translate.h
 engine/engine.h.gch: shared/cube.h shared/tools.h shared/geom.h shared/ents.h
 engine/engine.h.gch: shared/command.h shared/glexts.h shared/glemu.h
 engine/engine.h.gch: shared/iengine.h shared/igame.h engine/world.h
 engine/engine.h.gch: engine/octa.h engine/lightmap.h engine/bih.h
-engine/engine.h.gch: engine/texture.h engine/model.h
+engine/engine.h.gch: engine/texture.h engine/model.h engine/translate.h
 fpsgame/game.h.gch: shared/cube.h shared/tools.h shared/geom.h shared/ents.h
 fpsgame/game.h.gch: shared/command.h shared/glexts.h shared/glemu.h
-fpsgame/game.h.gch: shared/iengine.h shared/igame.h fpsgame/ai.h
+fpsgame/game.h.gch: shared/iengine.h shared/igame.h fpsgame/ai.h engine/translate.h
 
 shared/crypto-standalone.o: shared/cube.h shared/tools.h shared/geom.h
 shared/crypto-standalone.o: shared/ents.h shared/command.h shared/iengine.h

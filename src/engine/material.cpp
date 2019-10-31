@@ -528,7 +528,7 @@ void sortmaterials(vector<materialsurface *> &vismats)
         loopi(va->matsurfs)
         {
             materialsurface &m = va->matbuf[i];
-            if((!editmode && !showmat == 1) || drawtex)
+            if((!editmode && (!showmat == 1)) || drawtex)
             {
                 int matvol = m.material&MATF_VOLUME;
                 if(matvol==MAT_WATER && (m.orient==O_TOP || (refracting<0 && reflectz>worldsize))) { i += m.skip; continue; }
