@@ -538,7 +538,7 @@ namespace rawinput
         oldstring name;
         loopi(32)
         {
-            formatstring(path)("/dev/input/event%d", i);
+            formatstring(path, "/dev/input/event%d", i);
             int fd = open(path, O_RDONLY);
             if(fd < 0)
             {
