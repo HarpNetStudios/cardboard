@@ -4,7 +4,7 @@ namespace game
 {
 	char* gametitle = "Project Crimson";
 	char* gamestage = "Alpha";
-	char* gameversion = "2.0";
+	char* gameversion = "2.0.0.2";
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
@@ -620,15 +620,23 @@ namespace game
 					tag = cJSON_GetObjectItemCaseSensitive(tagitm, "tag");
 					if (cJSON_IsString(tag) && (tag->valuestring != NULL))
 					{
-						//conoutf(CON_DEBUG, "tag is \"%s\"", tag->valuestring);
 						color = cJSON_GetObjectItemCaseSensitive(tagitm, "color");
-						if (cJSON_IsString(color) && (color->valuestring != NULL) && (strcmp(color->valuestring, "")))
+						if (strcmp(tag->valuestring, "")) 
 						{
-							//conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
-							concformatstring(conc, "\fs\f%s[%s] \fr", color->valuestring, tag->valuestring);
+							//conoutf(CON_DEBUG, "tag is \"%s\"", tag->valuestring);
+							if (cJSON_IsString(color) && (color->valuestring != NULL) && (strcmp(color->valuestring, "")))
+							{
+								//conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
+								concformatstring(conc, "\fs\f%s[%s] \fr", color->valuestring, tag->valuestring);
+							}
+							else {
+								concformatstring(conc, "[%s]", tag->valuestring);
+							}
 						}
-						else {
-							concformatstring(conc, "[%s]", tag->valuestring);
+						else if(cJSON_IsString(color) && (color->valuestring != NULL))
+						{
+							conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
+							concformatstring(conc, "\f%s", color->valuestring);
 						}
 					}
 				}
@@ -660,7 +668,7 @@ namespace game
 			d->deaths = 0;
 			d->totaldamage = 0;
 			d->totalshots = 0;
-			d->maxhealth = 1000;
+			d->maxhealth = m_insta ? 1 : 1000;
 			d->lifesequence = -1;
 			d->respawned = d->suicided = -2;
 		}
@@ -803,6 +811,7 @@ namespace game
 		cidx = (cidx + 1) % 3;
 		if (d->aitype == AI_NONE && showtags) {
 			prefix = gettags(d);
+			if(prefix == NULL) prefix = "";
 		}
         if(dup || prefix[0] || suffix[0])
         {

@@ -2,7 +2,7 @@
 *.slo
 *.lo
 *.o
-*.obj
+# *.obj # this better not break shit
 
 # Executables
 *.exe

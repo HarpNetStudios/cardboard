@@ -126,6 +126,8 @@ namespace server
         }
     };
 
+	int gamemode = 0;
+
     struct gamestate : fpsstate
     {
         vec o;
@@ -152,7 +154,7 @@ namespace server
         void reset()
         {
             if(state!=CS_SPECTATOR) state = editstate = CS_DEAD;
-            maxhealth = 1000;
+            maxhealth = m_insta ? 1 : 1000;
             rockets.reset();
             grenades.reset();
 
@@ -403,7 +405,6 @@ namespace server
     #define MM_COOPSERV (MM_AUTOAPPROVE | MM_PUBSERV | (1<<MM_LOCKED))
 
     bool notgotitems = true;        // true when map has changed and waiting for clients to send item
-    int gamemode = 0;
     int gamemillis = 0, gamelimit = 0, nextexceeded = 0, gamespeed = 100;
     bool gamepaused = false, shouldstep = true;
 

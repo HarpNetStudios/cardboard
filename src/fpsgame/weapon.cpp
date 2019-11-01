@@ -734,7 +734,6 @@ namespace game
                 playsound(sound, d==hudplayer() ? NULL : &d->o);
                 break;
         }
-        if(lastmillis-prevaction>200 && !looped) playsound(S_ITEMPUP, d==hudplayer() ? NULL : &d->o);
     }
 
     void particletrack(physent *owner, vec &o, vec &d)

@@ -1383,7 +1383,7 @@ struct memoryStruct {
 };
 
 #define MAXTOKENLEN 64
-SVARP(__gametoken, ""); // game token time
+SVARNP(__gametoken, gametoken_internal, ""); // game token time
 
 #ifdef CURLENABLED
 
@@ -1485,9 +1485,9 @@ COMMANDN(testcurl, testcurl_, "s");
 
 void getuserinfo_(bool debug) {
 	if (offline) return; // don't waste time trying to check everything if we are offline.
-	if (debug) conoutf(CON_DEBUG, __gametoken);
+	if (debug) conoutf(CON_DEBUG, gametoken_internal);
 	oldstring apiurl;
-	formatstring(apiurl, "%s/game/get/userinfo?id=1&token=%s", HNAPI, __gametoken);
+	formatstring(apiurl, "%s/game/get/userinfo?id=1&token=%s", HNAPI, gametoken_internal);
 	char* thing = web_get(apiurl, debug);
 	if (!thing[0]) {
 		conoutf(CON_ERROR, "no data recieved from server, switching to offline mode");
@@ -1504,7 +1504,7 @@ void getuserinfo_(bool debug) {
 		if (status->valueint > 0) {
 			conoutf(CON_ERROR, "web error! status: %d, \"%s\"", status->valueint, message->valuestring);
 			if (!strcmp(message->valuestring, "no token found") || !strcmp(message->valuestring, "malformed token")) {
-				__gametoken = "";
+				gametoken_internal = "";
 				offline = 1;
 				return;
 			}
@@ -1530,11 +1530,7 @@ COMMANDN(getuserinfo, getuserinfo_, "i");
 #endif 
 
 void setgametoken(const char* token) {
-	filtertext(__gametoken, token, false, false, MAXTOKENLEN);
-	/*if (!__gametoken[0]) {
-		copystring(__gametoken, token, strlen(token));
-	}
-	conoutf("length: %s", strlen(__gametoken));*/
+	filtertext(gametoken_internal, token, false, false, MAXTOKENLEN);
 	#ifdef CURLENABLED
 		getuserinfo_(false);
 	#endif
@@ -1545,7 +1541,7 @@ ICOMMAND(gametoken, "s", (char* s),
 	setgametoken(s);
 });
 
-ICOMMAND(getgametoken, "", (), result(__gametoken));
+ICOMMAND(getgametoken, "", (), result(gametoken_internal));
 
 int globalgamestate = -1;
 
@@ -1697,7 +1693,7 @@ int main(int argc, char **argv)
     initing = NOT_INITING;
 
 	#ifdef CURLENABLED
-		if (strcmp(__gametoken,"")) {
+		if (strcmp(gametoken_internal,"")) {
 			renderprogress(0, "connecting to auth server...");
 			getuserinfo_(false); 
 		}
