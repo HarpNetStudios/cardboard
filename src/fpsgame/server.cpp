@@ -1717,7 +1717,6 @@ namespace server
             putint(p, ci->clientnum);
             sendstring(ci->name, p);
             sendstring(ci->team, p);
-			sendstring(ci->tags, p);
             putint(p, ci->playermodel);
         }
     }
@@ -1844,6 +1843,7 @@ namespace server
                 putint(p, oi->state.state);
                 putint(p, oi->state.frags);
                 putint(p, oi->state.flags);
+				putint(p, 0); // quad
                 sendstate(oi->state, p);
             }
             putint(p, -1);
@@ -1868,8 +1868,8 @@ namespace server
     void sendresume(clientinfo *ci)
     {
         gamestate &gs = ci->state;
-        sendf(-1, 1, "ri3i8vi", N_RESUME, ci->clientnum,
-            gs.state, gs.frags, gs.flags,
+        sendf(-1, 1, "ri3i9vi", N_RESUME, ci->clientnum,
+            gs.state, gs.frags, gs.flags, 0,
             gs.lifesequence,
             gs.health, gs.maxhealth,
             gs.gunselect, GUN_GL-GUN_SMG+1, &gs.ammo[GUN_SMG], -1);
