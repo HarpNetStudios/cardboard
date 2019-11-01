@@ -40,7 +40,7 @@ struct captureclientmode : clientmode
 
         baseinfo() { reset(); }
 
-        bool valid() const { return ammotype>0 && ammotype<=I_GRENADES-I_SMG+1; }
+        bool valid() const { return ammotype==I_AMMO+1; }
 
         void noenemy()
         {
@@ -182,7 +182,7 @@ struct captureclientmode : clientmode
         if(bases.length() >= MAXBASES) return;
         baseinfo &b = bases.add();
         b.ammogroup = min(ammotype, 0);
-        b.ammotype = ammotype > 0 ? ammotype : rnd(I_GRENADES-I_SHELLS+1)+1;
+        b.ammotype = ammotype > 0 ? ammotype : I_AMMO+1;
         b.o = o;
 
         if(b.ammogroup)
@@ -192,7 +192,7 @@ struct captureclientmode : clientmode
                 b.ammotype = bases[i].ammotype;
                 return;
             }
-            int uses[I_GRENADES-I_SHELLS+1];
+            int uses[I_AMMO+1];
             memset(uses, 0, sizeof(uses));
             loopi(bases.length()-1) if(bases[i].ammogroup)
             {
@@ -201,9 +201,9 @@ struct captureclientmode : clientmode
                 nextbase:;
             }
             int mintype = 0;
-            loopi(I_GRENADES-I_SHELLS+1) if(uses[i] < uses[mintype]) mintype = i;
-            int numavail = 0, avail[I_GRENADES-I_SHELLS+1];
-            loopi(I_GRENADES-I_SHELLS+1) if(uses[i] == uses[mintype]) avail[numavail++] = i+1;
+            loopi(I_AMMO+1) if(uses[i] < uses[mintype]) mintype = i;
+            int numavail = 0, avail[I_AMMO+1];
+            loopi(I_AMMO+1) if(uses[i] == uses[mintype]) avail[numavail++] = i+1;
             b.ammotype = avail[rnd(numavail)];
         }
     }
@@ -264,17 +264,17 @@ struct captureclientmode : clientmode
         loopv(bases)
         {
             baseinfo &b = bases[i];
-            if(b.valid() && insidebase(b, player1->feetpos()) && player1->hasmaxammo(b.ammotype-1+I_SMG)) return;
+            if(b.valid() && insidebase(b, player1->feetpos()) && player1->hasmaxammo(b.ammotype-1+I_AMMO)) return;
         }
         addmsg(N_REPAMMO, "rc", player1);
     }
 
     void receiveammo(fpsent *d, int type)
     {
-        type += I_SMG-1;
-        if(type<I_SMG || type>I_GRENADES) return;
-        entities::repammo(d, type, d==player1);
-        int icon = itemstats[type-I_SMG].icon;
+        type += I_AMMO-1;
+        if(type!=I_AMMO) return;
+        entities::repammo(d, d==player1);
+        int icon = itemstats[type].icon;
         if(icon >= 0) particle_icon(d->abovehead(), icon%4, icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
     }
 
@@ -289,7 +289,7 @@ struct captureclientmode : clientmode
             {
                 if(d->lastrepammo!=i)
                 {
-                    if(b.ammo > 0 && !player1->hasmaxammo(b.ammotype-1+I_SMG)) addmsg(N_REPAMMO, "rc", d);
+                    if(b.ammo > 0 && !player1->hasmaxammo(b.ammotype-1+I_AMMO)) addmsg(N_REPAMMO, "rc", d);
                     d->lastrepammo = i;
                 }
                 return;
@@ -357,7 +357,7 @@ struct captureclientmode : clientmode
 
 //            particle_fireball(b.ammopos, 4.8f, PART_EXPLOSION, 0, b.owner[0] ? (strcmp(b.owner, player1->team) ? 0x802020 : 0x2020FF) : 0x208020, 4.8f);
 
-            const char *ammoname = entities::entmdlname(I_SHELLS+b.ammotype-1);
+            const char *ammoname = entities::entmdlname(I_AMMO+b.ammotype-1);
             if(m_regencapture)
             {
                 vec height(0, 0, 0);
@@ -373,7 +373,7 @@ struct captureclientmode : clientmode
                 ammopos.x += 10*cosf(angle);
                 ammopos.y += 10*sinf(angle);
                 ammopos.z += 4;
-                rendermodel(&b.light, entities::entmdlname(I_SHELLS+b.ammotype-1), ANIM_MAPMODEL|ANIM_LOOP, ammopos, 0, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED);
+                rendermodel(&b.light, entities::entmdlname(I_AMMO+b.ammotype-1), ANIM_MAPMODEL|ANIM_LOOP, ammopos, 0, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED);
             }
 
             int tcolor = 0x1EC850, mtype = -1, mcolor = 0xFFFFFF, mcolor2 = 0;
@@ -690,7 +690,7 @@ struct captureclientmode : clientmode
 			int regen = !m_regencapture || d->health >= 100 ? 0 : 1;
 			if(m_regencapture)
 			{
-				int gun = f.ammotype-1+I_SHELLS;
+				int gun = f.ammotype-1+I_AMMO;
 				if(f.ammo > 0 && !d->hasmaxammo(gun))
 					regen = gun != d->ai->weappref ? 2 : 4;
 			}
@@ -720,7 +720,7 @@ struct captureclientmode : clientmode
 		bool regen = !m_regencapture || d->health >= 100 ? false : true;
 		if(!regen && m_regencapture)
 		{
-			int gun = f.ammotype-1+I_SHELLS;
+			int gun = f.ammotype-1+I_AMMO;
 			if(f.ammo > 0 && !d->hasmaxammo(gun))
 				regen = true;
 		}
@@ -833,7 +833,7 @@ ICOMMAND(insidebases, "", (),
         loopv(bases)
         {
             baseinfo &b = bases[i];
-            if(b.valid() && insidebase(b, ci->state.o) && !ci->state.hasmaxammo(b.ammotype-1+I_SHELLS) && b.takeammo(ci->team))
+            if(b.valid() && insidebase(b, ci->state.o) && !ci->state.hasmaxammo(b.ammotype-1+I_AMMO) && b.takeammo(ci->team))
             {
                 sendbaseinfo(i);
                 sendf(-1, 1, "riii", N_REPAMMO, ci->clientnum, b.ammotype);
@@ -891,7 +891,7 @@ ICOMMAND(insidebases, "", (),
                 }
                 if(b.valid())
                 {
-                    int ammotype = b.ammotype-1+I_SHELLS;
+                    int ammotype = b.ammotype-1+I_AMMO;
                     if(!ci->state.hasmaxammo(ammotype))
                     {
                         ci->state.addammo(b.ammotype, ticks*REGENAMMO, 100);

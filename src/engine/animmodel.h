@@ -344,7 +344,7 @@ struct animmodel : model
                 v3.norm.add(norm);
             }
             vec *norms = new vec[numverts];
-            memset(norms, 0, numverts*sizeof(vec));
+			memclear(norms, numverts);
             loopi(numverts)
             {
                 V &v = verts[i];
@@ -416,7 +416,7 @@ struct animmodel : model
         template<class B, class V, class TC, class T> void calctangents(B *bumpverts, V *verts, TC *tcverts, int numverts, T *tris, int numtris, bool areaweight)
         {
             vec *tangent = new vec[2*numverts], *bitangent = tangent+numverts;
-            memset(tangent, 0, 2*numverts*sizeof(vec));
+			memclear(tangent, 2 * numverts);
             loopi(numtris)
             {
                 const T &t = tris[i];

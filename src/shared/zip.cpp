@@ -227,17 +227,17 @@ static void mountzip(ziparchive &arch, vector<zipfile> &files, const char *mount
             }
             break;
         }
-        const char *foundogz = strstr(f.name, ".cmr");
-        if(foundogz)
+        const char *foundcmr = strstr(f.name, ".cmr");
+        if(foundcmr)
         {
-            const char *ogzdir = foundogz;
-            while(--ogzdir >= f.name && *ogzdir != PATHDIV);
-            if(ogzdir < f.name || checkprefix(files, f.name, ogzdir + 1 - f.name))
+            const char *cmrdir = foundcmr;
+            while(--cmrdir >= f.name && *cmrdir != PATHDIV);
+            if(cmrdir < f.name || checkprefix(files, f.name, cmrdir + 1 - f.name))
             {
-                if(ogzdir >= f.name)
+                if(cmrdir >= f.name)
                 {
                     stripdir = f.name;
-                    striplen = ogzdir + 1 - f.name;
+                    striplen = cmrdir + 1 - f.name;
                 }
                 if(!mountdir) mountdir = "packages/base/";
                 break;
@@ -262,7 +262,7 @@ static void mountzip(ziparchive &arch, vector<zipfile> &files, const char *mount
     }
 }
 
-bool addzip(const char *name, const char *mount = NULL, const char *strip = NULL)
+bool addzip(const char* name, const char* mount = NULL, const char* strip = NULL, bool internal = false)
 {
     oldstring pname;
     copystring(pname, name);
@@ -273,21 +273,21 @@ bool addzip(const char *name, const char *mount = NULL, const char *strip = NULL
     ziparchive *exists = findzip(pname);
     if(exists)
     {
-        conoutf(CON_ERROR, "already added zip %s", pname);
+        if(!internal) conoutf(CON_ERROR, "already added zip %s", pname);
         return true;
     }
 
     FILE *f = fopen(findfile(pname, "rb"), "rb");
     if(!f)
     {
-        conoutf(CON_ERROR, "could not open file %s", pname);
+		conoutf(CON_ERROR, "could not open file %s", pname);
         return false;
     }
     zipdirectoryheader h;
     vector<zipfile> files;
     if(!findzipdirectory(f, h) || !readzipdirectory(pname, f, h.entries, h.offset, h.size, files))
     {
-        conoutf(CON_ERROR, "could not read directory in zip %s", pname);
+		conoutf(CON_ERROR, "could not read directory in zip %s", pname);
         fclose(f);
         return false;
     }
@@ -298,7 +298,7 @@ bool addzip(const char *name, const char *mount = NULL, const char *strip = NULL
     mountzip(*arch, files, mount, strip);
     archives.add(arch);
 
-    conoutf("added zip %s", pname);
+	if(!internal) conoutf("added zip %s", pname);
     return true;
 }
 

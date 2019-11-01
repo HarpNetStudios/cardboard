@@ -332,11 +332,6 @@ void mmodel(char *name)
     mmi.m = NULL;
 }
 
-void mapmodelcompat(int *rad, int *h, int *tex, char *name, char *shadow)
-{
-    mmodel(name);
-}
-
 void mapmodelreset(int *n) 
 { 
     if(!(identflags&IDF_OVERRIDDEN) && !game::allowedittoggle()) return;
@@ -347,9 +342,9 @@ mapmodelinfo *getmminfo(int i) { return mapmodels.inrange(i) ? &mapmodels[i] : 0
 const char *mapmodelname(int i) { return mapmodels.inrange(i) ? mapmodels[i].name : NULL; }
 
 COMMAND(mmodel, "s");
-COMMANDN(mapmodel, mapmodelcompat, "iiiss");
 COMMAND(mapmodelreset, "i");
 ICOMMAND(mapmodelname, "i", (int *index), { result(mapmodels.inrange(*index) ? mapmodels[*index].name : ""); });
+ICOMMAND(mapmodelloaded, "i", (int* index), { intret(mapmodels.inrange(*index) && mapmodels[*index].m ? 1 : 0); });
 ICOMMAND(nummapmodels, "", (), { intret(mapmodels.length()); });
 
 // model registry
@@ -581,6 +576,7 @@ void renderbatchedmodel(model *m, batchedmodel &b)
         if(b.flags&MDL_GHOST) anim |= ANIM_GHOST;
     }
 
+	if (darkmap) anim |= ANIM_NOSKIN;
     m->render(anim, b.basetime, b.basetime2, b.pos, b.yaw, b.pitch, b.d, a, b.color, b.dir, b.transparent);
 }
 
@@ -954,6 +950,8 @@ void rendermodel(entitylight *light, const char *mdl, int anim, const vec &o, fl
         if(flags&MDL_GHOST) anim |= ANIM_GHOST;
     }
 
+	if(darkmap) anim |= ANIM_NOSKIN;
+
     if(flags&MDL_CULL_QUERY)
     {
         d->query = newquery(d);
@@ -1042,7 +1040,7 @@ void loadskin(const char *dir, const char *altdir, Texture *&skin, Texture *&mas
     tryload(masks, NULL, NULL, "masks");
 }
 
-// convenient function that covers the usual anims for players/monsters/npcs
+// convenient function that covers the usual anims for players/npcs
 
 VAR(animoverride, -1, 0, NUMANIMS-1);
 VAR(testanims, 0, 0, 1);
@@ -1085,13 +1083,19 @@ void renderclient(dynent *d, const char *mdlname, modelattach *attachments, int 
             basetime = lastaction; 
         }
 
-        if(d->inwater && d->physstate<=PHYS_FALL) anim |= (((game::allowmove(d) && (d->move || d->strafe)) || d->vel.z+d->falling.z>0 ? ANIM_SWIM : ANIM_SINK)|ANIM_LOOP)<<ANIM_SECONDARY;
+		vec m;
+		vecfrommovement(d->yaw, d->pitch, d->fmove, d->fstrafe, m);
+		const bool moving = m.magnitude() > 0.01f;
+		if(d->inwater && d->physstate<=PHYS_FALL) anim |= (((game::allowmove(d) && moving) || d->vel.z+d->falling.z>0 ? ANIM_SWIM : ANIM_SINK) | ANIM_LOOP) << ANIM_SECONDARY;
         else if(d->timeinair>100) anim |= (ANIM_JUMP|ANIM_END)<<ANIM_SECONDARY;
-        else if(game::allowmove(d) && (d->move || d->strafe)) 
+        else if(game::allowmove(d) && moving)
         {
-            if(d->move>0) anim |= (ANIM_FORWARD|ANIM_LOOP)<<ANIM_SECONDARY;
-            else if(d->strafe) anim |= ((d->strafe>0 ? ANIM_LEFT : ANIM_RIGHT)|ANIM_LOOP)<<ANIM_SECONDARY;
-            else if(d->move<0) anim |= (ANIM_BACKWARD|ANIM_LOOP)<<ANIM_SECONDARY;
+			if (fabs(d->fstrafe) > 0.25f && d->fmove <= 0.5f)
+				anim |= ((d->fstrafe > 0.0f ? ANIM_LEFT : ANIM_RIGHT) | ANIM_LOOP) << ANIM_SECONDARY;
+			else if (d->fmove < 0.0f)
+				anim |= (ANIM_BACKWARD | ANIM_LOOP) << ANIM_SECONDARY;
+			else
+				anim |= (ANIM_FORWARD | ANIM_LOOP) << ANIM_SECONDARY;
         }
         
         if((anim&ANIM_INDEX)==ANIM_IDLE && (anim>>ANIM_SECONDARY)&ANIM_INDEX) anim >>= ANIM_SECONDARY;
@@ -1114,8 +1118,6 @@ void setbbfrommodel(dynent *d, const char *mdl)
     if(!m) return;
     vec center, radius;
     m->collisionbox(center, radius);
-    if(d->type==ENT_INANIMATE && !m->ellipsecollide)
-        d->collidetype = COLLIDE_OBB;
     d->xradius   = radius.x + fabs(center.x);
     d->yradius   = radius.y + fabs(center.y);
     d->radius    = d->collidetype==COLLIDE_OBB ? sqrtf(d->xradius*d->xradius + d->yradius*d->yradius) : max(d->xradius, d->yradius);

@@ -5,11 +5,11 @@ enum                            // hardcoded texture numbers
     DEFAULT_GEOM
 };
 
-#define MAPVERSION 33           // bump if map format changes, see worldio.cpp
+#define MAPVERSION 34           // bump if map format changes, see worldio.cpp
 
 struct octaheader
 {
-    char magic[4];              // "OCTA"
+    char magic[4];              // "CARD"
     int version;                // any >8bit quantity is little endian
     int headersize;             // sizeof(header)
     int worldsize;
@@ -23,7 +23,7 @@ struct octaheader
     
 struct compatheader             // map file format header
 {
-    char magic[4];              // "OCTA"
+    char magic[4];              // "CARD"
     int version;                // any >8bit quantity is little endian
     int headersize;             // sizeof(header)
     int worldsize;

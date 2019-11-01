@@ -500,7 +500,7 @@ struct ctfclientmode : clientmode
         {
             loopv(flags) if(flags[i].owner == d)
             {
-                int x = HICON_X + 3*HICON_STEP + (d->quadmillis ? HICON_SIZE + HICON_SPACE : 0);
+                int x = HICON_X + 2*HICON_STEP;
                 drawicon(m_hold ? HICON_NEUTRAL_FLAG : (flags[i].team==ctfteamflag("red") ? HICON_RED_FLAG : HICON_BLUE_FLAG), x, HICON_Y);
                 if(m_hold)
                 {

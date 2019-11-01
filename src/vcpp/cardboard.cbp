@@ -124,6 +124,9 @@
 		<Unit filename="../engine/glare.cpp" />
 		<Unit filename="../engine/grass.cpp" />
 		<Unit filename="../engine/iqm.h" />
+		<Unit filename="../engine/irc.cpp" />
+		<Unit filename="../engine/irc.h" />
+		<Unit filename="../engine/joy.cpp" />
 		<Unit filename="../engine/lensflare.h" />
 		<Unit filename="../engine/lightmap.cpp" />
 		<Unit filename="../engine/lightmap.h" />
@@ -135,7 +138,6 @@
 		<Unit filename="../engine/md5.h" />
 		<Unit filename="../engine/menus.cpp" />
 		<Unit filename="../engine/model.h" />
-		<Unit filename="../engine/movie.cpp" />
 		<Unit filename="../engine/mpr.h" />
 		<Unit filename="../engine/normal.cpp" />
 		<Unit filename="../engine/obj.h" />
@@ -146,6 +148,7 @@
 		<Unit filename="../engine/physics.cpp" />
 		<Unit filename="../engine/pvs.cpp" />
 		<Unit filename="../engine/ragdoll.h" />
+		<Unit filename="../engine/raw.cpp" />
 		<Unit filename="../engine/rendergl.cpp" />
 		<Unit filename="../engine/rendermodel.cpp" />
 		<Unit filename="../engine/renderparticles.cpp" />
@@ -163,6 +166,8 @@
 		<Unit filename="../engine/textedit.h" />
 		<Unit filename="../engine/texture.cpp" />
 		<Unit filename="../engine/texture.h" />
+		<Unit filename="../engine/translate.cpp" />
+		<Unit filename="../engine/translate.h" />
 		<Unit filename="../engine/vertmodel.h" />
 		<Unit filename="../engine/water.cpp" />
 		<Unit filename="../engine/world.cpp" />
@@ -183,19 +188,29 @@
 			<Option compile="1" />
 			<Option weight="0" />
 		</Unit>
-		<Unit filename="../fpsgame/monster.cpp" />
-		<Unit filename="../fpsgame/movable.cpp" />
 		<Unit filename="../fpsgame/render.cpp" />
 		<Unit filename="../fpsgame/scoreboard.cpp" />
 		<Unit filename="../fpsgame/server.cpp" />
 		<Unit filename="../fpsgame/waypoint.cpp" />
 		<Unit filename="../fpsgame/weapon.cpp" />
+		<Unit filename="../shared/cJSON/cJSON.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../shared/cJSON/cJSON.h" />
 		<Unit filename="../shared/command.h" />
 		<Unit filename="../shared/crypto.cpp" />
 		<Unit filename="../shared/cube.h">
 			<Option compile="1" />
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="../shared/curl/curl.h" />
+		<Unit filename="../shared/curl/curlver.h" />
+		<Unit filename="../shared/curl/easy.h" />
+		<Unit filename="../shared/curl/mprintf.h" />
+		<Unit filename="../shared/curl/multi.h" />
+		<Unit filename="../shared/curl/stdcheaders.h" />
+		<Unit filename="../shared/curl/system.h" />
+		<Unit filename="../shared/curl/typecheck-gcc.h" />
 		<Unit filename="../shared/ents.h" />
 		<Unit filename="../shared/geom.cpp" />
 		<Unit filename="../shared/geom.h" />

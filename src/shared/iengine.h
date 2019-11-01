@@ -34,16 +34,18 @@ enum // cube empty-space materials
     MAT_NOCLIP    = 1 << MATF_CLIP_SHIFT,  // collisions always treat cube as empty
     MAT_CLIP      = 2 << MATF_CLIP_SHIFT,  // collisions always treat cube as solid
     MAT_GAMECLIP  = 3 << MATF_CLIP_SHIFT,  // game specific clip material
+	MAT_SPACECLIP = 4 << MATF_CLIP_SHIFT,  // disables spacepack
 
     MAT_DEATH     = 1 << MATF_FLAG_SHIFT,  // force player suicide
-	MAT_SPACECLIP = 2 << MATF_FLAG_SHIFT,  // disables spacepack
-    MAT_ALPHA     = 4 << MATF_FLAG_SHIFT   // alpha blended
+    MAT_ALPHA     = 4 << MATF_FLAG_SHIFT,  // alpha blended
+	MAT_JUMPRESET = 8 << MATF_FLAG_SHIFT,  // resets double jump
 };
 
 #define isliquid(mat) ((mat)==MAT_WATER || (mat)==MAT_LAVA)
 #define isclipped(mat) ((mat)==MAT_GLASS)
 #define isdeadly(mat) ((mat)==MAT_LAVA)
 #define isspaceclip(mat) ((mat)==MAT_SPACECLIP)
+#define isjumpreset(mat) ((mat)==MAT_JUMPRESET)
 
 extern void lightent(extentity &e, float height = 8.0f);
 extern void lightreaching(const vec &target, vec &color, vec &dir, bool fast = false, extentity *e = 0, float ambient = 0.4f);
@@ -60,6 +62,7 @@ extern int thirdperson;
 extern bool isthirdperson();
 
 extern bool settexture(const char *name, int clamp = 0);
+extern void enabletexture(const bool on);
 
 // octaedit
 
@@ -191,7 +194,8 @@ enum
     CON_ERROR = 1<<2,
     CON_DEBUG = 1<<3,
     CON_INIT  = 1<<4,
-    CON_ECHO  = 1<<5
+    CON_ECHO  = 1<<5,
+	CON_IRC   = 1<<6
 };
 
 extern void conoutf(const char *s, ...) PRINTFARGS(1, 2);
@@ -239,11 +243,14 @@ extern void renderentarrow(const extentity &e, const vec &dir, float radius);
 extern void renderentattachment(const extentity &e);
 extern void renderentsphere(const extentity &e, float radius);
 extern void renderentring(const extentity &e, float radius, int axis = 0);
+extern int spacepackallowed;
 
 // main
 extern void fatal(const char *s, ...) PRINTFARGS(1, 2);
 extern char *web_get(char *targetUrl, bool debug);
+extern int offline;
 extern void getuserinfo_(bool debug);
+extern void resetgl();
 
 // rendertext
 extern bool setfont(const char *name);
@@ -339,8 +346,8 @@ extern void regular_particle_splash(int type, int num, int fade, const vec &p, i
 extern void regular_particle_flame(int type, const vec &p, float radius, float height, int color, int density = 3, float scale = 2.0f, float speed = 200.0f, float fade = 600.0f, int gravity = -15);
 extern void particle_splash(int type, int num, int fade, const vec &p, int color = 0xFFFFFF, float size = 1.0f, int radius = 150, int gravity = 2);
 extern void particle_trail(int type, int fade, const vec &from, const vec &to, int color = 0xFFFFFF, float size = 1.0f, int gravity = 20);
-extern void particle_text(const vec &s, const char *t, int type, int fade = 2000, int color = 0xFFFFFF, float size = 2.0f, int gravity = 0);
-extern void particle_textcopy(const vec &s, const char *t, int type, int fade = 2000, int color = 0xFFFFFF, float size = 2.0f, int gravity = 0);
+extern void particle_text(const vec &s, const char *t, int type, int fade = 2000, int color = 0xFFFFFF, float size = 2.0f, int gravity = 0, int maxdist = 0);
+extern void particle_textcopy(const vec &s, const char *t, int type, int fade = 2000, int color = 0xFFFFFF, float size = 2.0f, int gravity = 0, int maxdist = 0);
 extern void particle_icon(const vec &s, int ix, int iy, int type, int fade = 2000, int color = 0xFFFFFF, float size = 2.0f, int gravity = 0);
 extern void particle_meter(const vec &s, float val, int type, int fade = 1, int color = 0xFFFFFF, int color2 = 0xFFFFF, float size = 2.0f);
 extern void particle_flare(const vec &p, const vec &dest, int fade, int type, int color = 0xFFFFFF, float size = 0.28f, physent *owner = NULL);
@@ -384,6 +391,7 @@ extern void dropenttofloor(entity *e);
 extern bool droptofloor(vec &o, float radius, float height);
 
 extern void vecfromyawpitch(float yaw, float pitch, int move, int strafe, vec &m);
+extern void vecfrommovement(float yaw, float pitch, float move, float strafe, vec& m);
 extern void vectoyawpitch(const vec &v, float &yaw, float &pitch);
 extern bool moveplatform(physent *p, const vec &dir);
 extern void updatephysstate(physent *d);
@@ -407,6 +415,10 @@ extern void preloadmapsound(int n);
 extern bool stopsound(int n, int chanid, int fade = 0);
 extern void stopsounds();
 extern void initsound();
+extern void resetsound();
+
+// lightmap 
+extern int darkmap;
 
 // rendermodel
 enum { MDL_CULL_VFC = 1<<0, MDL_CULL_DIST = 1<<1, MDL_CULL_OCCLUDED = 1<<2, MDL_CULL_QUERY = 1<<3, MDL_SHADOW = 1<<4, MDL_DYNSHADOW = 1<<5, MDL_LIGHT = 1<<6, MDL_DYNLIGHT = 1<<7, MDL_FULLBRIGHT = 1<<8, MDL_NORENDER = 1<<9, MDL_LIGHT_FAST = 1<<10, MDL_HUD = 1<<11, MDL_GHOST = 1<<12 };
@@ -574,6 +586,7 @@ extern void g3d_cursorpos(float &x, float &y);
 extern void g3d_resetcursor();
 extern void g3d_limitscale(float scale);
 
+#ifdef DISCORD
 // discord
 namespace discord
 {
@@ -588,3 +601,8 @@ namespace discord
 		D_QUITTING,
 	};
 }
+#endif
+
+// zip 
+extern bool addzip(const char* name, const char* mount, const char* strip, bool internal);
+extern bool removezip(const char* name);

@@ -44,7 +44,7 @@ override WINDRES+= -F pe-i386
 endif
 CLIENT_INCLUDES= $(INCLUDES) -Iinclude
 STD_LIBS= -static-libgcc -static-libstdc++
-CLIENT_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lSDL2 -lSDL2_image -lSDL2_mixer -lzlib1 -lopengl32 -lenet -lws2_32 -lwinmm
+CLIENT_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lSDL2 -lSDL2_image -lSDL2_mixer -lzlib1 -lopengl32 -lenet -lws2_32 -lwinmm -lcurl
 else
 ifneq (,$(findstring DARWIN,$(PLATFORM)))
 ifneq (,$(findstring CROSS,$(PLATFORM)))
@@ -63,10 +63,10 @@ override CXX+= -arch x86_64 -mmacosx-version-min=$(OSXMIN)
 CLIENT_INCLUDES= $(INCLUDES) -Iinclude
 CLIENT_LIBS= -Fxcode/Frameworks -framework SDL2 -framework SDL2_image
 CLIENT_LIBS+= -framework SDL2_mixer -framework CoreAudio -framework AudioToolbox
-CLIENT_LIBS+= -framework AudioUnit -framework OpenGL -framework Cocoa -lz -Lenet -lenet
+CLIENT_LIBS+= -framework AudioUnit -framework OpenGL -framework Cocoa -lz -Lenet -lenet -lcurl
 else
 CLIENT_INCLUDES= $(INCLUDES) -I/usr/X11R6/include `sdl2-config --cflags`
-CLIENT_LIBS= -Lenet -lenet -L/usr/X11R6/lib -lX11 `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lz -lGL
+CLIENT_LIBS= -Lenet -lenet -L/usr/X11R6/lib -lX11 `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lz -lGL -lcurl
 endif
 endif
 ifeq ($(PLATFORM),LINUX)
@@ -76,6 +76,8 @@ ifneq (,$(findstring GNU,$(PLATFORM)))
 CLIENT_LIBS+= -lrt
 endif
 endif
+# commented out until i can get the .a file from my VM.
+#CLIENT_LIBS+= -lpthread lib/libdiscord-rpc.a
 CLIENT_OBJS= \
 	shared/crypto.o \
 	shared/geom.o \
@@ -83,6 +85,7 @@ CLIENT_OBJS= \
 	shared/stream.o \
 	shared/tools.o \
 	shared/zip.o \
+	shared/cJSON/cJSON.o \
 	engine/3dgui.o \
 	engine/bih.o \
 	engine/blend.o \
@@ -94,17 +97,19 @@ CLIENT_OBJS= \
 	engine/dynlight.o \
 	engine/glare.o \
 	engine/grass.o \
+	engine/irc.o \
 	engine/lightmap.o \
 	engine/main.o \
 	engine/material.o \
 	engine/menus.o \
-	engine/movie.o \
 	engine/normal.o	\
 	engine/octa.o \
 	engine/octaedit.o \
 	engine/octarender.o \
 	engine/physics.o \
 	engine/pvs.o \
+	engine/raw.o \
+	engine/joy.o \
 	engine/rendergl.o \
 	engine/rendermodel.o \
 	engine/renderparticles.o \
@@ -117,15 +122,15 @@ CLIENT_OBJS= \
 	engine/shadowmap.o \
 	engine/sound.o \
 	engine/texture.o \
+	engine/translate.o \
 	engine/water.o \
 	engine/world.o \
 	engine/worldio.o \
 	fpsgame/ai.o \
 	fpsgame/client.o \
+	fpsgame/discord.o \
 	fpsgame/entities.o \
 	fpsgame/fps.o \
-	fpsgame/monster.o \
-	fpsgame/movable.o \
 	fpsgame/render.o \
 	fpsgame/scoreboard.o \
 	fpsgame/server.o \
@@ -136,17 +141,18 @@ CLIENT_PCH= shared/cube.h.gch engine/engine.h.gch fpsgame/game.h.gch
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 SERVER_INCLUDES= -DSTANDALONE $(INCLUDES) -Iinclude
-SERVER_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm
-MASTER_LIBS= $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm
+SERVER_LIBS= -mwindows $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm -lcurl
+MASTER_LIBS= $(STD_LIBS) -L$(WINBIN) -L$(WINLIB) -lzlib1 -lenet -lws2_32 -lwinmm -lcurl
 else
 SERVER_INCLUDES= -DSTANDALONE $(INCLUDES)
-SERVER_LIBS= -Lenet -lenet -lz
+SERVER_LIBS= -Lenet -lenet -lz -lcurl
 MASTER_LIBS= $(SERVER_LIBS)
 endif
 SERVER_OBJS= \
 	shared/crypto-standalone.o \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
+	shared/cJSON/cJSON.o \
 	engine/command-standalone.o \
 	engine/server-standalone.o \
 	engine/worldio-standalone.o \
@@ -157,6 +163,7 @@ MASTER_OBJS= \
 	shared/crypto-standalone.o \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
+	shared/cJSON/cJSON.o \
 	engine/command-standalone.o \
 	engine/master-standalone.o
 
@@ -177,7 +184,7 @@ default: all
 all: client server
 
 clean:
-	-$(RM) $(CLIENT_PCH) $(CLIENT_OBJS) $(SERVER_MASTER_OBJS) sauer_client sauer_server sauer_master
+	-$(RM) $(CLIENT_PCH) $(CLIENT_OBJS) $(SERVER_MASTER_OBJS) cardboard_client cardboard_server cardboard_master
 
 $(filter-out shared/%,$(CLIENT_PCH)): $(filter shared/%,$(CLIENT_PCH))
 
@@ -198,25 +205,25 @@ $(SERVER_MASTER_OBJS): CXXFLAGS += $(SERVER_INCLUDES)
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 client: $(CLIENT_OBJS)
 	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff
-	$(CXX) $(CXXFLAGS) -o $(WINBIN)/sauerbraten.exe vcpp/mingw.res $(CLIENT_OBJS) $(CLIENT_LIBS)
+	$(CXX) $(CXXFLAGS) -o $(WINBIN)/cardboard_mingw.exe vcpp/mingw.res $(CLIENT_OBJS) $(CLIENT_LIBS)
 
 server: $(SERVER_OBJS)
 	$(WINDRES) -I vcpp -i vcpp/mingw.rc -J rc -o vcpp/mingw.res -O coff
-	$(CXX) $(CXXFLAGS) -o $(WINBIN)/sauer_server.exe vcpp/mingw.res $(SERVER_OBJS) $(SERVER_LIBS)
+	$(CXX) $(CXXFLAGS) -o $(WINBIN)/cardboard_mingw_server.exe vcpp/mingw.res $(SERVER_OBJS) $(SERVER_LIBS)
 
 master: $(MASTER_OBJS)
-	$(CXX) $(CXXFLAGS) -o $(WINBIN)/sauer_master.exe $(MASTER_OBJS) $(MASTER_LIBS)
+	$(CXX) $(CXXFLAGS) -o $(WINBIN)/cardboard_mingw_master.exe $(MASTER_OBJS) $(MASTER_LIBS)
 
 install: all
 else
 client:	libenet $(CLIENT_OBJS)
-	$(CXX) $(CXXFLAGS) -o sauer_client $(CLIENT_OBJS) $(CLIENT_LIBS)
+	$(CXX) $(CXXFLAGS) -o cardboard_client $(CLIENT_OBJS) $(CLIENT_LIBS)
 
 server:	libenet $(SERVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o sauer_server $(SERVER_OBJS) $(SERVER_LIBS)
+	$(CXX) $(CXXFLAGS) -o cardboard_server $(SERVER_OBJS) $(SERVER_LIBS)
 
 master: libenet $(MASTER_OBJS)
-	$(CXX) $(CXXFLAGS) -o sauer_master $(MASTER_OBJS) $(MASTER_LIBS)
+	$(CXX) $(CXXFLAGS) -o cardboard_master $(MASTER_OBJS) $(MASTER_LIBS)
 
 shared/cube2font.o: shared/cube2font.c
 	$(CXX) $(CXXFLAGS) -c -o $@ $< `freetype-config --cflags`
@@ -225,8 +232,8 @@ cube2font: shared/cube2font.o
 	$(CXX) $(CXXFLAGS) -o cube2font shared/cube2font.o `freetype-config --libs` -lz
 
 install: all
-	cp sauer_client	../bin_unix/$(PLATFORM_PREFIX)_client
-	cp sauer_server	../bin_unix/$(PLATFORM_PREFIX)_server
+	cp cardboard_client	../bin_unix/$(PLATFORM_PREFIX)_client
+	cp cardboard_server	../bin_unix/$(PLATFORM_PREFIX)_server
 ifneq (,$(STRIP))
 	$(STRIP) ../bin_unix/$(PLATFORM_PREFIX)_client
 	$(STRIP) ../bin_unix/$(PLATFORM_PREFIX)_server
@@ -262,6 +269,7 @@ shared/tools.o: shared/iengine.h shared/igame.h
 shared/zip.o: shared/cube.h shared/tools.h shared/geom.h shared/ents.h
 shared/zip.o: shared/command.h shared/glexts.h shared/glemu.h
 shared/zip.o: shared/iengine.h shared/igame.h
+shared/cJSON/cJSON.o: shared/cJSON/cJSON.h
 engine/3dgui.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/3dgui.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/3dgui.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
@@ -315,6 +323,10 @@ engine/grass.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/grass.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/grass.o: engine/lightmap.h engine/bih.h engine/texture.h
 engine/grass.o: engine/model.h
+engine/irc.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
+engine/irc.o: shared/ents.h shared/command.h shared/iengine.h shared/igame.h
+engine/irc.o: engine/world.h engine/octa.h engine/lightmap.h engine/bih.h
+engine/irc.o: engine/texture.h engine/model.h
 engine/lightmap.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/lightmap.o: shared/ents.h shared/command.h shared/glexts.h
 engine/lightmap.o: shared/glemu.h shared/iengine.h shared/igame.h
@@ -334,11 +346,6 @@ engine/menus.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/menus.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/menus.o: engine/lightmap.h engine/bih.h engine/texture.h
 engine/menus.o: engine/model.h
-engine/movie.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
-engine/movie.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
-engine/movie.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
-engine/movie.o: engine/lightmap.h engine/bih.h engine/texture.h
-engine/movie.o: engine/model.h
 engine/normal.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/normal.o: shared/ents.h shared/command.h shared/glexts.h
 engine/normal.o: shared/glemu.h shared/iengine.h shared/igame.h
@@ -369,6 +376,10 @@ engine/pvs.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/pvs.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/pvs.o: engine/lightmap.h engine/bih.h engine/texture.h engine/model.h
 engine/rendergl.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
+
+engine/raw.o: engine/engine.h shared/tools.h shared/geom.h
+engine/joy.o: engine/engine.h shared/tools.h shared/geom.h
+
 engine/rendergl.o: shared/ents.h shared/command.h shared/glexts.h
 engine/rendergl.o: shared/glemu.h shared/iengine.h shared/igame.h
 engine/rendergl.o: engine/world.h engine/octa.h engine/lightmap.h
@@ -439,6 +450,11 @@ engine/texture.o: shared/ents.h shared/command.h shared/glexts.h
 engine/texture.o: shared/glemu.h shared/iengine.h shared/igame.h
 engine/texture.o: engine/world.h engine/octa.h engine/lightmap.h engine/bih.h
 engine/texture.o: engine/texture.h engine/model.h
+engine/translate.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
+engine/translate.o: shared/ents.h shared/command.h shared/glexts.h
+engine/translate.o: shared/glemu.h shared/iengine.h shared/igame.h
+engine/translate.o: engine/world.h engine/octa.h engine/lightmap.h engine/bih.h
+engine/translate.o: engine/translate.h engine/model.h
 engine/water.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/water.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/water.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
@@ -468,14 +484,6 @@ fpsgame/entities.o: fpsgame/ai.h
 fpsgame/fps.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/fps.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 fpsgame/fps.o: shared/iengine.h shared/igame.h fpsgame/ai.h
-fpsgame/monster.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
-fpsgame/monster.o: shared/ents.h shared/command.h shared/glexts.h
-fpsgame/monster.o: shared/glemu.h shared/iengine.h shared/igame.h
-fpsgame/monster.o: fpsgame/ai.h
-fpsgame/movable.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
-fpsgame/movable.o: shared/ents.h shared/command.h shared/glexts.h
-fpsgame/movable.o: shared/glemu.h shared/iengine.h shared/igame.h
-fpsgame/movable.o: fpsgame/ai.h
 fpsgame/render.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/render.o: shared/ents.h shared/command.h shared/glexts.h
 fpsgame/render.o: shared/glemu.h shared/iengine.h shared/igame.h fpsgame/ai.h
@@ -498,15 +506,15 @@ fpsgame/weapon.o: shared/glemu.h shared/iengine.h shared/igame.h fpsgame/ai.h
 
 shared/cube.h.gch: shared/tools.h shared/geom.h shared/ents.h
 shared/cube.h.gch: shared/command.h shared/glexts.h shared/glemu.h
-shared/cube.h.gch: shared/iengine.h shared/igame.h
+shared/cube.h.gch: shared/iengine.h shared/igame.h engine/translate.h
 engine/engine.h.gch: shared/cube.h shared/tools.h shared/geom.h shared/ents.h
 engine/engine.h.gch: shared/command.h shared/glexts.h shared/glemu.h
 engine/engine.h.gch: shared/iengine.h shared/igame.h engine/world.h
 engine/engine.h.gch: engine/octa.h engine/lightmap.h engine/bih.h
-engine/engine.h.gch: engine/texture.h engine/model.h
+engine/engine.h.gch: engine/texture.h engine/model.h engine/translate.h
 fpsgame/game.h.gch: shared/cube.h shared/tools.h shared/geom.h shared/ents.h
 fpsgame/game.h.gch: shared/command.h shared/glexts.h shared/glemu.h
-fpsgame/game.h.gch: shared/iengine.h shared/igame.h fpsgame/ai.h
+fpsgame/game.h.gch: shared/iengine.h shared/igame.h fpsgame/ai.h engine/translate.h
 
 shared/crypto-standalone.o: shared/cube.h shared/tools.h shared/geom.h
 shared/crypto-standalone.o: shared/ents.h shared/command.h shared/iengine.h

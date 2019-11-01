@@ -6,18 +6,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-<title>Cube 2: Sauerbraten - Map Editing</title>
+<title>Project Crimson - Map Editing</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="shortcut icon" href="favicon.ico" />
 </head>
 <body>
 
-<h1>Cube 2: Sauerbraten - Map Editing</h1>
+<h1>Project Crimson - Map Editing</h1>
 
 <div class="contents">
 <ul class="contents">
 <li>
-<a href="#editing_in_cube2"><b>Editing In Cube 2</b></a>
+<a href="#editing_in_crimson"><b>Editing In Project Crimson</b></a>
 </li>
 <li>
 <a href="#the_basics"><b>The Basics</b></a>
@@ -37,24 +37,15 @@
 </ul>
 </div>
 
-<h2 id="editing_in_cube2">Editing In Cube 2</h2>
+<h2 id="editing_in_crimson">Editing In Project Crimson</h2>
 
 <p>
 Editing isn't like editing in any other game/engine; it is done within the program itself, and the
 structure of the map is comprised of octrees. Octree may sound confusing but it's actually a pretty simple idea.
 Imagine a cube you can do two things to: push the corners at any angle inwards, or split the cube into 8 smaller cubes
 (4 cubes in the top half, 4 cubes in the bottom half) which you can do the same things to. That's all there is to it!
-Below is an example cube where it is split and one cube is removed, and then again for a smaller cube.
-</p>
-
-<p>
-<img src="dev/editing1.jpg" alt="Editing Example 1" />
-<img src="dev/editing2.jpg" alt="Editing Example 2" />
-<img src="dev/editing3.jpg" alt="Editing Example 2" />
-</p> 	 
-	 
-<p>
-With that out of the way: fire up the game and press E. This is edit mode. The first thing you'll notice is a faded
+<br><br>
+With that out of the way: fire up the game and press Right Alt. This is edit mode. The first thing you'll notice is a faded
 outline of the face of the cube pointed to by your cross hair. If you click on this face it will be selected, and will
 be outlined by a solid outline. You can click and drag to select multiple faces of cubes. Press space to deselect all cubes.
 When you have cubes selected, all editing commands will go to those cubes, otherwise it will go to the cube face you are pointing at.
@@ -63,14 +54,10 @@ In the bottom left above your health you'll find text stating what the closest e
 The effect properties have depend upon the type of entity.
 </p>
 
-<p>
-<img src="dev/editing4.jpg" alt="Editing Example 4" />
-</p>
-
 <h2 id="the_basics">The Basics</h2>
 
 <p>
-Go into edit mode (E) and press ` to open a console (pressing T then / has the same effect) and run the command <i>/newmap 7</i>.
+Go into edit mode (Right Alt) and press ` to open a console (pressing T then / has the same effect) and run the command <i>/newmap 7</i>.
 This command creates a blank map, where smaller numbers create smaller maps and larger numbers create larger maps.
 Editing commands are performed on the cube you selected by clicking and dragging, or the face you are pointing at if none are selected.
 Press space to deselect. Point at the ground near you and roll the mouse wheel towards you. This creates a new cube towards you.
@@ -80,21 +67,17 @@ Either by selecting faces or just pointing at them try to create a structure 3 h
 Now try holding G and move the mouse wheel towards you once. The selection size is now one step smaller. Any space you alter
 at this grid size will be made up of smaller cubes, which will take more time to render but allow finer detail. The finest
 grid size is much smaller than this, and the max size much much larger. Try adding a smaller L coming out of your bigger one for practice.
-</p>
-
-<p>
+<br><br>
 Now, let's edit those corners. To select corners press and hold Middle Mouse Button, much the same as selecting with the Left Mouse Button.
 Try playing with the mouse wheel. This will push or pull the selected corners. Now make a selction with Left Mouse Button. Hold F and scroll 
 with mouse. This edits all 4 corners at once. These operations may seem simple but they allow for the creation of complex geometry.
-</p>
-
-<p>
+<br><br>
 By now you should have an idea of how most editing operations work. Hold a modifier button and use the scroll wheel to change the
 selected cubes or the one you're pointing at. It naturally follows that changing the texture of a face of a cube is as simple as holding
 Y while using the scroll wheel. Not that there is no way to shift, scale, or rotate textures. While it may feel restrictive it greatly
 speeds up the process of mapping and the running of the game. Another useful command is rotate, which is done with R and the scroll
 wheel. Experiment with these operations to get a feel for them and then save your creation with the command <i>/savemap mmapname</i>
-where mapname is some name of your choosing. This will create a file in packages/base named mapname.ogz. Save your work often!
+where mapname is some name of your choosing. This will create a file in packages/base named mapname.cmr. Save your work often!
 Backups of old saves will be made for you with a .BAK extension. You can later open your map with the command <i>/map mapname</i>.
 </p>
 
@@ -108,9 +91,7 @@ To add an entity select it from the editing section of the built in menu or type
 <i>/newent light 32 120 120 120</i>. The location of the entity will be exactly where you are, except dropped straight down if it's
 not a light. This behavior can be changed through the entdrop variable, but the default is best in most cases. You can delete an
 entity with the delent command, which is bound to backspace.
-</p>
-
-<p>
+<br><br>
 For a DM: Place some "playerstart" entities, suggested quite a few of them, i.e. from 5 or so in a really small map up to
 15 in really big ones. Place some ammo... remember to not just place excessive amounts: ammo spawns VERY quickly (4 to 8 seconds
 depending on player load), and not having endless ammo forces the player to move around the map more and use different weapons, rather
@@ -130,13 +111,9 @@ See the <a href="editref.html#lighting">lighting commands</a> for an indepth lis
 <p>
 There are various materials available such as water, lava & clip etc.  To create a material make a selection then in the console type 
 <i>/water</i>. The area of your selection will have the material applied to it.
-</p>
-
-<p>
+<br><br>
 <b>Hint:</b> You do not have to type the full command you can just type the name of the material.  For example <i>/water</i> rather then <i>/editmat water</i>.
-</p>
-
-<p>
+<br><br>
 See <a href="editref.html#editmat">available materials</a>.
 </p>
 

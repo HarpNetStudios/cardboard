@@ -177,6 +177,11 @@ void cleanupserver()
     if(pongsock != ENET_SOCKET_NULL) enet_socket_destroy(pongsock);
     if(lansock != ENET_SOCKET_NULL) enet_socket_destroy(lansock);
     pongsock = lansock = ENET_SOCKET_NULL;
+	#ifndef STANDALONE
+		irccleanup();
+	#endif
+
+	
 }
 
 VARF(maxclients, 0, DEFAULTCLIENTS, MAXCLIENTS, { if(!maxclients) maxclients = DEFAULTCLIENTS; });
@@ -723,7 +728,7 @@ void localdisconnect(bool cleanup)
     if(!disconnected) return;
     game::gamedisconnect(cleanup);
     mainmenu = 1;
-	#ifdef WIN32
+	#ifdef DISCORD
 		discord::updatePresence(discord::D_MENU);
 	#endif
 }
@@ -1030,6 +1035,7 @@ void rundedicatedserver()
 			DispatchMessage(&msg);
 		}
 		serverslice(true, 5);
+		ircslice();
 	}
 #else
     for(;;) serverslice(true, 5);

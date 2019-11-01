@@ -73,6 +73,17 @@ static inline T clamp(T a, U b, U c)
 {
     return max(T(b), min(a, T(c)));
 }
+template<class T, class U>
+static inline T lerp(T v0, U v1, U t) {
+	return (1 - t) * v0 + t * v1;
+}
+template<class T, class U>
+static inline T map(T x, U in_min, U in_max, U out_min, U out_max)
+{
+	float a = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+	return a;
+}
+
 
 #ifdef __GNUC__
 #define bitscan(mask) (__builtin_ffs(mask)-1)
@@ -228,6 +239,10 @@ inline char *newstring(const char *s)           { size_t l = strlen(s); char *d 
 #define loopvj(v)   for(int j = 0; j<(v).length(); j++)
 #define loopvk(v)   for(int k = 0; k<(v).length(); k++)
 #define loopvrev(v) for(int i = (v).length()-1; i>=0; i--)
+
+template<class T> inline void memclear(T * p, size_t n) { memset((void*)p, 0, n * sizeof(T)); }
+template<class T> inline void memclear(T & p) { memset((void*)&p, 0, sizeof(T)); }
+template<class T, size_t N> inline void memclear(T(&p)[N]) { memset((void*)p, 0, N * sizeof(T)); }
 
 template <class T>
 struct databuf
@@ -654,8 +669,8 @@ template <class T> struct vector
     void shrink(int i) { ASSERT(i<=ulen); if(isclass<T>::no) ulen = i; else while(ulen>i) drop(); }
     void setsize(int i) { ASSERT(i<=ulen); ulen = i; }
 
-    void deletecontents() { while(!empty()) delete   pop(); }
-    void deletearrays() { while(!empty()) delete[] pop(); }
+	void deletecontents(int n = 0) { while (ulen > n) delete pop(); }
+	void deletearrays(int n = 0) { while (ulen > n) delete[] pop(); }
 
     T *getbuf() { return buf; }
     const T *getbuf() const { return buf; }
@@ -673,7 +688,7 @@ template <class T> struct vector
     void growbuf(int sz)
     {
         int olen = alen;
-        if(!alen) alen = max(MINSIZE, sz);
+		if(alen <= 0) alen = max(MINSIZE, sz);
         else while(alen < sz) alen += alen/2;
         if(alen <= olen) return;
         uchar *newbuf = new uchar[alen*sizeof(T)];
@@ -854,6 +869,28 @@ template <class T> struct vector
         loopi(ulen) if(htcmp(key, buf[i])) return i;
         return -1;
     }
+
+	#define UNIQUE(overwrite, cleanup) \
+        for(int i = 1; i < ulen; i++) if(htcmp(buf[i-1], buf[i])) \
+        { \
+            int n = i; \
+            while(++i < ulen) if(!htcmp(buf[n-1], buf[i])) { overwrite; n++; } \
+            cleanup; \
+            break; \
+        }
+    void unique() // contents must be initially sorted
+    {
+        UNIQUE(buf[n] = buf[i], setsize(n));
+    }
+    void uniquedeletecontents()
+    {
+        UNIQUE(swap(buf[n], buf[i]), deletecontents(n));
+    }
+    void uniquedeletearrays()
+    {
+        UNIQUE(swap(buf[n], buf[i]), deletearrays(n));
+    }
+    #undef UNIQUE
 };
 
 template<class H, class E, class K, class T> struct hashbase

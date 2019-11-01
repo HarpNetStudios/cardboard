@@ -184,6 +184,7 @@ void toggleedit(bool force)
     if(!force) game::edittoggled(editmode);
 }
 
+VARP(editinview, 0, 1, 1);
 bool noedit(bool view, bool msg)
 {
     if(!editmode) { if(msg) conoutf(CON_ERROR, "This feature is exclusive to the Editor."); return true; }
@@ -194,9 +195,37 @@ bool noedit(bool view, bool msg)
     o.add(s);
     r = float(max(s.x, max(s.y, s.z)));
     bool viewable = (isvisiblesphere(r, o) != VFC_NOT_VISIBLE);
-    if(!viewable && msg) conoutf(CON_ERROR, "selection not in view");
-    return !viewable;
+    //if(!viewable && msg) conoutf(CON_ERROR, "selection not in view");
+    //return !viewable;
+	if (!viewable && editinview && msg) conoutf(CON_ERROR, "selection not in view");
+	if (editinview) return !viewable;
+	else return false;
 }
+
+ICOMMAND(getselpos, "", (),
+{
+	defformatstring(pos, "%s %s %s", floatstr(sel.o.x), floatstr(sel.o.y), floatstr(sel.o.z));
+	result(pos);
+});
+
+void setselpos(int* posx, int* posy, int* posz)
+{
+	if (noedit(moving != 0)) return;
+	if (!havesel) { havesel = true; };
+	sel.o.x = *posx - *posx % gridsize;
+	sel.o.y = *posy - *posy % gridsize;
+	sel.o.z = *posz - *posz % gridsize;
+}
+COMMAND(setselpos, "iii");
+
+void movesel(int* dir, int* pface)
+{
+	if (noedit(moving != 0)) return;
+	if ((*pface > 2) || (*pface < 0)) return;
+	int s = *dir;
+	sel.o[*pface] += s * sel.grid;
+}
+COMMAND(movesel, "ii");
 
 void reorient()
 {
@@ -773,8 +802,8 @@ void makeundo()                        // stores state of selected cubes before 
 
 static inline int countblock(cube *c, int n = 8)
 {
-    int r = n;
-    loopi(n) if(c[i].children) r += countblock(c[i].children);
+	int r = 0;
+	loopi(n) if (c[i].children) r += countblock(c[i].children); else ++r;
     return r;
 }
 
@@ -792,8 +821,9 @@ void swapundo(undolist &a, undolist &b, int op)
         {
             ++ops;
             n += u->numents ? u->numents : countblock(u->block());
-            if(ops > 10 || n > 500)
+            if(ops > 10 || n > 2500)
             {
+				conoutf(CON_WARN, "undo too big for multiplayer");
                 if(nompedit) { multiplayer(); return; }
                 op = -1;
                 break;
@@ -2422,12 +2452,23 @@ void gettexname(int *tex, int *subslot)
     result(slot.sts[*subslot].name);
 }
 
+void getslottex(int* idx)
+{
+    if (*idx < 0 || !slots.inrange(*idx)) { intret(-1); return; }
+    Slot & slot = lookupslot(*idx, false);
+    intret(slot.variants->index);
+}
+
 COMMANDN(edittex, edittex_, "i");
 COMMAND(gettex, "");
 COMMAND(getcurtex, "");
 COMMAND(getseltex, "");
 ICOMMAND(getreptex, "", (), { if(!noedit()) intret(vslots.inrange(reptex) ? reptex : -1); });
 COMMAND(gettexname, "ii");
+ICOMMAND(numvslots, "", (), intret(vslots.length()));
+ICOMMAND(numslots, "", (), intret(slots.length()));
+COMMAND(getslottex, "i");
+ICOMMAND(texloaded, "i", (int* tex), intret(slots.inrange(*tex) && slots[*tex]->loaded ? 1 : 0));
 
 void replacetexcube(cube &c, int oldtex, int newtex)
 {
@@ -2662,11 +2703,12 @@ COMMAND(editmat, "ss");
 
 extern int menudistance, menuautoclose;
 
-VARP(texguiwidth, 1, 12, 1000);
-VARP(texguiheight, 1, 8, 1000);
+VARP(texguiwidth, 1, 15, 1000);
+VARP(texguiheight, 1, 6, 1000);
 VARP(texguitime, 0, 25, 1000);
 
 static int lastthumbnail = 0;
+static int texhoveridx = 0;
 
 VARP(texgui2d, 0, 1, 1);
 
@@ -2703,16 +2745,24 @@ struct texturegui : g3d_callback
                             if(totalmillis-lastthumbnail<texguitime)
                             {
                                 g.texture(dummyvslot, 1.0, false); //create an empty space
+								hudshader->set();
                                 continue;
                             }
                             loadthumbnail(slot);
                             lastthumbnail = totalmillis;
                         }
-                        if(g.texture(vslot, 1.0f, true)&G3D_UP && (slot.loaded || slot.thumbnail!=notexture))
+						int test = g.texture(vslot, 1.0f, true);
+                        if(test & G3D_UP && (slot.loaded || slot.thumbnail!=notexture))
                         {
                             edittex(vslot.index);
                             hudshader->set();
                         }
+						if (test & G3D_ROLLOVER)
+						{
+							if (!slot.loaded && !slot.thumbnail)
+								loadthumbnail(slot);
+							texhoveridx = ti;
+						}
                     }
                     else
                     {
@@ -2721,6 +2771,38 @@ struct texturegui : g3d_callback
                 }
                 g.poplist();
             }
+			Slot& prev = lookupslot(texhoveridx, false);
+			VSlot& vprev = *prev.variants;
+
+			g.pushlist();
+			g.texture(vprev, 2.0f, true);
+
+			int guitextcolour = 0xFFFFFF;
+			g.pushlist();
+			defformatstring(ds, "Texture: %s", prev.sts[0].name);
+			if (ds[60]) //shorten strings, to avoid a jittery interface
+			{
+				ds[60] = '\0';
+				ds[59] = ds[58] = ds[57] = '.';
+			}
+			g.text(ds, guitextcolour, "info");
+
+			formatstring(ds, "Layer: %i\tShader: %s", vprev.layer, prev.shader->name);
+			if (ds[40]) //shorten strings, to avoid a jittery interface
+			{
+				ds[40] = '\0';
+				ds[39] = ds[38] = ds[37] = '.';
+			}
+			g.text(ds, guitextcolour, "info");
+
+			formatstring(ds, "Scale: %.2f\tAlpha %.2f %.2f", vprev.scale, vprev.alphafront, vprev.alphaback);
+			g.text(ds, guitextcolour, "info");
+
+			formatstring(ds, "Scroll: %.2f %.2f\tOffset %i %i", (float)vprev.scroll.x * 1000.0f, (float)vprev.scroll.y * 1000.0f, vprev.offset.x, vprev.offset.y);
+			g.text(ds, guitextcolour, "info");
+
+			g.poplist();
+			g.poplist();
         }
         g.end();
     }

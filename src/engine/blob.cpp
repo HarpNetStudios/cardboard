@@ -115,7 +115,7 @@ struct blobrenderer
         memset(cache, 0xFF, cachesize * sizeof(ushort));
         maxblobs = tris/2;
         blobs = new blobinfo[maxblobs];
-        memset(blobs, 0, maxblobs * sizeof(blobinfo));
+		memclear(blobs, maxblobs);
         maxindexes = tris*3 + 3;
         availindexes = maxindexes - 3;
         indexes = new ushort[maxindexes];

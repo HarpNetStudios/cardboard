@@ -441,7 +441,8 @@ const float FLOORZ = 0.867f;
 const float SLOPEZ = 0.5f;
 const float WALLZ = 0.2f;
 extern const float JUMPVEL = 125.0f;
-extern const float GRAVITY = 200.0f;
+FVARR(gravity, 10, 200, 1000);
+
 
 bool ellipseboxcollide(physent *d, const vec &dir, const vec &o, const vec &center, float yaw, float xr, float yr, float hi, float lo)
 {
@@ -482,13 +483,13 @@ bool ellipseboxcollide(physent *d, const vec &dir, const vec &o, const vec &cent
         }
         if(yo.z < 0)
         {
-            if(dir.iszero() || (dir.z > 0 && (d->type>=ENT_INANIMATE || below >= d->zmargin-(d->eyeheight+d->aboveeye)/4.0f)))
+            if(dir.iszero() || (dir.z > 0 && (d->type>=ENT_CAMERA || below >= d->zmargin-(d->eyeheight+d->aboveeye)/4.0f)))
             {
                 collidewall = vec(0, 0, -1);
                 return true;
             }
         }
-        else if(dir.iszero() || (dir.z < 0 && (d->type>=ENT_INANIMATE || above >= d->zmargin-(d->eyeheight+d->aboveeye)/3.0f)))
+        else if(dir.iszero() || (dir.z < 0 && (d->type>=ENT_CAMERA || above >= d->zmargin-(d->eyeheight+d->aboveeye)/3.0f)))
         {
             collidewall = vec(0, 0, 1);
             return true;
@@ -521,13 +522,13 @@ bool ellipsecollide(physent *d, const vec &dir, const vec &o, const vec &center,
         }
         if(d->o.z < yo.z)
         {
-            if(dir.iszero() || (dir.z > 0 && (d->type>=ENT_INANIMATE || below >= d->zmargin-(d->eyeheight+d->aboveeye)/4.0f)))
+            if(dir.iszero() || (dir.z > 0 && (d->type>=ENT_CAMERA || below >= d->zmargin-(d->eyeheight+d->aboveeye)/4.0f)))
             {
                 collidewall = vec(0, 0, -1);
                 return true;
             }
         }
-        else if(dir.iszero() || (dir.z < 0 && (d->type>=ENT_INANIMATE || above >= d->zmargin-(d->eyeheight+d->aboveeye)/3.0f)))
+        else if(dir.iszero() || (dir.z < 0 && (d->type>=ENT_CAMERA || above >= d->zmargin-(d->eyeheight+d->aboveeye)/3.0f)))
         {
             collidewall = vec(0, 0, 1);
             return true;
@@ -639,7 +640,7 @@ static inline bool plcollide(physent *d, const vec &dir, physent *o)
     }
 }
 
-bool plcollide(physent *d, const vec &dir, bool insideplayercol)    // collide with player or monster
+bool plcollide(physent *d, const vec &dir, bool insideplayercol)    // collide with player
 {
     if(d->type==ENT_CAMERA || d->state!=CS_ALIVE) return false;
     int lastinside = collideinside;
@@ -1211,7 +1212,7 @@ bool trystepdown(physent *d, vec &dir, float step, float xy, float z, bool init 
 
 bool trystepdown(physent *d, vec &dir, bool init = false)
 {
-    if((!d->move && !d->strafe) || !game::allowmove(d)) return false;
+    if(!d->tryingtomove() || !game::allowmove(d)) return false;
     vec old(d->o);
     d->o.z -= STAIRHEIGHT;
     d->zmargin = -STAIRHEIGHT;
@@ -1250,13 +1251,13 @@ void falling(physent *d, vec &dir, const vec &floor)
 
 void landing(physent *d, vec &dir, const vec &floor, bool collided)
 {
-#if 0
+	/*
     if(d->physstate == PHYS_FALL)
     {
         d->timeinair = 0;
         if(dir.z < 0.0f) dir.z = d->vel.z = 0.0f;
     }
-#endif
+	*/
     switchfloor(d, dir, floor);
     d->timeinair = 0;
     if((d->physstate!=PHYS_STEP_UP && d->physstate!=PHYS_STEP_DOWN) || !collided)
@@ -1311,7 +1312,7 @@ bool move(physent *d, vec &dir)
     bool collided = false, slidecollide = false;
     vec obstacle;
     d->o.add(dir);
-    if(collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_INANIMATE) && collide(d, vec(0, 0, 0), 0, false)))
+    if(collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_CAMERA) && collide(d, vec(0, 0, 0), 0, false)))
     {
         obstacle = collidewall;
         /* check to see if there is an obstacle that would prevent this one from being used as a floor (or ceiling bump) */
@@ -1359,8 +1360,7 @@ bool move(physent *d, vec &dir)
     if(slide || (!collided && floor.z > 0 && floor.z < WALLZ))
     {
         slideagainst(d, dir, slide ? obstacle : floor, found, slidecollide);
-        //if(d->type == ENT_AI || d->type == ENT_INANIMATE)
-        d->blocked = true;
+        if(d->type == ENT_AI) d->blocked = true;
     }
     if(found) landing(d, dir, floor, collided);
     else falling(d, dir, floor);
@@ -1373,7 +1373,7 @@ bool spacemove(physent *d, vec &dir)
     bool collided = false, slidecollide = false;
     vec obstacle;
     d->o.add(dir);
-    if(collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_INANIMATE) && collide(d, vec(0, 0, 0), 0, false)))
+    if(collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_CAMERA) && collide(d, vec(0, 0, 0), 0, false)))
     {
         obstacle = collidewall;
         /* check to see if there is an obstacle that would prevent this one from being used as a floor (or ceiling bump) */
@@ -1421,8 +1421,7 @@ bool spacemove(physent *d, vec &dir)
     if(slide || (!collided && floor.z > 0 && floor.z < WALLZ))
     {
         slideagainst(d, dir, slide ? obstacle : floor, found, slidecollide);
-        //if(d->type == ENT_AI || d->type == ENT_INANIMATE)
-        d->blocked = true;
+        if(d->type == ENT_AI) d->blocked = true;
     }
     if(found) landing(d, dir, floor, collided);
     else falling(d, dir, floor);
@@ -1437,10 +1436,10 @@ bool bounce(physent *d, float secs, float elasticity, float waterfric, float gra
     bool water = isliquid(mat);
     if(water)
     {
-        d->vel.z -= grav*GRAVITY/16*secs;
+        d->vel.z -= grav*gravity/16*secs;
         d->vel.mul(max(1.0f - secs/waterfric, 0.0f));
     }
-    else d->vel.z -= grav*GRAVITY*secs;
+    else d->vel.z -= grav*gravity*secs;
     vec old(d->o);
     loopi(2)
     {
@@ -1599,6 +1598,43 @@ void vecfromyawpitch(float yaw, float pitch, int move, int strafe, vec &m)
     }
 }
 
+FVARP(joyminthreshold, 0.0f, 0.05f, 1.0f);
+FVARP(joymaxthreshold, 0.0f, 1.0f, 1.0f);
+
+void vecfrommovement(float yaw, float pitch, float move, float strafe, vec& m)
+{
+	if (move)
+	{
+		m.x = move * -sinf(RAD * yaw);
+		m.y = move * cosf(RAD * yaw);
+	}
+	else m.x = m.y = 0;
+
+	if (pitch)
+	{
+		m.x *= cosf(RAD * pitch);
+		m.y *= cosf(RAD * pitch);
+		m.z = move * sinf(RAD * pitch);
+	}
+	else m.z = 0;
+
+	if (strafe)
+	{
+		m.x += strafe * cosf(RAD * yaw);
+		m.y += strafe * sinf(RAD * yaw);
+	}
+
+	const float mag = m.magnitude();
+	if (mag <= joyminthreshold || joyminthreshold >= joymaxthreshold)
+	{
+		m = vec(0.0f);
+		return;
+	}
+	const float scaledmag =
+		(mag - joyminthreshold)
+		/ (joymaxthreshold - joyminthreshold);
+	m.mul(min(1.0f, scaledmag) / mag);
+}
 
 void vectoyawpitch(const vec &v, float &yaw, float &pitch)
 {
@@ -1642,7 +1678,10 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
             pl->vel.z = max(pl->vel.z, JUMPVEL);
         }
     }
-    if(pl->spacepack && !pl->spaceclip)
+
+	//conoutf(CON_DEBUG, "jumpstate: %d", pl->jumpstate);
+
+    else if(pl->spacepack && !pl->spaceclip)
     {
         if(pl->jumping && allowmove)
 		{
@@ -1667,18 +1706,24 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
             pl->vel.z = max(pl->vel.z, JUMPVEL); // physics impulse upwards
             if(water) { pl->vel.x /= 8.0f; pl->vel.y /= 8.0f; } // dampen velocity change even harder, gives correct water feel
 
+			pl->jumpstate = 1;
+
             game::physicstrigger(pl, local, 1, 0);
         }
     }
-    else if(pl->jumpstate == 1 && pl->candouble)
+    if(pl->jumpstate == 1 && pl->candouble)
     {
-		pl->falling.z = 0; // set back gravity to 0, so you can jump again
-		pl->vel.z = max(pl->vel.z, pl->vel.z + (JUMPVEL/2)); // physics impulse upwards
-		if(water) { pl->vel.x /= 16.0f; pl->vel.y /= 16.0f; } // dampen velocity change even harder, gives correct water feel
+		if (pl->jumping) {
+			pl->falling.z = 0; // set back gravity to 0, so you can jump again
+			pl->vel.z = max(pl->vel.z, pl->vel.z + (JUMPVEL / 2)); // physics impulse upwards
+			if (water) { pl->vel.x /= 16.0f; pl->vel.y /= 16.0f; } // dampen velocity change even harder, gives correct water feel
 
-		pl->jumpstate++;
+			pl->jumpstate = 2;
 
-		game::physicstrigger(pl, local, 1, 0);
+			game::physicstrigger(pl, local, 1, 0);
+		}
+
+		pl->jumping = false;
 	}
 
     if(!(floating || (pl->spacepack && !pl->spaceclip)) && pl->physstate == PHYS_FALL) {
@@ -1686,9 +1731,15 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 	}
 
     vec m(0.0f, 0.0f, 0.0f);
-    if((pl->move || pl->strafe) && allowmove)
+    if(pl->tryingtomove() && allowmove)
     {
-        vecfromyawpitch(pl->yaw, (pl->spacepack && !pl->spaceclip) || floating || water || pl->type==ENT_CAMERA ? pl->pitch : 0, pl->move, pl->strafe, m);
+		vecfrommovement
+		(pl->yaw
+			, (pl->spacepack && !pl->spaceclip) || floating || water || pl->type == ENT_CAMERA ? pl->pitch : 0
+			, pl->fmove
+			, pl->fstrafe
+			, m
+		);
 
         if((!floating || !pl->spacepack) && pl->physstate >= PHYS_SLOPE)
         {
@@ -1703,14 +1754,14 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
     }
 
     vec d(m);
-    d.mul(pl->maxspeed);
+    d.mul(pl->maxspeed); // TODO: joystick analog movement speed 
     if(pl->type==ENT_PLAYER)
     {
         if(floating)
         {
             if(pl==player) d.mul(floatspeed/100.0f);
         }
-        //else if(!water && allowmove) d.mul((pl->move && !pl->strafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
+        //else if(!water && allowmove) d.mul((pl->fmove && !pl->fstrafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
 		else if (!water && allowmove) d.mul(1.3f * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
     }
 	calcfric(pl, local, water, floating, curtime, d);
@@ -1720,15 +1771,15 @@ void modifygravity(physent *pl, bool water, int curtime)
 {
     float secs = curtime/1000.0f;
     vec g(0, 0, 0);
-    if(pl->physstate == PHYS_FALL) g.z -= GRAVITY*secs;
+    if(pl->physstate == PHYS_FALL) g.z -= gravity*secs;
     else if(pl->floor.z > 0 && pl->floor.z < FLOORZ)
     {
         g.z = -1;
         g.project(pl->floor);
         g.normalize();
-        g.mul(GRAVITY*secs);
+        g.mul(gravity*secs);
     }
-    if(!water || !game::allowmove(pl) || (!pl->move && !pl->strafe))
+    if(!water || !game::allowmove(pl) || !pl->tryingtomove())
     {
         if (!pl->spacepack || pl->spaceclip) pl->falling.add(g);
     }
@@ -1747,8 +1798,8 @@ void modifygravity(physent *pl, bool water, int curtime)
     }
 }
 
-// main physics routine, moves a player/monster for a curtime step
-// moveres indicated the physics precision (which is lower for monsters and multiplayer prediction)
+// main physics routine, moves a player for a curtime step
+// moveres indicated the physics precision (which is lower for multiplayer prediction)
 // local is false for multiplayer prediction
 
 bool moveplayer(physent* pl, int moveres, bool local, int curtime)
@@ -1766,7 +1817,7 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 	modifyvelocity(pl, local, water, floating, curtime);
 
 	vec d(pl->vel);
-	if ((!floating || !ispack) && water && !editmode) d.mul(0.5f);
+	if (!floating && water && !editmode) d.mul(0.5f);
 	d.add(pl->falling);
 	d.mul(secs);
 
@@ -1814,7 +1865,7 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 
 	// automatically apply smooth roll when strafing
 
-	if (pl->strafe && maxroll) pl->roll = clamp(pl->roll - pow(clamp(1.0f + pl->strafe * pl->roll / maxroll, 0.0f, 1.0f), 0.33f) * pl->strafe * curtime * straferoll, -maxroll, maxroll);
+	if (pl->fstrafe && maxroll) pl->roll = clamp(pl->roll - pow(clamp(1.0f + pl->fstrafe * pl->roll / maxroll, 0.0f, 1.0f), 0.33f) * pl->fstrafe * curtime * straferoll, -maxroll, maxroll);
 	else pl->roll *= curtime == PHYSFRAMETIME ? faderoll : pow(faderoll, curtime / float(PHYSFRAMETIME));
 
 	// play sounds on water transitions if not in edit mode
@@ -1829,32 +1880,19 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 		pl->inwater = water ? material & MATF_VOLUME : MAT_AIR;
 	}
 
-	if (pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_DEATH)) game::suicide(pl); //DEATH kills you
-	/*if (pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_SPACECLIP))
+	if (pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_DEATH)) game::suicide(pl); //DEATH or being under the origin (z<0) kills you
+	if (pl->state == CS_ALIVE && (material & MAT_SPACECLIP)) //SPACECLIP prevents spacepack usage
 	{
-		//conoutf("\f3spaceclip");
-		pl->spaceclip = true; // this just don't work for some reason, idk
+		//if(pl->spacepack) conoutf("\f3spaceclip");
+		pl->spaceclip = true;	
 	}
-
-	pl->spaceclip = inspclip; */
-	/*
-	if (pl->spaceclip && !inspclip)
+	if (pl->state == CS_ALIVE && (material & MAT_JUMPRESET)) //JUMPRESET allows another double jump
 	{
-		material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (pl->aboveeye - pl->eyeheight) / 2));
-		inspclip = isliquid(material & MATF_VOLUME);
+		if(pl->jumpstate == 2) pl->jumpstate = 1;
 	}
-	if (!pl->spaceclip && inspclip) {
-		pl->spaceclip = true;
-		conoutf("in"); //game::physicstrigger(pl, local, 0, -1, material & MATF_VOLUME);
+	else if (pl->state == CS_ALIVE && !(material & MAT_SPACECLIP) && pl->spaceclip) {
+		pl->spaceclip = !pl->spaceclip;
 	}
-	else if (pl->spaceclip && !inspclip) {
-		pl->spaceclip = false;
-		conoutf("out"); //game::physicstrigger(pl, local, 0, 1, pl->inwater);
-	}
-	pl->spaceclip = inspclip ? material & MATF_VOLUME : MAT_AIR; // join a cool, be gang -Y 05/09/19
-
-	conoutf("spacepack: %d, spaceclip: %d, inspclip: %d", pl->spacepack, pl->spaceclip, inspclip); // i sure do love debugging
-	*/
 
     return true;
 }
@@ -2134,17 +2172,17 @@ bool moveplatform(physent *p, const vec &dir)
 
 #define dir(name,v,d,s,os) ICOMMAND(name, "D", (int *down), { player->s = *down!=0; player->v = player->s ? d : (player->os ? -(d) : 0); });
 
-dir(backward, move,   -1, k_down,  k_up);
-dir(forward,  move,    1, k_up,    k_down);
-dir(left,     strafe,  1, k_left,  k_right);
-dir(right,    strafe, -1, k_right, k_left);
+dir(backward, fmove,   -1.0f, k_down,  k_up);
+dir(forward,  fmove,    1.0f, k_up,    k_down);
+dir(left,     fstrafe,  1.0f, k_left,  k_right);
+dir(right,    fstrafe, -1.0f, k_right, k_left);
 
 ICOMMAND(jump,   "D", (int *down), {
          if(!*down || game::canjump())
          {
              player->jumping = *down!=0;
              if(*down != 0)
-                player->jumpstate++;
+                player->jumpstate = min(player->jumpstate++, 2);
          }
          });
 ICOMMAND(attack, "D", (int *down), { game::doattack(*down!=0); });

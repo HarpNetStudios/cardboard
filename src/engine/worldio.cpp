@@ -59,27 +59,28 @@ static void fixent(entity &e, int version)
 
 bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 {
-    oldstring pakname, mapname, mcfgname, ogzname;
+    oldstring pakname, mapname, mcfgname, cmrname;
     getmapfilenames(fname, NULL, pakname, mapname, mcfgname);
-    formatstring(ogzname, "packages/%s.cmr", mapname);
-    path(ogzname);
-    stream *f = opengzfile(ogzname, "rb");
+    formatstring(cmrname, "packages/%s.cmr", mapname);
+    path(cmrname);
+    stream *f = opengzfile(cmrname, "rb");
     if(!f) return false;
     octaheader hdr;
-    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
     lilswap(&hdr.version, 6);
-    if(memcmp(hdr.magic, "OCTA", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
-    if(hdr.version>MAPVERSION) { conoutf(CON_ERROR, "map %s requires a newer version of this game", ogzname); delete f; return false; }
+	if(!memcmp(hdr.magic, "OCTA", 4)) { conoutf(CON_ERROR, "map %s is a Cube 2 map, attempting automatic conversion...", cmrname); memcpy(hdr.magic, "CARD", 4); }
+    if(memcmp(hdr.magic, "CARD", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
+    if(hdr.version>MAPVERSION) { conoutf(CON_ERROR, "map %s requires a newer version of this game", cmrname); delete f; return false; }
     compatheader chdr;
     if(hdr.version <= 28)
     {
-        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
     }
     else
     {
         int extra = 0;
         if(hdr.version <= 29) extra++;
-        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
     }
 
     if(hdr.version <= 28)
@@ -170,7 +171,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 }
 
 #ifndef STANDALONE
-oldstring ogzname, bakname, cfgname, picname, loadname;
+oldstring cmrname, bakname, cfgname, picname, loadname;
 
 VARP(savebak, 0, 2, 2);
 
@@ -179,14 +180,14 @@ void setmapfilenames(const char *fname, const char *cname = NULL)
     oldstring pakname, mapname, mcfgname;
     getmapfilenames(fname, cname, pakname, mapname, mcfgname);
 
-    formatstring(ogzname, "packages/%s.cmr", mapname);
+    formatstring(cmrname, "packages/%s.cmr", mapname);
     if(savebak==1) formatstring(bakname, "packages/%s.cmr.BAK", mapname);
     else formatstring(bakname, "packages/%s_%d.cmr.BAK", mapname, totalmillis);
     formatstring(cfgname, "packages/%s/%s.cfg", pakname, mcfgname);
     formatstring(picname, "packages/%s.png", mapname);
 	formatstring(loadname, "packages/%s_big.png", mapname);
 
-    path(ogzname);
+    path(cmrname);
     path(bakname);
     path(cfgname);
     path(picname);
@@ -880,9 +881,9 @@ bool save_world(const char *mname, bool nolms)
 {
     if(!*mname) mname = game::getclientmap();
     setmapfilenames(mname);
-    if(savebak) backup(ogzname, bakname);
-    stream *f = opengzfile(ogzname, "wb");
-    if(!f) { conoutf(CON_WARN, "could not write map to %s", ogzname); return false; }
+    if(savebak) backup(cmrname, bakname);
+    stream *f = opengzfile(cmrname, "wb");
+    if(!f) { conoutf(CON_WARN, "could not write map to %s", cmrname); return false; }
 
     int numvslots = vslots.length();
     if(!nolms && !multiplayer(false))
@@ -895,7 +896,7 @@ bool save_world(const char *mname, bool nolms)
     renderprogress(0, "saving map...");
 
     octaheader hdr;
-    memcpy(hdr.magic, "OCTA", 4);
+    memcpy(hdr.magic, "CARD", 4);
     hdr.version = MAPVERSION;
     hdr.headersize = sizeof(hdr);
     hdr.worldsize = worldsize;
@@ -992,7 +993,7 @@ bool save_world(const char *mname, bool nolms)
     if(shouldsaveblendmap()) { renderprogress(0, "saving blendmap..."); saveblendmap(f); }
 
     delete f;
-    conoutf("wrote map file %s", ogzname);
+    conoutf("wrote map file %s", cmrname);
     return true;
 }
 
@@ -1005,24 +1006,25 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 {
     int loadingstart = SDL_GetTicks();
     setmapfilenames(mname, cname);
-    stream *f = opengzfile(ogzname, "rb");
-    if(!f) { conoutf(CON_ERROR, "could not read map %s", ogzname); return false; }
-    if(!f) { conoutf(CON_ERROR, "could not read map %s", ogzname); return false; }
+    stream *f = opengzfile(cmrname, "rb");
+    if(!f) { conoutf(CON_ERROR, "could not read map %s", cmrname); return false; }
+    if(!f) { conoutf(CON_ERROR, "could not read map %s", cmrname); return false; }
     octaheader hdr;
-    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+    if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
     lilswap(&hdr.version, 6);
-    if(memcmp(hdr.magic, "OCTA", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
-    if(hdr.version>MAPVERSION) { conoutf(CON_ERROR, "map %s requires a newer version of this game", ogzname); delete f; return false; }
+	if(!memcmp(hdr.magic, "OCTA", 4)) { conoutf(CON_ERROR, "\f3map %s is a Cube 2 map, attempting automatic conversion...", cmrname); memcpy(hdr.magic, "CARD", 4); }
+    if(memcmp(hdr.magic, "CARD", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
+    if(hdr.version>MAPVERSION) { conoutf(CON_ERROR, "map %s requires a newer version of this game", cmrname); delete f; return false; }
     compatheader chdr;
     if(hdr.version <= 28)
     {
-        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+        if(f->read(&chdr.lightprecision, sizeof(chdr) - 7*sizeof(int)) != sizeof(chdr) - 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
     }
     else
     {
         int extra = 0;
         if(hdr.version <= 29) extra++;
-        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", ogzname); delete f; return false; }
+        if(f->read(&hdr.blendmap, sizeof(hdr) - (7+extra)*sizeof(int)) != sizeof(hdr) - (7+extra)*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
     }
 
     resetmap();
@@ -1244,7 +1246,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     mapcrc = f->getcrc();
     delete f;
 
-    conoutf("read map %s (%.1f seconds)", ogzname, (SDL_GetTicks()-loadingstart)/1000.0f);
+    conoutf("read map %s (%.1f seconds)", cmrname, (SDL_GetTicks()-loadingstart)/1000.0f);
 
     clearmainmenu();
 
@@ -1290,7 +1292,7 @@ void writeobj(char *name)
     defformatstring(fname, "%s.obj", name);
     stream *f = openfile(path(fname), "w");
     if(!f) return;
-    f->printf("# obj file of Cube 2 level\n\n");
+    f->printf("# obj file of Cardboard Engine level\n\n");
     defformatstring(mtlname, "%s.mtl", name);
     path(mtlname);
     f->printf("mtllib %s\n\n", mtlname);
@@ -1374,7 +1376,7 @@ void writeobj(char *name)
 
     f = openfile(mtlname, "w");
     if(!f) return;
-    f->printf("# mtl file of Cube 2 level\n\n");
+    f->printf("# mtl file of Cardboard Engine level\n\n");
     loopv(usedmtl)
     {
         VSlot &vslot = lookupvslot(usedmtl[i], false);

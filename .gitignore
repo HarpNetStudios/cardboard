@@ -18,3 +18,8 @@
 *.tlog
 *.pdb
 *.pch
+
+# Visual Studio trash
+*.map
+*.ilk
+*.exp

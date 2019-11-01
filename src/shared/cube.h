@@ -6,16 +6,16 @@
 #ifdef WIN32
 #define _USE_MATH_DEFINES
 #endif
-#include <math.h>
+#include <cmath>
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <stdarg.h>
-#include <limits.h>
-#include <assert.h>
-#include <time.h>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cstdarg>
+#include <climits>
+#include <cassert>
+#include <ctime>
 
 // include C++ standard libs here
 
@@ -26,7 +26,7 @@
   #ifdef _WIN32_WINNT
   #undef _WIN32_WINNT
   #endif
-  #define _WIN32_WINNT 0x0500
+  #define _WIN32_WINNT 0x0501
   #include "windows.h"
   #ifndef _WINDOWS
     #define _WINDOWS
@@ -52,17 +52,26 @@
   #endif
 #endif
 
+#ifndef CURLENABLED
+#define CURLENABLED
+#endif
+
 #ifdef WIN32
+#ifndef DISCORD
+#define DISCORD
+#endif
+#endif
+
+#ifdef DISCORD
 #include <discord_rpc.h>
 #endif
 
 #include <enet/enet.h>
-
 #include <curl/curl.h>
-
 #include <cJSON/cJSON.h>
-
 #include <zlib.h>
+
+#include "translate.h"
 
 #include "tools.h"
 #include "geom.h"
@@ -76,6 +85,10 @@
 
 #include "iengine.h"
 #include "igame.h"
+
+#ifndef CURLENABLED
+#define CURLENABLED
+#endif
 
 #endif
 

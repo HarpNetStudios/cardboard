@@ -135,11 +135,9 @@ namespace game
     {
         conoutf("your name is: %s", colorname(player1));
     }
-    ICOMMAND(name, "", ()/*"sN", (char *s, int *numargs)*/,
+    ICOMMAND(name, "", (),
     {
-        /*if(*numargs > 0) switchname(s);
-        else if(!*numargs) printname();
-        else */result(colorname(player1));
+        result(colorname(player1));
     });
     ICOMMAND(getname, "", (), result(player1->name));
 
@@ -270,6 +268,8 @@ namespace game
         f->printf("name %s\n", escapestring(player1->name));
     }
 
+	VAR(allowedit, 0, 0, 1);
+
     bool allowedittoggle()
     {
         if(editmode) return true;
@@ -278,6 +278,11 @@ namespace game
             conoutf(CON_ERROR, "editing in multiplayer requires coop edit mode (1)");
             return false;
         }
+		if (!allowedit && !m_edit)
+		{
+			conoutf(CON_ERROR, "editing requires allowedit to be set to 1");
+			return false;
+		}
         if(identexists("allowedittoggle") && !execute("allowedittoggle"))
             return false;
         return true;
@@ -580,9 +585,6 @@ namespace game
     ICOMMANDS("m_demo", "i", (int *mode), { int gamemode = *mode; intret(m_demo); });
     ICOMMANDS("m_edit", "i", (int *mode), { int gamemode = *mode; intret(m_edit); });
     ICOMMANDS("m_lobby", "i", (int *mode), { int gamemode = *mode; intret(m_lobby); });
-    ICOMMANDS("m_sp", "i", (int *mode), { int gamemode = *mode; intret(m_sp); });
-    ICOMMANDS("m_dmsp", "i", (int *mode), { int gamemode = *mode; intret(m_dmsp); });
-    ICOMMANDS("m_classicsp", "i", (int *mode), { int gamemode = *mode; intret(m_classicsp); });
     ICOMMANDS("m_parkour", "i", (int *mode), { int gamemode = *mode; intret(m_parkour); });
 	ICOMMANDS("m_grenade", "i", (int *mode), { int gamemode = *mode; intret(m_grenade); });
 	ICOMMANDS("m_gun", "i", (int *mode), { int gamemode = *mode; intret(m_gun); });
@@ -607,11 +609,12 @@ namespace game
     }
     ICOMMAND(map, "s", (char *name), changemap(name));
 
-    void forceintermission()
+	void voterestart(int* favor)
     {
-        if(!remote && !hasnonlocalclients()) server::startintermission();
-        else addmsg(N_FORCEINTERMISSION, "r");
-    }
+		if (!remote && *favor) server::restartgame();
+		else if (player1->state != CS_SPECTATOR || player1->privilege) addmsg(N_RESTARTVOTE, "ri", *favor);
+	}
+	COMMAND(voterestart, "i");
 
     void forceedit(const char *name)
     {
@@ -953,8 +956,10 @@ namespace game
     {
         putint(q, N_POS);
         putuint(q, d->clientnum);
-        // 3 bits phys state, 1 bit life sequence, 2 bits move, 2 bits strafe
-        uchar physstate = d->physstate | ((d->lifesequence&1)<<3) | ((d->move&3)<<4) | ((d->strafe&3)<<6);
+        // 3 bits phys state, 1 bit life sequence, 4 bits unused
+		uchar physstate
+			= d->physstate
+			| ((d->lifesequence & 1) << 3);
         q.put(physstate);
         ivec o = ivec(vec(d->o.x, d->o.y, d->o.z-d->eyeheight).mul(DMF));
         uint vel = min(int(d->vel.magnitude()*DVELF), 0xFFFF), fall = min(int(d->falling.magnitude()*DVELF), 0xFFFF);
@@ -1002,6 +1007,8 @@ namespace game
                 q.put((falldir>>8)&0xFF);
             }
         }
+		putint(q, int(d->fmove* DNF));
+		putint(q, int(d->fstrafe* DNF));
     }
 
     void sendposition(fpsent *d, bool reliable)
@@ -1119,7 +1126,7 @@ namespace game
         const float dz = player1->o.z-d->o.z;
         const float rz = player1->aboveeye+d->eyeheight;
         const float fx = (float)fabs(dx), fy = (float)fabs(dy), fz = (float)fabs(dz);
-        if(fx<r && fy<r && fz<rz && player1->state!=CS_SPECTATOR && d->state!=CS_DEAD)
+        if(fx<r && fy<r && fz<rz && !spectating(player1) && d->state!=CS_DEAD)
         {
             if(fx<fy) d->o.y += dy<0 ? r-fy : -(r-fy);  // push aside
             else      d->o.x += dx<0 ? r-fx : -(r-fx);
@@ -1168,6 +1175,8 @@ namespace game
                     falling.mul(mag/DVELF);
                 }
                 else falling = vec(0, 0, 0);
+				float fmove = getint(p) / DNF;
+				float fstrafe = getint(p) / DNF;
                 int seqcolor = (physstate>>3)&1;
                 fpsent *d = getclient(cn);
                 if(!d || d->lifesequence < 0 || seqcolor!=(d->lifesequence&1) || d->state==CS_DEAD) continue;
@@ -1175,8 +1184,8 @@ namespace game
                 d->yaw = yaw;
                 d->pitch = pitch;
                 d->roll = roll;
-                d->move = (physstate>>4)&2 ? -1 : (physstate>>4)&1;
-                d->strafe = (physstate>>6)&2 ? -1 : (physstate>>6)&1;
+				d->fmove = fmove;
+				d->fstrafe = fstrafe;
                 vec oldpos(d->o);
                 d->o = o;
                 d->o.z += d->eyeheight;
@@ -1242,7 +1251,6 @@ namespace game
             d->frags = getint(p);
             d->flags = getint(p);
             if(d==player1) getint(p);
-            else d->quadmillis = getint(p);
         }
         d->lifesequence = getint(p);
         d->health = getint(p);
@@ -1318,8 +1326,6 @@ namespace game
                 int val = clamp(getint(p), 10, 1000), cn = getint(p);
                 fpsent *a = cn >= 0 ? getclient(cn) : NULL;
                 if(!demopacket) gamespeed = val;
-                extern int slowmosp;
-                if(m_sp && slowmosp) break;
                 if(a) conoutf("%s set gamespeed to %d", colorname(a), val);
                 else conoutf("gamespeed is %d", val);
                 break;
@@ -1362,6 +1368,14 @@ namespace game
                 conoutf(CON_TEAMCHAT, "%s:\f1 %s", colorname(t), text);
                 break;
             }
+
+			case N_RESTARTGAME:
+			{
+				// dont startgame(), it loads map
+				entities::spawnitems();
+				startgame();
+				break;
+			}
 
             case N_MAPCHANGE:
                 getstring(text, p);
@@ -1406,6 +1420,7 @@ namespace game
                 {
                     getstring(text, p);
                     getstring(text, p);
+					getstring(text, p);
                     getint(p);
                     break;
                 }
@@ -1426,6 +1441,10 @@ namespace game
                 copystring(d->name, text, MAXNAMELEN+1);
                 getstring(text, p);
                 filtertext(d->team, text, false, false, MAXTEAMLEN);
+				getstring(text, p);
+				copystring(d->tags, text, MAXNAMELEN+1);
+				gettags(d); // causes lag on connect, figure out how to not cause lag
+				d->tagfetch = true;
                 d->playermodel = getint(p);
                 break;
             }
@@ -1555,12 +1574,11 @@ namespace game
 
             case N_DIED:
             {
-                int vcn = getint(p), acn = getint(p), frags = getint(p), tfrags = getint(p), gun = getint(p);
+                int vcn = getint(p), acn = getint(p), frags = getint(p), gun = getint(p), special = getint(p);
                 fpsent *victim = getclient(vcn),
                        *actor = getclient(acn);
                 if(!actor) break;
                 actor->frags = frags;
-                if(m_teammode) setteaminfo(actor->team, tfrags);
 				extern int hidefrags;
 				if (actor != player1 && (!cmode || !cmode->hidefrags() || !hidefrags))
                 {
@@ -1568,7 +1586,7 @@ namespace game
                     particle_textcopy(actor->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
                 }
                 if(!victim) break;
-                killed(victim, actor, gun);
+                killed(victim, actor, gun, special);
                 break;
             }
 
@@ -1902,14 +1920,6 @@ namespace game
             #include "ctf.h"
             #include "collect.h"
             #undef PARSEMESSAGES
-
-            case N_ANNOUNCE:
-            {
-                int t = getint(p);
-                if     (t==I_QUAD)  { playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);  conoutf(CON_GAMEINFO, "\f2quad damage will spawn in 10 seconds!"); }
-                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); conoutf(CON_GAMEINFO, "\f2+100 health will spawn in 10 seconds!"); }
-                break;
-            }
 
             case N_NEWMAP:
             {

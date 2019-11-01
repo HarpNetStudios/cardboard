@@ -1519,6 +1519,12 @@ bool settexture(const char *name, int clamp)
     return t != notexture;
 }
 
+void enabletexture(const bool on)
+{
+	if (on) hudshader->set();
+	else hudnotextureshader->set();
+}
+
 vector<VSlot *> vslots;
 vector<Slot *> slots;
 MSlot materialslots[(MATF_VOLUME|MATF_INDEX)+1];
@@ -1849,7 +1855,7 @@ void packvslot(vector<uchar> &buf, const VSlot &src)
     if(src.changed & (1<<VSLOT_ROTATION))
     {
         buf.put(VSLOT_ROTATION);
-        putfloat(buf, src.rotation);
+		putint(buf, src.rotation);
     }
     if(src.changed & (1<<VSLOT_OFFSET))
     {

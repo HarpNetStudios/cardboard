@@ -2694,20 +2694,50 @@ found:
 }
 COMMAND(listfind, "rse");
 
-void looplist(ident *id, const char *list, const uint *body)
+void looplist(ident* id, const char* list, const uint* body)
 {
-    if(id->type!=ID_ALIAS) return;
-    identstack stack;
-    int n = 0;
-    for(const char *s = list, *start, *end; parselist(s, start, end); n++)
-    {
-        char *val = newstring(start, end-start);
-        setiter(*id, val, stack);
-        execute(body);
-    }
-    if(n) poparg(*id);
+	if(id->type!=ID_ALIAS) return;
+	identstack stack;
+	int n = 0;
+	for(const char* s = list, *start, *end; parselist(s, start, end); n++)
+	{
+		setiter(*id, newstring(start, end-start), stack);
+		execute(body);
+	}
+	if(n) poparg(*id);
 }
 COMMAND(looplist, "rse");
+
+void looplist2(ident *id, ident *id2, const char *list, const uint *body)
+{
+    if(id->type!=ID_ALIAS || id2->type!=ID_ALIAS) return;
+    identstack stack, stack2;
+    int n = 0;
+    for(const char *s = list, *start, *end; parselist(s, start, end); n += 2)
+    {
+        setiter(*id, newstring(start, end - start), stack);
+        setiter(*id2, parselist(s, start, end) ? newstring(start, end - start) : newstring(""), stack2);
+        execute(body);
+    }
+    if(n) { poparg(*id); poparg(*id2); }
+}
+COMMAND(looplist2, "rrse");
+
+void looplist3(ident *id, ident *id2, ident *id3, const char *list, const uint *body)
+{
+    if(id->type!=ID_ALIAS || id2->type!=ID_ALIAS || id3->type!=ID_ALIAS) return;
+    identstack stack, stack2, stack3;
+    int n = 0;
+    for(const char *s = list, *start, *end; parselist(s, start, end); n += 3)
+    {
+        setiter(*id, newstring(start, end - start), stack);
+        setiter(*id2, parselist(s, start, end) ? newstring(start, end - start) : newstring(""), stack2);
+        setiter(*id3, parselist(s, start, end) ? newstring(start, end - start) : newstring(""), stack3);
+        execute(body);
+    }
+    if(n) { poparg(*id); poparg(*id2); poparg(*id3); }
+}
+COMMAND(looplist3, "rrrse");
 
 void looplistconc(ident *id, const char *list, const uint *body, bool space)
 {
@@ -2864,6 +2894,47 @@ ICOMMAND(loopfiles, "rsse", (ident *id, char *dir, char *ext, uint *body),
         {
             tagval t;
             t.setstr(file);
+            pusharg(*id, t, stack);
+            id->flags &= ~IDF_UNKNOWN;
+        }
+        execute(body);
+    }
+    if(files.length()) poparg(*id);
+});
+
+//assume directories don't have extensions - AKA a hack
+ICOMMAND(loopdir, "rse", (ident *id, char *dir, uint *body),
+{
+    if(id->type != ID_ALIAS) return;
+    identstack stack;
+    vector<char *> files;
+    listfiles(dir, NULL, files);
+    files.sort();
+    files.uniquedeletearrays();
+
+    loopvrev(files)
+    {
+        bool redundant = false;
+        if(strstr(files[i], ".")) redundant = true;
+        if(!redundant) loopj(i) if(!strcmp(files[i], files[j]))
+        {
+            redundant = true; break;
+        }
+        if(redundant) { delete[] files.removeunordered(i); continue; }
+    }
+
+    loopv(files)
+    {
+        if(i)
+        {
+            if(id->valtype == VAL_STR) delete[] id->val.s;
+            else id->valtype = VAL_STR;
+            id->val.s = files[i];
+        }
+        else
+        {
+            tagval t;
+            t.setstr(files[i]);
             pusharg(*id, t, stack);
             id->flags &= ~IDF_UNKNOWN;
         }

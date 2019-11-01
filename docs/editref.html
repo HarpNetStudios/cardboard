@@ -6,13 +6,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-<title>Cube 2: Sauerbraten - Editing Reference</title>
+<title>Project Crimson - Editing Reference</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="shortcut icon" href="favicon.ico" />
 </head>
 
 <body>
-<h1>Cube 2: Sauerbraten - Editing Reference</h1>
+<h1>Project Crimson - Editing Reference</h1>
 
 <div class="contents">
 <ul class="contents">
@@ -107,10 +107,10 @@
 <a href="#gotosel"><tt>gotosel</tt></a>
 </li>
 <li>
-<a href="#savebrush"><tt>savebrush</tt></a>
+<a href="#saveprefab"><tt>saveprefab</tt></a>
 </li>
 <li>
-<a href="#pastebrush"><tt>pastebrush</tt></a>
+<a href="#pasteprefab"><tt>pasteprefab</tt></a>
 </li>
 </ul>
 </li>
@@ -265,6 +265,9 @@
 <a href="#map"><tt>map</tt></a>
 </li>
 <li>
+<a href="#dbgmap"><tt>dbgmap</tt></a>
+</li>
+<li>
 <a href="#sendmap"><tt>sendmap</tt></a>
 </li>
 <li>
@@ -408,9 +411,6 @@
 <a href="#mapsound"><tt>mapsound</tt></a>
 </li>
 <li>
-<a href="#mapmodel"><tt>mapmodel</tt></a>
-</li>
-<li>
 <a href="#mmodel"><tt>mmodel</tt></a>
 </li>
 <li>
@@ -492,10 +492,16 @@
 <a href="#skytexture"><tt>skytexture</tt></a>
 </li>
 <li>
-<a href="#importcube"><tt>importcube</tt></a>
+<a href="#darkmap"><tt>darkmap</tt></a>
 </li>
 <li>
 <a href="#writeobj"><tt>writeobj</tt></a>
+</li>
+<li>
+<a href="#flipnormalmapy"><tt>flipnormalmapy</tt></a>
+</li>
+<li>
+<a href="#mergenormalmaps"><tt>mergenormalmaps</tt></a>
 </li>
 </ul>
 </li>
@@ -793,7 +799,7 @@ with entity attributes, as zero is always considered to be the first/default val
 
 <pre id="edittoggle">edittoggle</pre>
 <p>
-Switches between map edit mode and normal (default key: e). In map edit mode
+Switches between map edit mode and normal (default key: right alt). In map edit mode
 you can select bits of the map by clicking or dragging your crosshair on the
 cubes (using the "attack" command, normally MOUSE1), then use the commands
 below to modify the selection. While in edit mode, physics &amp; collision
@@ -986,10 +992,13 @@ noclip: cubes are always treated as empty in physics. Shows green volume in edit
 gameclip: a game mode specific clip material. Currently it can block monsters in SP modes, it can stop flags from being picked up in areas in CTF/protect modes, and it can stop capturing of bases in areas in capture modes. Overwrites other clip materials.
 </li>
 <li>
-death: causes the player to suicide if he is inside the material. Shows black volume in edit mode.
+death: causes the player to suicide if they are inside the material. Shows translucent black volume in edit mode.
 </li>
 <li>
 alpha: all faces of cubes with this material are rendered transparently. Use the "valpha" and "texalpha" commands to control the transparency of front and back faces. Shows pink volume in edit mode.
+</li>
+<li>
+spaceclip: disables spacepack on maps with spacepacks enabled when inside the material. Shows solid black volume in edit mode.
 </li>
 </ul>
 
@@ -1011,14 +1020,14 @@ Returns 0 if the cubes are only implicitly selected.
 Goes to the position of the currently selected cube or entity.
 </p>
 
-<pre id="savebrush">savebrush B</pre>
+<pre id="saveprefab">saveprefab B</pre>
 <p>
-Saves the current selection as an octa-brush named B.
+Saves the current selection as an prefab named B.
 </p>
 
-<pre id="pastebrush">pastebrush B</pre>
+<pre id="pasteprefab">pasteprefab B</pre>
 <p>
-Pastes the octa-brush named B.
+Pastes the prefab named B.
 </p>
 
 <h2 id="heightfield">Heightfield</h2>
@@ -1112,9 +1121,7 @@ entity around using the cursor. if multiple entities are selected, they will
 also move. the plane on which the entity will be moved is
 dependent on the orientation of the cube surrounding the entity. set to 0 to turn off moving.
 if no entity is under the cursor when turned on, it will automatically turn off.
-
 </p>
-
 
 <pre id="entdrop">entdrop N</pre>
 <p>
@@ -1151,33 +1158,27 @@ If N = -1, causes all platforms or elevators with tag T to move backwards or dow
 <p>
 Takes a boolean expression as argument. Selects all entities that evaluate to true for the given expression.
 examples:
+<br><br>
+<tt>entselect insel // select all entities in blue selection box</tt>
+<br>
+<tt>entselect [ strcmp (et) "shells" ] // select all shells in map</tt>
 </p>
-
-<ul>
-<li>entselect insel // select all entities in blue selection box</li>
-<li>entselect [ strcmp (et) "shells" ] // select all shells in map</li>
-</ul>
 
 <pre id="entloop">entloop X</pre>
 <p>
 Loops through and executes the given expression for all selected entities.
 Note that most of the entity commands are already vector based and will 
 automatically do this. Therefore they don't need to be explicitly executed within an entloop. 
-Entloop is to be used when more precise custom instructions need to be executed on a selection. 
-</p>
-
-<p>
+entloop is to be used when more precise custom instructions need to be executed on a selection. 
+<br><br>
 Another property of entloop is that entity commands within it, that are normally executed 
 on the entire selection, will only be done on the current entity iterator.
 In other words, the two following examples are equivalent:
-</p>
-
-<ul>
-<li>entset light 120 0 0 0</li>
-<li>entloop [ entset light 120 0 0 0 ]</li>
-</ul>
-
-<p>
+<br><br>
+<tt>entset light 120 0 0 0</tt>
+<br>
+<tt>entloop [ entset light 120 0 0 0 ]</tt>
+<br><br>
 The entset in the second statement will NOT be applied n squared times. Entloops can be nested.
 </p>
 
@@ -1197,12 +1198,9 @@ Returns a string in the form of "type value1 value2 value3 value4".
 This string is the definition of the current selected entity. 
 For example, the following statement will display the values of
 all the entities within the current selection:
-</p>
-<ul>
-<li>entloop [ echo (entget) ]</li>
-</ul>
-
-<p>
+<br><br>
+<tt>entloop [ echo (entget) ]</tt>
+<br><br>
 Outside of an entloop, the last entity selected will be returned. 
 Normally, if an entity is highlighted by the cursor, it will
 only be considered as in the selection if an explicit one does not exisit 
@@ -1291,7 +1289,7 @@ Turns on wireframe drawing of the map.
 
 <pre id="allfaces">allfaces 0/1</pre>
 <p>
-when on, causes the texturing commands to apply the new texture to all sides of the selected cubes
+When on, causes the texturing commands to apply the new texture to all sides of the selected cubes
 rather than just the selected face.
 </p>
 
@@ -1336,24 +1334,25 @@ Of course, in order to push a selection box, you must be holding it.
 <pre id="map">map name</pre>
 <p>
 Loads up map "name" in the gamemode set previously by "mode". A map given as
-"blah" refers to "packages/base/blah.ogz", "mypackage/blah" refers to
-"packages/mypackage/blah.ogz". The menu has a set of maps that can be loaded.
+"blah" refers to "packages/base/blah.cmr", "mypackage/blah" refers to
+"packages/mypackage/blah.cmr". The menu has a set of maps that can be loaded.
 See also map in the gameplay docs.
-</p>
-
-<p>
+<br><br>
 At every map load, "data/default_map_settings.cfg" is loaded which sets up all
 texture definitions etc. Everything defined in there can be overridden per
 package or per map by creating a "package.cfg" or "mapname.cfg" which contains
 whatever you want to do differently from the default. It can also set up
 triggers scripts per map etc.
-</p>
-
-<p>
+<br><br>
 When the map finishes it will load the next map when one is defined, otherwise
 reloads the current map. You can define what map follows a particular map by
 making an alias like (in the map script): <i>alias nextmap_blah1 blah2</i>
 (loads "blah2" after "blah1").
+</p>
+
+<pre id="dbgmap">dbgmap name</pre>
+<p>
+Attempts to bypass the lightmap bug while converting from .ogz to .cmr format maps. Might not work properly, YMMV.
 </p>
 
 <pre id="sendmap">sendmap</pre>
@@ -1375,7 +1374,7 @@ Saves the current map, using the same naming scheme as "map". Makes a versioned
 backup to "mapname_N.BAK" if a map by that name already exists, so you can never
 lose a map. With "savemap", if you leave out the "name" argument, it is saved under the current map name.
 With "savecurrentmap", the map is saved with the name determined by the current game.
-
+<br><br>
 Where you store a map depends on the complexity of what you are creating: if
 its a single map (maybe with its own .cfg) then the "base" package is the best
 place. If its multiple maps or a map with new media (textures etc.) its better
@@ -1386,7 +1385,7 @@ distributing it less messy.
 <pre id="newmap">newmap size</pre>
 <p>
 Creates a new map of size^2 cubes (on the smallest grid size). 10 is a small
-map, 15 is a large map but it goes up to 20.
+map, 12 is a large map but it goes up to 16.
 </p>
 
 <pre id="mapenlarge">mapenlarge</pre>
@@ -1583,9 +1582,6 @@ This sets the percentage of light water shows as specularity (default: 150).
 <pre id="waterfog">waterfog N</pre>
 <p>
 Sets the distance beneath the surface of water at which it fogs, from 1..10000 (default: 150).
-</p>
-
-<p>
 </p>
 
 <pre id="watercolour">watercolour R G B</pre>
@@ -1839,8 +1835,6 @@ map cfg files or triggers. Evaluates ondone when the song is finished, or just k
 looping the song if ondone is missing. Example: <i>music "songs/music.ogg" [ echo "Song done playing!" ]</i>
 </p>
 
-
-
 <pre id="n">N = registersound name V</pre>
 <p>
 Registers sound "name" (see for example data/sounds.cfg). This
@@ -1866,30 +1860,17 @@ V is volume adjustment; if not specified (0), it is the default 100, valid
 range is 1-255. N is the maximum number instances of this sound that are allowed to play simultaneously;
 the default is only 1 instance. If N is -1, then an unlimited number of instances may play simultaneously.</p>
 
-<pre id="mapmodel">mapmodel R H T N SH</pre>
 <pre id="mmodel">mmodel N</pre>
 <p>
-<i>NOTE: the mapmodel form is deprecated.. set additional properties of a mapmodel in its .cfg</i>
 Registers a mapmodel that can be placed in maps using <i>newent
-mapmodel</i> (see newent). N is the name, R is the square
-radius, H the height, T the texture slot to skin the model with (0 for default skin), and SH toggles whether the it
-will cast shadows (not given or 1 casts shadows, 0 has no shadows). The radius R and height
-H define the collision bounding box of the model (if either is 0, players won't collide
-with the mapmodel). Name N is the name of a folder inside packages/models folder, e.g.
+mapmodel</i> (see newent). N is the name of a folder inside packages/models folder, e.g.
 "hudguns/rifle". Loaded from that folder are: tris.md2 and skin.jpg (and if not available,
-skin.png, or the same from the parent folder to allow skin sharing).
-</p>
-<p>
-Example: <i>mapmodel 4 32 0 "tree1"</i>
-</p>
-<p>
-This map model is loaded from packages/models/tree1/. It has a collision box 8x8x32 in size (x=2*R, y=2*R, z=H). It uses the model's default skin (texture slot=0).
-It casts shadows (default).
+skin.png, or the same from the parent folder to allow skin sharing). set additional properties of a mapmodel in its .cfg
 </p>
 
 <pre id="shadowmapambient">shadowmapambient N</pre>
 <p>
-specifies a colour to use for the ambient light value of shadows created by shadowmapping, where N
+Specifies a colour to use for the ambient light value of shadows created by shadowmapping, where N
 is a hexadecimal colour value of the form "0xRRGGBB". Note that any value of 255 or less are treated
 as gray-scale. If N is 0 or unset, this value is determined by the "ambient" variable and the "skylight"
 command. (Default: 0)
@@ -1897,23 +1878,23 @@ command. (Default: 0)
 
 <pre id="shadowmapangle">shadowmapangle N</pre>
 <p>
-specifies the angle in degrees at which shadows created by shadowmapping point. If N is 0 or unset,
+Specifies the angle in degrees at which shadows created by shadowmapping point. If N is 0 or unset,
 this value is guessed based on any radius 0 lights in the map.
 </p>
 
 <pre id="causticscale">causticscale N</pre>
 <p>
-specifies the scale, as a percent, to multiply the size of water caustics by.
+Specifies the scale, as a percent, to multiply the size of water caustics by.
 </p>
 
 <pre id="causticmillis">causticmillis N</pre>
 <p>
-specifies the speed at which water caustics play, in milliseconds per frame.
+Specifies the speed at which water caustics play, in milliseconds per frame.
 </p>
 
 <pre id="skybox">skybox NAME</pre>
 <p>
-loads the skybox described by NAME, where NAME is a file name relative
+Loads the skybox described by NAME, where NAME is a file name relative
 to the "packages/" directory. The engine will look for 6 sky box images:
 NAME_up.jpg, NAME_dn.jpg, NAME_lf.jpg, NAME_rt.jpg, NAME_ft.jpg, NAME_bk.jpg.
 These represent the skybox in the up, down, left, right, front, and back
@@ -1923,43 +1904,43 @@ search for the files with a .png extension.
 
 <pre id="spinsky">spinsky SPIN</pre>
 <p>
-a floating point value that specifies, in degrees per second, the rate at which to 
+A floating point value that specifies, in degrees per second, the rate at which to 
 spin/yaw the skybox.
 </p>
 
 <pre id="yawsky">yawsky YAW</pre>
 <p>
-specifies in degrees a constant yaw rotation to apply
+Specifies in degrees a constant yaw rotation to apply
 to the skybox.
 </p>
 
 <pre id="cloudbox">cloudbox NAME</pre>
 <p>
-loads the cloudbox described by NAME, similar to the "skybox" command. The cloudbox
+Loads the cloudbox described by NAME, similar to the "skybox" command. The cloudbox
 should have an alpha channel which is used to blend it over the normal skybox.
 </p>
 
 <pre id="spinclouds">spinclouds SPIN</pre>
 <p>
-a floating point value that specifies, in degrees per second, the rate at which to 
+A floating point value that specifies, in degrees per second, the rate at which to 
 spin/yaw the cloudbox.
 </p>
 
 <pre id="yawclouds">yawclouds YAW</pre>
 <p>
-specifies in degrees a constant yaw rotation to apply
+Specifies in degrees a constant yaw rotation to apply
 to the cloudbox.
 </p>
 
 <pre id="cloudclip">cloudclip CLIP</pre>
 <p>
-specifies a vertical offset at which to clip the cloudbox, a floating point value between 0 and 1.
+Specifies a vertical offset at which to clip the cloudbox, a floating point value between 0 and 1.
 This defaults to 0.5, meaning the bottom half of the cloudbox is clipped away.
 </p>
 
 <pre id="cloudlayer">cloudlayer NAME</pre>
 <p>
-loads the cloud layer described by NAME, where NAME is a file name relative
+Loads the cloud layer described by NAME, where NAME is a file name relative
 to the "packages/" directory. The engine will look for either "packages/NAME.png"
 or "packages/NAME.jpg".  The cloud layer should have an alpha channel which is used
 to blend it onto the skybox. The cloud layer is mapped onto a horizontal circle 
@@ -1968,73 +1949,73 @@ that fades into the edges of the skybox.
 
 <pre id="cloudscrollx">cloudscrollx N</pre>
 <p>
-specifies the rate, a floating-point value in Hz, at which the cloud layer scrolls in the X direction.
+Specifies the rate, a floating-point value in Hz, at which the cloud layer scrolls in the X direction.
 </p>
 
 <pre id="cloudscrolly">cloudscrolly N</pre>
 <p>
-specifies the rate, a floating-point value in Hz, at which the cloud layer scrolls in the Y direction.
+Specifies the rate, a floating-point value in Hz, at which the cloud layer scrolls in the Y direction.
 </p>
 
 <pre id="cloudscale">cloudscale N</pre>
 <p>
-specifies the scale as a floating-point value telling how much to multiply the size of the cloud layer.
+Specifies the scale as a floating-point value telling how much to multiply the size of the cloud layer.
 (Default: 1)
 </p>
 
 <pre id="cloudheight">cloudheight N</pre>
 <p>
-specifies the height of the cloud layer as a floating-point value, where -1 corresponds to the bottom of
+Specifies the height of the cloud layer as a floating-point value, where -1 corresponds to the bottom of
 the skybox, 0 corresponds to the middle of the skybox, and 1 corresponds to the top of the skybox. Intermediate
 values place the cloud layer at intermediate heights of those. (Default: 0.2)
 </p>
 
 <pre id="cloudfade">cloudfade N</pre>
 <p>
-specifies the offset towards the center of the cloud layer at which the cloud layer will start fading into the skybox.
+Specifies the offset towards the center of the cloud layer at which the cloud layer will start fading into the skybox.
 This is a floating-point value between 0 and 1, where 0 corresponds to the edge of the cloud layer, and 1 corresponds
 to the center. (Default: 0.2)
 </p>
 
 <pre id="cloudcolour">cloudcolour N</pre>
 <p>
-specifies a colour multiplier for the cloud layer, where N is a hexadecimal colour value in the form of "0xRRGGBB".
+Specifies a colour multiplier for the cloud layer, where N is a hexadecimal colour value in the form of "0xRRGGBB".
 (Default: 0xFFFFFF, white)
 </p>
 
 <pre id="cloudalpha">cloudalpha A</pre>
 <p>
-specifies an opacity for the cloud layer, where A is a floating-point value between 0 and 1.
+Specifies an opacity for the cloud layer, where A is a floating-point value between 0 and 1.
 (Default: 1, solid)
 </p>
 
 <pre id="fogdomeheight">fogdomeheight N</pre>
 <p>
-specifies the height of the fog dome as a floating-point value, where -1 corresponds to the bottom of
+Specifies the height of the fog dome as a floating-point value, where -1 corresponds to the bottom of
 the skybox, 0 corresponds to the middle of the skybox, and 1 corresponds to the top of the skybox. Intermediate
 values place the fog dome at intermediate heights of those. (Default: -0.5)
 </p>
 
 <pre id="fogdomemin">fogdomemin A</pre>
 <p>
-specifies a minimum opacity for the fog dome, where A is a floating-point value between 0 and 1.
+Specifies a minimum opacity for the fog dome, where A is a floating-point value between 0 and 1.
 (Default: 0, invisible)
 </p>
 
 <pre id="fogdomemax">fogdomemax A</pre>
 <p>
-specifies a maximum opacity for the fog dome, where A is a floating-point value between 0 and 1.
+Specifies a maximum opacity for the fog dome, where A is a floating-point value between 0 and 1.
 (Default: 0, invisible)
 </p>
 
 <pre id="fogdomecap">fogdomecap B</pre>
 <p>
-specifies whether the bottom of the fog dome should be capped, where B is 0 or 1 (Default: 1, on).
+Specifies whether the bottom of the fog dome should be capped, where B is 0 or 1 (Default: 1, on).
 </p>
 
 <pre id="fogdomeclip">fogdomeclip Z</pre>
 <p>
-specifies whether the top of the fog dome should be clipped off at a relative size Z, where Z is a floating-point value between 0 and 1 (Default: 1, not clipped).
+Specifies whether the top of the fog dome should be clipped off at a relative size Z, where Z is a floating-point value between 0 and 1 (Default: 1, not clipped).
 </p>
 
 <pre id="fogdomecolour">fogdomecolour R G B</pre>
@@ -2044,30 +2025,15 @@ The colour of the fog dome, specified as R G B values from 0..255 (default: 0 0 
 
 <pre id="skytexture">skytexture B</pre>
 <p>
-specifies whether or not to enable rendering of sky-textured surfaces. If set to 0, sky-textured surfaces are not rendered,
+Specifies whether or not to enable rendering of sky-textured surfaces. If set to 0, sky-textured surfaces are not rendered,
 allowing sky texture to be used as a "don't render this" surface. Disabling this also allows the skybox to be rendered last
 after the scene, which yields speedups on some video cards, so disable this if possible in your map, even though it defaults
 to on. (Default: 1)
 </p>
 
-<pre id="importcube">importcube N</pre>
+<pre id="darkmap">darkmap 0/1</pre>
 <p>
-Imports a cube map (.cgz) and converts it to the new OCTA (.ogz) map format. N is the
-name of the map, without the .cgz. The map file must reside in packages/cube,
-which is because that folder has a package.cfg that sets the default cube
-textures. If the cube map in question has a custom texture list, it will have
-to be adapted manually. Currently converts everything relatively faithfully,
-except heighfields which are converted as best as possible but not always
-accurately. Slopes tend to work faultlessly, landscape style stuff is usuable,
-but curves/arches are problematic, and may have to be redone. All entities are
-converted though mapmodels may not be present, and light entities are useless
-because of their 2d nature, so probably the first thing to do after converting
-a map is /clearents light, and place some new lights. Pickups and other items
-may spawn inside the walls because they have no proper Z value, you may have to
-correct these manually. The importcube command does not automatically save the
-map, you still have to do a /savecurrentmap which will create
-packages/cube/N.ogz. Reload the map to be able to pick up stuff. Waterlevel is
-also not supported, you will have to add water using the new material system.
+Disables rendering of textures on all models and renders them as pitch black instead. ambient 1 recommended.
 </p>
 
 <pre id="writeobj">writeobj N</pre>
@@ -2225,24 +2191,18 @@ calculation time, video memory usage, and map file size. The default is good
 for most maps, you may go as low as 16 if you are lighting a really small map
 and love hard shadows, and for bigger maps you may need to set it to 64 or so
 to get reasonable memory usage.
-</p>
-
-<p>
+<br><br>
 The number to watch out for is the number of lightmaps generated which are
 shown on the HUD (and also as output after a calclight). 1 or 2 lightmap
 textures is very good, over 10 lightmap textures is excessive.
-</p>
-
-<p>
+<br><br>
 The map file size is 90% determined by the lightmaps, so tweak this value
 to get an acceptable quality to size ratio. Look at the size of the map files,
-sometimes a slightly higher lightprecision can halve the size of your .ogz.
-</p>
-
-<p>
+sometimes a slightly higher lightprecision can halve the size of your .cmr.
+<br><br>
 Every surface matters, even though the engine attempts to compress surfaces
 with a uniform lightvalue, it is always a good ideas to delete parts of the
-world that are not part of your map. Lightprecision, lighterror, and lightlod
+world that are not part of your map. lightprecision, lighterror, and lightlod
 are stored as part of map files.
 </p>
 
@@ -2261,8 +2221,7 @@ Default = 0. This will double the resolution of lightmaps (cut the
 lightprecision in half) if size of the surface being lit is smaller than 2^D
 units. This allows large maps to have pockets of detailed lighting without
 using a high resolution over everything.
-
-
+<br><br>
 NOTE: if you feel like using this, test it thoroughly. On medium or small sized
 detailed maps, this command wastes space, use lightlod 0. Lightlod &gt; 0 is
 only useful for huge maps
@@ -2273,7 +2232,7 @@ only useful for huge maps
 This variable controls whether to apply a blur filter to the lightmap after
 they are generated, as a post-pass. For N=0, no blur is applied. For N=1, a
 3x3 blur filter is used. For N=2, a 5x5 blur filter is used. 
-
+<br><br>
 NOTE: this can cause lightmaps to mismatch at surface boundaries in complex scenes.
 </p>
 
@@ -2300,10 +2259,8 @@ Texture blending in maps is accomplished by smoothly blending two textures toget
 
 <h3 id="defining_blended_textures">Defining Blended Textures</h3>
 <p>
-Texture blending can use any two textures that are already set in your map.cfg, but you need to define the textures normally first. Texture thumbnails that have an additional texture layer to blend will have the texture they are set to blend with in one of the corners in the texture browser (f2).
-</p>
-
-<p>
+Texture blending can use any two textures that are already set in your map.cfg, but you need to define the textures normally first. Texture thumbnails that have an additional texture layer to blend will have the texture they are set to blend with in one of the corners in the texture browser (F2).
+<br><br>
 To set up textures to blend, in your map cfg, under the texture that you want to have a second texture layer, you would add:
 </p>
 
@@ -2371,7 +2328,7 @@ Where N is a number from 0 to 5, which defines how the painting will be done. Se
 <li>5 - max(destination, invert(source)) - use for filling where black is the fill pattern</li>
 </ul>
 
-<p>
+<p style="border-top:2px solid #555;">
 Experiment with the numbers to understand what they do. Finally, in order to paint on to the surface, you would open the console and type
 </p>
 
@@ -2815,15 +2772,13 @@ note: +32 to reverse direction of streaks
 </table>
 
 <h2 id="pvs_culling">PVS Culling</h2>
-<p>Cube 2 provides a precomputed visibility culling system as described in the technical paper "Conservative Volumetric Visibility with Occluder Fusion" by Schaufler et al (see paper for technical details). Basically, it divides the world into small cube-shaped "view cells" of empty space that the player might possibly occupy, and for each of these view cells calculates what other parts of the octree might be visible from it. Since this is calculated ahead of time, the engine can cheaply look up at runtime whether some part of the octree is possibly visible from the player's current view cell. Once pre-calculated, this PVS (potential visibility set) data is stored within your map and saved along with it, so that it may be reused during gameplay. This data is only valid for a particular map/octree, and if you change your map, you must recalculate it or otherwise expect culling errors. It is recommended you do this only after you are sure you are finished working on your map and ready to release it, as it can take a very long time to compute this data. If you have a multi-core processor or multi-processor system, it can use multiple threads to speed up the pre-calculation (essentially N processors/cores will calculate N times faster).
-</p>
-
-<p>The number of pre-calculated view cells stored with your map will show up in the edit HUD stats under the "pvs:" stat. It is recommended you keep this number to less than 10,000, or otherwise the amount of storage used for the PVS data in your map can become excessive. For very large SP maps, up to 15,000 view cells is acceptable. The number of view cells is best controlled by use of the "clip" material, or by setting the view cell size (default is 32, equal to a gridpower 5 cube). View cell sizes of 64 or 128 are worth trying if your map still has an excessive number of view cells, but try to use the default view cell size of 32 if it stays reasonable. Note that if you have a map with a lot of open space, there will be a lot of view cells, and so the initial pre-calculation may take a long time. You can use the "clip" material, if necessary, to mark empty space the player can't go into, and the PVS calculation will skip computing view cells for these areas. Filling places the player can't go with solid cubes/sealing the map will similarly reduce the number of possible view cells.
-</p>
-
-<p>Visibility from a view cell, to some other part of the octree, is determined by looking for large square or block-shaped surfaces and seeing if they block the view from the view cell to each part of the octree. So surfaces like large walls, ceilings, solid buildings, or even mountains and hills, that have large solid cross-sections to them will make the best occluders, and allow the PVS system to cull away large chunks of the octree that are behind them, with respect to the current view cell. Avoid putting holes running entirely through these structures, or this will prevent large cross-section of them from being used as an occluder (since the player could possibly see through them). You can use the "testpvs" command to check how well your occluders are working while building them. If your map is an open arena-style map, then using the PVS system will have little to no effect, since few things are blocking visibility, and it is not worth using the PVS system for such maps.</p>
-
-<p>Note that there is already an occlusion culling system based on hardware occlusion queries, in addition to the PVS system, so the main function of the PVS system is to provide occlusion culling for older 3D hardware that does not support occlusion queries, and also to speed up occlusion queries by reducing the amount of such queries (which can be expensive themselves) even for 3D hardware that supports them. If PVS is used effectively (a map with lots of good occluders), it should always provide some speed-up regardless of whether or not the 3D hardware supports occlusion queries. However, if you are doing open arena-style maps for which there are few good occluders, then it is recommended you skip using the PVS system (as it will just take up memory without providing a speedup) and rely upon the hardware occlusion queries instead.
+<p>Cardboard Engine provides a precomputed visibility culling system as described in the technical paper "Conservative Volumetric Visibility with Occluder Fusion" by Schaufler et al (see paper for technical details). Basically, it divides the world into small cube-shaped "view cells" of empty space that the player might possibly occupy, and for each of these view cells calculates what other parts of the octree might be visible from it. Since this is calculated ahead of time, the engine can cheaply look up at runtime whether some part of the octree is possibly visible from the player's current view cell. Once pre-calculated, this PVS (potential visibility set) data is stored within your map and saved along with it, so that it may be reused during gameplay. This data is only valid for a particular map/octree, and if you change your map, you must recalculate it or otherwise expect culling errors. It is recommended you do this only after you are sure you are finished working on your map and ready to release it, as it can take a very long time to compute this data. If you have a multi-core processor or multi-processor system, it can use multiple threads to speed up the pre-calculation (essentially N processors/cores will calculate N times faster).
+<br><br>
+The number of pre-calculated view cells stored with your map will show up in the edit HUD stats under the "pvs:" stat. It is recommended you keep this number to less than 10,000, or otherwise the amount of storage used for the PVS data in your map can become excessive. For very large SP maps, up to 15,000 view cells is acceptable. The number of view cells is best controlled by use of the "clip" material, or by setting the view cell size (default is 32, equal to a gridpower 5 cube). View cell sizes of 64 or 128 are worth trying if your map still has an excessive number of view cells, but try to use the default view cell size of 32 if it stays reasonable. Note that if you have a map with a lot of open space, there will be a lot of view cells, and so the initial pre-calculation may take a long time. You can use the "clip" material, if necessary, to mark empty space the player can't go into, and the PVS calculation will skip computing view cells for these areas. Filling places the player can't go with solid cubes/sealing the map will similarly reduce the number of possible view cells.
+<br><br>
+Visibility from a view cell, to some other part of the octree, is determined by looking for large square or block-shaped surfaces and seeing if they block the view from the view cell to each part of the octree. So surfaces like large walls, ceilings, solid buildings, or even mountains and hills, that have large solid cross-sections to them will make the best occluders, and allow the PVS system to cull away large chunks of the octree that are behind them, with respect to the current view cell. Avoid putting holes running entirely through these structures, or this will prevent large cross-section of them from being used as an occluder (since the player could possibly see through them). You can use the "testpvs" command to check how well your occluders are working while building them. If your map is an open arena-style map, then using the PVS system will have little to no effect, since few things are blocking visibility, and it is not worth using the PVS system for such maps.
+<br><br>
+Note that there is already an occlusion culling system based on hardware occlusion queries, in addition to the PVS system, so the main function of the PVS system is to provide occlusion culling for older 3D hardware that does not support occlusion queries, and also to speed up occlusion queries by reducing the amount of such queries (which can be expensive themselves) even for 3D hardware that supports them. If PVS is used effectively (a map with lots of good occluders), it should always provide some speed-up regardless of whether or not the 3D hardware supports occlusion queries. However, if you are doing open arena-style maps for which there are few good occluders, then it is recommended you skip using the PVS system (as it will just take up memory without providing a speedup) and rely upon the hardware occlusion queries instead.
 </p>
 
 <pre id="pvs">pvs N</pre>
@@ -2862,17 +2817,13 @@ Prints out some useful info about the PVS data stored with the map, such as the 
 </p>
 
 <h2 id="waypoints">Waypoints</h2>
-<p>Cube 2 provides waypoints to aid bot navigation, and without these bots are not able to calculate safe paths from place to place on the map.
-</p>
-
-<p>
+<p>Cardboard Engine provides waypoints to aid bot navigation, and without these bots are not able to calculate safe paths from place to place on the map.
+<br><br>
 Waypoints are entities in a map that tell where it is safe for bots to move to. Each waypoint can link to other waypoints, telling a bot how to get from one waypoint to another. To set up waypoints, first either add a bot (which causes you to drop waypoints as a side-effect) or set the "dropwaypoints" variable to 1. Run around the level through all valid paths, making sure to run through teleporters and touch all items and playerstarts. Waypoints should be dropped at ground level in an even grid across the map, i.e. only jump where it is necesssary to jump. Avoid any movement tricks like weapon jumping that might confuse the AI. 
-</p>
-
-<p>Set the "showwaypoints" variable to 1 so you can see the waypoints you are dropping, and you will see blue lines representing the links between these waypoints. When you are done, use the "savewaypoints" command to save the waypoints for your map; they will be saved to a file named "yourmap.wpt" for a map named "yourmap" in the same directory as your map. It also helps to add some bots before you save and make sure there are no bots stuck at playerstarts without waypoints to guide them.
-</p>
-
-<p>Note waypoints are not loaded until required, i.e. until a "loadwaypoints" or "addbot" command is issued.
+<br><br>
+Set the "showwaypoints" variable to 1 so you can see the waypoints you are dropping, and you will see blue lines representing the links between these waypoints. When you are done, use the "savewaypoints" command to save the waypoints for your map; they will be saved to a file named "yourmap.wpt" for a map named "yourmap" in the same directory as your map. It also helps to add some bots before you save and make sure there are no bots stuck at playerstarts without waypoints to guide them.
+<br><br>
+Note waypoints are not loaded until required, i.e. until a "loadwaypoints" or "addbot" command is issued.
 </p>
 
 <pre id="showwaypoints">showwaypoints 0/1</pre>
@@ -2909,7 +2860,6 @@ In editing mode this will remove waypoints within the selection region.
 <p>
 On the bottom left of the screen are a bunch of stats. You'll find out what they mean below.
 </p>
-
 <ul>
 <li>
 cube: the number of cubes in the current selection. Only the visible (leaf) cubes are counted.

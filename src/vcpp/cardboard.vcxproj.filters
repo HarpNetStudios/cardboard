@@ -67,9 +67,6 @@
     <ClCompile Include="..\engine\menus.cpp">
       <Filter>engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\movie.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\engine\normal.cpp">
       <Filter>engine</Filter>
     </ClCompile>
@@ -148,12 +145,6 @@
     <ClCompile Include="..\fpsgame\fps.cpp">
       <Filter>fpsgame</Filter>
     </ClCompile>
-    <ClCompile Include="..\fpsgame\monster.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\movable.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
     <ClCompile Include="..\fpsgame\pch.cpp">
       <Filter>fpsgame</Filter>
     </ClCompile>
@@ -175,8 +166,20 @@
     <ClCompile Include="..\fpsgame\discord.cpp">
       <Filter>fpsgame</Filter>
     </ClCompile>
-    <ClCompile Include="..\include\cJSON\cJSON.c">
+    <ClCompile Include="..\shared\cJSON\cJSON.c">
       <Filter>shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\translate.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\raw.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\joy.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\irc.cpp">
+      <Filter>engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -300,6 +303,15 @@
     <ClInclude Include="..\fpsgame\game.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
+    <ClInclude Include="..\fpsgame\weapon.h">
+      <Filter>fpsgame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\translate.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\irc.h">
+      <Filter>engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="shared">
@@ -313,6 +325,9 @@
     </Filter>
     <Filter Include="config">
       <UniqueIdentifier>{707ff788-77de-496a-8440-1f61fb626dda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="config\lang">
+      <UniqueIdentifier>{9e580865-6284-4b39-bbdb-ebc6058fa17f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -376,5 +391,14 @@
     <None Include="..\..\servers.cfg">
       <Filter>config</Filter>
     </None>
+    <None Include="..\..\packages\lang\en_US.cfg">
+      <Filter>config\lang</Filter>
+    </None>
+    <None Include="..\..\packages\lang\fr_CA.cfg">
+      <Filter>config\lang</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\ADDING_REMOVING_FILES.txt" />
   </ItemGroup>
 </Project>

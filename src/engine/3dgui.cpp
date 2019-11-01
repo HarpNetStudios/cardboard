@@ -105,12 +105,19 @@ struct gui : g3d_gui
     bool visible() { return (!tcurrent || tpos==*tcurrent) && !layoutpass; }
 
     //tab is always at top of page
-    void tab(const char *name, int color)
+    void tab(const char *rawName, int color)
     {
-        if(curdepth != 0) return;
-        if(color) tcolor = color;
-        tpos++;
-        if(!name) name = intstr(tpos);
+		if (curdepth != 0) return;
+		if (color) tcolor = color;
+		tpos++;
+		if (!rawName) rawName = intstr(tpos);
+
+		const char* name = (rawName[0] == 't' && rawName[1] == ':') ? getTranslation((rawName + 2)) : rawName;
+		if (name == noTranslation)
+		{
+			name = rawName;
+		}
+        
         int w = max(text_width(name) - 2*INSERT, 0);
         if(layoutpass)
         {
@@ -606,8 +613,14 @@ struct gui : g3d_gui
         xtraverts += gle::end();
     }
 
-    void text_(const char *text, int x, int y, int color, bool shadow, bool force = false)
+    void text_(const char *rawText, int x, int y, int color, bool shadow, bool force = false)
     {
+		const char* text = (rawText[0] == 't' && rawText[1] == ':') ? getTranslation((rawText + 2)) : rawText;
+		if (text == noTranslation)
+		{
+			text = rawText;
+		}
+
         if(shadow) draw_text(text, x+SHADOW, y+SHADOW, 0x00, 0x00, 0x00, -0xC0);
         draw_text(text, x, y, color>>16, (color>>8)&0xFF, color&0xFF, force ? -0xFF : 0xFF);
     }
@@ -784,8 +797,14 @@ struct gui : g3d_gui
         layout(width, height);
     }
 
-    int button_(const char *text, int color, const char *icon, bool clickable, bool center)
+    int button_(const char *rawText, int color, const char *icon, bool clickable, bool center)
     {
+		const char* text = (rawText[0] == 't' && rawText[1] == ':') ? getTranslation((rawText + 2)) : rawText;
+		if (text == noTranslation)
+		{
+			text = rawText;
+		}
+
         const int padding = 10;
         int w = 0;
         if(icon) w += ICON_SIZE;

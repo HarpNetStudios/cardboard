@@ -48,7 +48,7 @@ namespace game
 
     static const playermodelinfo playermodels[1] = // new player
     {
-        { "prototype", "prototype/blue", "prototype/red", "prototype/hudguns", NULL, "prototype/quad", "prototype", "prototype_blue", "prototype_red", true },
+        { "prototype", "prototype/blue", "prototype/red", "prototype/hudguns", NULL, "prototype", "prototype_blue", "prototype_red", true },
     };
 
     int chooserandomplayermodel(int seed)
@@ -111,11 +111,9 @@ namespace game
             }
             else preloadmodel(mdl->ffa);
             if(mdl->vwep) preloadmodel(mdl->vwep);
-            if(mdl->quad) preloadmodel(mdl->quad);
         }
     }
 
-    VAR(testquad, 0, 0, 1);
     VAR(testteam, 0, 0, 3);
 
     void renderplayer(fpsent *d, const playermodelinfo &mdl, int team, float fade, bool mainpass)
@@ -147,11 +145,6 @@ namespace game
             }
             a[ai++] = modelattach("tag_weapon", mdl.vwep ? mdl.vwep : vweps[d->gunselect], vanim, vtime);
         }
-        if(d->state==CS_ALIVE)
-        {
-            if((testquad || d->quadmillis) && mdl.quad)
-                a[ai++] = modelattach("tag_powerup", mdl.quad, ANIM_POWERUP|ANIM_LOOP, 0);
-        }
         if(mainpass)
         {
             d->muzzle = vec(-1, -1, -1);
@@ -164,16 +157,10 @@ namespace game
             case 2: mdlname = mdl.redteam; break;
         }
         renderclient(d, mdlname, a[0].tag ? a : NULL, hold, attack, delay, lastaction, intermission && d->state!=CS_DEAD ? 0 : d->lastpain, fade, ragdoll && mdl.ragdoll);
-#if 0
-        if(d->state!=CS_DEAD && d->quadmillis)
-        {
-            entitylight light;
-            rendermodel(&light, "quadrings", ANIM_MAPMODEL|ANIM_LOOP, vec(d->o).sub(vec(0, 0, d->eyeheight/2)), 360*lastmillis/1000.0f, 0, MDL_DYNSHADOW | MDL_CULL_VFC | MDL_CULL_DIST);
-        }
-#endif
     }
 
     VARP(teamskins, 0, 0, 1);
+	VARP(shownames, 0, 1, 1);
 
     void rendergame(bool mainpass)
     {
@@ -190,17 +177,20 @@ namespace game
         startmodelbatches();
 
         fpsent *exclude = isthirdperson() ? NULL : followingplayer();
-        loopv(players)
-        {
-            fpsent *d = players[i];
-            if(d == player1 || d->state==CS_SPECTATOR || d->state==CS_SPAWNING || d->lifesequence < 0 || d == exclude || (d->state==CS_DEAD && hidedead)) continue;
-            int team = 0;
-            if(teamskins || m_teammode) team = strcmp(d->team, "red") ? 1 : 2;
-            renderplayer(d, getplayermodelinfo(d), team, 1, mainpass);
-            copystring(d->info, colorname(d));
-            if(d->maxhealth>1000) { defformatstring(sn, " +%d", d->maxhealth-1000); concatstring(d->info, sn); }
-            if(d->state!=CS_DEAD) particle_text(d->abovehead(), d->info, PART_TEXT, 1, team ? (team==1 ? 0x6496FF : 0xFF4B19) : 0x1EC850, 2.0f);
-        }
+		loopv(players)
+		{
+			fpsent* d = players[i];
+			if (d == player1 || d->state == CS_SPECTATOR || d->state == CS_SPAWNING || d->lifesequence < 0 || d == exclude || (d->state == CS_DEAD && hidedead)) continue;
+			int team = 0;
+			if (teamskins || m_teammode) team = strcmp(d->team, "red") ? 1 : 2;
+			renderplayer(d, getplayermodelinfo(d), team, 1, mainpass);
+			if (shownames)
+			{
+				copystring(d->info, colorname(d));
+				if (d->maxhealth > 1000) { defformatstring(sn, " +%d", d->maxhealth - 1000); concatstring(d->info, sn); }
+				if (d->state != CS_DEAD) particle_text(d->abovehead(), d->info, PART_TEXT, 1, team ? (team == 1 ? 0x6496FF : 0xFF4B19) : 0x1EC850, 2.0f);
+			}
+        }	
         loopv(ragdolls)
         {
             fpsent *d = ragdolls[i];
@@ -215,8 +205,6 @@ namespace game
         {
             renderplayer(player1, getplayermodelinfo(player1), teamskins || m_teammode ? (strcmp(player1->team, "red") ? 1 : 2) : 0, 1, mainpass);
         }
-        rendermonsters();
-        rendermovables();
         entities::renderentities();
         renderbouncers();
         renderprojectiles();
@@ -284,13 +272,6 @@ namespace game
         sway.add(swaydir).add(d->o);
         if(!hudgunsway) sway = d->o;
 
-#if 0
-        if(player1->state!=CS_DEAD && player1->quadmillis)
-        {
-            float t = 0.5f + 0.5f*sinf(2*M_PI*lastmillis/1000.0f);
-            color.y = color.y*(1-t) + t;
-        }
-#endif
         const playermodelinfo &mdl = getplayermodelinfo(d);
         defformatstring(gunname, "%s/%s", hudgunsdir[0] ? hudgunsdir : mdl.hudguns, guns[d->gunselect].file);
         if((m_teammode || teamskins) && teamhudguns)
@@ -425,7 +406,6 @@ namespace game
         preloadplayermodel();
         preloadsounds();
         entities::preloadentities();
-        if(m_sp) preloadmonsters();
     }
 
 }

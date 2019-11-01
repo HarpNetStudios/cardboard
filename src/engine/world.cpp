@@ -7,6 +7,9 @@ VARNR(mapscale, worldscale, 1, 0, 0);
 VARNR(mapsize, worldsize, 1, 0, 0);
 SVARR(maptitle, "Untitled Map by Unknown");
 
+// spacepack stuff, continue here.
+VARR(spacepackallowed, 0, 0, 1);
+
 VAR(octaentsize, 0, 64, 1024);
 VAR(entselradius, 0, 2, 10);
 
@@ -1146,7 +1149,7 @@ int findentity(int type, int index, int attr1, int attr2)
 
 int spawncycle = -1;
 
-void findplayerspawn(dynent *d, int forceent, int tag)   // place at random spawn. also used by monsters!
+void findplayerspawn(dynent *d, int forceent, int tag)   // place at random spawn.
 {
 	//conoutf("tag: %d", tag);
     int pick = forceent;
@@ -1233,7 +1236,8 @@ bool emptymap(int scale, bool force, const char *mname, bool usecfg)    // main 
 
     resetmap();
 
-    setvar("mapscale", scale<10 ? 10 : (scale>16 ? 16 : scale), true, false);
+	// there is a reason that this is limited to 16 -Y
+    setvar("mapscale", scale<10 ? 10 : (scale>16 ? 16 : scale), true, false); 
     setvar("mapsize", 1<<worldscale, true, false);
 
     texmru.shrink(0);
