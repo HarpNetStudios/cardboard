@@ -4,7 +4,7 @@ namespace game
 {
 	char* gametitle = "Project Crimson";
 	char* gamestage = "Alpha";
-	char* gameversion = "2.0rc3";
+	char* gameversion = "2.0";
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);

@@ -14,7 +14,9 @@ for:
   matrix:
     only:
       - image: Visual Studio 2019
-        APPVEYOR_REPO_TAG: true
+        # shit ain't working, fix later.
+        
+        # APPVEYOR_REPO_TAG: true 
 
   after_build:
   - cmd: >-

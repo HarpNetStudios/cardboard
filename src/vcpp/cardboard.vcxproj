@@ -1230,6 +1230,9 @@
     <None Include="..\..\server-init.cfg" />
     <None Include="..\..\servers.cfg" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\ADDING_REMOVING_FILES.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

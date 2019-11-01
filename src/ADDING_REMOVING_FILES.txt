@@ -1,0 +1,9 @@
+OK, so, I keep forgetting where exactly I need to add new source files, or remove old ones that aren't in use anymore, so here they are:
+
+- Visual Studio filters
+- Makefile object definition, and header definition
+- Code::Blocks project file
+
+Remember to actually delete source files that have been removed from projects.
+
+-Yellow 10/31/19

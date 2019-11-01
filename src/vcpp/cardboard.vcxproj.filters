@@ -398,4 +398,7 @@
       <Filter>config\lang</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\ADDING_REMOVING_FILES.txt" />
+  </ItemGroup>
 </Project>
