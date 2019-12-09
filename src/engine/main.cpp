@@ -1691,6 +1691,7 @@ int main(int argc, char **argv)
     initing = NOT_INITING;
 
 	#ifdef CURLENABLED
+		logoutf("init: auth");
 		if (strcmp(__gametoken,"")) {
 			renderprogress(0, "connecting to auth server...");
 			getuserinfo_(false); 
