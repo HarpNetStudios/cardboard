@@ -837,11 +837,12 @@ namespace server
 
     bool delayspawn(int type)
     {
-        switch(type)
+		return false;
+        /*switch(type)
         {
             default:
                 return false;
-        }
+        }*/
     }
 
     bool pickup(int i, int sender)         // server side item pickup, acknowledge first client that gets it

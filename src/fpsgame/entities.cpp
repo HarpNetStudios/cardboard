@@ -202,6 +202,8 @@ namespace entities
         }
         if(local && d->clientnum >= 0)
         {
+			// act like the jump pad lets you touch the ground
+			if (!d->jumpstate || (d->jumpstate == 2)) d->jumpstate = 1;
             sendposition(d);
             packetbuf p(16, ENET_PACKET_FLAG_RELIABLE);
             putint(p, N_JUMPPAD);

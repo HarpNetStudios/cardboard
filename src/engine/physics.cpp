@@ -1755,6 +1755,8 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 
     vec d(m);
     d.mul(pl->maxspeed); // TODO: joystick analog movement speed 
+	int meleespeed = 10; // percentage multiplier of melee weapon movement speed
+	if(pl->candouble) d.mul(1 + (meleespeed/100.0f));
     if(pl->type==ENT_PLAYER)
     {
         if(floating)

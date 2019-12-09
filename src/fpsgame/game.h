@@ -211,7 +211,9 @@ enum
 
     S_HIT,
 
-    S_FLAGFAIL
+    S_FLAGFAIL,
+
+	S_KILLBONUS
 };
 
 // network messages codes, c2s, c2c, s2c
@@ -763,6 +765,7 @@ namespace game
     extern void clearteaminfo();
     extern void setteaminfo(const char *team, int frags);
 	extern void resetteaminfo();
+	extern int statuscolor(fpsent *d, int color);
 
     // render
     struct playermodelinfo

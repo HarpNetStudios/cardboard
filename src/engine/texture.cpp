@@ -2690,6 +2690,7 @@ void initenvmaps()
 
 void genenvmaps()
 {
+	return; // env maps are overrated and they break shit for some reason -Y 11/03/19
     if(envmaps.empty()) return;
     renderprogress(0, "generating environment maps...");
     int lastprogress = SDL_GetTicks();

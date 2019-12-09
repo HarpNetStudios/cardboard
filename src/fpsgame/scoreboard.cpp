@@ -7,8 +7,9 @@ namespace game
     VARP(showservinfo, 0, 1, 1);
     VARP(showclientnum, 0, 0, 1);
     VARP(showpj, 0, 0, 1);
-    VARP(showping, 0, 1, 1);
+	VARP(showping, 0, 1, 2);
     VARP(showspectators, 0, 1, 1);
+	VARP(showspectatorping, 0, 0, 1);
     VARP(highlightscore, 0, 1, 1);
     VARP(showconnecting, 0, 0, 1);
 	VARP(hidefrags, 0, 1, 1);
@@ -139,6 +140,17 @@ namespace game
         return numgroups;
     }
 
+	int statuscolor(fpsent* d, int color)
+	{
+		if (d->privilege)
+		{
+			color = d->privilege >= PRIV_ADMIN ? 0xFF8000 : (d->privilege >= PRIV_AUTH ? 0xC040C0 : 0x40FF80);
+			if (d->state == CS_DEAD) color = (color >> 1) & 0x7F7F7F;
+		}
+		else if (d->state == CS_DEAD) color = 0x606060;
+		return color;
+	}
+
     void renderscoreboard(g3d_gui &g, bool firstpass)
     {
         const ENetAddress *address = connectedpeer();
@@ -244,22 +256,18 @@ namespace game
 
             g.pushlist();
             g.text("name", fgcolor);
-            g.strut(13);
+			g.strut(12);
             loopscoregroup(o,
             {
-                int status = o->state!=CS_DEAD ? 0xFFFFDD : 0x606060;
-                if(o->privilege)
-                {
-                    status = o->privilege>=PRIV_ADMIN ? 0xFF8000 : 0x40FF80;
-                    if(o->state==CS_DEAD) status = (status>>1)&0x7F7F7F;
-                }
-                g.textf("%s ", status, NULL, colorname(o));
+				g.textf("%s ", statuscolor(o, 0xFFFFDD), NULL, colorname(o));
             });
             g.poplist();
 
             if(multiplayer(false) || demoplayback)
             {
-                if(showpj)
+				if(showpj || showping) g.space(1);
+
+                if(showpj && showping <= 1)
                 {
                     g.pushlist();
                     g.strut(6);
@@ -272,7 +280,36 @@ namespace game
                     g.poplist();
                 }
 
-                if(showping)
+                if(showping > 1)
+				{
+					g.pushlist();
+					g.strut(6);
+
+					g.pushlist();
+					g.text("ping", fgcolor);
+					g.space(1);
+					g.spring();
+					g.text("pj", fgcolor);
+					g.poplist();
+					
+					loopscoregroup(o,
+					{
+						fpsent * p = o->ownernum >= 0 ? getclient(o->ownernum) : o;
+						if (!p) p = o;
+						g.pushlist();
+						if (p->state == CS_LAGGED) g.text("LAG", 0xFFFFDD);
+						else
+						{
+							g.textf("%d", 0xFFFFDD, NULL, p->ping);
+							g.space(1);
+							g.spring();
+							g.textf("%d", 0xFFFFDD, NULL, o->plag);
+						}
+						g.poplist();
+					});
+					g.poplist();
+				}
+				else if (showping)
                 {
                     g.pushlist();
                     g.text("ping", fgcolor);
@@ -318,20 +355,36 @@ namespace game
 
                 g.pushlist();
                 g.text("spectator", 0xFFFF80, " ");
+				g.strut(12);
                 loopv(spectators)
                 {
                     fpsent *o = spectators[i];
-                    int status = 0xFFFFDD;
-                    if(o->privilege) status = o->privilege>=PRIV_ADMIN ? 0xFF8000 : 0x40FF80;
                     if(o==player1 && highlightscore)
                     {
                         g.pushlist();
                         g.background(0x808080, 3);
                     }
-                    g.text(colorname(o), status, "spectator");
+					g.text(colorname(o), statuscolor(o, 0xFFFFDD), "spectator");
                     if(o==player1 && highlightscore) g.poplist();
                 }
                 g.poplist();
+
+				if ((multiplayer(false) || demoplayback) && showspectatorping)
+				{
+					g.space(1);
+					g.pushlist();
+					g.text("ping", 0xFFFF80);
+					g.strut(6);
+					loopv(spectators)
+					{
+						fpsent * o = spectators[i];
+						fpsent * p = o->ownernum >= 0 ? getclient(o->ownernum) : o;
+						if (!p) p = o;
+						if (p->state == CS_LAGGED) g.text("LAG", 0xFFFFDD);
+						else g.textf("%d", 0xFFFFDD, NULL, p->ping);
+					}
+					g.poplist();
+				}
 
                 g.space(1);
                 g.pushlist();
@@ -352,14 +405,12 @@ namespace game
                         g.text("", 0xFFFFDD, "spectator");
                     }
                     fpsent *o = spectators[i];
-                    int status = 0xFFFFDD;
-                    if(o->privilege) status = o->privilege>=PRIV_ADMIN ? 0xFF8000 : 0x40FF80;
                     if(o==player1 && highlightscore)
                     {
                         g.pushlist();
                         g.background(0x808080);
                     }
-                    g.text(colorname(o), status);
+					g.text(colorname(o), statuscolor(o, 0xFFFFDD), "spectator");
                     if(o==player1 && highlightscore) g.poplist();
                     if(i+1<spectators.length() && (i+1)%3) g.space(1);
                     else g.poplist();

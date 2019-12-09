@@ -329,6 +329,9 @@
     <Filter Include="config\lang">
       <UniqueIdentifier>{9e580865-6284-4b39-bbdb-ebc6058fa17f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="config\extra">
+      <UniqueIdentifier>{af0b6ad5-3059-4824-acf7-2352b7a9068e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="cardboard.rc" />
@@ -396,6 +399,9 @@
     </None>
     <None Include="..\..\packages\lang\fr_CA.cfg">
       <Filter>config\lang</Filter>
+    </None>
+    <None Include="..\..\data\extra\ao1edit.cfg">
+      <Filter>config\extra</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

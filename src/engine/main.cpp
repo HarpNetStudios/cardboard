@@ -48,8 +48,6 @@ void quit()                     // normal exit
     exit(EXIT_SUCCESS);
 }
 
-ICOMMAND(random, "i", (int seed), intret(rnd(seed)));
-
 void fatal(const char *s, ...)    // failure exit
 {
     static int errors = 0;
@@ -184,11 +182,12 @@ void bgquad(float x, float y, float w, float h, float tx = 0, float ty = 0, floa
     gle::end();
 }
 
-void renderbackground(const char *caption, Texture *mapshot, const char *mapname, const char *mapinfo, bool restore, bool force)
+void renderbackground(const char *caption, Texture *mapshot, const char *mapname, const char *mapinfo, bool restore, bool force, bool splash)
 {
     if(!inbetweenframes && !force) return;
 
-    if(!restore || force) stopsounds(); // stop sounds while loading
+	if(splash) playsound(S_KILLBONUS);  // sound for splash screen
+	else if(!restore || force) stopsounds(); // stop sounds while loading
 
     int w = screenw, h = screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
@@ -197,8 +196,6 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
     static int lastupdate = -1, lastw = -1, lasth = -1;
 	static float backgroundu = 0, backgroundv = 0;
-    static int numdecals = 0;
-    static struct decal { float x, y, size; int side; } decals[12];
     if((renderedframe && !mainmenu && lastupdate != lastmillis) || lastw != w || lasth != h)
     {
         lastupdate = lastmillis;
@@ -207,14 +204,6 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
         backgroundu = rndscale(1);
         backgroundv = rndscale(1);
-        numdecals = sizeof(decals)/sizeof(decals[0]);
-        numdecals = numdecals/3 + rnd((numdecals*2)/3 + 1);
-        float maxsize = min(w, h)/16.0f;
-        loopi(numdecals)
-        {
-            decal d = { rndscale(w), rndscale(h), maxsize/2 + rndscale(maxsize/2), rnd(2) };
-            decals[i] = d;
-        }
     }
     else if(lastupdate != lastmillis) lastupdate = lastmillis;
 
@@ -232,24 +221,33 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 		
 		if (!(mapshot || mapname)) {
 			/*background and logo*/
-			settexture("data/background.png", 0);
 			float bu = w * 0.67f / 256.0f + backgroundu, bv = h * 0.67f / 256.0f + backgroundv;
-			bgquad(0, 0, w, h, 0, 0, bu, bv);
+			if (splash) settexture("data/splash.png", 0);
+			else settexture("data/background.png", 0);
+
+			if (splash) bgquad(0, 0, w, h);
+			else bgquad(0, 0, w, h, 0, 0, bu, bv);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
 			float lh = 0.5f * min(w, h), lw = lh * 2,
 				lx = 0.5f * (w - lw), ly = 0.5f * (h * 0.5f - lh);
-			settexture((maxtexsize ? min(maxtexsize, hwtexsize) : hwtexsize) >= 1024 && (screenw > 1280 || screenh > 800) ? "data/logo_1024.png" : "data/logo.png", 3);
-			bgquad(lx, ly, lw, lh);
+			if(!splash) 
+			{
+				settexture((maxtexsize ? min(maxtexsize, hwtexsize) : hwtexsize) >= 1024 && (screenw > 1280 || screenh > 800) ? "data/logo_1024.png" : "data/logo.png", 3);
+				bgquad(lx, ly, lw, lh);
+			}
 		
 			/*engine badge*/
 			float badgeh = 0.12f*min(w, h), badgew = badgeh*2.00,
 				  badgex = 0.01f*(w - badgew), badgey = 2.2f*(h*0.5f - badgeh);
-			settexture("data/cube2badge.png", 3);
-			bgquad(badgex, badgey, badgew, badgeh);
+			if(!splash)
+			{
+				settexture("data/cube2badge.png", 3);
+				bgquad(badgex, badgey, badgew, badgeh);
+			}
 		}
 		else {
-			/* blank black box, used for map load*/
+			// blank black box, used for map load
 			gle::colorf(0,0,0);
 			bgquad(0, 0, w, h);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1066,7 +1064,7 @@ bool interceptkey(int sym)
     lastintercept = sym;
     if(sym != SDLK_UNKNOWN) for(int i = len; i < events.length(); i++)
     {
-        if(events[i].type == SDL_KEYDOWN && events[i].key.keysym.sym == sym) { events.remove(i); return true; }
+		if(events[i].type == SDL_KEYDOWN && events[i].key.keysym.sym == sym) { events.remove(i); return true; }
     }
     return false;
 }
@@ -1383,7 +1381,7 @@ struct memoryStruct {
 };
 
 #define MAXTOKENLEN 64
-SVARNP(__gametoken, gametoken_internal, ""); // game token time
+SVARFP(__gametoken, "", { getuserinfo_(false); }); // game token time
 
 #ifdef CURLENABLED
 
@@ -1485,9 +1483,9 @@ COMMANDN(testcurl, testcurl_, "s");
 
 void getuserinfo_(bool debug) {
 	if (offline) return; // don't waste time trying to check everything if we are offline.
-	if (debug) conoutf(CON_DEBUG, gametoken_internal);
+	if (debug) conoutf(CON_DEBUG, __gametoken);
 	oldstring apiurl;
-	formatstring(apiurl, "%s/game/get/userinfo?id=1&token=%s", HNAPI, gametoken_internal);
+	formatstring(apiurl, "%s/game/get/userinfo?id=1&token=%s", HNAPI, __gametoken);
 	char* thing = web_get(apiurl, debug);
 	if (!thing[0]) {
 		conoutf(CON_ERROR, "no data recieved from server, switching to offline mode");
@@ -1504,7 +1502,6 @@ void getuserinfo_(bool debug) {
 		if (status->valueint > 0) {
 			conoutf(CON_ERROR, "web error! status: %d, \"%s\"", status->valueint, message->valuestring);
 			if (!strcmp(message->valuestring, "no token found") || !strcmp(message->valuestring, "malformed token")) {
-				gametoken_internal = "";
 				offline = 1;
 				return;
 			}
@@ -1530,18 +1527,18 @@ COMMANDN(getuserinfo, getuserinfo_, "i");
 #endif 
 
 void setgametoken(const char* token) {
-	filtertext(gametoken_internal, token, false, false, MAXTOKENLEN);
+	filtertext(__gametoken, token, false, false, MAXTOKENLEN);
 	#ifdef CURLENABLED
 		getuserinfo_(false);
 	#endif
 }
 
-ICOMMAND(gametoken, "s", (char* s),
+/*ICOMMAND(gametoken, "s", (char* s),
 {
 	setgametoken(s);
-});
+});*/
 
-ICOMMAND(getgametoken, "", (), result(gametoken_internal));
+ICOMMAND(getgametoken, "", (), result(__gametoken));
 
 int globalgamestate = -1;
 
@@ -1654,21 +1651,22 @@ int main(int argc, char **argv)
     if(!execfile("data/font.cfg", false)) fatal("cannot find font definitions");
     if(!setfont("default")) fatal("no default font specified");
 
+	logoutf("init: sound");
+	execfile("data/sounds.cfg"); // load sounds early
+	initsound();
+
     inbetweenframes = true;
-    renderbackground("initializing...");
+	renderbackground(NULL, NULL, NULL, NULL, false, false, true);
+    //renderbackground("initializing...");
 
     logoutf("init: world");
     camera1 = player = game::iterdynents(0);
     emptymap(0, true, NULL, false);
 
-    logoutf("init: sound");
-    initsound();
-
     logoutf("init: cfg");
     initing = INIT_LOAD;
     execfile("data/keymap.cfg");
     execfile("data/stdedit.cfg");
-    execfile("data/sounds.cfg");
     execfile("data/menus.cfg"); 
     execfile("data/heightmap.cfg");
     execfile("data/blendbrush.cfg");
@@ -1693,7 +1691,7 @@ int main(int argc, char **argv)
     initing = NOT_INITING;
 
 	#ifdef CURLENABLED
-		if (strcmp(gametoken_internal,"")) {
+		if (strcmp(__gametoken,"")) {
 			renderprogress(0, "connecting to auth server...");
 			getuserinfo_(false); 
 		}

@@ -1213,6 +1213,7 @@
     <None Include="..\..\data\defaults.cfg" />
     <None Include="..\..\data\default_map_models.cfg" />
     <None Include="..\..\data\default_map_settings.cfg" />
+    <None Include="..\..\data\extra\ao1edit.cfg" />
     <None Include="..\..\data\font.cfg" />
     <None Include="..\..\data\game_fps.cfg" />
     <None Include="..\..\data\glsl.cfg" />

@@ -2,9 +2,9 @@
 
 namespace game
 {
-	char* gametitle = "Project Crimson";
-	char* gamestage = "Alpha";
-	char* gameversion = "2.0.0.2";
+	char* gametitle = "Project Crimson"; // game name: are you dumb
+	char* gamestage = "Alpha"; // stage: alpha, beta, release, whatever
+	char* gameversion = "2.0.1"; // version: major.minor(.patch[.bugfix])
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
@@ -285,7 +285,7 @@ namespace game
 				if (cmode) cmode->checkitems(player1);
 			}
 			#ifdef DISCORD
-				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING ), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
+				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
 			#endif
 		}
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
@@ -323,25 +323,29 @@ namespace game
             respawnself();
         }
     }
+	COMMAND(respawn, "");
 
     // inputs
+	VARP(attackspawn, 0, 1, 1);
 
     void doattack(bool on)
     {
         if(!connected || intermission) return;
-        if((player1->attacking = on)) respawn();
+        if((player1->attacking = on) && attackspawn) respawn();
     }
 
 	void dosecattack(bool on)
 	{
-		if (!connected || intermission) return;
-		if ((player1->secattacking = on)) respawn();
+		if(!connected || intermission) return;
+		if((player1->attacking = on) && attackspawn) respawn();
 	}
+
+	VARP(jumpspawn, 0, 1, 1);
 
     bool canjump()
     {
         if(!connected || intermission) return false;
-        respawn();
+        if(jumpspawn) respawn();
         return player1->state!=CS_DEAD;
     }
 
@@ -838,7 +842,7 @@ namespace game
 
     const char *teamcolorname(fpsent *d, const char *alt)
     {
-        if(!teamcolortext || !m_teammode) return colorname(d, NULL, "", "", alt);
+        if(!teamcolortext || !m_teammode || d->state==CS_SPECTATOR) return colorname(d, NULL, "", "", alt);
         return colorname(d, NULL, !strcmp(d->team, "red") ? "\fs\f1" : "\fs\f3", "\fr", alt);
     }
 
@@ -1045,12 +1049,7 @@ namespace game
             draw_text("SPECTATOR", w*1800/h - tw - pw, 1650 - th - fh);
             if(f)
             {
-                int color = f->state!=CS_DEAD ? 0xFFFFFF : 0x606060;
-                if(f->privilege)
-                {
-                    color = f->privilege>=PRIV_ADMIN ? 0xFF8000 : 0x40FF80;
-                    if(f->state==CS_DEAD) color = (color>>1)&0x7F7F7F;
-                }
+				int color = statuscolor(f, 0xFFFFFF);
                 draw_text(colorname(f), w*1800/h - fw - pw, 1650 - fh, (color>>16)&0xFF, (color>>8)&0xFF, color&0xFF);
             }
         }
