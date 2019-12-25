@@ -1224,12 +1224,19 @@
     <None Include="..\..\data\sounds.cfg" />
     <None Include="..\..\data\stdedit.cfg" />
     <None Include="..\..\data\stdlib.cfg" />
+    <None Include="..\..\docs\config.html" />
+    <None Include="..\..\docs\editing.html" />
+    <None Include="..\..\docs\editref.html" />
+    <None Include="..\..\docs\game.html" />
+    <None Include="..\..\docs\index.html" />
+    <None Include="..\..\docs\models.html" />
     <None Include="..\..\init.cfg" />
     <None Include="..\..\packages\lang\en_US.cfg" />
     <None Include="..\..\packages\lang\fr_CA.cfg" />
     <None Include="..\..\restore.cfg" />
     <None Include="..\..\server-init.cfg" />
     <None Include="..\..\servers.cfg" />
+    <None Include="..\Makefile" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\ADDING_REMOVING_FILES.txt" />

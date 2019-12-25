@@ -77,7 +77,7 @@ CLIENT_LIBS+= -lrt
 endif
 endif
 # commented out until i can get the .a file from my VM.
-#CLIENT_LIBS+= -lpthread lib/libdiscord-rpc.a
+CLIENT_LIBS+= -lpthread lib/libdiscord-rpc.a
 CLIENT_OBJS= \
 	shared/crypto.o \
 	shared/geom.o \

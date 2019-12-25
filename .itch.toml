@@ -1,4 +1,4 @@
 [[actions]]
 name = "play"
-path = "crimson_msvc.bat"
+path = "launcher.exe"
 platform = "windows"

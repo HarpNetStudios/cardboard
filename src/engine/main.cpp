@@ -3,6 +3,8 @@
 #include <engine.h>
 #include <game.h>
 
+oldstring gametoken = "";
+
 extern void cleargamma();
 
 void cleanup()
@@ -1380,11 +1382,6 @@ struct memoryStruct {
 
 };
 
-#define MAXTOKENLEN 64
-SVARFP(__gametoken, "", { getuserinfo_(false); }); // game token time
-
-#ifdef CURLENABLED
-
 VARFP(offline, 0, 0, 1, { getuserinfo_(false); });
 
 static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
@@ -1483,9 +1480,9 @@ COMMANDN(testcurl, testcurl_, "s");
 
 void getuserinfo_(bool debug) {
 	if (offline) return; // don't waste time trying to check everything if we are offline.
-	if (debug) conoutf(CON_DEBUG, __gametoken);
+	if (debug) conoutf(CON_DEBUG, gametoken);
 	oldstring apiurl;
-	formatstring(apiurl, "%s/game/get/userinfo?id=1&token=%s", HNAPI, __gametoken);
+	formatstring(apiurl, "%s/game/get/userinfo?id=1&token=%s", HNAPI, gametoken);
 	char* thing = web_get(apiurl, debug);
 	if (!thing[0]) {
 		conoutf(CON_ERROR, "no data recieved from server, switching to offline mode");
@@ -1513,6 +1510,7 @@ void getuserinfo_(bool debug) {
 			if (cJSON_IsString(name) && (name->valuestring != NULL))
 			{
 				if (debug) conoutf(CON_DEBUG, "username is \"%s\"", name->valuestring);
+				//fatal(name->valuestring);
 				game::switchname(name->valuestring);
 			}
 		}
@@ -1524,23 +1522,21 @@ void getuserinfo_(bool debug) {
 
 COMMANDN(getuserinfo, getuserinfo_, "i");
 
-#endif 
-
-void setgametoken(const char* token) {
-	filtertext(__gametoken, token, false, false, MAXTOKENLEN);
-	#ifdef CURLENABLED
-		getuserinfo_(false);
-	#endif
-}
-
 /*ICOMMAND(gametoken, "s", (char* s),
 {
 	setgametoken(s);
 });*/
 
-ICOMMAND(getgametoken, "", (), result(__gametoken));
+ICOMMAND(getgametoken, "", (), result(gametoken));
 
 int globalgamestate = -1;
+
+#define MAXTOKENLEN 64
+
+void setgametoken(const char* token) {
+	filtertext(gametoken, token, false, false, MAXTOKENLEN);
+	if(player!=NULL) getuserinfo_(false);
+}
 
 int main(int argc, char **argv)
 {
@@ -1569,6 +1565,10 @@ int main(int argc, char **argv)
         logoutf("Setting log file: %s", file);
         break;
     }
+	// get gametoken, you son of a bitch
+	for (int i = 1; i < argc; i++) if (argv[i][0] == '-' && argv[i][1] == 'c') { setgametoken(&argv[i][2]); break; }
+	if (!gametoken[0]) fatal("no gametoken given");
+	//if (gametoken[0]) fatal(gametoken);
 
     execfile("init.cfg", false);
     for(int i = 1; i<argc; i++)
@@ -1578,6 +1578,7 @@ int main(int argc, char **argv)
 			// reordered alpha to make it easier to see what's being used already. -Y 03/14/19
 			case 'a': fsaa = atoi(&argv[i][2]); break;
 			case 'b': /* compat, ignore */ break;
+			case 'c': if (gametoken[0]) logoutf("Using game token: [REDACTED]"); break;
 			case 'd': dedicated = atoi(&argv[i][2]); if (dedicated <= 0) dedicated = 2; break;
 			case 'f': /* compat, ignore */ break;
 			case 'g': break;
@@ -1692,7 +1693,7 @@ int main(int argc, char **argv)
 
 	#ifdef CURLENABLED
 		logoutf("init: auth");
-		if (strcmp(__gametoken,"")) {
+		if (strcmp(gametoken,"")) {
 			renderprogress(0, "connecting to auth server...");
 			getuserinfo_(false); 
 		}

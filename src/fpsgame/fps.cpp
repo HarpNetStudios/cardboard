@@ -4,7 +4,7 @@ namespace game
 {
 	char* gametitle = "Project Crimson"; // game name: are you dumb
 	char* gamestage = "Alpha"; // stage: alpha, beta, release, whatever
-	char* gameversion = "2.0.1"; // version: major.minor(.patch[.bugfix])
+	char* gameversion = "2.1"; // version: major.minor(.patch[.bugfix])
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);

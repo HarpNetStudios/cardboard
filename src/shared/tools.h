@@ -1402,6 +1402,8 @@ struct ipmask
 };
 
 extern char* pmodeltoname(int model);
+
+extern oldstring gametoken;
     
 #endif
 
