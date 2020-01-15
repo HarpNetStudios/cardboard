@@ -2235,6 +2235,27 @@ const char *escapestring(const char *s)
     return buf.getbuf();
 }
 
+int sortidents(ident** x, ident** y)
+{
+	return strcmp((*x)->name, (*y)->name);
+}
+
+
+void writeescapedstring(stream* f, const char* s)
+{
+	f->putchar('"');
+	for (; *s; s++) switch (*s)
+	{
+	case '\n': f->write("^n", 2); break;
+	case '\t': f->write("^t", 2); break;
+	case '\f': f->write("^f", 2); break;
+	case '"': f->write("^\"", 2); break;
+	case '^': f->write("^^", 2); break;
+	default: f->putchar(*s); break;
+	}
+	f->write("\"\0", 2);
+}
+
 ICOMMAND(escape, "s", (char *s), result(escapestring(s)));
 ICOMMAND(unescape, "s", (char *s),
 {

@@ -93,6 +93,7 @@ extern void compactvslots(cube *c, int n = 8);
 extern void compactvslot(int &index);
 extern void compactvslot(VSlot &vs);
 extern int compactvslots();
+extern const char* textypename(int i);
 extern void reloadtextures();
 extern void cleanuptextures();
 
@@ -573,6 +574,7 @@ extern void clearmainmenu();
 extern void g3d_mainmenu();
 
 // sound
+extern void writemapsounds(stream* f);
 extern void clearmapsounds();
 extern void checkmapsounds();
 extern void updatesounds();

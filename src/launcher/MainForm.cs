@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Security.Permissions;
-using System.Text;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 
@@ -18,11 +13,22 @@ namespace CardboardLauncher
     [System.Runtime.InteropServices.ComVisibleAttribute(true)]
     public partial class mainForm : Form
     {
+
+        public const int launcherVersion = 2;
+
+        private bool drag = false; // determine if we should be moving the form
+        private Point startPoint = new Point(0, 0); // also for the moving
+
         private static string gameName = "Project Crimson";
 
         private bool use64bit;
 
         private Config config;
+
+        private void DisplayMessage(string text, string origin = null, MessageBoxButtons buttons = MessageBoxButtons.OK, MessageBoxIcon icon = MessageBoxIcon.None)
+        {
+            MessageBox.Show(text, "Cardboard Launcher" + (origin != null ? " - "+origin : ""), buttons, icon);
+        }
 
         private void LoadConfig()
         {
@@ -45,23 +51,32 @@ namespace CardboardLauncher
 
         private bool GrabInfo(string token)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://harpnetstudios.com/hnid/api/v1/game/get/userinfo?id=1&token="+token);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            string content = new StreamReader(response.GetResponseStream()).ReadToEnd();
-            UserInfo info = JsonConvert.DeserializeObject<UserInfo>(content);
-            Console.WriteLine(content);
-
-            bool success = info.status == 0;
-
-            if (success)
+            bool success = false;
+            try
             {
-                userAuthLabel.Text = "User: " + info.username;
-            } 
-            else
-            {
-                userAuthLabel.Text = "User: N/A";
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://harpnetstudios.com/hnid/api/v1/game/get/userinfo?id=1&token=" + token);
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                string content = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                UserInfo info = JsonConvert.DeserializeObject<UserInfo>(content);
+                Console.WriteLine(content);
+
+                success = info.status == 0;
+
+                if (success)
+                {
+                    userAuthLabel.Text = "User: " + info.username;
+                }
+                else
+                {
+                    userAuthLabel.Text = "User: N/A";
+                }
+                playButton.Enabled = success;
             }
-            playButton.Enabled = success;
+            catch (Exception)
+            {
+            
+            }
+            
 
             return success;
         }
@@ -71,6 +86,7 @@ namespace CardboardLauncher
             public string webUrl = "";
             public string homeDir = "";
             public string gameToken = "";
+            public string qConnectServ = "";
         }
 
         private class UserInfo
@@ -83,29 +99,47 @@ namespace CardboardLauncher
         public mainForm()
         {
             InitializeComponent();
+
+            webWarn.Location = new Point(206, 34);
+
             webLauncher.Document.BackColor = this.BackColor;
             LoadConfig();
             GrabInfo(config.gameToken);
             if (config.homeDir == "") config.homeDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Project Crimson Alpha");
             homeDirBox.Text = config.homeDir;
+            qConnectServBox.Text = config.qConnectServ;
+
+            pageSelectCombo.SelectedIndex = 0; // HNID
+
             webLauncher.ObjectForScripting = this;
-            webLauncher.Url = new Uri(config.webUrl+"?goAway=1234");
+            webLauncher.Url = new Uri(config.webUrl);
             this.Text = gameName + " Launcher";
+            launcherTitle.Text = gameName + " Launcher";
             playButton.Text = "Play " + gameName;
         }
 
         public void displayMessage(String message)
         {
-            MessageBox.Show(message, "Cardboard Launcher");
+            DisplayMessage(message, "Webpage");
+        }
+
+        public void setScroll(bool scroll)
+        {
+            this.webLauncher.ScrollBarsEnabled = scroll;
         }
         
         public void setGameToken(string token)
         {
             if (GrabInfo(token))
             {
-                config.gameToken = token;
-                MessageBox.Show("Successfully set game token!", "Cardboard Launcher");
-            } else MessageBox.Show("Error setting game token", "Cardboard Launcher", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (token.Length.Equals(64))
+                {
+                    config.gameToken = token;
+                    DisplayMessage("Successfully set game token!");
+                    return;
+                }
+            } 
+            DisplayMessage("Error setting game token", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void archGroup_Layout(object sender, LayoutEventArgs e)
@@ -130,11 +164,6 @@ namespace CardboardLauncher
             }
         }
 
-        private void saveConfigBtn_Click(object sender, EventArgs e)
-        {
-            SaveConfig();
-        }
-
         private void archRadio64_CheckedChanged(object sender, EventArgs e)
         {
             use64bit = archRadio64.Checked;
@@ -142,21 +171,25 @@ namespace CardboardLauncher
 
         private void playButton_Click(object sender, EventArgs e)
         {
+            // Save config if box is checked.
+            if(saveConfigChkBox.Checked) SaveConfig();
+            
+            // Create new process definition
             ProcessStartInfo gameProcess = new ProcessStartInfo();
             gameProcess.FileName = Path.Combine("bin" + (use64bit ? "64" : ""), "cardboard_msvc.exe");
-            gameProcess.Arguments = "-q\"" + config.homeDir + "\" -glog.txt -c"+config.gameToken;
+            gameProcess.Arguments = "-q\"" + config.homeDir + "\" -glog.txt -c"+config.gameToken + (qConnectChkBox.Checked ? " -x\"connect "+config.qConnectServ+"\"" : "");
+            
+            
+            // Attempt to start process with correct arguments
             try
             {
                 Process.Start(gameProcess);
-                Environment.Exit(0);
+                Environment.Exit(0); // Close launcher if successful game launch
             } 
             catch(Exception ex)
             {
-                MessageBox.Show("Error while starting game process: "+ex.Message,"Launcher Error",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DisplayMessage("Error while starting game process: "+ex.Message,"Error",MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
-
-            Console.WriteLine(gameProcess.WorkingDirectory);
         }
 
         private void homeDirBox_TextChanged(object sender, EventArgs e)
@@ -176,23 +209,99 @@ namespace CardboardLauncher
 
         private void webLauncher_Navigating(object sender, WebBrowserNavigatingEventArgs e)
         {
-            if(webLauncher.Url.ToString() == "about:blank") { return; }
+            if(e.Url.ToString() == "about:blank") { return; }
             string safeSite = "https://harpnetstudios.com/";
-            Console.WriteLine(webLauncher.Url.ToString());
-            if (!webLauncher.Url.ToString().StartsWith(safeSite))
+            Console.WriteLine(e.Url.ToString());
+            if (!e.Url.ToString().StartsWith(safeSite))
             {
                 webWarn.BackColor = Color.Red;
             }
             else webWarn.BackColor = this.BackColor;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void gameTokenBtn_Click(object sender, EventArgs e)
         {
             GametokenDialog gtDialog = new GametokenDialog();
             gtDialog.gameToken = config.gameToken;
             if (gtDialog.ShowDialog() == DialogResult.OK)
             {
                 setGameToken(gtDialog.gameToken);
+            }
+        }
+
+        private void qConnectChkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            qConnectServBox.Enabled = qConnectChkBox.Checked;
+        }
+
+        private void qConnectServBox_TextChanged(object sender, EventArgs e)
+        {
+            config.qConnectServ = qConnectServBox.Text;
+        }
+
+        private void saveConfigChkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            saveConfigChkBox.ForeColor = saveConfigChkBox.Checked ? Color.FromArgb(255, 36, 0) : SystemColors.HighlightText;
+        }
+
+        private void pageSelectCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            webWarn.Visible = false;
+            advSettings.Visible = false;
+
+            switch (pageSelectCombo.SelectedIndex)
+            {
+                case 0: // HNID
+                    webWarn.Visible = true;
+                    break;
+
+                case 1: // Advanced Settings
+                    advSettings.Visible = true;
+                    break;
+
+                case 2: // About
+                    break;
+
+                default: 
+                    break;
+            }
+        }
+
+        private void closeBtn_MouseClick(object sender, MouseEventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void closeBtn_MouseDown(object sender, MouseEventArgs e)
+        {
+            closeBtn.BackgroundImage = CardboardLauncher.Properties.Resources.close_click;
+        }
+
+        private void closeBtn_MouseUp(object sender, MouseEventArgs e)
+        {
+            closeBtn.BackgroundImage = CardboardLauncher.Properties.Resources.close;
+        }
+
+        private void Title_MouseUp(object sender, MouseEventArgs e)
+        {
+            this.drag = false;
+        }
+
+        private void Title_MouseDown(object sender, MouseEventArgs e)
+        {
+            this.startPoint = e.Location;
+            this.drag = true;
+        }
+
+        private void Title_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (this.drag)
+            { // if we should be dragging it, we need to figure out some movement
+                Point p1 = new Point(e.X, e.Y);
+                Point p2 = this.PointToScreen(p1);
+                Point p3 = new Point(p2.X - this.startPoint.X,
+                                     p2.Y - this.startPoint.Y);
+                this.Location = p3;
             }
         }
     }

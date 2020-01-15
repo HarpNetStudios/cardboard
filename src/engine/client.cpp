@@ -74,11 +74,9 @@ SVARP(connectname, "");
 VARP(connectport, 0, 0, 0xFFFF);
 
 void connectserv(const char *servername, int serverport, const char *serverpassword)
-{  
-	#ifdef CURLENABLED	
-		if (offline == 1) { conoutf("\f3cannot connect to servers in offline mode"); return; }
-		getuserinfo_(false);
-	#endif
+{  	
+	if (offline == 1) { conoutf("\f3cannot connect to servers in offline mode"); return; }
+	getuserinfo_(false);
 	globalgamestate = -1;
 
     if(connpeer)
@@ -161,9 +159,7 @@ void disconnect(bool async, bool cleanup)
         discmillis = 0;
         conoutf("disconnected");
         game::gamedisconnect(cleanup);
-		#ifdef CURLENABLED
-			getuserinfo_(false);
-		#endif
+		getuserinfo_(false);
         mainmenu = 1;
 		#ifdef DISCORD
 			discord::updatePresence(discord::D_MENU);

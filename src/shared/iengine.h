@@ -165,6 +165,7 @@ extern void alias(const char *name, const char *action);
 extern void alias(const char *name, tagval &v);
 extern const char *getalias(const char *name);
 extern const char *escapestring(const char *s);
+extern void writeescapedstring(stream* f, const char* s);
 extern const char *escapeid(const char *s);
 static inline const char *escapeid(ident &id) { return escapeid(id.name); }
 extern bool validateblock(const char *s);

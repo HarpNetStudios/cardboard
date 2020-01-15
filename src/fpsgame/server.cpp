@@ -2386,8 +2386,8 @@ namespace server
                     loopv(sents) if(sents[i].spawntime > 0) // spawn entities when timer reached
                     {
                         int oldtime = sents[i].spawntime;
-                        sents[i].spawntime -= curtime;
-                        if(sents[i].spawntime<=0)
+						oldtime -= curtime;
+						if (oldtime <= 0)
                         {
                             sents[i].spawntime = 0;
                             sents[i].spawned = true;

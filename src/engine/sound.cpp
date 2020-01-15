@@ -700,6 +700,17 @@ int playsoundname(const char *s, const vec *loc, int vol, int flags, int loops, 
 void sound(int *n) { playsound(*n); }
 COMMAND(sound, "i");
 
+void writemapsounds(stream* f)
+{
+	f->printf("// To-do, sound system changed\n");
+	/*
+	loopv(mapsounds)
+	{
+		f->printf("mapsound \"%s\" %d %d // %d\n", mapsounds[i].sample->name, mapsounds[i].volume, mapsounds[i].maxuses, i);
+	}
+	*/
+}
+
 void resetsound()
 {
     clearchanges(CHANGE_SOUND);

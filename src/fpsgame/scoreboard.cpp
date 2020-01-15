@@ -259,8 +259,8 @@ namespace game
 			g.strut(12);
             loopscoregroup(o,
             {
-				g.textf("%s ", statuscolor(o, 0xFFFFDD), NULL, colorname(o));
-            });
+				g.textf("%s ", statuscolor(o, 0xFFFFDD), NULL, colorname(o, NULL, "", "", NULL, true));
+			});
             g.poplist();
 
             if(multiplayer(false) || demoplayback)
@@ -364,8 +364,8 @@ namespace game
                         g.pushlist();
                         g.background(0x808080, 3);
                     }
-					g.text(colorname(o), statuscolor(o, 0xFFFFDD), "spectator");
-                    if(o==player1 && highlightscore) g.poplist();
+					g.text(colorname(o, NULL, "", "", NULL, true), statuscolor(o, 0xFFFFDD), "spectator");
+					if(o==player1 && highlightscore) g.poplist();
                 }
                 g.poplist();
 
@@ -410,8 +410,8 @@ namespace game
                         g.pushlist();
                         g.background(0x808080);
                     }
-					g.text(colorname(o), statuscolor(o, 0xFFFFDD), "spectator");
-                    if(o==player1 && highlightscore) g.poplist();
+					g.text(colorname(o, NULL, "", "", NULL, true), statuscolor(o, 0xFFFFDD), "spectator");
+					if(o==player1 && highlightscore) g.poplist();
                     if(i+1<spectators.length() && (i+1)%3) g.space(1);
                     else g.poplist();
                 }

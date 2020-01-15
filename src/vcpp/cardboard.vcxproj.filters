@@ -181,6 +181,9 @@
     <ClCompile Include="..\engine\irc.cpp">
       <Filter>engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\shared\microtar.c">
+      <Filter>shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\command.h">
@@ -312,6 +315,9 @@
     <ClInclude Include="..\engine\irc.h">
       <Filter>engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared\microtar.h">
+      <Filter>shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="shared">
@@ -425,6 +431,9 @@
       <Filter>docs</Filter>
     </None>
     <None Include="..\Makefile" />
+    <None Include="..\..\launcher.json">
+      <Filter>config</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\ADDING_REMOVING_FILES.txt" />

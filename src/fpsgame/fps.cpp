@@ -4,7 +4,7 @@ namespace game
 {
 	char* gametitle = "Project Crimson"; // game name: are you dumb
 	char* gamestage = "Alpha"; // stage: alpha, beta, release, whatever
-	char* gameversion = "2.1"; // version: major.minor(.patch[.bugfix])
+	char* gameversion = "2.1.1"; // version: major.minor(.patch[.bugfix])
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
@@ -40,7 +40,7 @@ namespace game
 	{
 		if (!isconnected()) return;
 		if (!spacepackallowed) return;
-		else if (!m_edit) return;
+		//else if (!m_edit) return;
 		if (player1->state != CS_ALIVE && player1->state != CS_DEAD && player1->spacepack != true) return;
 		if (player1->state == CS_ALIVE) // only allow spacepack toggle when alive
 			player1->spacepack = !player1->spacepack;
@@ -807,13 +807,13 @@ namespace game
         return false;
     }
 
-    const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
-    {
+	const char* colorname(fpsent* d, const char* name, const char* prefix, const char* suffix, const char* alt, bool tags)
+	{
         //if(!name) name = alt && d == player1 ? alt : d->name;
 		if (!name) name = d->name;
         bool dup = !name[0] || duplicatename(d, name, alt) || d->aitype != AI_NONE;
 		cidx = (cidx + 1) % 3;
-		if (d->aitype == AI_NONE && showtags) {
+		if (d->aitype == AI_NONE && showtags && tags) {
 			prefix = gettags(d);
 			if(prefix == NULL) prefix = "";
 		}

@@ -1519,6 +1519,23 @@ bool settexture(const char *name, int clamp)
     return t != notexture;
 }
 
+const char* textypename(int i)
+{
+	switch (i)
+	{
+	case TEX_DIFFUSE: return "0";
+	case TEX_DECAL: return "d";
+	case TEX_NORMAL: return "n";
+	case TEX_GLOW: return "g";
+	case TEX_SPEC: return "s";
+	case TEX_DEPTH: return "z";
+	case TEX_ENVMAP: return "e";
+
+	case TEX_UNKNOWN:
+	default: return "1";
+	}
+}
+
 void enabletexture(const bool on)
 {
 	if (on) hudshader->set();
