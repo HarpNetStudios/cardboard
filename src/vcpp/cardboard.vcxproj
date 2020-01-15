@@ -479,6 +479,7 @@
     <ClInclude Include="..\shared\glexts.h" />
     <ClInclude Include="..\shared\iengine.h" />
     <ClInclude Include="..\shared\igame.h" />
+    <ClInclude Include="..\shared\microtar.h" />
     <ClInclude Include="..\shared\tools.h" />
     <ClInclude Include="..\fpsgame\ai.h" />
     <ClInclude Include="..\fpsgame\aiman.h" />
@@ -1028,6 +1029,7 @@
     <ClCompile Include="..\shared\crypto.cpp" />
     <ClCompile Include="..\shared\geom.cpp" />
     <ClCompile Include="..\shared\glemu.cpp" />
+    <ClCompile Include="..\shared\microtar.c" />
     <ClCompile Include="..\shared\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -1213,6 +1215,7 @@
     <None Include="..\..\data\defaults.cfg" />
     <None Include="..\..\data\default_map_models.cfg" />
     <None Include="..\..\data\default_map_settings.cfg" />
+    <None Include="..\..\data\extra\ao1edit.cfg" />
     <None Include="..\..\data\font.cfg" />
     <None Include="..\..\data\game_fps.cfg" />
     <None Include="..\..\data\glsl.cfg" />
@@ -1223,12 +1226,20 @@
     <None Include="..\..\data\sounds.cfg" />
     <None Include="..\..\data\stdedit.cfg" />
     <None Include="..\..\data\stdlib.cfg" />
+    <None Include="..\..\docs\config.html" />
+    <None Include="..\..\docs\editing.html" />
+    <None Include="..\..\docs\editref.html" />
+    <None Include="..\..\docs\game.html" />
+    <None Include="..\..\docs\index.html" />
+    <None Include="..\..\docs\models.html" />
     <None Include="..\..\init.cfg" />
+    <None Include="..\..\launcher.json" />
     <None Include="..\..\packages\lang\en_US.cfg" />
     <None Include="..\..\packages\lang\fr_CA.cfg" />
     <None Include="..\..\restore.cfg" />
     <None Include="..\..\server-init.cfg" />
     <None Include="..\..\servers.cfg" />
+    <None Include="..\Makefile" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\ADDING_REMOVING_FILES.txt" />

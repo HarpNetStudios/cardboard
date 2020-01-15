@@ -2235,6 +2235,27 @@ const char *escapestring(const char *s)
     return buf.getbuf();
 }
 
+int sortidents(ident** x, ident** y)
+{
+	return strcmp((*x)->name, (*y)->name);
+}
+
+
+void writeescapedstring(stream* f, const char* s)
+{
+	f->putchar('"');
+	for (; *s; s++) switch (*s)
+	{
+	case '\n': f->write("^n", 2); break;
+	case '\t': f->write("^t", 2); break;
+	case '\f': f->write("^f", 2); break;
+	case '"': f->write("^\"", 2); break;
+	case '^': f->write("^^", 2); break;
+	default: f->putchar(*s); break;
+	}
+	f->write("\"\0", 2);
+}
+
 ICOMMAND(escape, "s", (char *s), result(escapestring(s)));
 ICOMMAND(unescape, "s", (char *s),
 {
@@ -2273,8 +2294,6 @@ void writecfg(const char *name)
     stream *f = openutf8file(path(name && name[0] ? name : game::savedconfig(), true), "w");
     if(!f) return;
     f->printf("// automatically written on exit, DO NOT MODIFY\n// delete this file to have %s overwrite these settings\n// modify settings in game, or put settings in %s to override anything\n\n", game::defaultconfig(), game::autoexec());
-    game::writeclientinfo(f);
-    f->printf("\n");
     writecrosshairs(f);
     vector<ident *> ids;
     enumerate(idents, ident, id, ids.add(&id));

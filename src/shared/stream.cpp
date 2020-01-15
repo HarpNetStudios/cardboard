@@ -1202,6 +1202,25 @@ stream *opengzfile(const char *filename, const char *mode, stream *file, int lev
     return gz;
 }
 
+stream* opentargzfile(const char* filename, const char* tarfn, const char* mode, stream* file, int level) {
+	mtar_t tar;
+	mtar_header_t h;
+	stream* untar;
+
+	stream* unpacked = opengzfile(filename, mode, file, level);
+	if (!unpacked) return NULL;
+
+	tar.stream = &unpacked;
+
+	mtar_find(&tar, tarfn, &h);
+	untar = (stream*)calloc(1, h.size + 1);
+	mtar_read_data(&tar, untar, h.size);
+
+	mtar_close(&tar);
+
+	return untar;
+}
+
 stream *openutf8file(const char *filename, const char *mode, stream *file)
 {
     stream *source = file ? file : openfile(filename, mode);

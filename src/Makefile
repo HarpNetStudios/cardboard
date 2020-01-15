@@ -77,7 +77,7 @@ CLIENT_LIBS+= -lrt
 endif
 endif
 # commented out until i can get the .a file from my VM.
-#CLIENT_LIBS+= -lpthread lib/libdiscord-rpc.a
+CLIENT_LIBS+= -lpthread lib/libdiscord-rpc.a
 CLIENT_OBJS= \
 	shared/crypto.o \
 	shared/geom.o \
@@ -85,6 +85,7 @@ CLIENT_OBJS= \
 	shared/stream.o \
 	shared/tools.o \
 	shared/zip.o \
+	shared/microtar.o \
 	shared/cJSON/cJSON.o \
 	engine/3dgui.o \
 	engine/bih.o \
@@ -269,6 +270,7 @@ shared/tools.o: shared/iengine.h shared/igame.h
 shared/zip.o: shared/cube.h shared/tools.h shared/geom.h shared/ents.h
 shared/zip.o: shared/command.h shared/glexts.h shared/glemu.h
 shared/zip.o: shared/iengine.h shared/igame.h
+shared/microtar.o: shared/microtar.h
 shared/cJSON/cJSON.o: shared/cJSON/cJSON.h
 engine/3dgui.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/3dgui.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h

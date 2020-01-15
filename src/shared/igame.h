@@ -33,7 +33,6 @@ namespace game
     extern void gameconnect(bool _remote);
     extern bool allowedittoggle();
     extern void edittoggled(bool on);
-    extern void writeclientinfo(stream *f);
     extern void toserver(char *text);
     extern void changemap(const char *name);
     extern void forceedit(const char *name);

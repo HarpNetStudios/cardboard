@@ -52,14 +52,12 @@
   #endif
 #endif
 
-#ifndef CURLENABLED
-#define CURLENABLED
-#endif
+
 
 #ifdef WIN32
-#ifndef DISCORD
-#define DISCORD
-#endif
+	#ifndef DISCORD
+		#define DISCORD
+	#endif
 #endif
 
 #ifdef DISCORD
@@ -70,6 +68,7 @@
 #include <curl/curl.h>
 #include <cJSON/cJSON.h>
 #include <zlib.h>
+#include <microtar.h>
 
 #include "translate.h"
 
@@ -85,10 +84,6 @@
 
 #include "iengine.h"
 #include "igame.h"
-
-#ifndef CURLENABLED
-#define CURLENABLED
-#endif
 
 #endif
 

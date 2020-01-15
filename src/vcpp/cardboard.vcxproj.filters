@@ -181,6 +181,9 @@
     <ClCompile Include="..\engine\irc.cpp">
       <Filter>engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\shared\microtar.c">
+      <Filter>shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\command.h">
@@ -312,6 +315,9 @@
     <ClInclude Include="..\engine\irc.h">
       <Filter>engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared\microtar.h">
+      <Filter>shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="shared">
@@ -328,6 +334,12 @@
     </Filter>
     <Filter Include="config\lang">
       <UniqueIdentifier>{9e580865-6284-4b39-bbdb-ebc6058fa17f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="config\extra">
+      <UniqueIdentifier>{af0b6ad5-3059-4824-acf7-2352b7a9068e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="docs">
+      <UniqueIdentifier>{2a4b0ce2-2226-49a6-9c7d-e4a15c9311f3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -396,6 +408,31 @@
     </None>
     <None Include="..\..\packages\lang\fr_CA.cfg">
       <Filter>config\lang</Filter>
+    </None>
+    <None Include="..\..\data\extra\ao1edit.cfg">
+      <Filter>config\extra</Filter>
+    </None>
+    <None Include="..\..\docs\config.html">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="..\..\docs\editing.html">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="..\..\docs\editref.html">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="..\..\docs\game.html">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="..\..\docs\index.html">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="..\..\docs\models.html">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="..\Makefile" />
+    <None Include="..\..\launcher.json">
+      <Filter>config</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

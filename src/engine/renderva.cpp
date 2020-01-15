@@ -1256,8 +1256,6 @@ static void resetbatches()
     numbatches = 0;
 }
 
-VAR(dbg_disablelight, 0, 0, 1); // crude fix for loading sauer maps
-
 static void renderbatches(renderstate &cur, int pass)
 {
     cur.slot = NULL;
@@ -1289,7 +1287,7 @@ static void renderbatches(renderstate &cur, int pass)
             if(cur.texgendim != b.es.dim || (cur.texgendim <= 2 && cur.texgenvslot != &b.vslot)) changetexgen(cur, b.es.dim, *b.vslot.slot, b.vslot);
         }
         else if(cur.texgendim != b.es.dim) changetexgen(cur, b.es.dim, *b.vslot.slot, b.vslot);
-        if(pass == RENDERPASS_LIGHTMAP && !dbg_disablelight) changebatchtmus(cur, pass, b);
+        if(pass == RENDERPASS_LIGHTMAP) changebatchtmus(cur, pass, b);
 
         renderbatch(cur, pass, b);
     }

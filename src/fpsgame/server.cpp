@@ -126,6 +126,8 @@ namespace server
         }
     };
 
+	int gamemode = 0;
+
     struct gamestate : fpsstate
     {
         vec o;
@@ -152,7 +154,7 @@ namespace server
         void reset()
         {
             if(state!=CS_SPECTATOR) state = editstate = CS_DEAD;
-            maxhealth = 1000;
+            maxhealth = m_insta ? 1 : 1000;
             rockets.reset();
             grenades.reset();
 
@@ -403,7 +405,6 @@ namespace server
     #define MM_COOPSERV (MM_AUTOAPPROVE | MM_PUBSERV | (1<<MM_LOCKED))
 
     bool notgotitems = true;        // true when map has changed and waiting for clients to send item
-    int gamemode = 0;
     int gamemillis = 0, gamelimit = 0, nextexceeded = 0, gamespeed = 100;
     bool gamepaused = false, shouldstep = true;
 
@@ -836,11 +837,12 @@ namespace server
 
     bool delayspawn(int type)
     {
-        switch(type)
+		return false;
+        /*switch(type)
         {
             default:
                 return false;
-        }
+        }*/
     }
 
     bool pickup(int i, int sender)         // server side item pickup, acknowledge first client that gets it
@@ -1717,7 +1719,6 @@ namespace server
             putint(p, ci->clientnum);
             sendstring(ci->name, p);
             sendstring(ci->team, p);
-			sendstring(ci->tags, p);
             putint(p, ci->playermodel);
         }
     }
@@ -1844,6 +1845,7 @@ namespace server
                 putint(p, oi->state.state);
                 putint(p, oi->state.frags);
                 putint(p, oi->state.flags);
+				putint(p, 0); // quad
                 sendstate(oi->state, p);
             }
             putint(p, -1);
@@ -1868,8 +1870,8 @@ namespace server
     void sendresume(clientinfo *ci)
     {
         gamestate &gs = ci->state;
-        sendf(-1, 1, "ri3i8vi", N_RESUME, ci->clientnum,
-            gs.state, gs.frags, gs.flags,
+        sendf(-1, 1, "ri3i9vi", N_RESUME, ci->clientnum,
+            gs.state, gs.frags, gs.flags, 0,
             gs.lifesequence,
             gs.health, gs.maxhealth,
             gs.gunselect, GUN_GL-GUN_SMG+1, &gs.ammo[GUN_SMG], -1);
@@ -2384,8 +2386,8 @@ namespace server
                     loopv(sents) if(sents[i].spawntime > 0) // spawn entities when timer reached
                     {
                         int oldtime = sents[i].spawntime;
-                        sents[i].spawntime -= curtime;
-                        if(sents[i].spawntime<=0)
+						oldtime -= curtime;
+						if (oldtime <= 0)
                         {
                             sents[i].spawntime = 0;
                             sents[i].spawned = true;

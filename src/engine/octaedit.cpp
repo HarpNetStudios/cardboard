@@ -2412,6 +2412,13 @@ void edittex_(int *dir)
     edittex(texmru[curtexindex], false);
 }
 
+void settex(int* tex)
+{
+	if (noedit()) return;
+	filltexlist();
+	edittex(*tex, true);
+}
+
 void gettex()
 {
     if(noedit(true)) return;
@@ -2469,6 +2476,7 @@ ICOMMAND(numvslots, "", (), intret(vslots.length()));
 ICOMMAND(numslots, "", (), intret(slots.length()));
 COMMAND(getslottex, "i");
 ICOMMAND(texloaded, "i", (int* tex), intret(slots.inrange(*tex) && slots[*tex]->loaded ? 1 : 0));
+COMMAND(settex, "i");
 
 void replacetexcube(cube &c, int oldtex, int newtex)
 {
@@ -2779,7 +2787,7 @@ struct texturegui : g3d_callback
 
 			int guitextcolour = 0xFFFFFF;
 			g.pushlist();
-			defformatstring(ds, "Texture: %s", prev.sts[0].name);
+			defformatstring(ds, "Texture %d: %s", prev.index, prev.sts[0].name);
 			if (ds[60]) //shorten strings, to avoid a jittery interface
 			{
 				ds[60] = '\0';

@@ -2,9 +2,9 @@
 
 namespace game
 {
-	char* gametitle = "Project Crimson";
-	char* gamestage = "Alpha";
-	char* gameversion = "2.0";
+	char* gametitle = "Project Crimson"; // game name: are you dumb
+	char* gamestage = "Alpha"; // stage: alpha, beta, release, whatever
+	char* gameversion = "2.1.1"; // version: major.minor(.patch[.bugfix])
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
@@ -40,7 +40,7 @@ namespace game
 	{
 		if (!isconnected()) return;
 		if (!spacepackallowed) return;
-		else if (!m_edit) return;
+		//else if (!m_edit) return;
 		if (player1->state != CS_ALIVE && player1->state != CS_DEAD && player1->spacepack != true) return;
 		if (player1->state == CS_ALIVE) // only allow spacepack toggle when alive
 			player1->spacepack = !player1->spacepack;
@@ -285,7 +285,7 @@ namespace game
 				if (cmode) cmode->checkitems(player1);
 			}
 			#ifdef DISCORD
-				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING ), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
+				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
 			#endif
 		}
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
@@ -323,25 +323,29 @@ namespace game
             respawnself();
         }
     }
+	COMMAND(respawn, "");
 
     // inputs
+	VARP(attackspawn, 0, 1, 1);
 
     void doattack(bool on)
     {
         if(!connected || intermission) return;
-        if((player1->attacking = on)) respawn();
+        if((player1->attacking = on) && attackspawn) respawn();
     }
 
 	void dosecattack(bool on)
 	{
-		if (!connected || intermission) return;
-		if ((player1->secattacking = on)) respawn();
+		if(!connected || intermission) return;
+		if((player1->attacking = on) && attackspawn) respawn();
 	}
+
+	VARP(jumpspawn, 0, 1, 1);
 
     bool canjump()
     {
         if(!connected || intermission) return false;
-        respawn();
+        if(jumpspawn) respawn();
         return player1->state!=CS_DEAD;
     }
 
@@ -620,15 +624,23 @@ namespace game
 					tag = cJSON_GetObjectItemCaseSensitive(tagitm, "tag");
 					if (cJSON_IsString(tag) && (tag->valuestring != NULL))
 					{
-						//conoutf(CON_DEBUG, "tag is \"%s\"", tag->valuestring);
 						color = cJSON_GetObjectItemCaseSensitive(tagitm, "color");
-						if (cJSON_IsString(color) && (color->valuestring != NULL) && (strcmp(color->valuestring, "")))
+						if (strcmp(tag->valuestring, "")) 
 						{
-							//conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
-							concformatstring(conc, "\fs\f%s[%s] \fr", color->valuestring, tag->valuestring);
+							//conoutf(CON_DEBUG, "tag is \"%s\"", tag->valuestring);
+							if (cJSON_IsString(color) && (color->valuestring != NULL) && (strcmp(color->valuestring, "")))
+							{
+								//conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
+								concformatstring(conc, "\fs\f%s[%s] \fr", color->valuestring, tag->valuestring);
+							}
+							else {
+								concformatstring(conc, "[%s]", tag->valuestring);
+							}
 						}
-						else {
-							concformatstring(conc, "[%s]", tag->valuestring);
+						else if(cJSON_IsString(color) && (color->valuestring != NULL))
+						{
+							conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
+							concformatstring(conc, "\f%s", color->valuestring);
 						}
 					}
 				}
@@ -660,7 +672,7 @@ namespace game
 			d->deaths = 0;
 			d->totaldamage = 0;
 			d->totalshots = 0;
-			d->maxhealth = 1000;
+			d->maxhealth = m_insta ? 1 : 1000;
 			d->lifesequence = -1;
 			d->respawned = d->suicided = -2;
 		}
@@ -795,14 +807,15 @@ namespace game
         return false;
     }
 
-    const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
-    {
+	const char* colorname(fpsent* d, const char* name, const char* prefix, const char* suffix, const char* alt, bool tags)
+	{
         //if(!name) name = alt && d == player1 ? alt : d->name;
 		if (!name) name = d->name;
         bool dup = !name[0] || duplicatename(d, name, alt) || d->aitype != AI_NONE;
 		cidx = (cidx + 1) % 3;
-		if (d->aitype == AI_NONE && showtags) {
+		if (d->aitype == AI_NONE && showtags && tags) {
 			prefix = gettags(d);
+			if(prefix == NULL) prefix = "";
 		}
         if(dup || prefix[0] || suffix[0])
         {
@@ -829,7 +842,7 @@ namespace game
 
     const char *teamcolorname(fpsent *d, const char *alt)
     {
-        if(!teamcolortext || !m_teammode) return colorname(d, NULL, "", "", alt);
+        if(!teamcolortext || !m_teammode || d->state==CS_SPECTATOR) return colorname(d, NULL, "", "", alt);
         return colorname(d, NULL, !strcmp(d->team, "red") ? "\fs\f1" : "\fs\f3", "\fr", alt);
     }
 
@@ -1036,12 +1049,7 @@ namespace game
             draw_text("SPECTATOR", w*1800/h - tw - pw, 1650 - th - fh);
             if(f)
             {
-                int color = f->state!=CS_DEAD ? 0xFFFFFF : 0x606060;
-                if(f->privilege)
-                {
-                    color = f->privilege>=PRIV_ADMIN ? 0xFF8000 : 0x40FF80;
-                    if(f->state==CS_DEAD) color = (color>>1)&0x7F7F7F;
-                }
+				int color = statuscolor(f, 0xFFFFFF);
                 draw_text(colorname(f), w*1800/h - fw - pw, 1650 - fh, (color>>16)&0xFF, (color>>8)&0xFF, color&0xFF);
             }
         }

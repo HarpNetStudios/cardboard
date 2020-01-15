@@ -263,11 +263,6 @@ namespace game
         if(player1->state!=CS_SPECTATOR || player1->privilege || !remote) senditemstoserver = true;
     }
 
-    void writeclientinfo(stream *f)
-    {
-        f->printf("name %s\n", escapestring(player1->name));
-    }
-
 	VAR(allowedit, 0, 0, 1);
 
     bool allowedittoggle()
@@ -943,11 +938,13 @@ namespace game
             clientmap[0] = '\0';
         }
     }
+	VARP(teamcolorchat, 0, 1, 1);
+	const char *chatcolorname(fpsent *d) { return teamcolorchat ? teamcolorname(d, NULL) : colorname(d); }
 
-    void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", colorname(player1), text); addmsg(N_TEXT, "rcs", player1, text); }
+    void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(player1), text); addmsg(N_TEXT, "rcs", player1, text); }
     COMMANDN(say, toserver, "C");
 
-    void sayteam(char *text) { conoutf(CON_TEAMCHAT, "%s:\f1 %s", colorname(player1), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
+    void sayteam(char *text) { conoutf(CON_TEAMCHAT, "\fs\f9[team]\fr %s: \f9%s", chatcolorname(player1), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
     COMMAND(sayteam, "C");
 
     ICOMMAND(servcmd, "C", (char *cmd), addmsg(N_SERVCMD, "rs", cmd));
@@ -1251,6 +1248,7 @@ namespace game
             d->frags = getint(p);
             d->flags = getint(p);
             if(d==player1) getint(p);
+			getint(p); // yeah
         }
         d->lifesequence = getint(p);
         d->health = getint(p);
@@ -1352,7 +1350,7 @@ namespace game
                 if(isignored(d->clientnum)) break;
                 if(d->state!=CS_DEAD && d->state!=CS_SPECTATOR)
                     particle_textcopy(d->abovehead(), text, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
-                conoutf(CON_CHAT, "%s:\f0 %s", colorname(d), text);
+                conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(d), text);
                 break;
             }
 
@@ -1365,7 +1363,7 @@ namespace game
                 if(!t || isignored(t->clientnum)) break;
                 if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
                     particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
-                conoutf(CON_TEAMCHAT, "%s:\f1 %s", colorname(t), text);
+                conoutf(CON_TEAMCHAT, "\fs\f8[team]\fr %s: \f8%s", chatcolorname(t), text);
                 break;
             }
 
@@ -1420,7 +1418,6 @@ namespace game
                 {
                     getstring(text, p);
                     getstring(text, p);
-					getstring(text, p);
                     getint(p);
                     break;
                 }
@@ -1441,10 +1438,6 @@ namespace game
                 copystring(d->name, text, MAXNAMELEN+1);
                 getstring(text, p);
                 filtertext(d->team, text, false, false, MAXTEAMLEN);
-				getstring(text, p);
-				copystring(d->tags, text, MAXNAMELEN+1);
-				gettags(d); // causes lag on connect, figure out how to not cause lag
-				d->tagfetch = true;
                 d->playermodel = getint(p);
                 break;
             }

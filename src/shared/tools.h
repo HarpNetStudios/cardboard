@@ -35,12 +35,13 @@ typedef unsigned long long int ullong;
 
 void *operator new(size_t, bool);
 void *operator new[](size_t, bool);
+// might be causing problems 
 /*
 inline void *operator new(size_t, void *p) { return p; }
 inline void *operator new[](size_t, void *p) { return p; }
 inline void operator delete(void *, void *) {}
 inline void operator delete[](void *, void *) {}
-*/
+/**/
 
 #ifdef swap
 #undef swap
@@ -1364,6 +1365,7 @@ extern stream *openzipfile(const char *filename, const char *mode);
 extern stream *openfile(const char *filename, const char *mode);
 extern stream *opentempfile(const char *filename, const char *mode);
 extern stream *opengzfile(const char *filename, const char *mode, stream *file = NULL, int level = Z_BEST_COMPRESSION);
+extern stream* opentargzfile(const char* filename, const char* tarfn, const char* mode, stream* file = NULL, int level = Z_BEST_COMPRESSION);
 extern stream *openutf8file(const char *filename, const char *mode, stream *file = NULL);
 extern char *loadfile(const char *fn, size_t *size, bool utf8 = true);
 extern bool listdir(const char *dir, bool rel, const char *ext, vector<char *> &files);
@@ -1402,6 +1404,8 @@ struct ipmask
 };
 
 extern char* pmodeltoname(int model);
+
+extern oldstring gametoken;
     
 #endif
 

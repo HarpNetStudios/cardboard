@@ -1698,13 +1698,13 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 
     else if(pl->physstate >= PHYS_SLOPE || water)
     {
-        if(water && !pl->inwater) pl->vel.div(8);
+        if(water && !pl->inwater) pl->vel.div(4);
         if(pl->jumping && allowmove)
         {
             pl->jumping = false;
 
             pl->vel.z = max(pl->vel.z, JUMPVEL); // physics impulse upwards
-            if(water) { pl->vel.x /= 8.0f; pl->vel.y /= 8.0f; } // dampen velocity change even harder, gives correct water feel
+            if(water) { pl->vel.x /= 4.0f; pl->vel.y /= 4.0f; } // dampen velocity change even harder, gives correct water feel
 
 			pl->jumpstate = 1;
 
@@ -1716,7 +1716,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 		if (pl->jumping) {
 			pl->falling.z = 0; // set back gravity to 0, so you can jump again
 			pl->vel.z = max(pl->vel.z, pl->vel.z + (JUMPVEL / 2)); // physics impulse upwards
-			if (water) { pl->vel.x /= 16.0f; pl->vel.y /= 16.0f; } // dampen velocity change even harder, gives correct water feel
+			if (water) { pl->vel.x /= 8.0f; pl->vel.y /= 8.0f; } // dampen velocity change even harder, gives correct water feel
 
 			pl->jumpstate = 2;
 
@@ -1755,6 +1755,8 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 
     vec d(m);
     d.mul(pl->maxspeed); // TODO: joystick analog movement speed 
+	int meleespeed = 10; // percentage multiplier of melee weapon movement speed
+	if(pl->candouble) d.mul(1 + (meleespeed/100.0f));
     if(pl->type==ENT_PLAYER)
     {
         if(floating)

@@ -1,0 +1,4 @@
+# Ignore things we don't care about.
+
+obj/
+bin/

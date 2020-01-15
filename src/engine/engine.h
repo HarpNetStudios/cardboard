@@ -93,6 +93,7 @@ extern void compactvslots(cube *c, int n = 8);
 extern void compactvslot(int &index);
 extern void compactvslot(VSlot &vs);
 extern int compactvslots();
+extern const char* textypename(int i);
 extern void reloadtextures();
 extern void cleanuptextures();
 
@@ -458,7 +459,7 @@ extern void pushevent(const SDL_Event &e);
 extern bool interceptkey(int sym);
 
 extern float loadprogress;
-extern void renderbackground(const char *caption = NULL, Texture *mapshot = NULL, const char *mapname = NULL, const char *mapinfo = NULL, bool restore = false, bool force = false);
+extern void renderbackground(const char *caption = NULL, Texture *mapshot = NULL, const char *mapname = NULL, const char *mapinfo = NULL, bool restore = false, bool force = false, bool splash = false);
 extern void renderprogress(float bar, const char *text, GLuint tex = 0, bool background = false);
 
 extern void getfps(int &fps, int &bestdiff, int &worstdiff);
@@ -573,6 +574,7 @@ extern void clearmainmenu();
 extern void g3d_mainmenu();
 
 // sound
+extern void writemapsounds(stream* f);
 extern void clearmapsounds();
 extern void checkmapsounds();
 extern void updatesounds();

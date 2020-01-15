@@ -820,13 +820,15 @@ void rendermaterials()
                     {
                         if(!depth) { glDepthMask(GL_TRUE); depth = true; }
                         if(blended) { glDisable(GL_BLEND); blended = false; }
-                        float t = lastmillis/2000.0f;
+                        /*float t = lastmillis/2000.0f;
                         t -= floor(t);
                         t = 1.0f - 2*fabs(t-0.5f);
                         extern int glare;
                         if(glare) t = 0.625f + 0.075f*t;
                         else t = 0.5f + 0.5f*t;
-                        gle::colorf(t, t, t);
+                        gle::colorf(t, t, t);*/
+						bvec lfcol = getlavacolor(m.material); // colorful lava -Y
+						gle::color(lfcol, 192);
                         if(glaring) SETSHADER(lavaglare); else SETSHADER(lava);
                         fogtype = 1;
                     }

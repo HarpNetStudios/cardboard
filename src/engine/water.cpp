@@ -250,10 +250,10 @@ GETMATIDXVAR(water, fog, int)
 GETMATIDXVAR(water, spec, int)
 
 #define LAVAVARS(name) \
-    bvec name##color(0xFF, 0x40, 0x00); \
-    HVARFR(name##colour, 0, 0xFF4000, 0xFFFFFF, \
+    bvec name##color(0xFF, 0x8A, 0x00); \
+    HVARFR(name##colour, 0, 0xFF8A00, 0xFFFFFF, \
     { \
-        if(!name##colour) name##colour = 0xFF4000; \
+        if(!name##colour) name##colour = 0xFF8A00; \
         name##color = bvec((name##colour>>16)&0xFF, (name##colour>>8)&0xFF, name##colour&0xFF); \
     }); \
     VARR(name##fog, 0, 50, 10000);

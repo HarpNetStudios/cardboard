@@ -838,7 +838,7 @@ struct gui : g3d_gui
     static const int skinx[], skiny[];
     static const struct patch { ushort left, right, top, bottom; uchar flags; } patches[];
 
-    static void drawskin(int x, int y, int gapw, int gaph, int start, int n, int passes = 1, const vec &light = vec(1, 1, 1), float alpha = 0.80f)//int vleft, int vright, int vtop, int vbottom, int start, int n)
+    static void drawskin(int x, int y, int gapw, int gaph, int start, int n, int passes = 1, const vec &light = vec(1, 1, 1), float alpha = 0.8f)//int vleft, int vright, int vtop, int vbottom, int start, int n)
     {
         if(!skintex) skintex = textureload("data/guiskin.png", 3);
         glBindTexture(GL_TEXTURE_2D, skintex->id);

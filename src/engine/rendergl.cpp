@@ -754,6 +754,7 @@ VARF(zoom, -1, 0, 1,
 
 void disablezoom()
 {
+	//conoutf(CON_DEBUG, "DEBUG: disabled zoom");
     zoom = 0;
 	zoommillis = totalmillis;
 }

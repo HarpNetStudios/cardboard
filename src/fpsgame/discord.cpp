@@ -62,7 +62,36 @@ namespace discord
 					discordPresence.startTimestamp = 0;
 					discordPresence.endTimestamp = 0;
 				}
-				discordPresence.largeImageKey = game::getclientmap();
+				//discordPresence.largeImageKey = game::getclientmap();
+
+				char* x[] = { // all maps with discord rpc keys
+					"color",
+					"flux",
+					"fz_burn",
+					"highland",
+					"hr",
+					"illusion",
+					"maze",
+					"neo_falls",
+					"neo_noir",
+					"retrograde",
+					"ruins",
+					"secondevermap",
+					"zigguraut",
+					"zsolttest",
+				};
+				const char* s = game::getclientmap();
+				const char* fin = "logo-large";
+				int len = sizeof(x) / sizeof(x[0]);
+				int i;
+
+				for (i = 0; i < len; ++i)
+				{
+					if (!strcmp(x[i], s)) fin = game::getclientmap();
+				}
+
+				discordPresence.largeImageKey = fin;
+
 				discordPresence.largeImageText = game::getclientmap();
 				if (address) {
 					if (enet_address_get_host_ip(address, partykey, sizeof(partykey)) >= 0)

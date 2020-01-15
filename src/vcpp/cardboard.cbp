@@ -12,7 +12,7 @@
 				<Option object_output="../../.trash/.objs/client64" />
 				<Option type="0" />
 				<Option compiler="gcc" />
-				<Option parameters="-t0 -w640 -h480 -qhome" />
+				<Option parameters="-t0 -w640 -h480 -qhome -caaa" />
 				<Compiler>
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-O3" />
@@ -59,7 +59,7 @@
 				<Option object_output="../../.trash/.objs/client32" />
 				<Option type="0" />
 				<Option compiler="gcc" />
-				<Option parameters="-t0 -w640 -h480 -qhome" />
+				<Option parameters="-t0 -w640 -h480 -qhome -caaa" />
 				<Compiler>
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-O2" />
@@ -219,6 +219,10 @@
 		<Unit filename="../shared/glexts.h" />
 		<Unit filename="../shared/iengine.h" />
 		<Unit filename="../shared/igame.h" />
+		<Unit filename="../shared/microtar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../shared/microtar.h" />
 		<Unit filename="../shared/stream.cpp" />
 		<Unit filename="../shared/tools.cpp" />
 		<Unit filename="../shared/tools.h" />

@@ -3,6 +3,7 @@
 *.lo
 *.o
 *.obj
+!/packages/
 
 # Executables
 *.exe
@@ -23,3 +24,5 @@
 *.map
 *.ilk
 *.exp
+
+*msvc.lib

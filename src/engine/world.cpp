@@ -655,6 +655,8 @@ void renderentradius(extentity &e, bool color)
 
         case ET_ENVMAP:
         {
+			e.type = ET_EMPTY;
+			break;
             extern int envmapradius;
             if(color) gle::colorf(0, 1, 1);
             renderentsphere(e, e.attr1 ? max(0, min(10000, int(e.attr1))) : envmapradius);
