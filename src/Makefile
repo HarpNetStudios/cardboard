@@ -154,6 +154,7 @@ SERVER_OBJS= \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
 	shared/cJSON/cJSON.o \
+	shared/microtar.o \
 	engine/command-standalone.o \
 	engine/server-standalone.o \
 	engine/worldio-standalone.o \
@@ -165,6 +166,7 @@ MASTER_OBJS= \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
 	shared/cJSON/cJSON.o \
+	shared/microtar.o \
 	engine/command-standalone.o \
 	engine/master-standalone.o
 
