@@ -163,9 +163,6 @@
     <ClCompile Include="..\fpsgame\weapon.cpp">
       <Filter>fpsgame</Filter>
     </ClCompile>
-    <ClCompile Include="..\fpsgame\discord.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
     <ClCompile Include="..\shared\cJSON\cJSON.c">
       <Filter>shared</Filter>
     </ClCompile>
@@ -178,11 +175,53 @@
     <ClCompile Include="..\engine\joy.cpp">
       <Filter>engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\irc.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\shared\microtar.c">
       <Filter>shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\achievement_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\activity_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\application_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\core.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\image_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\lobby_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\network_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\overlay_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\relationship_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\storage_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\store_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\types.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\user_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\discord\voice_manager.cpp">
+      <Filter>shared\discord</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fpsgame\discord.cpp">
+      <Filter>fpsgame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -312,11 +351,65 @@
     <ClInclude Include="..\engine\translate.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\engine\irc.h">
-      <Filter>engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\microtar.h">
       <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord_game_sdk.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\achievement_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\activity_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\application_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\core.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\discord.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\discord_game_sdk.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\event.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\ffi.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\image_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\lobby_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\network_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\overlay_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\relationship_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\storage_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\store_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\types.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\user_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\voice_manager.h">
+      <Filter>shared\discord</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -340,6 +433,9 @@
     </Filter>
     <Filter Include="docs">
       <UniqueIdentifier>{2a4b0ce2-2226-49a6-9c7d-e4a15c9311f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared\discord">
+      <UniqueIdentifier>{4046b8b6-ab84-460e-bf7d-f194a6aa64d2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

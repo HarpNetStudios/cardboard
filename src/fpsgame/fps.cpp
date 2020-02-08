@@ -267,6 +267,9 @@ namespace game
         gets2c();
 		if (connected)
 		{
+			#ifdef DISCORD
+				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode - STARTGAMEMODE].name, player1);
+			#endif
 			if (player1->state == CS_DEAD)
 			{
 				if (player1->ragdoll) moveragdoll(player1);
@@ -284,9 +287,6 @@ namespace game
 				entities::checkitems(player1);
 				if (cmode) cmode->checkitems(player1);
 			}
-			#ifdef DISCORD
-				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode - STARTGAMEMODE].name, player1->name, player1->playermodel);
-			#endif
 		}
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }
@@ -483,6 +483,9 @@ namespace game
 		}
 		deathstate(d);
 		ai::killed(d, actor);
+		#ifdef DISCORD // this updates every time anyone gets a kill, shouldn't be an issue.
+			discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode - STARTGAMEMODE].name, player1, true);
+		#endif
     }
 
     void timeupdate(int secs)

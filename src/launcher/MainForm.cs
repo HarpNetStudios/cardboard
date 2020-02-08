@@ -16,6 +16,8 @@ namespace CardboardLauncher
 
         public const int launcherVersion = 2;
 
+        private int gameId = 1; // Project Crimson
+
         private bool drag = false; // determine if we should be moving the form
         private Point startPoint = new Point(0, 0); // also for the moving
 
@@ -54,7 +56,7 @@ namespace CardboardLauncher
             bool success = false;
             try
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://harpnetstudios.com/hnid/api/v1/game/get/userinfo?id=1&token=" + token);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://harpnetstudios.com/hnid/api/v1/game/get/userinfo?id=" + gameId + "&token=" + token);
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 string content = new StreamReader(response.GetResponseStream()).ReadToEnd();
                 UserInfo info = JsonConvert.DeserializeObject<UserInfo>(content);
@@ -96,13 +98,19 @@ namespace CardboardLauncher
             public string username;
         }
 
-        public mainForm()
+        private mainForm()
         {
             InitializeComponent();
 
             webWarn.Location = new Point(206, 34);
 
             webLauncher.Document.BackColor = this.BackColor;
+            #if DEBUG
+                webLauncher.ScriptErrorsSuppressed = false;
+            #else
+                webLauncher.ScriptErrorsSuppressed = true;
+            #endif
+
             LoadConfig();
             GrabInfo(config.gameToken);
             if (config.homeDir == "") config.homeDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Project Crimson Alpha");
@@ -140,6 +148,16 @@ namespace CardboardLauncher
                 }
             } 
             DisplayMessage("Error setting game token", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        public bool isTokenSet()
+        {
+            return config.gameToken != "";
+        }
+
+        public bool checkToken(string token)
+        {
+            return config.gameToken == token;
         }
 
         private void archGroup_Layout(object sender, LayoutEventArgs e)

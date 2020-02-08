@@ -20,6 +20,8 @@
 // include C++ standard libs here
 
 #include <string>
+#include <thread>
+#include <mutex>
 
 #ifdef WIN32
   #define WIN32_LEAN_AND_MEAN
@@ -61,7 +63,8 @@
 #endif
 
 #ifdef DISCORD
-#include <discord_rpc.h>
+#include <discord_game_sdk.h>
+#include <discord.h>
 #endif
 
 #include <enet/enet.h>

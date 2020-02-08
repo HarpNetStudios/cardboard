@@ -591,15 +591,15 @@ extern void g3d_limitscale(float scale);
 // discord
 namespace discord
 {
-	extern void updatePresence(int gamestate = 0, const char* modename = NULL, oldstring playername = NULL, int playermodel = -1);
+	extern void updatePresence(int gamestate, const char* modename = "", physent* d = (physent*)NULL, bool force = false); // if this works, i'll be upset
 	extern void initDiscord();
+	extern void discordCallbacks();
 
 	enum gamestates
 	{
 		D_MENU = 0,
 		D_PLAYING,
 		D_SPECTATE,
-		D_QUITTING,
 	};
 }
 #endif

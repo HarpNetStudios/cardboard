@@ -76,7 +76,7 @@ ifneq (,$(findstring GNU,$(PLATFORM)))
 CLIENT_LIBS+= -lrt
 endif
 endif
-# commented out until i can get the .a file from my VM.
+
 CLIENT_LIBS+= -lpthread lib/libdiscord-rpc.a
 CLIENT_OBJS= \
 	shared/crypto.o \
@@ -98,7 +98,6 @@ CLIENT_OBJS= \
 	engine/dynlight.o \
 	engine/glare.o \
 	engine/grass.o \
-	engine/irc.o \
 	engine/lightmap.o \
 	engine/main.o \
 	engine/material.o \
@@ -327,10 +326,6 @@ engine/grass.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/grass.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/grass.o: engine/lightmap.h engine/bih.h engine/texture.h
 engine/grass.o: engine/model.h
-engine/irc.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
-engine/irc.o: shared/ents.h shared/command.h shared/iengine.h shared/igame.h
-engine/irc.o: engine/world.h engine/octa.h engine/lightmap.h engine/bih.h
-engine/irc.o: engine/texture.h engine/model.h
 engine/lightmap.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/lightmap.o: shared/ents.h shared/command.h shared/glexts.h
 engine/lightmap.o: shared/glemu.h shared/iengine.h shared/igame.h

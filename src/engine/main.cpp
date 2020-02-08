@@ -25,10 +25,6 @@ void cleanup()
     #ifdef __APPLE__
         if(screen) SDL_SetWindowFullscreen(screen, 0);
     #endif
-	#ifdef DISCORD
-		discord::updatePresence(discord::D_QUITTING);
-		Discord_Shutdown();
-	#endif
     SDL_Quit();
 }
 
@@ -36,10 +32,6 @@ extern void writeinitcfg();
 
 void quit()                     // normal exit
 {
-	#ifdef DISCORD
-		discord::updatePresence(discord::D_QUITTING);
-		Discord_Shutdown();
-	#endif
     writeinitcfg();
     writeservercfg();
     abortconnect();
@@ -76,9 +68,6 @@ void fatal(const char *s, ...)    // failure exit
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Cardboard Engine fatal error", msg, NULL);
         }
     }
-	#ifdef DISCORD
-		Discord_Shutdown();
-	#endif
     exit(EXIT_FAILURE);
 }
 
@@ -1452,7 +1441,7 @@ void getuserinfo_(bool debug) {
 		return; 
 	}
 	if (debug) conoutf(CON_DEBUG, thing);
-	cJSON *json = cJSON_Parse(thing); // fix on linux, makefile doesn't work.
+	cJSON *json = cJSON_Parse(thing);
 
 	// error handling
 	const cJSON* status = cJSON_GetObjectItemCaseSensitive(json, "status");
@@ -1771,7 +1760,6 @@ int main(int argc, char **argv)
         checksleep(lastmillis);
 
         serverslice(false, 0);
-		ircslice();
 
         if(frames) updatefpshistory(elapsedtime);
         frames++;
@@ -1794,6 +1782,7 @@ int main(int argc, char **argv)
 		//gl_drawframe();
         swapbuffers();
         renderedframe = inbetweenframes = true;
+		discord::discordCallbacks();
     }
 
     ASSERT(0);
