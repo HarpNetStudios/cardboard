@@ -34,10 +34,18 @@ namespace CardboardLauncher
 
         private void LoadConfig()
         {
-            using (StreamReader r = new StreamReader("launcher.json"))
+            try
             {
-                string json = r.ReadToEnd();
-                config = JsonConvert.DeserializeObject<Config>(json);
+                using (StreamReader r = new StreamReader("launcher.json"))
+                {
+                    string json = r.ReadToEnd();
+                    config = JsonConvert.DeserializeObject<Config>(json);
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show("Config file is missing!");
+                System.Environment.Exit(1);
             }
         }
 
@@ -98,7 +106,7 @@ namespace CardboardLauncher
             public string username;
         }
 
-        private mainForm()
+        public mainForm()
         {
             InitializeComponent();
 
