@@ -10,7 +10,9 @@ namespace joystick
 		AXIS_X = 0, // left/right lean
 		AXIS_Y, // forward/back lean
 		AXIS_ZX, // X but second stick
-		AXIS_ZY // Y but second stick
+		AXIS_ZY, // Y but second stick
+		AXIS_TRIG_L, // triggers for XInput
+		AXIS_TRIG_R  //
 	};
 
 	const float axismax = 32767.5f;
@@ -91,33 +93,40 @@ namespace joystick
         }
     }
 
+	VARP(joydeadzone, 0, 8000, axismax);
+
 	float axis(const int value)
 	{
-		const float scaled = -value / axismax;
+		int val = value;
+		if ((val > -joydeadzone ) && (val < joydeadzone)) val = 0;
+		const float scaled = -val / axismax;
 		//conoutf(CON_DEBUG, "axis: %f (%f)", scaled, value);
 		return scaled;
 	}
+
+	VARP(joydebug, 0, 0, 1);
 
     void handleaxis(const SDL_JoyAxisEvent &e)
     {
 		switch (e.axis)
 		{
-		case AXIS_X:
-			player->fstrafe = clamp(axis(e.value), -1.0f, 1.0f);
-			//conoutf("fstrafe: %f", player->fstrafe);
-			break;
-		case AXIS_Y:
-			player->fmove = clamp(axis(e.value), -1.0f, 1.0f);
-			//conoutf("fmove: %f", player->fmove);
-			break;
-
-		// shit's fucked, fix and figure it out later -Y
-		case AXIS_ZX:
-			//joymove(-clamp(axis(e.value), -10.0f, 10.0f), 0);
-			break;
-		case AXIS_ZY:
-			//joymove(0, -clamp(axis(e.value), -10.0f, 10.0f));
-			break;
+			case AXIS_X:
+				player->fstrafe = axis(e.value);
+				if(joydebug) conoutf("fstrafe: %f", player->fstrafe);
+				break;
+			case AXIS_Y:
+				player->fmove = axis(e.value);
+				if (joydebug) conoutf("fmove: %f", player->fmove);
+				break;
+			case AXIS_ZX:
+				player->camx = -axis(e.value);
+				if (joydebug) conoutf("axis ZX: %f", player->camx);
+				break;
+			case AXIS_ZY:
+				player->camy = -axis(e.value);
+				if (joydebug) conoutf("axis ZY: %f", player->camy);
+				break;
+				
 		}
     }
 
@@ -170,15 +179,15 @@ namespace joystick
     {
         switch (e.type)
         {
-        case SDL_JOYAXISMOTION:
-            handleaxis(e.jaxis);
-            break;
-        case SDL_JOYBUTTONDOWN:
-        case SDL_JOYBUTTONUP:
-			handlebutton(e.jbutton);
-            break;
-		case SDL_JOYHATMOTION:
-			handlehat(e.jhat);
+			case SDL_JOYAXISMOTION:
+				handleaxis(e.jaxis);
+				break;
+			case SDL_JOYBUTTONDOWN:
+			case SDL_JOYBUTTONUP:
+				handlebutton(e.jbutton);
+				break;
+			case SDL_JOYHATMOTION:
+				handlehat(e.jhat);
         }
     }
 

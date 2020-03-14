@@ -814,11 +814,12 @@ void writemapcfg(const char* a)
 	loopv(ids)
 	{
 		ident& id = *ids[i];
-		if (!(id.flags & IDF_OVERRIDDEN) || id.flags & IDF_READONLY) continue; switch (id.type)
+		if (!(id.flags & IDF_OVERRIDDEN) || id.flags & IDF_READONLY) continue;
+		switch (id.type)
 		{
-		case ID_VAR: f->printf(id.flags & IDF_HEX ? "//%s 0x%.6X\n" : "//%s %d\n", id.name, *id.storage.i); break;
-		case ID_FVAR: f->printf("//%s %s\n", id.name, floatstr(*id.storage.f)); break;
-		case ID_SVAR: f->printf("//%s ", id.name); writeescapedstring(f, *id.storage.s); f->putchar('\n'); break;
+			case ID_VAR: f->printf(id.flags & IDF_HEX ? "//%s 0x%.6X\n" : "//%s %d\n", id.name, *id.storage.i); break;
+			case ID_FVAR: f->printf("//%s %s\n", id.name, floatstr(*id.storage.f)); break;
+			case ID_SVAR: f->printf("//%s ", id.name); writeescapedstring(f, *id.storage.s); f->putchar('\n'); break;
 		}
 	}
 

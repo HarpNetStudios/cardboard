@@ -18,11 +18,11 @@ void loadsky(const char *basename, Texture *texs[6])
         }
         else
         {
-            defformatstring(ext, "_%s.jpg", side);
+            defformatstring(ext, "_%s.png", side);
             concatstring(name, ext);
             if((texs[i] = textureload(name, 3, true, false))==notexture)
             {
-                strcpy(name+strlen(name)-3, "png");
+                strcpy(name+strlen(name)-3, "jpg");
                 texs[i] = textureload(name, 3, true, false);
             }
         }
@@ -41,10 +41,10 @@ Texture *loadskyoverlay(const char *basename)
     if(ext) t = textureload(name, 0, true, false);
     else
     {
-        concatstring(name, ".jpg");
+        concatstring(name, ".png");
         if((t = textureload(name, 0, true, false)) == notexture)
         {
-            strcpy(name+strlen(name)-3, "png");
+            strcpy(name+strlen(name)-3, "jpg");
             t = textureload(name, 0, true, false);
         }
     }

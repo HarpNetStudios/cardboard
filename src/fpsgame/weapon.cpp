@@ -558,15 +558,14 @@ namespace game
 		return false;
 	}
 
-    bool projdamage(dynent *o, projectile &p, vec &v, int qdam, bool &headshot)
+    bool projdamage(dynent *o, projectile &p, vec &v, int qdam)
     {
         if(o->state!=CS_ALIVE) return false;
         if(!intersect(o, p.o, v)) return false;
         projsplash(p, v, o, qdam);
         vec dir;
-		headshot = isheadshot(o, p.o, v);
         projdist(o, dir, v);
-        hit(qdam, o, p.owner, dir, p.gun, 0, headshot);
+        hit(qdam, o, p.owner, dir, p.gun, 0);
         return true;
     }
 
@@ -593,7 +592,7 @@ namespace game
                 {
                     dynent *o = iterdynents(j);
                     if(p.owner==o || o->o.reject(bo, o->radius + br)) continue;
-                    if(projdamage(o, p, v, qdam, headshot)) { exploded = true; break; }
+                    if(projdamage(o, p, v, qdam)) { exploded = true; break; }
                 }
             }
             if(!exploded)

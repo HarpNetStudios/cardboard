@@ -250,7 +250,7 @@ extern int spacepackallowed;
 extern void fatal(const char *s, ...) PRINTFARGS(1, 2);
 extern char *web_get(char *targetUrl, bool debug);
 extern int offline;
-extern void getuserinfo_(bool debug);
+extern void getuserinfo_(bool debug, bool first = false);
 extern void resetgl();
 
 // rendertext
@@ -594,6 +594,7 @@ namespace discord
 	extern void updatePresence(int gamestate, const char* modename = "", physent* d = (physent*)NULL, bool force = false); // if this works, i'll be upset
 	extern void initDiscord();
 	extern void discordCallbacks();
+	extern bool connected();
 
 	enum gamestates
 	{

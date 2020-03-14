@@ -8,7 +8,6 @@
 
 static vec menupos;
 static int menustart = 0;
-static int menutab = 1;
 static g3d_gui *cgui = NULL;
 
 struct menu : g3d_callback
@@ -17,7 +16,9 @@ struct menu : g3d_callback
     uint *contents, *init, *onclear;
     bool showtab;
 
-    menu() : name(NULL), header(NULL), contents(NULL), init(NULL), onclear(NULL), showtab(true) {}
+	int menutab;
+	
+	menu() : name(NULL), header(NULL), contents(NULL), init(NULL), onclear(NULL), showtab(true), menutab(1) {}
 
     void gui(g3d_gui &g, bool firstpass)
     {
@@ -149,7 +150,7 @@ void pushgui(menu *m, int pos = -1)
     else guistack.insert(pos, m);
     if(pos < 0 || pos==guistack.length()-1)
     {
-        menutab = 1;
+        m->menutab = 1;
         menustart = totalmillis;
     }
     if(m->init) execute(m->init);
@@ -159,7 +160,6 @@ void restoregui(int pos)
 {
     int clear = guistack.length()-pos-1;
     loopi(clear) popgui();
-    menutab = 1;
     menustart = totalmillis;
 }
 

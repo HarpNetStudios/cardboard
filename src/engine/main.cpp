@@ -116,10 +116,13 @@ void writeinitcfg()
     f->printf("scr_h %d\n", scr_h);
     f->printf("depthbits %d\n", depthbits);
     f->printf("fsaa %d\n", fsaa);
-    extern int soundchans, soundfreq, soundbufferlen;
+	extern int usesound, soundchans, soundfreq, soundbufferlen;
+	extern char* audiodriver;
+	f->printf("usesound %d\n", usesound);
     f->printf("soundchans %d\n", soundchans);
     f->printf("soundfreq %d\n", soundfreq);
     f->printf("soundbufferlen %d\n", soundbufferlen);
+	if (audiodriver[0]) f->printf("audiodriver %s\n", escapestring(audiodriver));
     delete f;
 }
 
@@ -177,8 +180,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 {
     if(!inbetweenframes && !force) return;
 
-	if(splash) playsound(S_KILLBONUS);  // sound for splash screen
-	else if(!restore || force) stopsounds(); // stop sounds while loading
+	if(!restore || force || !splash) stopsounds(); // stop sounds while loading
 
     int w = screenw, h = screenh;
     if(forceaspect) w = int(ceil(h*forceaspect));
@@ -228,12 +230,19 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 				bgquad(lx, ly, lw, lh);
 			}
 		
-			/*engine badge*/
-			float badgeh = 0.12f*min(w, h), badgew = badgeh*2.00,
-				  badgex = 0.01f*(w - badgew), badgey = 2.2f*(h*0.5f - badgeh);
+			/*cardboard badge*/
+			float badgeh = 0.12f*min(w, h), badgew = badgeh, badgex = 20, badgey = (h - badgeh - 20);
 			if(!splash)
 			{
-				settexture("data/cube2badge.png", 3);
+				settexture("data/cardboard.png", 3);
+				bgquad(badgex, badgey, badgew, badgeh);
+			}
+
+			/*cube 2 badge*/
+			badgex = (w - badgew - 20);
+			if (!splash && mainmenu)
+			{
+				settexture("data/cube.png", 3);
 				bgquad(badgex, badgey, badgew, badgeh);
 			}
 		}
@@ -260,58 +269,14 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         if(mapshot || mapname)
         {
             int infowidth = 12*FONTH;
-			float sz = 0.35f * min(w, h);//, msz = (0.75f * min(w, h) - sz) / (infowidth + FONTH), x = 0.5f*(w-sz), y = ly+lh - sz/15;
-			//float sz = 0.5f * min(w, h), msz = (0.75f * min(w, h) - sz) / (infowidth + FONTH), x = 0.5f * (w - sz), y = ly + lh - sz / 15;
+			float sz = 0.35f * min(w, h);
             if(mapinfo)
             {
                 int mw, mh;
                 text_bounds(mapinfo, mw, mh, infowidth);
-                //x -= 0.5f*(mw*msz + FONTH*msz);
-            }
-            if(mapshot && mapshot!=notexture)
-            {
-                glBindTexture(GL_TEXTURE_2D, mapshot->id);
-                //bgquad(x, y, sz, sz);
-				bgquad(0, h/10, w, h-(h/10));
-            }
-            /*else
-            {
-                int qw, qh;
-                text_bounds("?", qw, qh);
-                float qsz = sz*0.5f/max(qw, qh);
-                pushhudmatrix();
-                hudmatrix.translate(x + 0.5f*(sz - qw*qsz), y + 0.5f*(sz - qh*qsz), 0);
-                hudmatrix.scale(qsz, qsz, 1);
-                flushhudmatrix();
-                draw_text("?", 0, 0);
-                pophudmatrix();
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            }*/
-            //settexture("data/mapshot_frame.png", 3);
-            //bgquad(x, y, sz, sz);
-            if(mapname)
-            {
-                int tw = text_width(mapname);
-                /*float tsz = sz/(8*FONTH),
-                      tx = 0.9f*sz - tw*tsz, ty = 0.9f*sz - FONTH*tsz;
-				if(tx < 0.1f*sz) { tsz = 0.1f*sz/tw; tx = 0.1f; }*/
-				float tsz = sz / (7 * FONTH),
-					tx = (0.5f * w) - (tw/2),// - tw * tsz, 
-					ty = 0.275f * sz - FONTH * tsz;
-                //tsz = 0.1f*sz/tw; tx = 0.1f;
-                pushhudmatrix();
-                //hudmatrix.translate(x+tx, y+ty, 0);
-				hudmatrix.translate(tx, ty, 0);
-                hudmatrix.scale(tsz, tsz, 1);
-                flushhudmatrix();
-                draw_text(mapname, 0, 0, 0xFF, 0x24, 0x00);
-                pophudmatrix();
-            }
-            if(mapinfo)
-            {
 				int tw = text_width(mapinfo);
 				float tsz = sz / (8 * FONTH),
-					tx = (0.5f * w) - (tw / 2),
+					tx = (w / 2) - (mw / 4),
 					ty = 0.125f * sz - FONTH * tsz;
 				pushhudmatrix();
 				//hudmatrix.translate(x+sz+FONTH*msz, y, 0);
@@ -322,12 +287,33 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 				draw_text(mapinfo, 0, 0, 0xFF, 0xFF, 0xFF);
 				pophudmatrix();
             }
+            if(mapshot && mapshot!=notexture)
+            {
+                glBindTexture(GL_TEXTURE_2D, mapshot->id);
+				bgquad(0, h/10, w, h-(h/10));
+            }
+            if(mapname)
+            {
+                int tw = text_width(mapname);
+				float tsz = sz / (7 * FONTH),
+					//tx = (0.5f * w) - (tw/2),
+					tx = (w/2) - (tw/2),
+					ty = 0.275f * sz - FONTH * tsz;
+                pushhudmatrix();
+				hudmatrix.translate(tx, ty, 0);
+                hudmatrix.scale(tsz, tsz, 1);
+                flushhudmatrix();
+                draw_text(mapname, 0, 0, 0xFF, 0x24, 0x00);
+                pophudmatrix();
+            }
         }
         glDisable(GL_BLEND);
         if(!restore) swapbuffers(false);
     }
 
     if(!restore) setbackgroundinfo(caption, mapshot, mapname, mapinfo);
+
+	if(splash) playsound(S_KILLBONUS);  // sound for splash screen
 }
 
 VAR(progressbackground, 0, 0, 1);
@@ -588,7 +574,8 @@ VARFNP(gamma, reqgamma, 30, 100, 300,
 
 void restoregamma()
 {
-    if(initing || curgamma == 100) return;
+	if (initing || reqgamma == 100) return;
+	curgamma = reqgamma;
     setgamma(curgamma);
 }
 
@@ -948,7 +935,8 @@ void resetgl()
        !reloadtexture("data/mapshot_frame.png") ||
        !reloadtexture("data/loading_frame.png") ||
        !reloadtexture("data/loading_bar.png") ||
-       !reloadtexture("data/cube2badge.png"))
+       !reloadtexture("data/cardboard.png") ||
+       !reloadtexture("data/cube.png"))
         fatal("failed to reload core texture");
     reloadfonts();
     inbetweenframes = true;
@@ -1429,18 +1417,22 @@ void testcurl_(char* targetUrl) {
 
 COMMANDN(testcurl, testcurl_, "s");
 
-void getuserinfo_(bool debug) {
+void getuserinfo_(bool debug, bool first) {
 	if (offline) return; // don't waste time trying to check everything if we are offline.
-	if (debug) conoutf(CON_DEBUG, gametoken);
+	if (!strcmp(gametoken, "OFFLINE")) // check if playing without logging into launcher
+	{
+		if(!first) conoutf(CON_ERROR, "\f3[HNID] Please restart the game and log in with your HNID to play online!");
+		offline = 1;
+		return;
+	}
 	oldstring apiurl;
 	formatstring(apiurl, "%s/game/get/userinfo?id=1&token=%s", HNAPI, gametoken);
 	char* thing = web_get(apiurl, debug);
 	if (!thing[0]) {
-		conoutf(CON_ERROR, "no data recieved from server, switching to offline mode");
+		conoutf(CON_ERROR, "\f3[HNID] No data recieved from server, switching to offline mode");
 		offline = 1;
 		return; 
 	}
-	if (debug) conoutf(CON_DEBUG, thing);
 	cJSON *json = cJSON_Parse(thing);
 
 	// error handling
@@ -1448,7 +1440,7 @@ void getuserinfo_(bool debug) {
 	const cJSON* message = cJSON_GetObjectItemCaseSensitive(json, "message");
 	if (cJSON_IsNumber(status) && cJSON_IsString(message)) {
 		if (status->valueint > 0) {
-			conoutf(CON_ERROR, "web error! status: %d, \"%s\"", status->valueint, message->valuestring);
+			conoutf(CON_ERROR, "\f3[HNID] Web error! status: %d, \"%s\"", status->valueint, message->valuestring);
 			if (!strcmp(message->valuestring, "no token found") || !strcmp(message->valuestring, "malformed token")) {
 				offline = 1;
 				return;
@@ -1460,14 +1452,14 @@ void getuserinfo_(bool debug) {
 			name = cJSON_GetObjectItemCaseSensitive(json, "username");
 			if (cJSON_IsString(name) && (name->valuestring != NULL))
 			{
-				if (debug) conoutf(CON_DEBUG, "username is \"%s\"", name->valuestring);
-				//fatal(name->valuestring);
+				if(!first) conoutf(CON_INFO, "\f1[HNID] Successfully logged in as %s!", name->valuestring);
 				game::switchname(name->valuestring);
 			}
 		}
 	}
 	else {
-		if (debug) conoutf(CON_ERROR, "malformed JSON recieved from server");
+		conoutf(CON_ERROR, "\f3[HNID] Malformed JSON recieved from server (server blocked?)");
+		offline = 1;
 	}
 }
 
@@ -1523,11 +1515,6 @@ COMMAND(testopentar, "");
 
 COMMANDN(getuserinfo, getuserinfo_, "i");
 
-/*ICOMMAND(gametoken, "s", (char* s),
-{
-	setgametoken(s);
-});*/
-
 ICOMMAND(getgametoken, "", (), result(gametoken));
 
 int globalgamestate = -1;
@@ -1566,10 +1553,11 @@ int main(int argc, char **argv)
         logoutf("Setting log file: %s", file);
         break;
     }
+
 	// get gametoken, you son of a bitch
 	for (int i = 1; i < argc; i++) if (argv[i][0] == '-' && argv[i][1] == 'c') { setgametoken(&argv[i][2]); break; }
 	if (!gametoken[0]) fatal("no gametoken given");
-	//if (gametoken[0]) fatal(gametoken);
+	if (!strcmp(gametoken, "OFFLINE")) offline = 1;
 
     execfile("init.cfg", false);
     for(int i = 1; i<argc; i++)
@@ -1692,13 +1680,9 @@ int main(int argc, char **argv)
 
     initing = NOT_INITING;
 
-	#ifdef CURLENABLED
-		logoutf("init: auth");
-		if (strcmp(gametoken,"")) {
-			renderprogress(0, "connecting to auth server...");
-			getuserinfo_(false); 
-		}
-	#endif
+	logoutf("init: auth");
+	renderprogress(0, "connecting to auth server...");
+	getuserinfo_(false, true);
 
     logoutf("init: render");
     restoregamma();
@@ -1717,6 +1701,7 @@ int main(int argc, char **argv)
     logoutf("init: mainloop");
 
     if(execfile("once.cfg", false)) remove(findfile("once.cfg", "rb"));
+	if(execfile("update.cfg", false)) remove(findfile("update.cfg", "rb"));
 
     if(load)
     {

@@ -1,6 +1,6 @@
 #import "Launcher.h"
 #import "SDL2/SDL.h"
-#include <crt_externs.h>
+#import <crt_externs.h>
 
 // If you make a MOD then please change this, the bundle indentifier, the file extensions (.ogz, .dmo), and the url registration.
 #define kSAUERBRATEN @"sauerbraten"
@@ -22,7 +22,8 @@
             [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent], // relative to the binary
             [NSString stringWithUTF8String:__FILE__]  // relative to the source code - xcode 4+
         };
-        for(size_t i = 0; i < sizeof(paths)/sizeof(NSString*); i++) {
+        for(size_t i = 0; i < sizeof(paths)/sizeof(NSString*); i++)
+        {
             path = paths[i];
             // search up the folder till find a folder containing packages, or a game application containing packages
             while ([path length] > 1)
@@ -48,15 +49,12 @@
         NSLog(@"type=%@", type);
     }
     // userpath: directory where user files are kept - typically /Users/<name>/Application Support/sauerbraten
-    FSRef folder;
     path = nil;
-    if (FSFindFolder(kUserDomain, kApplicationSupportFolderType, NO, &folder) == noErr)
+    NSArray *supports = [fm URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask];
+    if ([supports count])
     {
-        CFURLRef url = CFURLCreateFromFSRef(kCFAllocatorDefault, &folder);
-        path = [(NSURL *)url path];
-        CFRelease(url);
+        path = [[supports objectAtIndex:0] path];
         path = [path stringByAppendingPathComponent:kSAUERBRATEN];
-        NSFileManager *fm = [NSFileManager defaultManager];
         if (![fm fileExistsAtPath:path]) [fm createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil]; // ensure it exists
     }
     userPath = [path retain];    
@@ -84,8 +82,7 @@
     char **argv = *_NSGetArgv();
     int argc = *_NSGetArgc();
     BOOL launcher = YES;
-    int i;
-    for(i = 0; i < argc; i++) if(strcmp(argv[i], "-nolauncher")==0) { launcher = NO; break; }
+    for(int i = 0; i < argc; i++) if(strcmp(argv[i], "-nolauncher")==0) { launcher = NO; break; }
     if(launcher)
     {
          if(command) [args addObject:command];
@@ -93,7 +90,7 @@
     else
     {
         // copy all args except program name and "-nolauncher" arg
-        for(i = 1; i < argc; i++) 
+        for(int i = 1; i < argc; i++) 
         {
             if(strcmp(argv[i], "-nolauncher")==0) continue;
             [args addObject:[NSString stringWithUTF8String:argv[i]]];
@@ -109,8 +106,7 @@
     const char **argv = (const char**)malloc(sizeof(char*)*(argc + 1)); // {path, <args>, NULL};
     argv[0] = [[[NSBundle mainBundle] executablePath] fileSystemRepresentation];
     argv[argc] = NULL;
-    int i;
-    for (i = 1; i < argc; i++) argv[i] = [[args objectAtIndex:i-1] UTF8String];
+    for (int i = 1; i < argc; i++) argv[i] = [[args objectAtIndex:i-1] UTF8String];
     
     // call back into C/C++ world
     if(dataPath) chdir([dataPath fileSystemRepresentation]);
@@ -142,9 +138,7 @@
 - (NSString*)roleForExtension:(NSString*)fileExtension
 {
     // from the plist determine that dmo->Viewer, and ogz->Editor
-    NSEnumerator *types = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDocumentTypes"] objectEnumerator];
-    NSDictionary *type;
-    while((type = [types nextObject]))
+    for(NSDictionary *type in [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDocumentTypes"])
     {
         NSString *role = [type objectForKey:@"CFBundleTypeRole"];
         NSArray *exts = [type objectForKey:@"CFBundleTypeExtensions"];
@@ -160,12 +154,12 @@
     if (!role) return NO;
     BOOL demo = [role isEqualToString:@"Viewer"];
     filename = [filename stringByDeletingPathExtension]; // chop off extension
-    int i;
-    for (i = 0; i < 2; i++)
+    for (int i = 0; i < 2; i++)
     {
         NSString *pkg = (i == 0) ? dataPath : userPath;
         if (!demo) pkg = [pkg stringByAppendingPathComponent:@"packages"];
-        if ([filename hasPrefix:pkg]) {
+        if ([filename hasPrefix:pkg])
+        {
             [self setCommand:(demo ? [NSString stringWithFormat:@"-xdemo \"%@\"", filename] : [NSString stringWithFormat:@"-l%@", filename])];
             return YES;
         }

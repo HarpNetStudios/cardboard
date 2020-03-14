@@ -755,9 +755,9 @@ struct collectclientmode : clientmode
         d->lastcollect = o;
     }
 
-    int respawnwait(fpsent *d)
-    {
-        return max(0, RESPAWNSECS-(lastmillis-d->lastpain)/1000);
+	int respawnwait(fpsent * d, int delay = 0)
+	{
+		return d->respawnwait(RESPAWNSECS, delay);
     }
 
     void pickspawn(fpsent *d)

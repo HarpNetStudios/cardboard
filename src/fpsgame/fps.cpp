@@ -4,7 +4,7 @@ namespace game
 {
 	char* gametitle = "Project Crimson"; // game name: are you dumb
 	char* gamestage = "Alpha"; // stage: alpha, beta, release, whatever
-	char* gameversion = "2.1.2"; // version: major.minor(.patch[.hotfix])
+	char* gameversion = "2.2"; // version: major.minor(.patch[.hotfix])
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
@@ -675,7 +675,7 @@ namespace game
 			d->deaths = 0;
 			d->totaldamage = 0;
 			d->totalshots = 0;
-			d->maxhealth = m_insta ? 1 : 1000;
+			d->health = d->maxhealth = m_insta ? 1 : 1000;
 			d->lifesequence = -1;
 			d->respawned = d->suicided = -2;
 		}
@@ -843,10 +843,10 @@ namespace game
 
     VARP(teamcolortext, 0, 1, 1);
 
-    const char *teamcolorname(fpsent *d, const char *alt)
+    const char *teamcolorname(fpsent *d, const char *alt, bool tags)
     {
-        if(!teamcolortext || !m_teammode || d->state==CS_SPECTATOR) return colorname(d, NULL, "", "", alt);
-        return colorname(d, NULL, !strcmp(d->team, "red") ? "\fs\f1" : "\fs\f3", "\fr", alt);
+        if(!teamcolortext || !m_teammode || d->state==CS_SPECTATOR) return colorname(d, NULL, "", "", alt, tags);
+        return colorname(d, NULL, strcmp(d->team, "red") ? "\fs\f1" : "\fs\f3", "\fr", alt, tags);
     }
 
     const char *teamcolor(const char *name, bool sameteam, const char *alt)
@@ -915,8 +915,8 @@ namespace game
 
     void drawhealth(fpsent *d, bool isinsta = false, float tx = 0, float ty = 0, float tw = 1, float th = 1)
     {
-        float barh = 150, barw = ((HICON_TEXTY/2)-barh)+HICON_SIZE*.75;
-        float h = d->state==CS_DEAD ? 0 : (d->health*barh)/(m_insta == true ? 1 : d->maxhealth), w = HICON_SIZE*.75;
+        float barh = 125, barw = ((HICON_TEXTY/2)-barh)+HICON_SIZE*.75;
+        float h = d->state==CS_DEAD ? 0 : (d->health*barh)/(m_insta == true ? 1 : d->maxhealth), w = HICON_SIZE*.85;
         float x = (HICON_X/2), y = ((HICON_TEXTY/2)-h)+HICON_SIZE*.75;
 
         settexture("packages/hud/health_bar_back.png", 3);
@@ -944,7 +944,7 @@ namespace game
             case CS_SPECTATOR:
                 return 1;
             default:
-                return 1650.0f/1800.0f;
+                return 1500.0f/1800.0f;
         }
     }
 
@@ -959,7 +959,7 @@ namespace game
 		else icon = HICON_SPACEPACK_OFF;
 		if(d->spacepack && d->spaceclip) icon = HICON_SPACEPACK_CLIP;
 
-		drawicon(icon, HICON_X + (healthbar ? 5 : 6) * HICON_STEP, HICON_Y);
+		drawicon(icon, HICON_X + (healthbar ? 2 : 3) * HICON_STEP, HICON_Y);
 	}
 
     void drawhudicons(fpsent *d)
@@ -975,11 +975,11 @@ namespace game
         {
 			if(!m_bottomless)
             {
-                draw_textf("%d", (HICON_X + (healthbar ? 3 : 4)*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->ammo[d->gunselect]);
+                draw_textf("%d", (HICON_X + (healthbar ? 1 : 2)*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->ammo[d->gunselect]);
             }
             else
             {
-                draw_textf("INF", (HICON_X + (healthbar ? 3 : 4)*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2);
+                draw_textf("INF", (HICON_X + (healthbar ? 1 : 2)*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2);
             }
         }
 
@@ -990,22 +990,23 @@ namespace game
         {
 			if(d->gunselect==GUN_FIST)
 			{
-				drawicon((d->jumpstate == 2 ? HICON_FIST_OFF : HICON_FIST), HICON_X + (healthbar ? 3 : 4) * HICON_STEP, HICON_Y);
+				drawicon((d->jumpstate == 2 ? HICON_FIST_OFF : HICON_FIST), HICON_X + (healthbar ? 1 : 2) * HICON_STEP, HICON_Y);
 			}
-			else drawicon(HICON_FIST + d->gunselect, HICON_X + (healthbar ? 3 : 4) * HICON_STEP, HICON_Y);
+			else drawicon(HICON_FIST + d->gunselect, HICON_X + (healthbar ? 1 : 2) * HICON_STEP, HICON_Y);
             
 			if(spacepackallowed) drawspacepack(d);
         }
     }
 
-	VARP(gameclock, 0, 0, 1);
+	VARP(gameclock, 0, 1, 1);
 	FVARP(gameclockscale, 1e-3f, 0.5f, 1e3f);
 	HVARP(gameclockcolour, 0, 0xFFFFFF, 0xFFFFFF);
-	VARP(gameclockalpha, 0, 255, 255);
 	HVARP(gameclocklowcolour, 0, 0xFFC040, 0xFFFFFF);
-	VARP(gameclockalign, -1, 1, 1);
-	FVARP(gameclockx, 0, 0.765f, 1);
-	FVARP(gameclocky, 0, 0.015f, 1);
+	HVARP(gameclockcritcolour, 0, 0xFF0000, 0xFFFFFF);
+	VARP(gameclockalpha, 0, 255, 255);
+	VARP(gameclockalign, -1, 0, 1);
+	FVARP(gameclockx, 0, 0.50f, 1);
+	FVARP(gameclocky, 0, 0.085f, 1);
 
 	void drawgameclock(int w, int h)
 	{
@@ -1025,8 +1026,8 @@ namespace game
 		hudmatrix.scale(gameclockscale, gameclockscale, 1);
 		flushhudmatrix();
 
-		int color = mins < 1 ? gameclocklowcolour : gameclockcolour;
-		draw_text(buf, int(offset.x), int(offset.y), (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, gameclockalpha);
+		int color = mins < 1 ? secs < 10 ? gameclockcritcolour : gameclocklowcolour : gameclockcolour;
+		if(m_timed) draw_text(buf, int(offset.x), int(offset.y), (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, gameclockalpha);
 
 		pophudmatrix();
 	}
@@ -1109,14 +1110,8 @@ namespace game
             if(o && o->type==ENT_PLAYER && isteam(((fpsent *)o)->team, d->team))
             {
                 crosshair = 1;
-                if(!strcmp(d->team, "red"))
-                {
-                    color = vec(1, 0, 0);
-                }
-                else
-                {
-                    color = vec(0, 0, 1);
-                }
+                if(!strcmp(d->team, "red")) color = vec(1, 0, 0);
+				else color = vec(0, 0, 1);
             }
         }
 
@@ -1193,7 +1188,7 @@ namespace game
                     {
                         if(g->button(sdesc, 0xFFFFDD)&G3D_UP) return true;
                     }
-                    else if(g->buttonf("[%s version, %s] ", 0xFFFFDD, NULL, (char*)PROTOCOL_VERSION, attr.empty() ? "unknown" : (attr[0] < PROTOCOL_VERSION ? "older" : "newer"))&G3D_UP) return true;
+                    else if(g->buttonf("[%s version, %d] ", 0xFFFFDD, NULL, attr.empty() ? "unknown" : (attr[0] < PROTOCOL_VERSION ? "older" : "newer"), attr.empty() ? 0 : attr[0])&G3D_UP) return true;
                     break;
             }
             return false;

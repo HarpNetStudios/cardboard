@@ -1405,10 +1405,10 @@ displayed after the map load msg).
 <p>
 loads the skybox described by NAME, where NAME is a file name relative
 to the "packages/" directory. The engine will look for 6 sky box images:
-NAME_up.jpg, NAME_dn.jpg, NAME_lf.jpg, NAME_rt.jpg, NAME_ft.jpg, NAME_bk.jpg.
+NAME_up.png, NAME_dn.png, NAME_lf.png, NAME_rt.png, NAME_ft.png, NAME_bk.png.
 These represent the skybox in the up, down, left, right, front, and back
-directions, respectively. If a .jpg file is not found, it will attempt to
-search for the files with a .png extension. SPIN, if specified, is floating point value that
+directions, respectively. If a .png file is not found, it will attempt to
+search for the files with a .jpg extension. SPIN, if specified, is floating point value that
 specifies, in degrees per second, the rate at which to spin/yaw the skybox.
 
 NOTE: This is an alias for the "skybox" and "spinsky" commands.
@@ -1865,8 +1865,8 @@ the default is only 1 instance. If N is -1, then an unlimited number of instance
 <p>
 Registers a mapmodel that can be placed in maps using <i>newent
 mapmodel</i> (see newent). N is the name of a folder inside packages/models folder, e.g.
-"hudguns/rifle". Loaded from that folder are: tris.md2 and skin.jpg (and if not available,
-skin.png, or the same from the parent folder to allow skin sharing). set additional properties of a mapmodel in its .cfg
+"hudguns/rifle". Loaded from that folder are: tris.md2 and skin.png (and if not available,
+skin.jpg, or the same from the parent folder to allow skin sharing). set additional properties of a mapmodel in its .cfg
 </p>
 
 <pre id="shadowmapambient">shadowmapambient N</pre>
@@ -1897,10 +1897,10 @@ Specifies the speed at which water caustics play, in milliseconds per frame.
 <p>
 Loads the skybox described by NAME, where NAME is a file name relative
 to the "packages/" directory. The engine will look for 6 sky box images:
-NAME_up.jpg, NAME_dn.jpg, NAME_lf.jpg, NAME_rt.jpg, NAME_ft.jpg, NAME_bk.jpg.
+NAME_up.png, NAME_dn.png, NAME_lf.png, NAME_rt.png, NAME_ft.png, NAME_bk.png.
 These represent the skybox in the up, down, left, right, front, and back
-directions, respectively. If a .jpg file is not found, it will attempt to
-search for the files with a .png extension.
+directions, respectively. If a .png file is not found, it will attempt to
+search for the files with a .jpg extension.
 </p>
 
 <pre id="spinsky">spinsky SPIN</pre>

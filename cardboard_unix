@@ -9,7 +9,7 @@ CARD_BIN=${CARD_DATA}/bin_unix
 
 # CARD_OPTIONS contains any command line options you would like to start Project Crimson with.
 #CARD_OPTIONS="-f"
-CARD_OPTIONS="-q${HOME}/.cardboard"
+CARD_OPTIONS="-q${HOME}/.cardboard -cOFFLINE"
 
 # SYSTEM_NAME should be set to the name of your operating system.
 #SYSTEM_NAME=Linux

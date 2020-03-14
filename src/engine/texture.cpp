@@ -1010,6 +1010,8 @@ static Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clam
         t->name = key;
     }
 
+	//conoutf("%s: %d bpp", rname, s.bpp*8);
+
     t->clamp = clamp;
     t->mipmap = mipit;
     t->type = Texture::IMAGE;
@@ -2592,11 +2594,11 @@ Texture *cubemapload(const char *name, bool mipit, bool msg, bool transient)
     Texture *t = NULL;
     if(!strchr(pname, '*'))
     {
-        defformatstring(jpgname, "%s_*.jpg", pname);
+        defformatstring(jpgname, "%s_*.png", pname);
         t = cubemaploadwildcard(NULL, jpgname, mipit, false, transient);
         if(!t)
         {
-            defformatstring(pngname, "%s_*.png", pname);
+            defformatstring(pngname, "%s_*.jpg", pname);
             t = cubemaploadwildcard(NULL, pngname, mipit, false, transient);
             if(!t && msg) conoutf(CON_ERROR, "could not load envmap %s", name);
         }
@@ -3504,7 +3506,7 @@ void screenshot(char *filename)
     }
     else
     {
-        defformatstring(name, "ss_%d", time(0));
+        defformatstring(name, "ss_%ld", time(0));
         concatstring(buf, name);
     }
     if(format < 0)

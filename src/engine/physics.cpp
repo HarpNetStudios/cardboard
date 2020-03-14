@@ -1308,6 +1308,7 @@ bool findfloor(physent *d, bool collided, const vec &obstacle, bool &slide, vec 
 
 bool move(physent *d, vec &dir)
 {
+	joymove(d->camx, d->camy);
     vec old(d->o);
     bool collided = false, slidecollide = false;
     vec obstacle;

@@ -17,7 +17,7 @@ enum
 };
 
 // network quantization scale
-#define DMF 16.0f               // for world locations
+#define DMF 8.0f                // for world locations (before 2.2 = 16)
 #define DNF 100.0f              // for normalized vectors
 #define DVELF 1.0f              // for playerspeed based velocity vectors
 
@@ -92,6 +92,7 @@ enum
 	M_ECTF       = 1<<22,
 	M_BOTTOMLESS = 1<<23,
 	M_TEST       = 1<<24,
+	M_R1CTF      = 1<<25,
 };
 
 static struct gamemodeinfo
@@ -127,6 +128,7 @@ static struct gamemodeinfo
     { "Last Man Standing", M_LMS, "You spawn with ten lives. Frag everyone to score points. Be the last one alive to win."}, //22
 	{ "Explosive CTF", M_INSTA | M_BOTTOMLESS | M_TEAM | M_CTF | M_NOITEMS | M_ECTF, "Rockets! Grenades! Instagib! CTF! Exciting!"}, //23
 	{ "Test Mode", M_TEST, "It might be something stupid, or it might be cool. It also might crash your game."}, //24
+	{ "Reverse One Flag CTF", M_CTF | M_TEAM | M_R1CTF, "Capture the center flag and return it to the enemy base to score points!"}, //?
 };
 
 #define STARTGAMEMODE (-1)
@@ -146,7 +148,8 @@ static struct gamemodeinfo
 #define m_grenade      (m_check(gamemode, M_GRENADE))
 #define m_gun          (m_check(gamemode, M_GUN))
 #define m_lms          (m_check(gamemode, M_LMS))
-#define m_ectf         (m_check(gamemode, M_ECTF))
+#define m_ectf         (m_checkall(gamemode, M_CTF | M_ECTF))
+#define m_r1ctf        (m_checkall(gamemode, M_CTF | M_R1CTF)))
 #define m_tactics      (m_check(gamemode, M_TACTICS))
 #define m_capture      (m_check(gamemode, M_CAPTURE))
 #define m_regencapture (m_checkall(gamemode, M_CAPTURE | M_REGEN))
@@ -286,7 +289,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 #define CARDBOARD_SERVER_PORT 35000
 #define CARDBOARD_SERVINFO_PORT 35001
 #define CARDBOARD_MASTER_PORT 35002
-#define PROTOCOL_VERSION 1003           // bump when protocol changes
+#define PROTOCOL_VERSION 1004           // bump when protocol changes
 #define DEMO_VERSION 1                  // bump when demo format changes
 #define DEMO_MAGIC "CARDBOARD_DEMO"
 
@@ -356,7 +359,7 @@ struct fpsstate
     int ammo[NUMGUNS];
     int aitype, skill;
 
-    fpsstate() : maxhealth(1000), aitype(AI_NONE), skill(0) {}
+    fpsstate() : health(1000), maxhealth(1000), aitype(AI_NONE), skill(0) {}
 
 	void baseammo(int gun, int k = 2, int scale = 1)
 	{
@@ -404,9 +407,6 @@ struct fpsstate
 
     void respawn()
     {
-		#ifndef STANDALONE
-			disablezoom();
-		#endif
         health = maxhealth;
 		loopi(NUMGUNS) gunwait[i] = 0;
         gunselect = GUN_SMG;
@@ -426,20 +426,18 @@ struct fpsstate
             {
                 health = 1;
             }
-            //ammo[GUN_SMG] = 40;
             int spawngun1 = rnd(6)+1, spawngun2;
             gunselect = spawngun1;
             baseammo(spawngun1);
             do spawngun2 = rnd(6)+1; while(spawngun1==spawngun2);
             baseammo(spawngun2);
-            //if(m_noitems) ammo[GUN_GL]++;
         }
 		else if (m_ectf)
 		{
 			health = 1;
 			gunselect = GUN_RL;
-			ammo[GUN_RL] = 32000;
-			ammo[GUN_GL] = 32000; // fixed it -Y 09/17/19
+			ammo[GUN_RL] = INT_MAX;
+			ammo[GUN_GL] = INT_MAX; // fixed it -Y 09/17/19
 		}
 		else if (m_insta)
 		{
@@ -457,11 +455,11 @@ struct fpsstate
         else if(m_parkour) // I have my doubts about this high ammo count becoming a problem, hopefully it doesn't. -Y 05/13/19
         {
             gunselect = GUN_RIFLE;
-            ammo[GUN_RIFLE] = 32000;
-            ammo[GUN_CG] = 32000;
-            ammo[GUN_RL] = 32000;
-			ammo[GUN_GL] = 32000;
-			ammo[GUN_SG] = 32000;
+            ammo[GUN_RIFLE] = INT_MAX;
+            ammo[GUN_CG] = INT_MAX;
+            ammo[GUN_RL] = INT_MAX;
+			ammo[GUN_GL] = INT_MAX;
+			ammo[GUN_SG] = INT_MAX;
         }
         else if(m_regencapture)
         {
@@ -471,18 +469,18 @@ struct fpsstate
         }
 		else if (m_ctf || m_collect) // CTF and variants
 		{
+			gunselect = GUN_SMG;
 			ammo[GUN_SMG] = 40;
 			ammo[GUN_GL] = 1;
         }
 		else if (m_gun)
 		{
-			loopi(6) ammo[i + 1] = 32000;
+			loopi(6) ammo[i + 1] = INT_MAX;
 		}
         else
         {
             loopi(6) baseammo(i + 1);
-			gunselect = GUN_CG;
-			//ammo[GUN_CG] /= 2;
+			gunselect = GUN_SMG;
 			ammo[GUN_SMG] = 40;
         }
     }
@@ -582,6 +580,11 @@ struct fpsent : dynent, fpsstate
         stopattacksound();
         lastnode = -1;
     }
+
+	int respawnwait(int secs, int delay = 0)
+	{
+		return max(0, secs - (::lastmillis - lastpain - delay) / 1000);
+	}
 };
 
 struct teamscore
@@ -651,7 +654,7 @@ namespace game
         virtual void respawned(fpsent *d) {}
         virtual void setup() {}
         virtual void checkitems(fpsent *d) {}
-        virtual int respawnwait(fpsent *d) { return 0; }
+        virtual int respawnwait(fpsent *d, int delay = 0) { return 0; }
         virtual void pickspawn(fpsent *d) { findplayerspawn(d); }
         virtual void senditems(packetbuf &p) {}
         virtual void removeplayer(fpsent *d) {}
@@ -687,7 +690,7 @@ namespace game
     extern fpsent *getclient(int cn);
     extern fpsent *newclient(int cn);
 	extern const char* colorname(fpsent* d, const char* name = NULL, const char* prefix = "", const char* suffix = "", const char* alt = NULL, bool tags = false);
-	extern const char *teamcolorname(fpsent *d, const char *alt = "you");
+	extern const char *teamcolorname(fpsent *d, const char *alt = "you", bool tags = false);
     extern const char *teamcolor(const char *name, bool sameteam, const char *alt = NULL);
     extern const char *teamcolor(const char *name, const char *team, const char *alt = NULL);
 	extern bool spectating(physent* d);

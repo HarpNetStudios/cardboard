@@ -10,19 +10,27 @@ discord::Core* core{};
 
 namespace discord
 {
+	discord::Result whatAmI;
+
 	void discordLogging(LogLevel level, const char* message) {
 		conoutf(CON_DEBUG, "Discord debug: %s", message);
 	}
 
 	void initDiscord() {
-		auto result = discord::Core::Create(623616609952464936, DiscordCreateFlags_NoRequireDiscord, &core);
-		core->SetLogHook(LogLevel::Debug, discordLogging);
-		conoutf("Discord intergation initialized successfully!");
+		whatAmI = discord::Core::Create(623616609952464936, DiscordCreateFlags_NoRequireDiscord, &core);
+		if (discord::connected()) {
+			core->SetLogHook(LogLevel::Debug, discordLogging);
+			conoutf("Discord intergation initialized successfully!");
+		}
+	}
+
+	bool connected() {
+		return whatAmI == discord::Result::Ok;
 	}
 
 	void updatePresence(int gamestate, const char* modename, physent* d, bool force)
 	{
-		if (globalgamestate != gamestate || force) {
+		if ((globalgamestate != gamestate || force) && discord::connected()) {
 			oldstring partykey;
 			discord::Activity activity{};
 
@@ -134,7 +142,7 @@ namespace discord
 	}
 
 	void discordCallbacks() {
-		core->RunCallbacks();
+		if (discord::connected()) core->RunCallbacks();
 	}
 }
 #endif

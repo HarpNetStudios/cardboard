@@ -14,7 +14,7 @@ namespace CardboardLauncher
     public partial class mainForm : Form
     {
 
-        public const int launcherVersion = 2;
+        public const int launcherVersion = 3;
 
         private int gameId = 1; // Project Crimson
 
@@ -74,10 +74,12 @@ namespace CardboardLauncher
 
                 if (success)
                 {
+                    config.gameToken = token;
                     userAuthLabel.Text = "User: " + info.username;
                 }
                 else
                 {
+                    config.gameToken = "";
                     userAuthLabel.Text = "User: N/A";
                 }
                 playButton.Enabled = success;
@@ -91,7 +93,7 @@ namespace CardboardLauncher
             return success;
         }
 
-        private class Config
+        public class Config
         {
             public string webUrl = "";
             public string homeDir = "";
@@ -99,11 +101,11 @@ namespace CardboardLauncher
             public string qConnectServ = "";
         }
 
-        private class UserInfo
+        public class UserInfo
         {
-            public string message;
-            public int status;
-            public string username;
+            public string message { get; set; }
+            public int status { get; set; }
+            public string username { get; set; }
         }
 
         public mainForm()
@@ -150,11 +152,14 @@ namespace CardboardLauncher
             {
                 if (token.Length.Equals(64))
                 {
-                    config.gameToken = token;
+                    playOfflineChkBox.Checked = playOfflineChkBox.Enabled = false;
                     DisplayMessage("Successfully set game token!");
                     return;
                 }
-            } 
+            } else
+            {
+                playOfflineChkBox.Enabled = true;
+            }
             DisplayMessage("Error setting game token", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
@@ -199,11 +204,20 @@ namespace CardboardLauncher
         {
             // Save config if box is checked.
             if(saveConfigChkBox.Checked) SaveConfig();
+
+            string launchToken = config.gameToken;
+
+            if(playOfflineChkBox.Checked)
+            {
+                launchToken = "OFFLINE";
+                DialogResult offlineMessage = MessageBox.Show("Hey, you are about to start the game in OFFLINE mode!\n\nTo experience all that the game has to offer, including multiplayer, please log into your HNID account.\n\nAre you sure you want to continue?", "Offline Mode Warning", MessageBoxButtons.YesNo);
+                if (offlineMessage == DialogResult.No) return;
+            }
             
             // Create new process definition
             ProcessStartInfo gameProcess = new ProcessStartInfo();
             gameProcess.FileName = Path.Combine("bin" + (use64bit ? "64" : ""), "cardboard_msvc.exe");
-            gameProcess.Arguments = "-q\"" + config.homeDir + "\" -glog.txt -c"+config.gameToken + (qConnectChkBox.Checked ? " -x\"connect "+config.qConnectServ+"\"" : "");
+            gameProcess.Arguments = "-q\"" + config.homeDir + "\" -glog.txt -c"+launchToken + (qConnectChkBox.Checked ? " -x\"connect "+config.qConnectServ+"\"" : "");
             
             
             // Attempt to start process with correct arguments
@@ -328,6 +342,18 @@ namespace CardboardLauncher
                 Point p3 = new Point(p2.X - this.startPoint.X,
                                      p2.Y - this.startPoint.Y);
                 this.Location = p3;
+            }
+        }
+
+        private void playOfflineChkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(playOfflineChkBox.Checked && !isTokenSet())
+            {
+                playButton.Enabled = true;
+            }
+            else if (!isTokenSet())
+            {
+                playButton.Enabled = false;
             }
         }
     }

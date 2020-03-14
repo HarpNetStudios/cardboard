@@ -1,5 +1,7 @@
 // client.cpp, mostly network related client game code
 
+// "a maybe is good enough for me" -Coal 02/12/2020
+
 #include "engine.h"
 
 ENetHost *clienthost = NULL;
@@ -75,7 +77,7 @@ VARP(connectport, 0, 0, 0xFFFF);
 
 void connectserv(const char *servername, int serverport, const char *serverpassword)
 {  	
-	if (offline == 1) { conoutf("\f3cannot connect to servers in offline mode"); return; }
+	if (offline == 1) { conoutf("\f3cannot connect to servers in offline mode!"); return; }
 	getuserinfo_(false);
 	globalgamestate = -1;
 

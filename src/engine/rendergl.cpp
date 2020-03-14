@@ -810,6 +810,7 @@ FVAR(thirdpersonup, -25, 0, 25);
 FVAR(thirdpersonside, -25, 0, 25);
 
 FVARP(joysens, 0.0f, 100.0f, 500.0f);
+FVARP(joyaccel, 0, 0, 1000);
 
 physent *camera1 = NULL;
 bool detachedcamera = false;
@@ -843,6 +844,7 @@ void fixcamerarange()
 
 void mousemove(int dx, int dy)
 {
+	//conoutf("X: %d, Y: %d", dx, dy);
     if(!game::allowmouselook()) return;
     float cursens = sensitivity, curaccel = mouseaccel;
     if(zoom)
@@ -877,14 +879,19 @@ void mousemove(int dx, int dy)
 
 void joymove(float dx, float dy)
 {
-	if (!game::allowmouselook()) return;
-	float cursens = joysens, curaccel = mouseaccel;
+	if (!game::allowmouselook()) 
+	{
+		setcammatrix();
+		return;
+	}
+
+	float cursens = joysens, curaccel = joyaccel;
 	if (zoom)
 	{
 		if (zoomautosens)
 		{
 			cursens = float(joysens * zoomfov) / fov;
-			curaccel = float(mouseaccel * zoomfov) / fov;
+			curaccel = float(joyaccel * zoomfov) / fov;
 		}
 		else
 		{
@@ -2392,8 +2399,8 @@ void gl_drawhud()
 
 				if (showvel && !editmode)
 				{
-					int speed = (int)camera1->vel.magnitude();
-					draw_textf("%3d cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, speed);
+					float speed = camera1->vel.magnitude();
+					draw_textf("%3.1f cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, speed);
 					roffset += FONTH;
 				}
 

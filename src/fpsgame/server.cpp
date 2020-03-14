@@ -154,7 +154,7 @@ namespace server
         void reset()
         {
             if(state!=CS_SPECTATOR) state = editstate = CS_DEAD;
-            maxhealth = m_insta ? 1 : 1000;
+			health = maxhealth = m_insta ? 1 : 1000;
             rockets.reset();
             grenades.reset();
 
@@ -189,12 +189,13 @@ namespace server
     {
         uint ip;
         oldstring name;
-        int maxhealth, frags, flags, deaths, shotdamage, damage;
+        int health, maxhealth, frags, flags, deaths, shotdamage, damage;
         int timeplayed;
         float effectiveness;
 
         void save(gamestate &gs)
         {
+			health = gs.health;
             maxhealth = gs.maxhealth;
             frags = gs.frags;
             flags = gs.flags;
@@ -207,7 +208,8 @@ namespace server
 
         void restore(gamestate &gs)
         {
-            if(gs.health==gs.maxhealth) gs.health = maxhealth;
+            /*if(gs.health==gs.maxhealth)*/
+			gs.health = maxhealth;
             gs.maxhealth = maxhealth;
             gs.frags = frags;
             gs.flags = flags;
@@ -2183,13 +2185,13 @@ namespace server
             if(fragvalue>0)
             {
                 int friends = 0, enemies = 0; // note: friends also includes the fragger
-                if(m_teammode) loopv(clients) if(strcmp(clients[i]->team, actor->team)) enemies++; else friends++;
+                if(m_teammode) loopv(clients) if(strcmp(clients[i]->team, actor->team)) enemies++; else friends++; // tdm bug?
                 else { friends = 1; enemies = clients.length()-1; }
                 actor->state.effectiveness += fragvalue*friends/float(max(enemies, 1));
             }
             teaminfo *t = m_teammode ? teaminfos.access(actor->team) : NULL;
             if(t) t->frags += fragvalue;
-            sendf(-1, 1, "ri6", N_DIED, target->clientnum, actor->clientnum, actor->state.frags, gun, special);
+            sendf(-1, 1, "ri6", N_DIED, target->clientnum, actor->clientnum, actor->state.frags, t ? t->frags : 0, gun, special);
             target->position.setsize(0);
             if(smode) smode->died(target, actor);
             ts.state = CS_DEAD;
@@ -2386,8 +2388,8 @@ namespace server
                     loopv(sents) if(sents[i].spawntime > 0) // spawn entities when timer reached
                     {
                         int oldtime = sents[i].spawntime;
-						oldtime -= curtime;
-						if (oldtime <= 0)
+						sents[i].spawntime -= curtime;
+						if (sents[i].spawntime <= 0)
                         {
                             sents[i].spawntime = 0;
                             sents[i].spawned = true;

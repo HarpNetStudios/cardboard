@@ -75,7 +75,8 @@ struct physent                                  // base entity type, can be affe
     int jumpstate;								// state of the jump, 1 for single, 2 for double
     bool candouble;								// used to see if the player can double jump
 	bool spacepack, spaceclip;					// used to see if the player can activate spacepack
-    float fmove, fstrafe;
+    float fmove, fstrafe;                       // used by the joystick for constant movement
+	float camx, camy;                           // used by the joystick for constant camera updates
 
     uchar physstate;                            // one of PHYS_* above
     uchar state, editstate;                     // one of CS_* above
@@ -108,6 +109,7 @@ struct physent                                  // base entity type, can be affe
 		spaceclip = false;
 		jumpstate = 0;
         fstrafe = fmove = 0.0f;
+		camx = camy = 0.0f;
         physstate = PHYS_FALL;
         vel = falling = vec(0, 0, 0);
         floor = vec(0, 0, 1);

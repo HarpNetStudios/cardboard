@@ -939,12 +939,14 @@ namespace game
         }
     }
 	VARP(teamcolorchat, 0, 1, 1);
-	const char *chatcolorname(fpsent *d) { return teamcolorchat ? teamcolorname(d, NULL) : colorname(d); }
+	const char *chatcolorname(fpsent *d, bool tags) { 
+		return teamcolorchat ? teamcolorname(d, NULL, tags) : colorname(d, NULL, "", "", NULL, tags);
+	}
 
-    void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(player1), text); addmsg(N_TEXT, "rcs", player1, text); }
+    void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(player1, true), text); addmsg(N_TEXT, "rcs", player1, text); }
     COMMANDN(say, toserver, "C");
 
-    void sayteam(char *text) { conoutf(CON_TEAMCHAT, "\fs\f9[team]\fr %s: \f9%s", chatcolorname(player1), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
+    void sayteam(char *text) { conoutf(CON_TEAMCHAT, "\fs\f9[team]\fr %s: \f9%s", chatcolorname(player1, false), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
     COMMAND(sayteam, "C");
 
     ICOMMAND(servcmd, "C", (char *cmd), addmsg(N_SERVCMD, "rs", cmd));
@@ -1350,7 +1352,7 @@ namespace game
                 if(isignored(d->clientnum)) break;
                 if(d->state!=CS_DEAD && d->state!=CS_SPECTATOR)
                     particle_textcopy(d->abovehead(), text, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
-                conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(d), text);
+                conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(d, true), text);
                 break;
             }
 
@@ -1363,7 +1365,7 @@ namespace game
                 if(!t || isignored(t->clientnum)) break;
                 if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
                     particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
-                conoutf(CON_TEAMCHAT, "\fs\f8[team]\fr %s: \f8%s", chatcolorname(t), text);
+                conoutf(CON_TEAMCHAT, "\fs\f8[team]\fr %s: \f8%s", chatcolorname(t, false), text);
                 break;
             }
 
@@ -1567,11 +1569,12 @@ namespace game
 
             case N_DIED:
             {
-                int vcn = getint(p), acn = getint(p), frags = getint(p), gun = getint(p), special = getint(p);
+                int vcn = getint(p), acn = getint(p), frags = getint(p), tfrags = getint(p), gun = getint(p), special = getint(p);
                 fpsent *victim = getclient(vcn),
                        *actor = getclient(acn);
                 if(!actor) break;
                 actor->frags = frags;
+				if (m_teammode) setteaminfo(actor->team, tfrags);
 				extern int hidefrags;
 				if (actor != player1 && (!cmode || !cmode->hidefrags() || !hidefrags))
                 {
@@ -1590,7 +1593,8 @@ namespace game
                     if(p.overread() || !text[0]) break;
                     int frags = getint(p);
                     if(p.overread()) break;
-                    if(m_teammode) setteaminfo(text, frags);
+					conoutf("teaminfo packet CLIENT");
+                    if(m_teammode) setteaminfo(text, frags); // tdm bug here?
                 }
                 break;
 
