@@ -16,4 +16,4 @@ make
 ```
 That's it! All you have to do now is tell the game your game token.
 
-Edit `cardboard_unix` script to change `GAME_TOKEN` to your very own HNID Project Crimson Game Token, and run it.
+Edit `cardboard_unix` script to change `GAME_TOKEN` to your very own HNID Project Crimson game token (should be around line 7), and run it.
