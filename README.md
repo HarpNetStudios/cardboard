@@ -13,6 +13,7 @@ Ensure you have the development versions of `SDL2`, `SDL2_image`, and `SDL2_mixe
 ```
 cd src
 make
+make install (no sudo, it doesn't install to /usr!)
 ```
 That's it! All you have to do now is tell the game your game token.
 
