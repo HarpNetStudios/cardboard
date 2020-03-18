@@ -4,12 +4,15 @@
 #CARD_DATA=/usr/local/cardboard
 CARD_DATA=.
 
+# Uncomment this line and put in your Project Crimson game token
+# GAME_TOKEN=<game token>
+
 # CARD_BIN should refer to the directory in which Project Crimson executable files are placed.
 CARD_BIN=${CARD_DATA}/bin_unix
 
 # CARD_OPTIONS contains any command line options you would like to start Project Crimson with.
 #CARD_OPTIONS="-f"
-CARD_OPTIONS="-q${HOME}/.cardboard -cOFFLINE"
+CARD_OPTIONS="-q${HOME}/.cardboard -c${GAME_TOKEN:-OFFLINE}"
 
 # SYSTEM_NAME should be set to the name of your operating system.
 #SYSTEM_NAME=Linux
