@@ -1767,7 +1767,9 @@ int main(int argc, char **argv)
 		//gl_drawframe();
         swapbuffers();
         renderedframe = inbetweenframes = true;
-		discord::discordCallbacks();
+        #ifdef DISCORD
+		    discord::discordCallbacks();
+        #endif
     }
 
     ASSERT(0);

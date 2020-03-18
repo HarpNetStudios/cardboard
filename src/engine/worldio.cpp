@@ -1119,6 +1119,7 @@ void clearmapcrc() { mapcrc = 0; }
 
 bool load_world(const char *mname, const char *cname)        // still supports all map formats that have existed since the earliest cube betas!
 {
+	bool cube2 = false;
     int loadingstart = SDL_GetTicks();
     setmapfilenames(mname, cname);
     stream *f = opengzfile(cmrname, "rb"); // change for cmz
@@ -1128,7 +1129,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     octaheader hdr;
     if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
     lilswap(&hdr.version, 6);
-	if(!memcmp(hdr.magic, "OCTA", 4)) { conoutf(CON_ERROR, "\f3map %s is a Cube 2 map, attempting automatic conversion...", cmrname); memcpy(hdr.magic, "CARD", 4); }
+	if(!memcmp(hdr.magic, "OCTA", 4)) { conoutf(CON_ERROR, "\f3map %s is a Cube 2 map, attempting automatic conversion...", cmrname); cube2 = true; memcpy(hdr.magic, "CARD", 4); }
     if(memcmp(hdr.magic, "CARD", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
     if(hdr.version>MAPVERSION) { conoutf(CON_ERROR, "map %s requires a newer version of this game", cmrname); delete f; return false; }
     compatheader chdr;
@@ -1335,25 +1336,27 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 
     if(!failed)
     {
-        if(hdr.version >= 7) loopi(hdr.lightmaps)
-        {
-            renderprogress(i/(float)hdr.lightmaps, "loading lightmaps...");
-            LightMap &lm = lightmaps.add();
-            if(hdr.version >= 17)
-            {
-                int type = f->getchar();
-                lm.type = type&0x7F;
-                if(hdr.version >= 20 && type&0x80)
-                {
-                    lm.unlitx = f->getlil<ushort>();
-                    lm.unlity = f->getlil<ushort>();
-                }
-            }
-            if(lm.type&LM_ALPHA && (lm.type&LM_TYPE)!=LM_BUMPMAP1) lm.bpp = 4;
-            lm.data = new uchar[lm.bpp*LM_PACKW*LM_PACKH];
-            f->read(lm.data, lm.bpp * LM_PACKW * LM_PACKH);
-            lm.finalize();
-        }
+		if(!cube2) {
+			if(hdr.version >= 7) loopi(hdr.lightmaps)
+			{
+				renderprogress(i/(float)hdr.lightmaps, "loading lightmaps...");
+				LightMap &lm = lightmaps.add();
+				if(hdr.version >= 17)
+				{
+					int type = f->getchar();
+					lm.type = type&0x7F;
+					if(hdr.version >= 20 && type&0x80)
+					{
+						lm.unlitx = f->getlil<ushort>();
+						lm.unlity = f->getlil<ushort>();
+					}
+				}
+				if(lm.type&LM_ALPHA && (lm.type&LM_TYPE)!=LM_BUMPMAP1) lm.bpp = 4;
+				lm.data = new uchar[lm.bpp*LM_PACKW*LM_PACKH];
+				f->read(lm.data, lm.bpp * LM_PACKW * LM_PACKH);
+				lm.finalize();
+			}
+		}
 
         if(hdr.version >= 25 && hdr.numpvs > 0) loadpvs(f, hdr.numpvs);
         if(hdr.version >= 28 && hdr.blendmap) loadblendmap(f, hdr.blendmap);

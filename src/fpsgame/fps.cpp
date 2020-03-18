@@ -675,7 +675,7 @@ namespace game
 			d->deaths = 0;
 			d->totaldamage = 0;
 			d->totalshots = 0;
-			d->health = d->maxhealth = m_insta ? 1 : 1000;
+            d->health = d->maxhealth = m_insta ? 1 : 1000;
 			d->lifesequence = -1;
 			d->respawned = d->suicided = -2;
 		}
@@ -916,8 +916,11 @@ namespace game
     void drawhealth(fpsent *d, bool isinsta = false, float tx = 0, float ty = 0, float tw = 1, float th = 1)
     {
         float barh = 125, barw = ((HICON_TEXTY/2)-barh)+HICON_SIZE*.75;
-        float h = d->state==CS_DEAD ? 0 : (d->health*barh)/(m_insta == true ? 1 : d->maxhealth), w = HICON_SIZE*.85;
+        float h = d->state==CS_DEAD ? 0 : (d->health*barh)/(m_insta ? 1 : d->maxhealth), w = HICON_SIZE*.85;
         float x = (HICON_X/2), y = ((HICON_TEXTY/2)-h)+HICON_SIZE*.75;
+
+		//conoutf("%f/%f=%f", (d->health * barh), (m_insta ? 1 : d->maxhealth), (d->health*barh)/(m_insta ? 1 : d->maxhealth));
+		//conoutf("%d (%d)", d->health, d->maxhealth);
 
         settexture("packages/hud/health_bar_back.png", 3);
         gle::begin(GL_TRIANGLE_STRIP);
