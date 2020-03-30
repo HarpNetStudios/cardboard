@@ -428,9 +428,6 @@
     <Filter Include="config\lang">
       <UniqueIdentifier>{9e580865-6284-4b39-bbdb-ebc6058fa17f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="config\extra">
-      <UniqueIdentifier>{af0b6ad5-3059-4824-acf7-2352b7a9068e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="docs">
       <UniqueIdentifier>{2a4b0ce2-2226-49a6-9c7d-e4a15c9311f3}</UniqueIdentifier>
     </Filter>
@@ -504,9 +501,6 @@
     </None>
     <None Include="..\..\packages\lang\fr_CA.cfg">
       <Filter>config\lang</Filter>
-    </None>
-    <None Include="..\..\data\extra\ao1edit.cfg">
-      <Filter>config\extra</Filter>
     </None>
     <None Include="..\..\docs\config.html">
       <Filter>docs</Filter>
