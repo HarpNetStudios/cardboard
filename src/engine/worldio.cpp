@@ -969,7 +969,7 @@ void loadvslot(stream *f, VSlot &vs, int changed)
 
 void loadvslots(stream *f, int numvslots)
 {
-    int *prev = new (false) int[numvslots];
+    int *prev = new (std::nothrow) int[numvslots];
     if(!prev) return;
     memset(prev, -1, numvslots*sizeof(int));
     while(numvslots > 0)
@@ -1196,6 +1196,8 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 
     renderprogress(0, "loading vars...");
 
+    char* skybox; // Read skybox separately as it could be overriden by config
+
     loopi(hdr.numvars)
     {
         int type = f->getchar(), ilen = f->getlil<ushort>();
@@ -1230,7 +1232,16 @@ bool load_world(const char *mname, const char *cname)        // still supports a
                 f->read(val, min(slen, MAXSTRLEN-1));
                 val[min(slen, MAXSTRLEN-1)] = '\0';
                 if(slen >= MAXSTRLEN) f->seek(slen - (MAXSTRLEN-1), SEEK_CUR);
-                if(exists) setsvar(name, val);
+                if(exists) {
+                    if (strcmp("skybox", name))
+                    {
+                        setsvar(name, val);
+                    }
+                    else
+                    {
+                        skybox = val;
+                    }
+                }
                 if(dbgvars) conoutf(CON_DEBUG, "read svar %s: %s", name, val);
                 break;
             }
@@ -1372,6 +1383,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     identflags |= IDF_OVERRIDDEN;
     execfile("data/default_map_settings.cfg", false);
     execfile(cfgname, false);
+    if (strlen(skybox) && !strlen(skybox)) setsvar("skybox", skybox);
     identflags &= ~IDF_OVERRIDDEN;
 
     extern void fixlightmapnormals();

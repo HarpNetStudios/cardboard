@@ -1135,7 +1135,7 @@ namespace server
         demoheader hdr;
         oldstring msg;
         msg[0] = '\0';
-        defformatstring(file, "%s.dmo", smapname);
+        defformatstring(file, "%s.cdm", smapname);
         demoplayback = opengzfile(file, "rb");
         if(!demoplayback) formatstring(msg, "could not read demo \"%s\"", file);
         else if(demoplayback->read(&hdr, sizeof(demoheader))!=sizeof(demoheader) || memcmp(hdr.magic, DEMO_MAGIC, sizeof(hdr.magic)))
@@ -2077,6 +2077,7 @@ namespace server
         loopv(votes) if(!best || votes[i].count > best->count || (votes[i].count == best->count && rnd(2))) best = &votes[i];
         if(force || (best && best->count > maxvotes/2))
         {
+            sendpackets(true);
             if(demorecord) enddemorecord();
             if(best && (best->count > (force ? 1 : maxvotes/2)))
             {
@@ -2139,6 +2140,7 @@ namespace server
         ci->modevote = reqmode;
         if(ci->local || (ci->privilege && mastermode>=MM_VETO))
         {
+            sendpackets(true);
             if(demorecord) enddemorecord();
             if(!ci->local || hasnonlocalclients())
                 sendservmsgf("%s forced %s on map %s", colorname(ci), modename(ci->modevote), ci->mapvote[0] ? ci->mapvote : "[new map]");
@@ -2422,6 +2424,7 @@ namespace server
             if(m_timed && smapname[0] && gamemillis-curtime>0) checkintermission();
             if(interm > 0 && gamemillis>interm)
             {
+                //sendpackets(true);
                 if(demorecord) enddemorecord();
                 interm = -1;
                 checkmapvotes(true);

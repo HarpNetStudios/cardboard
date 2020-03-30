@@ -371,6 +371,7 @@ void Shader::allocparams(Slot *slot)
                 case TEX_DECAL: UNIFORMTEX("decal", tmu++); break;
                 case TEX_SPEC: if(t.combined<0) UNIFORMTEX("specmap", tmu++); break;
                 case TEX_DEPTH: if(t.combined<0) UNIFORMTEX("depthmap", tmu++); break;
+                case TEX_ALPHA: if(t.combined<0) UNIFORMTEX("alphamap", tmu++); break;
                 case TEX_UNKNOWN:
                 {
                     defformatstring(sname, "stex%d", stex++);
@@ -539,6 +540,7 @@ void Shader::cleanup(bool invalid)
         reusevs = reuseps = NULL;
     }
     else loopv(defaultparams) defaultparams[i].loc = -1;
+    owner = NULL;
 }
 
 static void genattriblocs(Shader &s, const char *vs, const char *ps, Shader *reusevs, Shader *reuseps)

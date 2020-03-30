@@ -2,8 +2,8 @@
 #import "SDL2/SDL.h"
 #import <crt_externs.h>
 
-// If you make a MOD then please change this, the bundle indentifier, the file extensions (.ogz, .dmo), and the url registration.
-#define kSAUERBRATEN @"sauerbraten"
+// If you make a MOD then please change this, the bundle indentifier, the file extensions (.cmr, .cdm), and the url registration.
+#define kCARDBOARD @"cardboard"
 
 @implementation Launcher
 
@@ -30,7 +30,7 @@
             {
                 path = [path stringByDeletingLastPathComponent];
                 
-                NSString *probe = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.app/Contents/gamedata", kSAUERBRATEN]];
+                NSString *probe = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.app/Contents/gamedata", kCARDBOARD]];
                 if ([fm fileExistsAtPath:[probe stringByAppendingPathComponent:@"packages"]])
                 {
                     dataPath = [probe retain];
@@ -48,13 +48,13 @@
         }
         NSLog(@"type=%@", type);
     }
-    // userpath: directory where user files are kept - typically /Users/<name>/Application Support/sauerbraten
+    // userpath: directory where user files are kept - typically /Users/<name>/Application Support/cardboard
     path = nil;
     NSArray *supports = [fm URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask];
     if ([supports count])
     {
         path = [[supports objectAtIndex:0] path];
-        path = [path stringByAppendingPathComponent:kSAUERBRATEN];
+        path = [path stringByAppendingPathComponent:kCARDBOARD];
         if (![fm fileExistsAtPath:path]) [fm createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil]; // ensure it exists
     }
     userPath = [path retain];    
@@ -170,7 +170,7 @@
 #pragma mark -
 #pragma mark url opening
 
-// plist registers 'sauerbraten' as a url scheme
+// plist registers 'cardboard' as a url scheme
 - (void)getUrl:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
 {
     NSURL *url = [NSURL URLWithString:[[event paramDescriptorForKeyword:keyDirectObject] stringValue]];

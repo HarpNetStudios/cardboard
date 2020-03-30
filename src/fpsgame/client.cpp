@@ -558,7 +558,7 @@ namespace game
     ICOMMAND(getmode, "", (), intret(gamemode));
     ICOMMAND(timeremaining, "i", (int *formatted),
     {
-        int val = max(maplimit - lastmillis, 0)/1000;
+        int val = max(maplimit - lastmillis + 999, 0)/1000;
         if(*formatted)
         {
             defformatstring(str, "%d:%02d", val/60, val%60);
@@ -1502,8 +1502,7 @@ namespace game
                 s->respawn();
                 parsestate(s, p);
                 s->state = CS_ALIVE;
-                if(cmode) cmode->pickspawn(s);
-                else findplayerspawn(s, -1, (!m_teammode ? 0 : (strcmp(s->team,"red") ? 2 : 1)));
+                pickgamespawn(s); //findplayerspawn(s, -1, (!m_teammode ? 0 : (strcmp(s->team,"red") ? 2 : 1)));
                 if(s == player1)
                 {
                     showscores(false);
@@ -1992,7 +1991,7 @@ namespace game
             case N_DEMOPACKET: return;
             case N_SENDDEMO:
             {
-                defformatstring(fname, "%d.dmo", lastmillis);
+                defformatstring(fname, "%d.cdm", lastmillis);
                 stream *demo = openrawfile(fname, "wb");
                 if(!demo) return;
                 conoutf("received demo \"%s\"", fname);

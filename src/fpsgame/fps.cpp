@@ -291,10 +291,51 @@ namespace game
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }
 
+    float proximityscore(float x, float lower, float upper)
+    {
+        if(x <= lower) return 1.0f;
+        if(x >= upper) return 0.0f;
+        float a = x - lower, b = x - upper;
+        return (b * b) / (a * a + b * b);
+    }
+
+    static inline float harmonicmean(float a, float b) { return a + b > 0 ? 2 * a * b / (a + b) : 0.0f; }
+
+    // avoid spawning near other players
+    float ratespawn(dynent *d, const extentity &e)
+    {
+        fpsent *p = (fpsent *)d;
+        float maxrange = m_noitems && (!cmode || m_ctf_only) ? 160.0f : 400.0f;
+        float minplayerdist = maxrange;
+        loopv(players)
+        {
+            const fpsent *o = players[i];
+            if(o->state != CS_ALIVE || o == p || isteam(o->team, p->team)) continue;
+
+            vec dir = vec(o->o).sub(e.o);
+            float dist = dir.squaredlen();
+            if(dist >= minplayerdist*minplayerdist) continue;
+            dist = sqrtf(dist);
+            dir.mul(1/dist);
+
+            // scale actual distance if not in line of sight
+            if(raycube(e.o, dir, dist) < dist) dist *= 1.5f;
+            minplayerdist = min(minplayerdist, dist);
+        }
+        float rating = 1.0f - proximityscore(minplayerdist, 80.0f, maxrange);
+        return cmode ? harmonicmean(rating, cmode->ratespawn(p, e)) : rating;
+    }
+
+    void pickgamespawn(fpsent *d)
+    {
+        int ent = -1;
+        int tag = cmode ? cmode->getspawngroup(d) : 0;
+        findplayerspawn(d, ent, tag);
+    }
+
     void spawnplayer(fpsent *d)   // place at random spawn
     {
-        /*if(cmode) cmode->pickspawn(d);
-        else*/ findplayerspawn(d, d==player1 && respawnent  >=0 ? respawnent : -1, (!m_teammode ? 0 : (strcmp(player1->team,"red") ? 2 : 1)));
+        pickgamespawn(d); //findplayerspawn(d, d==player1 && respawnent  >=0 ? respawnent : -1, (!m_teammode ? 0 : (strcmp(player1->team,"red") ? 2 : 1)));
         spawnstate(d);
         if(d==player1)
         {
@@ -436,6 +477,8 @@ namespace game
             return;
         }
         else if((d->state!=CS_ALIVE && d->state != CS_LAGGED && d->state != CS_SPAWNING) || intermission) return;
+
+        if(cmode) cmode->died(d, actor);
 
         fpsent *h = followingplayer();
         if(!h) h = player1;
@@ -776,6 +819,11 @@ namespace game
         return showmodeinfo && m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].name : NULL; // .info
     }
 
+    const char *getscreenshotinfo()
+    {
+        return server::modename(gamemode, NULL);
+    }
+
     void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material)
     {
         if     (waterlevel>0) { if(material!=MAT_LAVA) playsound(S_SPLASH1, d==player1 ? NULL : &d->o); }
@@ -977,6 +1025,8 @@ namespace game
 		drawicon(icon, HICON_X + (healthbar ? 2 : 3) * HICON_STEP, HICON_Y);
 	}
 
+    VARP(healthcolors, 0, 1, 1);
+
     void drawhudicons(fpsent *d)
     {
         pushhudmatrix();
@@ -985,7 +1035,9 @@ namespace game
 
         if(healthbar) drawhealth(d);
 
-        draw_textf("%d", (HICON_X + ( healthbar ? 0 : (HICON_SIZE + HICON_SPACE + 20)))/2, HICON_TEXTY/2, d->state==CS_DEAD ? 0 : d->health);
+        defformatstring(health, "%d", d->state==CS_DEAD ? 0 : d->health);
+        bvec healthcolor = bvec::hexcolor(healthcolors && !m_insta ? (d->state==CS_DEAD ? 0x808080 : (d->health<=400 ? 0xFF0000 : (d->health<=600 ? 0xFF8000 : 0xFFFFFF))) : 0xFFFFFF);
+        draw_text(health, (HICON_X + (healthbar ? 0 : (20 + HICON_SIZE + HICON_SPACE)))/2, HICON_TEXTY/2, healthcolor.r, healthcolor.g, healthcolor.b);
         if(d->state!=CS_DEAD)
         {
 			if(!m_bottomless)
@@ -1025,7 +1077,7 @@ namespace game
 
 	void drawgameclock(int w, int h)
 	{
-		int secs = max(maplimit - lastmillis, 0) / 1000, mins = secs / 60;
+        int secs = max(maplimit - lastmillis + 999, 0) / 1000, mins = secs / 60;
 		secs %= 60;
 
 		defformatstring(buf, "%d:%02d", mins, secs);

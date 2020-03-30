@@ -9,12 +9,12 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>dmo</string>
+				<string>cdm</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>Maps.icns</string>
+			<string>cardboard.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>Sauerbraten demo</string>
+			<string>Cardboard Engine demo</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSTypeIsPackage</key>
@@ -25,12 +25,12 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>ogz</string>
+				<string>cmr</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>Maps.icns</string>
+			<string>cardboard.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>Sauerbraten map</string>
+			<string>Cardboard Engine map</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
@@ -49,15 +49,15 @@
 		<string>10.4.0</string>
 	</dict>
 	<key>CFBundleExecutable</key>
-	<string>sauerbraten</string>
+	<string>cardboard</string>
 	<key>CFBundleHelpBookFolder</key>
 	<string>help</string>
 	<key>CFBundleHelpBookName</key>
-	<string>Sauerbraten help</string>
+	<string>Cardboard Engine help</string>
 	<key>CFBundleIconFile</key>
-	<string>sauerbraten</string>
+	<string>cardboard</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.dot3labs.sauerbraten</string>
+	<string>com.harpnetstudios.cardboard</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
@@ -70,10 +70,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>SauerbratenServer</string>
+			<string>CardboardServer</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>sauerbraten</string>
+				<string>cardboard</string>
 			</array>
 		</dict>
 	</array>

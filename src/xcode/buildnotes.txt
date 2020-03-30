@@ -27,7 +27,7 @@ in project.pbxproj
 	MACOSX_DEPLOYMENT_TARGET_ppc = 10.3;
 
 Strip the x86_64 binary! (as SDL x86_64 isn't supported until 10.6)
-	lipo sauerbraten -remove x86_64 -output sauerbraten_c
+	lipo cardboard -remove x86_64 -output cardboard_c
 
 use file to check executable contains i386/ppc/7400 binaries
 
@@ -46,7 +46,7 @@ Copy 1.2.15 SDL frameworks into Frameworks/1.2.15/
 Copy 1.2.14 SDL frameworks into Frameworks/1.2.14/
 	- use install_name_tool on each framework and private frameworks to ensure that everything refers to Frameworks/1.2.14/ (because it uses @executable_path)
 
-Rename MODERN-BUILD sauerbraten executable as sauerbraten_u
-Rename LEGACY-BUILD sauerbraten executable as sauerbraten_c
-Rename xcode/runscript as sauerbraten
+Rename MODERN-BUILD cardboard executable as cardboard_u
+Rename LEGACY-BUILD cardboard executable as cardboard_c
+Rename xcode/runscript as cardboard
 

@@ -274,7 +274,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
             {
                 int mw, mh;
                 text_bounds(mapinfo, mw, mh, infowidth);
-				int tw = text_width(mapinfo);
+				//int tw = text_width(mapinfo);
 				float tsz = sz / (8 * FONTH),
 					tx = (w / 2) - (mw / 4),
 					ty = 0.125f * sz - FONTH * tsz;
@@ -1080,7 +1080,7 @@ void checkinput()
             case SDL_KEYDOWN:
             case SDL_KEYUP:
                 if(keyrepeatmask || !event.key.repeat)
-                    processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED);
+                   processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED, event.key.keysym.mod | SDL_GetModState());
                 break;
 
             case SDL_WINDOWEVENT:

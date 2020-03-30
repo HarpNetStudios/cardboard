@@ -462,6 +462,7 @@ void gl_checkextensions()
     {
         reservevpparams = 10;
         rtsharefb = 0; // work-around for strange driver stalls involving when using many FBOs
+        if (strstr(renderer, "GTX 1") != NULL || strstr(renderer, "GTX 2") != NULL) setvar("oqwait", 0); // work-around for strange driver stalls involving checkquery
         extern int filltjoints;
         if(glversion < 300 && !hasext("GL_EXT_gpu_shader4")) filltjoints = 0; // DX9 or less NV cards seem to not cause many sparklies
 
@@ -1671,6 +1672,7 @@ namespace modelpreview
 
     float oldaspect, oldfovy, oldfov;
     int oldfarplane;
+    matrix4 oldprojmatrix;
 
     void start(int x, int y, int w, int h, bool background)
     {
@@ -1694,6 +1696,7 @@ namespace modelpreview
         oldfovy = fovy;
         oldfov = curfov;
         oldfarplane = farplane;
+        oldprojmatrix = projmatrix;
 
         aspect = w/float(h);
         fovy = modelpreviewfov;
@@ -1732,6 +1735,9 @@ namespace modelpreview
 
         glDisable(GL_SCISSOR_TEST);
         glViewport(0, 0, screenw, screenh);
+
+        projmatrix = oldprojmatrix;
+        setcamprojmatrix();
     }
 }
 

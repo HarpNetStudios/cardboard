@@ -3140,6 +3140,21 @@ ICOMMAND(maxf, "V", (tagval *args, int numargs),
 ICOMMAND(abs, "i", (int *n), intret(abs(*n)));
 ICOMMAND(absf, "f", (float *n), floatret(fabs(*n)));
 
+ICOMMAND(floor, "f", (float* n), floatret(floor(*n)));
+ICOMMAND(ceil, "f", (float* n), floatret(ceil(*n)));
+ICOMMAND(round, "ff", (float* n, float* k),
+{
+    double step = *k;
+    double r = *n;
+    if (step > 0)
+    {
+        r += step * (r < 0 ? -0.5 : 0.5);
+        r -= fmod(r, step);
+    }
+    else r = r < 0 ? ceil(r - 0.5) : floor(r + 0.5);
+    floatret(float(r));
+});
+
 ICOMMAND(cond, "ee2V", (tagval *args, int numargs),
 {
     for(int i = 0; i < numargs; i += 2)

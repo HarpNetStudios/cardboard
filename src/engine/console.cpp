@@ -605,14 +605,20 @@ void processtextinput(const char *str, int len)
         consoleinput(str, len);
 }
 
-void processkey(int code, bool isdown)
+void processkey(int code, bool isdown, int modstate)
 {
+    switch(code)
+    {
+        case SDLK_LGUI: case SDLK_RGUI:
+            return;
+    }
     keym *haskey = keyms.access(code);
     if(haskey && haskey->pressed) execbind(*haskey, isdown); // allow pressed keys to release
     else if(!g3d_key(code, isdown)) // 3D GUI mouse button intercept   
     {
         if(!consolekey(code, isdown))
         {
+            if(modstate&KMOD_GUI) return;
             if(haskey) execbind(*haskey, isdown);
         }
     }
