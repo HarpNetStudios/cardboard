@@ -114,7 +114,7 @@ static struct gamemodeinfo
     { "Regen Capture", M_NOITEMS | M_CAPTURE | M_REGEN | M_TEAM, "Capture neutral bases or steal enemy bases by standing next to them. Your team scores points for every 10 seconds it holds a base. Regenerate health and ammo by standing next to your bases. There are no items." },
 	{ "Capture The Flag", M_CTF | M_TEAM, "Capture the enemy flag and bring it back to your flag to score points for your team. Collect items for ammo." },
     { "Instagib Capture The Flag", M_NOITEMS | M_INSTA | M_CTF | M_TEAM, "Capture the enemy flag and bring it back to your flag to score points for your team. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-	{ "Protect The Flag", M_CTF | M_PROTECT | M_TEAM, ": Touch the enemy flag to score points for your team. Pick up your flag to protect it. Your team loses points if a dropped flag resets. Collect items for ammo." },
+	{ "Protect The Flag", M_CTF | M_PROTECT | M_TEAM, "Touch the enemy flag to score points for your team. Pick up your flag to protect it. Your team loses points if a dropped flag resets. Collect items for ammo." },
     { "Instagib Protect The Flag", M_NOITEMS | M_INSTA | M_CTF | M_PROTECT | M_TEAM, "Touch the enemy flag to score points for your team. Pick up your flag to protect it. Your team loses points if a dropped flag resets. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
     { "Hold The Flag", M_CTF | M_HOLD | M_TEAM, "Hold the flag for 20 seconds to score points for your team. Collect items for ammo." },
     { "Instagib Hold The Flag", M_NOITEMS | M_INSTA | M_CTF | M_HOLD | M_TEAM, "Hold the flag for 20 seconds to score points for your team. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
@@ -358,8 +358,9 @@ struct fpsstate
 	int gunwait[NUMGUNS];
     int ammo[NUMGUNS];
     int aitype, skill;
+    int ggtier;
 
-    fpsstate() : health(1000), maxhealth(1000), aitype(AI_NONE), skill(0) {}
+    fpsstate() : health(1000), maxhealth(1000), aitype(AI_NONE), skill(0), ggtier(-1) {}
 
 	void baseammo(int gun, int k = 2, int scale = 1)
 	{
@@ -475,7 +476,9 @@ struct fpsstate
         }
 		else if (m_gun)
 		{
+            if(ggtier <= 0) ggtier = 1;
 			loopi(6) ammo[i + 1] = INT_MAX;
+            gunselect = ggtier;
 		}
         else
         {

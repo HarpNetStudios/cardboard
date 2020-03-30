@@ -2399,7 +2399,7 @@ void gl_drawhud()
 
 				if (showvel && !editmode)
 				{
-					float speed = camera1->vel.magnitude();
+                    float speed = game::hudplayer()->vel.magnitude();
 					draw_textf("%3.1f cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, speed);
 					roffset += FONTH;
 				}

@@ -65,11 +65,12 @@ namespace game
     void setweapon(const char *name, bool force = false)
     {
         int gun = getweapon(name);
+        if (m_gun & !force) return;
         if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_GL) return;
         if(force || player1->ammo[gun]) gunselect(gun, player1);
         else playsound(S_NOAMMO);
     }
-    ICOMMAND(setweapon, "si", (char *name, int *force), setweapon(name, *force!=0));
+    ICOMMAND(setweapon, "s", (char *name), setweapon(name));
 
     void dbgreload(const char *name)
     {
@@ -626,7 +627,7 @@ namespace game
             if(exploded)
             {
                 if(p.local)
-                    addmsg(N_EXPLODE, "rci3iv", p.owner, lastmillis-maptime, p.gun, p.id-maptime, // headshot
+                    addmsg(N_EXPLODE, "rci3iv", p.owner, lastmillis-maptime, p.gun, p.id-maptime,
                             hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
                 projs.remove(i--);
             }
@@ -826,7 +827,7 @@ namespace game
         }
         else if((o = intersectclosest(from, to, d, dist)))
         {
-			headshot = isheadshot((fpsent*)o, from, to);
+			headshot = isheadshot(o, from, to);
             shorten(from, to, dist);
             hitpush(qdam, o, d, from, to, d->gunselect, 1, headshot);
         }

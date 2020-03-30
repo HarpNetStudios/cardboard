@@ -82,6 +82,7 @@ namespace CardboardLauncher
                     config.gameToken = "";
                     userAuthLabel.Text = "User: N/A";
                 }
+                playOfflineChkBox.Checked = playOfflineChkBox.Enabled = !success;
                 playButton.Enabled = success;
             }
             catch (Exception)
@@ -152,7 +153,6 @@ namespace CardboardLauncher
             {
                 if (token.Length.Equals(64))
                 {
-                    playOfflineChkBox.Checked = playOfflineChkBox.Enabled = false;
                     DisplayMessage("Successfully set game token!");
                     return;
                 }

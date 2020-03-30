@@ -87,6 +87,7 @@
 
 #include "iengine.h"
 #include "igame.h"
+#include "game.h"
 
 #endif
 

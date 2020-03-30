@@ -357,19 +357,26 @@ namespace game
 
     VARP(hitsound, 0, 0, 1);
 
+    VARP(p_hitmark, 0, 0, 1);
+
     void damaged(int damage, fpsent *d, fpsent *actor, int gun, bool local)
     {
-        if(m_parkour || isteam(d->team,actor->team)) return;
+        if(isteam(d->team,actor->team)) return;
 
         if((d->state!=CS_ALIVE && d->state != CS_LAGGED && d->state != CS_SPAWNING) || intermission) return;
 
-        if(local) damage = d->dodamage(damage);
+        if(local && !m_parkour) damage = d->dodamage(damage);
         else if(actor==player1) return;
 
         fpsent *h = hudplayer();
         if(h!=player1 && actor==h && d!=actor)
         {
-            if(hitsound && lasthit != lastmillis && !m_parkour) playsound(S_HIT);
+            if(hitsound && lasthit != lastmillis) playsound(S_HIT);
+            else if(!(m_parkour && !p_hitmark))
+            {
+                playsound(S_HIT); // TODO: Make this actually work.
+                return;
+            }
             lasthit = lastmillis;
         }
         if(d==h)
@@ -467,18 +474,23 @@ namespace game
 				else
 					conoutf(contype, "\f2%s\f2 > %s > %s%s", aname, getweaponname(gun), dname, special?hs:"");
 			}
-			if (d != actor) {
-				if (m_gun)
+			if (m_gun) {
+				if (d != actor)
 				{
 					if (actor->frags >= 12) { intermission = true; if (cmode) cmode->gameover(); addmsg(N_FORCEINTERMISSION); }
-					//loopi(GUN_GL-GUN_FIST+1) actor->ammo[i] = 0;
-					int currentgun = clamp(int(floor(actor->frags / 2))+1, (int)GUN_SMG, (int)GUN_GL);
-					conoutf("gun should be %d", currentgun);
-					//actor->ammo[currentgun] = (itemstats[currentgun - GUN_SMG].add * 2);
+					actor->ggtier = clamp(int(floor(actor->frags / 2))+1, GUN_SMG, GUN_GL);
+					conoutf("gun should be %d", actor->ggtier);
 					actor->attacking = false;
 					actor->secattacking = false;
-					actor->gunselect = currentgun;
+					actor->gunselect = actor->ggtier;
 				}
+                else
+                {
+                    actor->ggtier = clamp(actor->ggtier - 2, GUN_SMG, GUN_GL);
+                    actor->attacking = false;
+                    actor->secattacking = false;
+                    actor->gunselect = actor->ggtier;
+                }
 			}
 		}
 		deathstate(d);
@@ -634,7 +646,7 @@ namespace game
 							if (cJSON_IsString(color) && (color->valuestring != NULL) && (strcmp(color->valuestring, "")))
 							{
 								//conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
-								concformatstring(conc, "\fs\f%s[%s] \fr", color->valuestring, tag->valuestring);
+								concformatstring(conc, "\fs\f%s[%s]\fr", color->valuestring, tag->valuestring);
 							}
 							else {
 								concformatstring(conc, "[%s]", tag->valuestring);
@@ -1106,7 +1118,7 @@ namespace game
         if(d->state!=CS_ALIVE) return 0;
 
         int crosshair = 0;
-        if(lasthit && lastmillis - lasthit < hitcrosshair && !m_parkour) crosshair = 2;
+        if(lasthit && lastmillis - lasthit < hitcrosshair && !(m_parkour && !p_hitmark)) crosshair = 2;
         else if(teamcrosshair)
         {
             dynent *o = intersectclosest(d->o, worldpos, d);
