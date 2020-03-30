@@ -2253,7 +2253,7 @@ void writeescapedstring(stream* f, const char* s)
 	case '^': f->write("^^", 2); break;
 	default: f->putchar(*s); break;
 	}
-	f->write("\"\0", 2);
+	f->write("\"", 2);
 }
 
 ICOMMAND(escape, "s", (char *s), result(escapestring(s)));

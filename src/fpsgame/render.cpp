@@ -241,7 +241,7 @@ namespace game
             renderplayer(player1, getplayermodelinfo(player1), teamskins || m_teammode ? (strcmp(player1->team, "red") ? 1 : 2) : 0, 1, mainpass);
         }
         entities::renderentities();
-        if(dbgspawns) renderspawns();
+        if(dbgspawns && m_edit) renderspawns(); // this could be cheaty if used online -Y
         renderbouncers();
         renderprojectiles();
         if(cmode) cmode->rendergame();

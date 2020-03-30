@@ -1026,6 +1026,7 @@ namespace game
 	}
 
     VARP(healthcolors, 0, 1, 1);
+    VARP(delayammo, 0, 1, 1);
 
     void drawhudicons(fpsent *d)
     {
@@ -1040,14 +1041,11 @@ namespace game
         draw_text(health, (HICON_X + (healthbar ? 0 : (20 + HICON_SIZE + HICON_SPACE)))/2, HICON_TEXTY/2, healthcolor.r, healthcolor.g, healthcolor.b);
         if(d->state!=CS_DEAD)
         {
-			if(!m_bottomless)
-            {
-                draw_textf("%d", (HICON_X + (healthbar ? 1 : 2)*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, d->ammo[d->gunselect]);
-            }
-            else
-            {
-                draw_textf("INF", (HICON_X + (healthbar ? 1 : 2)*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2);
-            }
+            oldstring ammocount = "INF";
+            if(!m_bottomless) formatstring(ammocount, "%d", d->ammo[d->gunselect]);
+
+            bvec ammocolor = bvec::hexcolor((d->gunwait[d->gunselect]>0 && delayammo)?0x888888:0xFFFFFF);
+			draw_text(ammocount, (HICON_X + (healthbar ? 1 : 2)*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, ammocolor.r, ammocolor.g, ammocolor.b);
         }
 
         pophudmatrix();
