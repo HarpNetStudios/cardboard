@@ -109,9 +109,8 @@ void writeinitcfg()
     stream *f = openutf8file("init.cfg", "w");
     if(!f) return;
     f->printf("// automatically written on exit, DO NOT MODIFY\n// modify settings in game\n");
-    extern int fullscreen, fullscreendesktop;
+    extern int fullscreen;
     f->printf("fullscreen %d\n", fullscreen);
-    f->printf("fullscreendesktop %d\n", fullscreendesktop);
     f->printf("scr_w %d\n", scr_w);
     f->printf("scr_h %d\n", scr_h);
     f->printf("depthbits %d\n", depthbits);
@@ -501,12 +500,16 @@ void inputgrab(bool on)
 
 bool initwindowpos = false;
 
-void setfullscreen(bool enable)
+void setfullscreen(int enable)
 {
     if(!screen) return;
     //initwarning(enable ? "fullscreen" : "windowed");
-    extern int fullscreendesktop;
-    SDL_SetWindowFullscreen(screen, enable ? (fullscreendesktop ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_FULLSCREEN) : 0);
+    extern int fullscreen, fullscreendesktop;
+    if(fullscreendesktop && enable) {
+        enable = fullscreen = 2;
+        fullscreendesktop = 0;
+    }
+    SDL_SetWindowFullscreen(screen, enable ? ((enable == 2) ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_FULLSCREEN) : 0);
     if(!enable)
     {
         SDL_SetWindowSize(screen, scr_w, scr_h);
@@ -519,11 +522,7 @@ void setfullscreen(bool enable)
     }
 }
 
-#ifdef _DEBUG
-VARF(fullscreen, 0, 0, 1, setfullscreen(fullscreen!=0));
-#else
-VARF(fullscreen, 0, 1, 1, setfullscreen(fullscreen!=0));
-#endif
+VARF(fullscreen, 0, 0, 2, setfullscreen(fullscreen));
 
 void resetfullscreen()
 {
@@ -531,7 +530,7 @@ void resetfullscreen()
     setfullscreen(true);
 }
 
-VARF(fullscreendesktop, 0, 0, 1, if(fullscreen) resetfullscreen());
+VAR(fullscreendesktop, 0, 0, 1);
 
 void screenres(int w, int h)
 {
@@ -539,14 +538,14 @@ void screenres(int w, int h)
     scr_h = clamp(h, SCR_MINH, SCR_MAXH);
     if(screen)
     {
-        if(fullscreendesktop)
+        if(fullscreen == 2)
         {
             scr_w = min(scr_w, desktopw);
             scr_h = min(scr_h, desktoph);
         }
         if(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN)
         {
-            if(fullscreendesktop) gl_resize();
+            if(fullscreen == 2) gl_resize();
             else resetfullscreen();
         }
         else SDL_SetWindowSize(screen, scr_w, scr_h);
@@ -807,7 +806,7 @@ void setupscreen()
     if(scr_w < 0) scr_w = (scr_h*desktopw)/desktoph;
     scr_w = clamp(scr_w, SCR_MINW, SCR_MAXW);
     scr_h = clamp(scr_h, SCR_MINH, SCR_MAXH);
-    if(fullscreendesktop)
+    if(fullscreen == 2)
     {
         scr_w = min(scr_w, desktopw);
         scr_h = min(scr_h, desktoph);
@@ -816,7 +815,7 @@ void setupscreen()
     int winx = SDL_WINDOWPOS_UNDEFINED, winy = SDL_WINDOWPOS_UNDEFINED, winw = scr_w, winh = scr_h, flags = SDL_WINDOW_RESIZABLE;
     if(fullscreen)
     {
-        if(fullscreendesktop)
+        if(fullscreen == 2)
         {
             winw = desktopw;
             winh = desktoph;
@@ -1117,7 +1116,7 @@ void checkinput()
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
                     {
                         SDL_GetWindowSize(screen, &screenw, &screenh);
-                        if(!fullscreendesktop || !(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
+                        if(fullscreen != 2 || !(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
                         {
                             scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
                             scr_h = clamp(screenh, SCR_MINH, SCR_MAXH);
