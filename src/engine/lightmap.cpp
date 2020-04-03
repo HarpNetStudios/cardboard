@@ -475,7 +475,7 @@ static bool packlightmap(lightmapinfo &l, layoutinfo &surface)
 
 static void updatelightmap(const layoutinfo &surface)
 {
-    if(max(LM_PACKW, LM_PACKH) > hwtexsize) return;
+    if(max(LM_PACKW, LM_PACKH) > hwtexsize || !lightmaps.inrange(surface.lmid-LMID_RESERVED)) return;
 
     LightMap &lm = lightmaps[surface.lmid-LMID_RESERVED];
     if(lm.tex < 0)
@@ -2441,7 +2441,7 @@ void genlightmaptexs(int flagmask, int flagval)
 {
     if(lightmaptexs.length() < LMID_RESERVED) genreservedlightmaptexs();
 
-    int remaining[3] = { 0, 0, 0 }, total = 0; 
+    int remaining[LM_TYPE+1] = { 0 }, total = 0; 
     loopv(lightmaps) 
     {
         LightMap &lm = lightmaps[i];
