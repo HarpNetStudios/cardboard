@@ -540,6 +540,7 @@ COMMAND(sortservers, "");
 
 VARP(autosortservers, 0, 1, 1);
 VARP(autoupdateservers, 0, 1, 1);
+VARP(slshowhost, 0, 0, 1);
 
 void refreshservers()
 {
@@ -577,6 +578,7 @@ const char *showservers(g3d_gui *cgui, uint *header, int pagemin, int pagemax)
         cgui->pushlist();
         loopi(10)
         {
+            if(!slshowhost && (i==6||i==7)) continue;
             if(!game::serverinfostartcolumn(cgui, i)) break;
             for(int j = start; j < end; j++)
             {

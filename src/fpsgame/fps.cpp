@@ -975,9 +975,9 @@ namespace game
 
     void drawhealth(fpsent *d, bool isinsta = false, float tx = 0, float ty = 0, float tw = 1, float th = 1)
     {
-        float barh = 125, barw = ((HICON_TEXTY/2)-barh)+HICON_SIZE*.75;
-        float h = d->state==CS_DEAD ? 0 : (d->health*barh)/(m_insta ? 1 : d->maxhealth), w = HICON_SIZE*.85;
-        float x = (HICON_X/2), y = ((HICON_TEXTY/2)-h)+HICON_SIZE*.75;
+        float barh = HICON_SIZE, barw = ((HICON_TEXTY/2)-barh)+(HICON_SIZE*.5);
+        float h = (d->state==CS_DEAD ? 0 : ((d->health*barh)/d->maxhealth)), w = HICON_SIZE*.5;
+        float x = (HICON_X/2), y = ((HICON_TEXTY/2)-h)+(HICON_SIZE*.5);
 
 		//conoutf("%f/%f=%f", (d->health * barh), (m_insta ? 1 : d->maxhealth), (d->health*barh)/(m_insta ? 1 : d->maxhealth));
 		//conoutf("%d (%d)", d->health, d->maxhealth);
@@ -1012,7 +1012,15 @@ namespace game
     }
 
     VARP(ammohud, 0, 1, 1);
+    VARP(ammohudhidemelee, 0, 0, 1);
+    VARP(ammohudspacing, 0, 0, 1);
+    VARP(ammohudoffset, 0, 0, 3);
+    FVARP(ammohudscale, 1, 1, 2);
+
 	VARP(healthbar, 0, 1, 1);
+    VARP(healthcolors, 0, 1, 1);
+
+    VARP(delayammo, 0, 1, 1);
 
 	void drawspacepack(fpsent *d)
 	{
@@ -1021,12 +1029,26 @@ namespace game
 		if(d->spacepack) icon = HICON_SPACEPACK;
 		else icon = HICON_SPACEPACK_OFF;
 		if(d->spacepack && d->spaceclip) icon = HICON_SPACEPACK_CLIP;
-
+        gle::color(bvec::hexcolor(0xFFFFFF), 255);
 		drawicon(icon, HICON_X + (healthbar ? 2 : 3) * HICON_STEP, HICON_Y);
 	}
 
-    VARP(healthcolors, 0, 1, 1);
-    VARP(delayammo, 0, 1, 1);
+    void drawammohud(fpsent *d) // this is messy, clean up later -Y 04/03/2020
+    {
+        gle::color(bvec::hexcolor(0xFFFFFF), 255);
+        int gunact = 0; // ammount of active guns
+        loopi(7-ammohudhidemelee) {
+            gle::color(bvec::hexcolor(!(lastmillis - d->lastaction[i+ammohudhidemelee] >= d->gunwait[i+ammohudhidemelee])?0x888888:0xFFFFFF), 255);
+            if(d->ammo[i+ammohudhidemelee]>0)
+            {
+                int spa;
+                if(!ammohudspacing) { spa = gunact; gunact++; } // only count up when ammo is present
+                else spa = i+ammohudhidemelee; // always count up
+
+                drawicon(HICON_FIST+i+ammohudhidemelee, HICON_X + ((healthbar ? 3+ammohudoffset : 4+ammohudoffset) * HICON_STEP) + (spa*HICON_SIZE/ammohudscale), HICON_Y, 120/ammohudscale);
+            }
+        }
+    }
 
     void drawhudicons(fpsent *d)
     {
@@ -1034,7 +1056,7 @@ namespace game
         hudmatrix.scale(2, 2, 1);
         flushhudmatrix();
 
-        if(healthbar) drawhealth(d);
+        if(healthbar) drawhealth(d, m_insta);
 
         defformatstring(health, "%d", d->state==CS_DEAD ? 0 : d->health);
         bvec healthcolor = bvec::hexcolor(healthcolors && !m_insta ? (d->state==CS_DEAD ? 0x808080 : (d->health<=400 ? 0xFF0000 : (d->health<=600 ? 0xFF8000 : 0xFFFFFF))) : 0xFFFFFF);
@@ -1044,7 +1066,7 @@ namespace game
             oldstring ammocount = "INF";
             if(!m_bottomless) formatstring(ammocount, "%d", d->ammo[d->gunselect]);
 
-            bvec ammocolor = bvec::hexcolor((d->gunwait[d->gunselect]>0 && delayammo)?0x888888:0xFFFFFF);
+            bvec ammocolor = bvec::hexcolor((delayammo && !(lastmillis - d->lastaction[d->gunselect] >= d->gunwait[d->gunselect]))?0x888888:0xFFFFFF);
 			draw_text(ammocount, (HICON_X + (healthbar ? 1 : 2)*HICON_STEP + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, ammocolor.r, ammocolor.g, ammocolor.b);
         }
 
@@ -1060,6 +1082,8 @@ namespace game
 			else drawicon(HICON_FIST + d->gunselect, HICON_X + (healthbar ? 1 : 2) * HICON_STEP, HICON_Y);
             
 			if(spacepackallowed) drawspacepack(d);
+
+            if(ammohud) drawammohud(d);
         }
     }
 

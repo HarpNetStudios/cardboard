@@ -335,7 +335,7 @@ enum
     HICON_Y       = 1650,
     HICON_TEXTY   = 1644,
     HICON_STEP    = 343, // 70% of normal
-    HICON_SIZE    = 84,  //
+    HICON_SIZE    = 120,
     HICON_SPACE   = 40
 };
 

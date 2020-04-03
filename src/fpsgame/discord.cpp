@@ -74,6 +74,7 @@ namespace discord
 
 				char* x[] = { // all maps with discord rpc keys
 					"color",
+					"cosmic",
 					"duabo",
 					"flux",
 					"fz_burn",
@@ -87,7 +88,6 @@ namespace discord
 					"ruins",
 					"secondevermap",
 					"zigguraut",
-					"zsolttest",
 				};
 				const char* s = game::getclientmap();
 				const char* fin = "logo-large";

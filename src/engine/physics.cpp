@@ -1669,7 +1669,10 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
     bool allowmove = game::allowmove(pl);
     if(pl->physstate != PHYS_FALL)
     {
-		pl->jumpstate = false;
+		pl->jumpstate = 0;
+    }
+    if (pl->physstate == PHYS_FALL && pl->candouble && pl->jumpstate < 2 && !water) {
+        pl->jumpstate = 1;
     }
     if(floating)
     {
@@ -1679,8 +1682,6 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
             pl->vel.z = max(pl->vel.z, JUMPVEL);
         }
     }
-
-	//conoutf(CON_DEBUG, "jumpstate: %d", pl->jumpstate);
 
     else if(pl->spacepack && !pl->spaceclip)
     {
@@ -1699,13 +1700,13 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 
     else if(pl->physstate >= PHYS_SLOPE || water)
     {
-        if(water && !pl->inwater) pl->vel.div(4);
+        if(water && !pl->inwater) pl->vel.div(2);
         if(pl->jumping && allowmove)
         {
             pl->jumping = false;
 
             pl->vel.z = max(pl->vel.z, JUMPVEL); // physics impulse upwards
-            if(water) { pl->vel.x /= 4.0f; pl->vel.y /= 4.0f; } // dampen velocity change even harder, gives correct water feel
+            if(water) { pl->vel.x /= 2.0f; pl->vel.y /= 2.0f; } // dampen velocity change even harder, gives correct water feel
 
 			pl->jumpstate = 1;
 
@@ -1715,9 +1716,10 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
     if(pl->jumpstate == 1 && pl->candouble)
     {
 		if (pl->jumping) {
-			pl->falling.z = 0; // set back gravity to 0, so you can jump again
+            
+			pl->falling.z = 10; // set back gravity to 10, so you can jump again with less down force immediately
 			pl->vel.z = max(pl->vel.z, pl->vel.z + (JUMPVEL / 2)); // physics impulse upwards
-			if (water) { pl->vel.x /= 8.0f; pl->vel.y /= 8.0f; } // dampen velocity change even harder, gives correct water feel
+			if (water) { pl->vel.x /= 2.0f; pl->vel.y /= 2.0f; } // dampen velocity change even harder, gives correct water feel
 
 			pl->jumpstate = 2;
 
@@ -1768,6 +1770,12 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 		else if (!water && allowmove) d.mul(1.3f * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
     }
 	calcfric(pl, local, water, floating, curtime, d);
+
+    /*
+    conoutf("jumping: %d", pl->jumping);
+    conoutf("candouble: %d", pl->candouble);
+    conoutf("jumpstate: %d", pl->jumpstate);
+    */
 }
 
 void modifygravity(physent *pl, bool water, int curtime)

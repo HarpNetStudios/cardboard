@@ -922,7 +922,7 @@ namespace game
             bouncer &bnc = *bouncers[i];
             if(bnc.bouncetype!=BNC_GRENADE) continue;
             vec pos = bnc.offsetpos();
-            adddynlight(pos, 10, vec(0.25f, 1, 1));
+            adddynlight(pos, bnc.lifetime/100, vec(0.25f, 1, 1)); // 10
         }
     }
 
