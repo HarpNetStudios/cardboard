@@ -19,8 +19,6 @@ prototype.png
 prototype_blue.png
 prototype_red.png
 
-spectator.png (based on a CC BY-NC version by P.J. Onori, http://www.somerandomdude.com/)
-
 (c) 2013 Alexander "pix" Willing
 
 License: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/

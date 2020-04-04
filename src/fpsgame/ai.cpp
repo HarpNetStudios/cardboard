@@ -1436,6 +1436,7 @@ namespace ai
         }
         if(showwaypoints || aidebug >= 6)
         {
+            if(dropwaypoints) particle_flare(camera1->feetpos(), camera1->feetpos(), 1, PART_SPARK, 0x00FFFF, 0.5f, camera1);
             vector<int> close;
             int len = waypoints.length();
             if(showwaypointsradius)

@@ -1117,6 +1117,8 @@ static uint mapcrc = 0;
 uint getmapcrc() { return mapcrc; }
 void clearmapcrc() { mapcrc = 0; }
 
+VAR(loadcubelms, 0, 0, 1);
+
 bool load_world(const char *mname, const char *cname)        // still supports all map formats that have existed since the earliest cube betas!
 {
 	bool cube2 = false;
@@ -1129,7 +1131,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     octaheader hdr;
     if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
     lilswap(&hdr.version, 6);
-	if(!memcmp(hdr.magic, "OCTA", 4)) { conoutf(CON_ERROR, "\f3map %s is a Cube 2 map, attempting automatic conversion...", cmrname); cube2 = true; memcpy(hdr.magic, "CARD", 4); }
+	if(!memcmp(hdr.magic, "OCTA", 4)) { conoutf(CON_ERROR, "\f3map %s is a Cube 2 map, attempting automatic conversion...", cmrname); cube2 = 1+loadcubelms; memcpy(hdr.magic, "CARD", 4); }
     if(memcmp(hdr.magic, "CARD", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
     if(hdr.version>MAPVERSION) { conoutf(CON_ERROR, "map %s requires a newer version of this game", cmrname); delete f; return false; }
     compatheader chdr;
@@ -1196,9 +1198,6 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 
     renderprogress(0, "loading vars...");
 
-    char* skybox; // Read skybox separately as it could be overriden by config
-
-
     loopi(hdr.numvars)
     {
         int type = f->getchar(), ilen = f->getlil<ushort>();
@@ -1233,16 +1232,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
                 f->read(val, min(slen, MAXSTRLEN-1));
                 val[min(slen, MAXSTRLEN-1)] = '\0';
                 if(slen >= MAXSTRLEN) f->seek(slen - (MAXSTRLEN-1), SEEK_CUR);
-                if(exists) {
-                    if (strcmp("skybox", name))
-                    {
-                        setsvar(name, val);
-                    }
-                    else
-                    {
-                        skybox = val;
-                    }
-                }
+                if(exists) setsvar(name, val);
                 if(dbgvars) conoutf(CON_DEBUG, "read svar %s: %s", name, val);
                 break;
             }
@@ -1348,7 +1338,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 
     if(!failed)
     {
-		if(!cube2) {
+		if(!cube2 || cube2==2) {
 			if(hdr.version >= 7) loopi(hdr.lightmaps)
 			{
 				renderprogress(i/(float)hdr.lightmaps, "loading lightmaps...");
@@ -1382,7 +1372,6 @@ bool load_world(const char *mname, const char *cname)        // still supports a
     clearmainmenu();
 
     identflags |= IDF_OVERRIDDEN;
-    if(skybox[0]) setsvar("skybox", skybox);
     execfile("data/default_map_settings.cfg", false);
     execfile(cfgname, false);
     

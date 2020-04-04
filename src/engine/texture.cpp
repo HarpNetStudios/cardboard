@@ -617,7 +617,7 @@ VAR(hwmaxaniso, 1, 0, 0);
 VARFP(maxtexsize, 0, 0, 1<<12, initwarning("texture quality", INIT_LOAD));
 VARFP(reducefilter, 0, 1, 1, initwarning("texture quality", INIT_LOAD));
 VARFP(texreduce, 0, 0, 12, initwarning("texture quality", INIT_LOAD));
-VARFP(texcompress, 0, 1<<10, 1<<12, initwarning("texture quality", INIT_LOAD));
+VARFP(texcompress, 0, 0, 1<<12, initwarning("texture quality", INIT_LOAD));
 VARFP(texcompressquality, -1, -1, 1, setuptexcompress());
 VARFP(trilinear, 0, 1, 1, initwarning("texture filtering", INIT_LOAD));
 VARFP(bilinear, 0, 1, 1, initwarning("texture filtering", INIT_LOAD));
@@ -3270,7 +3270,7 @@ void writepngchunk(stream *f, const char *type, uchar *data = NULL, uint len = 0
     f->putbig<uint>(crc);
 }
 
-VARP(compresspng, 0, 9, 9);
+VARP(compresspng, 0, 0, 9);
 
 void savepng(const char *filename, ImageData &image, bool flip)
 {
@@ -3382,7 +3382,7 @@ struct tgaheader
     uchar  descbyte;
 };
 
-VARP(compresstga, 0, 1, 1);
+VARP(compresstga, 0, 0, 1);
 
 void savetga(const char *filename, ImageData &image, bool flip)
 {
