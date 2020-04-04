@@ -1265,8 +1265,11 @@
     <None Include="..\..\docs\models.html" />
     <None Include="..\..\init.cfg" />
     <None Include="..\..\launcher.json" />
+    <None Include="..\..\packages\lang\de_DE.cfg" />
     <None Include="..\..\packages\lang\en_US.cfg" />
     <None Include="..\..\packages\lang\fr_CA.cfg" />
+    <None Include="..\..\packages\lang\nl_NL.cfg" />
+    <None Include="..\..\packages\lang\ru_RU.cfg" />
     <None Include="..\..\restore.cfg" />
     <None Include="..\..\server-init.cfg" />
     <None Include="..\..\servers.cfg" />

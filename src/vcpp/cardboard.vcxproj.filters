@@ -524,6 +524,15 @@
     <None Include="..\..\launcher.json">
       <Filter>config</Filter>
     </None>
+    <None Include="..\..\packages\lang\de_DE.cfg">
+      <Filter>config\lang</Filter>
+    </None>
+    <None Include="..\..\packages\lang\nl_NL.cfg">
+      <Filter>config\lang</Filter>
+    </None>
+    <None Include="..\..\packages\lang\ru_RU.cfg">
+      <Filter>config\lang</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\ADDING_REMOVING_FILES.txt" />
