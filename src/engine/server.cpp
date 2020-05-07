@@ -317,6 +317,7 @@ const char *disconnectreason(int reason)
         case DISC_TIMEOUT: return "connection timed out";
         case DISC_OVERFLOW: return "overflow";
         case DISC_PASSWORD: return "invalid password";
+        case DISC_PUBTOKEN: return "account authentication failure";
         default: return NULL;
     }
 }

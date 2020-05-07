@@ -1085,11 +1085,17 @@ namespace game
         flushclient();
     }
 
+    void setpubtoken(const char* pubtoken)
+    {
+        filtertext(player1->pubtoken, pubtoken, false, false, 32);
+    }
+
     void sendintro()
     {
         packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
         putint(p, N_CONNECT);
         sendstring(player1->name, p);
+        sendstring(player1->pubtoken, p);
         putint(p, player1->playermodel);
         oldstring hash = "";
         if(connectpass[0])

@@ -645,13 +645,15 @@ namespace game
 	oldstring fulltag = "";
 
 	VARP(showtags, 0, 1, 1);
+    VAR(dbgtags, 0, 0, 1);
 
 	const char* gettags(fpsent* d, char* tag)
 	{
-		if (!d->name[0] || !strcmp(d->name, "CardboardPlayer")) return "";
-		if (d->tagfetch) return *d->tags ? d->tags : tag;
+        if(offline) { d->tagfetch = true; return ""; }
+        if(d->tagfetch) return *d->tags ? d->tags : tag;
+		if(!d->name[0] || !strcmp(d->name, "CardboardPlayer")) return "";
 		copystring(d->tags, "");
-		conoutf(CON_INFO, "\fs\f1getting tags for %s...\fr", d->name);
+		if(dbgtags) conoutf(CON_INFO, "\fs\f1getting tags for %s...\fr", d->name);
 		oldstring apiurl;
 		formatstring(apiurl, "%s/game/get/tags?id=1&name=%s", HNAPI, d->name);
 		char* thing = web_get(apiurl, false);
@@ -663,7 +665,8 @@ namespace game
 		const cJSON* message = cJSON_GetObjectItemCaseSensitive(json, "message");
 		if (cJSON_IsNumber(status) && cJSON_IsString(message)) {
 			if (status->valueint > 0) {
-				//conoutf(CON_ERROR, "web error! status: %d, \"%s\"", status->valueint, message->valuestring);
+                if(dbgtags) conoutf(CON_INFO, "\fs\f3getting tags for %s failed! (non-zero)\fr", d->name);
+                d->tagfetch = true;
 				return "";
 			}
 			else {
@@ -685,10 +688,10 @@ namespace game
 						color = cJSON_GetObjectItemCaseSensitive(tagitm, "color");
 						if (strcmp(tag->valuestring, "")) 
 						{
-							//conoutf(CON_DEBUG, "tag is \"%s\"", tag->valuestring);
+							if(dbgtags) conoutf(CON_DEBUG, "tag is \"%s\"", tag->valuestring);
 							if (cJSON_IsString(color) && (color->valuestring != NULL) && (strcmp(color->valuestring, "")))
 							{
-								//conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
+								if(dbgtags) conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
 								concformatstring(conc, "\fs\f%s[%s]\fr", color->valuestring, tag->valuestring);
 							}
 							else {
@@ -697,7 +700,7 @@ namespace game
 						}
 						else if(cJSON_IsString(color) && (color->valuestring != NULL))
 						{
-							conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
+							if(dbgtags) conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
 							concformatstring(conc, "\f%s", color->valuestring);
 						}
 					}
@@ -712,9 +715,13 @@ namespace game
 		else {
 			//conoutf(CON_ERROR, "malformed JSON recieved from server");
 			free(json);
+            conoutf(CON_INFO, "\fs\f3getting tags for %s failed! (malformed JSON)\fr", d->name);
+            d->tagfetch = true;
 			return "";
 		}
 		free(json);
+        conoutf(CON_INFO, "\fs\f3getting tags for %s failed! (no tag)\fr", d->name);
+        d->tagfetch = true;
 		return "";
 	}
 

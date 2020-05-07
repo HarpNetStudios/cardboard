@@ -292,7 +292,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 #define CARDBOARD_SERVER_PORT 35000
 #define CARDBOARD_SERVINFO_PORT 35001
 #define CARDBOARD_MASTER_PORT 35002
-#define PROTOCOL_VERSION 1004           // bump when protocol changes
+#define PROTOCOL_VERSION 1005           // bump when protocol changes
 #define DEMO_VERSION 1                  // bump when demo format changes
 #define DEMO_MAGIC "CARDBOARD_DEMO"
 
@@ -526,7 +526,7 @@ struct fpsent : dynent, fpsstate
     int smoothmillis;
 	bool tagfetch; // check if tag has been got. -Y
 
-    oldstring name, team, info, tags;
+    oldstring name, team, info, tags, pubtoken;
     int playermodel;
     ai::aiinfo *ai;
     int ownernum, lastnode;
@@ -743,6 +743,7 @@ namespace game
     extern void forceintermission();
     extern void c2sinfo(bool force = false);
     extern void sendposition(fpsent *d, bool reliable = false);
+    extern void setpubtoken(const char* pubtoken);
 
     // weapon
     extern int getweapon(const char *name);

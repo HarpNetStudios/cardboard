@@ -1346,7 +1346,7 @@ VARP(curltimeout, 1, 5, 60);
 
 char* web_get(char *targetUrl, bool debug)
 {
-	if (offline) {
+	if (offline && !isdedicatedserver()) {
 		if (debug) conoutf(CON_ERROR, "cannot make web request in offline mode");
 		return "";
 	}
@@ -1449,10 +1449,16 @@ void getuserinfo_(bool debug, bool first) {
 			// actual parse
 			const cJSON* name = NULL;
 			name = cJSON_GetObjectItemCaseSensitive(json, "username");
+            const cJSON* pubt = NULL;
+            pubt = cJSON_GetObjectItemCaseSensitive(json, "public");
 			if (cJSON_IsString(name) && (name->valuestring != NULL))
 			{
+                game::switchname(name->valuestring);
+                if (cJSON_IsString(pubt) && (pubt->valuestring != NULL))
+                {
+                    game::setpubtoken(pubt->valuestring);
+                }
 				if(!first) conoutf(CON_INFO, "\f1[HNID] Successfully logged in as %s!", name->valuestring);
-				game::switchname(name->valuestring);
 			}
 		}
 	}

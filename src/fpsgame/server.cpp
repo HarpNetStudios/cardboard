@@ -2633,10 +2633,50 @@ namespace server
     ICOMMAND(clearipbans, "", (), ipbans.clear());
     ICOMMAND(ipban, "s", (const char *ipname), ipbans.add(ipname));
 
-    int allowconnect(clientinfo *ci, const char *pwd = "")
+    bool checkpubtoken(clientinfo* ci, const char* pubtoken)
+    {
+        oldstring apiurl;
+        formatstring(apiurl, "%s/game/check/pubtoken?id=1&token=%s", HNAPI, pubtoken);
+        char* thing = web_get(apiurl, false);
+        if (!thing[0]) {
+            return false;
+        }
+        cJSON* json = cJSON_Parse(thing);
+        // error handling
+        const cJSON* status = cJSON_GetObjectItemCaseSensitive(json, "status");
+        const cJSON* message = cJSON_GetObjectItemCaseSensitive(json, "message");
+        if (cJSON_IsNumber(status) && cJSON_IsString(message)) {
+            if (status->valueint > 0) {
+                return false;
+            }
+            else {
+                // actual parse
+                const cJSON* name = NULL;
+                name = cJSON_GetObjectItemCaseSensitive(json, "username");
+                if (cJSON_IsString(name) && (name->valuestring != NULL))
+                {
+                    if (!strcmp(name->valuestring, ci->name)) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    int allowconnect(clientinfo *ci, const char* pubtoken, const char *pwd = "")
     {
         if(ci->local) return DISC_NONE;
         if(!m_mp(gamemode)) return DISC_LOCAL;
+        if(!checkpubtoken(ci, pubtoken)) return DISC_PUBTOKEN;
         if(serverpass[0])
         {
             if(!checkpassword(ci, serverpass, pwd)) return DISC_PASSWORD;
@@ -2868,15 +2908,17 @@ namespace server
                 {
                     getstring(text, p);
                     filtertext(text, text, false, false, MAXNAMELEN);
-                    if(!text[0]) copystring(text, "unnamed");
-                    copystring(ci->name, text, MAXNAMELEN+1);
+                    if(!text[0]) copystring(text, "CardboardPlayer");
+                    copystring(ci->name, text, MAXNAMELEN + 1);
+                    oldstring pubtoken;
+                    getstring(pubtoken, p, sizeof(pubtoken));
                     ci->playermodel = getint(p);
 
                     oldstring password, authdesc, authname;
                     getstring(password, p, sizeof(password));
                     getstring(authdesc, p, sizeof(authdesc));
                     getstring(authname, p, sizeof(authname));
-                    int disc = allowconnect(ci, password);
+                    int disc = allowconnect(ci, pubtoken, password);
                     if(disc)
                     {
                         if(disc == DISC_LOCAL || !serverauth[0] || strcmp(serverauth, authdesc) || !tryauth(ci, authname, authdesc))
