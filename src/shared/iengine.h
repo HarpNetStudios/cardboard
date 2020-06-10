@@ -248,8 +248,6 @@ extern int spacepackallowed;
 
 // main
 extern void fatal(const char *s, ...) PRINTFARGS(1, 2);
-extern char *web_get(char *targetUrl, bool debug);
-extern int offline;
 extern void getuserinfo_(bool debug, bool first = false);
 extern void resetgl();
 

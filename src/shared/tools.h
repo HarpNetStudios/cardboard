@@ -1401,6 +1401,11 @@ struct ipmask
 extern char* pmodeltoname(int model);
 
 extern oldstring gametoken;
+
+// cURL stuff
+
+extern char* web_get(char* targetUrl, bool debug);
+extern int offline;
     
 #endif
 
