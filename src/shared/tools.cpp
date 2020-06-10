@@ -235,8 +235,6 @@ struct memoryStruct {
     size_t size;
 };
 
-VARFP(offline, 0, 0, 1, { getuserinfo_(false); });
-
 static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
     size_t realsize = size * nmemb;

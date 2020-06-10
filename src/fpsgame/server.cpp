@@ -672,6 +672,10 @@ namespace server
 	});
     SVAR(servermotd, "");
 
+    #ifdef STANDALONE
+    VAR(offline, 0, 0, 1);
+    #endif
+
     void *newclientinfo() { return new clientinfo; }
     void deleteclientinfo(void *ci) { delete (clientinfo *)ci; }
 

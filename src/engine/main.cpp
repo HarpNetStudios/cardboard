@@ -1321,6 +1321,8 @@ void testcurl_(char* targetUrl) {
 
 COMMANDN(testcurl, testcurl_, "s");
 
+VARFP(offline, 0, 0, 1, { getuserinfo_(false); });
+
 void getuserinfo_(bool debug, bool first) {
 	if (offline) return; // don't waste time trying to check everything if we are offline.
 	if (!strcmp(gametoken, "OFFLINE")) // check if playing without logging into launcher
@@ -1369,6 +1371,7 @@ void getuserinfo_(bool debug, bool first) {
 	}
 	else {
 		conoutf(CON_ERROR, "\f3[HNID] Malformed JSON recieved from server (server blocked?)");
+        logoutf("[MALFORMED JSON]: %s", thing);
 		offline = 1;
 	}
 }
