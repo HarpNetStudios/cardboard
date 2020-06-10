@@ -1316,7 +1316,7 @@ VAR(numcpus, 1, 1, 16);
 
 void testcurl_(char* targetUrl) {
 	char* thing = web_get(targetUrl, true);
-	conoutf(CON_ECHO, thing);
+	conoutf(CON_ECHO, "%s", thing);
 }
 
 COMMANDN(testcurl, testcurl_, "s");

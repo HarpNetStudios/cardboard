@@ -235,6 +235,10 @@ struct memoryStruct {
     size_t size;
 };
 
+#ifdef STANDALONE
+VAR(offline, 0, 0, 1);
+#endif
+
 static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
     size_t realsize = size * nmemb;
