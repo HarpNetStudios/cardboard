@@ -179,9 +179,9 @@
             this.versionLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(36)))), ((int)(((byte)(0)))));
             this.versionLabel.Location = new System.Drawing.Point(9, 345);
             this.versionLabel.Name = "versionLabel";
-            this.versionLabel.Size = new System.Drawing.Size(113, 13);
+            this.versionLabel.Size = new System.Drawing.Size(122, 13);
             this.versionLabel.TabIndex = 3;
-            this.versionLabel.Text = "Launcher Version 1.2";
+            this.versionLabel.Text = "Launcher Version 1.2.1";
             this.versionLabel.DoubleClick += new System.EventHandler(this.versionLabel_DoubleClick);
             // 
             // webWarn

@@ -21,6 +21,9 @@ namespace CardboardLauncher
         private bool drag = false; // determine if we should be moving the form
         private Point startPoint = new Point(0, 0); // also for the moving
 
+        private bool success;
+        private int pageSelected;
+
         private static string gameName = "Project Crimson";
 
         private bool use64bit;
@@ -44,8 +47,18 @@ namespace CardboardLauncher
             }
             catch (FileNotFoundException)
             {
-                MessageBox.Show("Config file is missing!");
-                System.Environment.Exit(1);
+                using (StreamWriter file = File.CreateText("launcher.json"))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    //serialize object directly into file stream
+
+                    Config tmpConf = new Config();
+                    tmpConf.webUrl = "https://harpnetstudios.com/hnid/launcher/";
+                    tmpConf.qConnectServ = "hnss.gq";
+
+                    serializer.Serialize(file, tmpConf);
+                    config = tmpConf;
+                }
             }
         }
 
@@ -61,7 +74,6 @@ namespace CardboardLauncher
 
         private bool GrabInfo(string token)
         {
-            bool success = false;
             try
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://harpnetstudios.com/hnid/api/v1/game/get/userinfo?id=" + gameId + "&token=" + token);
@@ -83,11 +95,11 @@ namespace CardboardLauncher
                     userAuthLabel.Text = "User: N/A";
                 }
                 playOfflineChkBox.Checked = playOfflineChkBox.Enabled = !success;
-                playButton.Enabled = success;
+                playButton.Enabled = success || playOfflineChkBox.Checked;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-            
+                DisplayMessage("Exception! "+e.Message,"Account Server - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             
 
@@ -114,6 +126,8 @@ namespace CardboardLauncher
             InitializeComponent();
 
             webWarn.Location = new Point(206, 34);
+
+            advSettings.Visible = false;
 
             webLauncher.Document.BackColor = this.BackColor;
             #if DEBUG
@@ -147,13 +161,13 @@ namespace CardboardLauncher
             this.webLauncher.ScrollBarsEnabled = scroll;
         }
         
-        public void setGameToken(string token)
+        public void setGameToken(string token, bool quiet=true)
         {
             if (GrabInfo(token))
             {
                 if (token.Length.Equals(64))
                 {
-                    DisplayMessage("Successfully set game token!");
+                    if(!quiet) DisplayMessage("Successfully set game token!");
                     return;
                 }
             } else
@@ -250,6 +264,18 @@ namespace CardboardLauncher
         private void webLauncher_Navigating(object sender, WebBrowserNavigatingEventArgs e)
         {
             if(e.Url.ToString() == "about:blank") { return; }
+
+            string extForce = "#_force";
+
+            if(e.Url.ToString().EndsWith(extForce))
+            {
+                //cancel the current event
+                e.Cancel = true;
+
+                //this opens the URL in the user's default browser
+                Process.Start(e.Url.ToString().Remove(e.Url.ToString().Length-extForce.Length));
+            }
+
             string safeSite = "https://harpnetstudios.com/";
             Console.WriteLine(e.Url.ToString());
             if (!e.Url.ToString().StartsWith(safeSite))
@@ -265,7 +291,7 @@ namespace CardboardLauncher
             gtDialog.gameToken = config.gameToken;
             if (gtDialog.ShowDialog() == DialogResult.OK)
             {
-                setGameToken(gtDialog.gameToken);
+                setGameToken(gtDialog.gameToken, false);
             }
         }
 
@@ -286,10 +312,13 @@ namespace CardboardLauncher
 
         private void pageSelectCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
+            int ps = pageSelectCombo.SelectedIndex;
+            if (ps == pageSelected) return; // Don't flash the screen trying to change the page, it looks bad. -Y
+
             webWarn.Visible = false;
             advSettings.Visible = false;
 
-            switch (pageSelectCombo.SelectedIndex)
+            switch (ps)
             {
                 case 0: // HNID
                     webWarn.Visible = true;
@@ -305,6 +334,8 @@ namespace CardboardLauncher
                 default: 
                     break;
             }
+
+            pageSelected = ps;
         }
 
         private void closeBtn_MouseClick(object sender, MouseEventArgs e)
@@ -347,11 +378,11 @@ namespace CardboardLauncher
 
         private void playOfflineChkBox_CheckedChanged(object sender, EventArgs e)
         {
-            if(playOfflineChkBox.Checked && !isTokenSet())
+            if(playOfflineChkBox.Checked && !success)
             {
                 playButton.Enabled = true;
             }
-            else if (!isTokenSet())
+            else if(!success)
             {
                 playButton.Enabled = false;
             }
