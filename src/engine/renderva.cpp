@@ -1190,7 +1190,7 @@ static void changetexgen(renderstate &cur, int dim, Slot &slot, VSlot &vslot)
 			float xs = r.flipx ? -tex->xs : tex->xs,
                   ys = r.flipy ? -tex->ys : tex->ys;
             vec2 scroll(vslot.scroll);
-			if (r.swapxy) swap(scroll.x, scroll.y);
+			if(r.swapxy) swap(scroll.x, scroll.y);
             scroll.x *= lastmillis*tex->xs/xs;
             scroll.y *= lastmillis*tex->ys/ys;
             if(cur.texgenscroll != scroll)

@@ -1102,7 +1102,7 @@ static bool compileblockstr(vector<uint> &code, const char *str, const char *end
                 if(str[1] == '/')
                 {
                     size_t comment = strcspn(str, "\n\0");
-                    if (iscubepunct(str[2]))
+                    if(iscubepunct(str[2]))
                     {
                         memcpy(&buf[len], str, comment);
                         len += comment;
@@ -3146,7 +3146,7 @@ ICOMMAND(round, "ff", (float* n, float* k),
 {
     double step = *k;
     double r = *n;
-    if (step > 0)
+    if(step > 0)
     {
         r += step * (r < 0 ? -0.5 : 0.5);
         r -= fmod(r, step);

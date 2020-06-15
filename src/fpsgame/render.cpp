@@ -215,15 +215,15 @@ namespace game
 		loopv(players)
 		{
 			fpsent* d = players[i];
-			if (d == player1 || d->state == CS_SPECTATOR || d->state == CS_SPAWNING || d->lifesequence < 0 || d == exclude || (d->state == CS_DEAD && hidedead)) continue;
+			if(d == player1 || d->state == CS_SPECTATOR || d->state == CS_SPAWNING || d->lifesequence < 0 || d == exclude || (d->state == CS_DEAD && hidedead)) continue;
 			int team = 0;
-			if (teamskins || m_teammode) team = strcmp(d->team, "red") ? 1 : 2;
+			if(teamskins || m_teammode) team = strcmp(d->team, "red") ? 1 : 2;
 			renderplayer(d, getplayermodelinfo(d), team, 1, mainpass);
-			if (shownames)
+			if(shownames)
 			{
 				copystring(d->info, colorname(d));
-				if (d->maxhealth > 1000) { defformatstring(sn, " +%d", d->maxhealth - 1000); concatstring(d->info, sn); }
-				if (d->state != CS_DEAD) particle_text(d->abovehead(), d->info, PART_TEXT, 1, team ? (team == 1 ? 0x6496FF : 0xFF4B19) : 0x1EC850, 2.0f);
+				if(d->maxhealth > 1000) { defformatstring(sn, " +%d", d->maxhealth - 1000); concatstring(d->info, sn); }
+				if(d->state != CS_DEAD) particle_text(d->abovehead(), d->info, PART_TEXT, 1, team ? (team == 1 ? 0x6496FF : 0xFF4B19) : 0x1EC850, 2.0f);
 			}
         }	
         loopv(ragdolls)

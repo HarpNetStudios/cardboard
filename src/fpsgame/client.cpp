@@ -235,9 +235,9 @@ namespace game
 	void getpubkey(const char* desc)
 	{
 		authkey * k = findauthkey(desc);
-		if (!k) { if (desc[0]) conoutf("no authkey found: %s", desc); else conoutf("no global authkey found"); return; }
+		if(!k) { if(desc[0]) conoutf("no authkey found: %s", desc); else conoutf("no global authkey found"); return; }
 		vector<char> pubkey;
-		if (!calcpubkey(k->key, pubkey)) { conoutf("failed calculating pubkey"); return; }
+		if(!calcpubkey(k->key, pubkey)) { conoutf("failed calculating pubkey"); return; }
 		result(pubkey.getbuf());
 	}
 	COMMAND(getpubkey, "s");
@@ -273,7 +273,7 @@ namespace game
             conoutf(CON_ERROR, "editing in multiplayer requires coop edit mode (1)");
             return false;
         }
-		if (!allowedit && !m_edit)
+		if(!allowedit && !m_edit)
 		{
 			conoutf(CON_ERROR, "editing requires allowedit to be set to 1");
 			return false;
@@ -606,8 +606,8 @@ namespace game
 
 	void voterestart(int* favor)
     {
-		if (!remote && *favor) server::restartgame();
-		else if (player1->state != CS_SPECTATOR || player1->privilege) addmsg(N_RESTARTVOTE, "ri", *favor);
+		if(!remote && *favor) server::restartgame();
+		else if(player1->state != CS_SPECTATOR || player1->privilege) addmsg(N_RESTARTVOTE, "ri", *favor);
 	}
 	COMMAND(voterestart, "i");
 
@@ -1579,9 +1579,9 @@ namespace game
                        *actor = getclient(acn);
                 if(!actor) break;
                 actor->frags = frags;
-				if (m_teammode) setteaminfo(actor->team, tfrags);
+				if(m_teammode) setteaminfo(actor->team, tfrags);
 				extern int hidefrags;
-				if (actor != player1 && (!cmode || !cmode->hidefrags() || !hidefrags))
+				if(actor != player1 && (!cmode || !cmode->hidefrags() || !hidefrags))
                 {
                     defformatstring(ds, "%d", actor->frags);
                     particle_textcopy(actor->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);

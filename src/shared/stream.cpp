@@ -1208,7 +1208,7 @@ stream* opentargzfile(const char* filename, const char* tarfn, const char* mode,
 	stream* untar;
 
 	stream* unpacked = opengzfile(filename, mode, file, level);
-	if (!unpacked) return NULL;
+	if(!unpacked) return NULL;
 
 	tar.stream = &unpacked;
 

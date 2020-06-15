@@ -18,7 +18,7 @@ namespace discord
 
 	void initDiscord() {
 		whatAmI = discord::Core::Create(623616609952464936, DiscordCreateFlags_NoRequireDiscord, &core);
-		if (discord::connected()) {
+		if(discord::connected()) {
 			core->SetLogHook(LogLevel::Debug, discordLogging);
 			conoutf("Discord intergation initialized successfully!");
 		}
@@ -30,7 +30,7 @@ namespace discord
 
 	void updatePresence(int gamestate, const char* modename, physent* d, bool force)
 	{
-		if ((globalgamestate != gamestate || force) && discord::connected()) {
+		if((globalgamestate != gamestate || force) && discord::connected()) {
 			oldstring partykey;
 			discord::Activity activity{};
 
@@ -54,12 +54,12 @@ namespace discord
 				activity.GetAssets().SetSmallText("Tell the #bugs channel about what you did!");
 				break;
 			}
-			if (gamestate != D_MENU) {
+			if(gamestate != D_MENU) {
 				const ENetAddress* address = connectedpeer();
 
 				defformatstring(buffer, "Mode: %s", modename);
 				activity.SetDetails(buffer);
-				if (game::maplimit >= 0) {
+				if(game::maplimit >= 0) {
 					time_t curtime;
 					uint32_t endtimedelta = (game::maplimit - lastmillis) / 1000;
 					time(&curtime);
@@ -96,14 +96,14 @@ namespace discord
 
 				for (i = 0; i < len; ++i)
 				{
-					if (!strcmp(x[i], s)) fin = game::getclientmap();
+					if(!strcmp(x[i], s)) fin = game::getclientmap();
 				}
 
 				activity.GetAssets().SetLargeImage(fin);
 
 				activity.GetAssets().SetLargeText(game::getclientmap());
-				if (address) {
-					if (enet_address_get_host_ip(address, partykey, sizeof(partykey)) >= 0)
+				if(address) {
+					if(enet_address_get_host_ip(address, partykey, sizeof(partykey)) >= 0)
 					{
 						defformatstring(newpartykey, "%s:%u", partykey, address->port);
 						defformatstring(partyid, "%s%s", "srv=", newpartykey);
@@ -126,7 +126,7 @@ namespace discord
 
 			fpsent* pl = (fpsent*)d;
 
-			if (pl) // if there is actually a player involved
+			if(pl) // if there is actually a player involved
 			{
 				defformatstring(icon, "player-%d", pl->playermodel);
 				//conoutf("imagekey: %s, playermodel: %d", icon, playermodel);
@@ -142,7 +142,7 @@ namespace discord
 	}
 
 	void discordCallbacks() {
-		if (discord::connected()) core->RunCallbacks();
+		if(discord::connected()) core->RunCallbacks();
 	}
 }
 #endif

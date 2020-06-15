@@ -747,9 +747,9 @@ void saveslotconfig(stream* h, Slot& s, int index)
 {
 	VSlot& vs = *s.variants;
 
-	if (index >= 0)
+	if(index >= 0)
 	{
-		if (s.shader)
+		if(s.shader)
 		{
 			h->printf("setshader %s\n", s.shader->name);
 		}
@@ -758,7 +758,7 @@ void saveslotconfig(stream* h, Slot& s, int index)
 		loopvj(s.params)
 		{
 			h->printf("set%sparam", s.params[j].type == SHPARAM_LOOKUP ? "shader" : (s.params[j].type == SHPARAM_UNIFORM ? "uniform" : (s.params[j].type == SHPARAM_PIXEL ? "pixel" : "vertex")));
-			if (s.params[j].type == SHPARAM_LOOKUP || s.params[j].type == SHPARAM_UNIFORM) h->printf(" \"%s\"", s.params[j].name);
+			if(s.params[j].type == SHPARAM_LOOKUP || s.params[j].type == SHPARAM_UNIFORM) h->printf(" \"%s\"", s.params[j].name);
 			else h->printf(" %d", s.params[j].index);
 			loopk(4) h->printf(" %f", s.params[j].val[k]);
 			h->printf("\n");
@@ -768,37 +768,37 @@ void saveslotconfig(stream* h, Slot& s, int index)
 	loopvj(s.sts)
 	{
 		h->printf("texture");
-		if (index >= 0) h->printf(" %s ", textypename(s.sts[j].type));
+		if(index >= 0) h->printf(" %s ", textypename(s.sts[j].type));
 		else h->printf(" 1 ");
 		writeescapedstring(h, s.sts[j].name);
-		if (!j)
+		if(!j)
 		{
 			h->printf(" %d %d %d %f",
 				vs.rotation, vs.offset.x, vs.offset.y, vs.scale);
-			if (index >= 0) h->printf(" // %d", index);
+			if(index >= 0) h->printf(" // %d", index);
 		}
 		h->printf("\n");
 	}
-	if (index >= 0)
+	if(index >= 0)
 	{
-		if (vs.scroll.x != 0.f || vs.scroll.y != 0.f)
+		if(vs.scroll.x != 0.f || vs.scroll.y != 0.f)
 			h->printf("texscroll %f %f\n", vs.scroll.x * 1000.0f, vs.scroll.y * 1000.0f);
-		if (vs.layer != 0)
+		if(vs.layer != 0)
 		{
-			if (s.layermaskname) h->printf("texlayer %d \"%s\" %d %f\n", vs.layer, s.layermaskname, s.layermaskmode, s.layermaskscale);
+			if(s.layermaskname) h->printf("texlayer %d \"%s\" %d %f\n", vs.layer, s.layermaskname, s.layermaskmode, s.layermaskscale);
 			else h->printf("texlayer %d\n", vs.layer);
 		}
-		if (s.autograss) h->printf("autograss \"%s\"\n", s.autograss);
+		if(s.autograss) h->printf("autograss \"%s\"\n", s.autograss);
 	}
 	h->printf("\n");
 }
 
 void writemapcfg(const char* a)
 {
-	if (!*a) a = game::getclientmap();
+	if(!*a) a = game::getclientmap();
 	setmapfilenames(a);
 
-	if (savebak) backup(cfgname, bcfgname);
+	if(savebak) backup(cfgname, bcfgname);
 
 	stream* f = openfile(path(cfgname, true), "w");
 
@@ -814,7 +814,7 @@ void writemapcfg(const char* a)
 	loopv(ids)
 	{
 		ident& id = *ids[i];
-		if (!(id.flags & IDF_OVERRIDDEN) || id.flags & IDF_READONLY) continue;
+		if(!(id.flags & IDF_OVERRIDDEN) || id.flags & IDF_READONLY) continue;
 		switch (id.type)
 		{
 			case ID_VAR: f->printf(id.flags & IDF_HEX ? "%s 0x%.6X\n" : "%s %d\n", id.name, *id.storage.i); break;
@@ -944,7 +944,7 @@ void loadvslot(stream *f, VSlot &vs, int changed)
         }
     }
     if(vs.changed & (1<<VSLOT_SCALE)) vs.scale = f->getlil<float>();
-	if (vs.changed & (1 << VSLOT_ROTATION)) vs.rotation = clamp(f->getlil<int>(), 0, 7);
+	if(vs.changed & (1 << VSLOT_ROTATION)) vs.rotation = clamp(f->getlil<int>(), 0, 7);
     if(vs.changed & (1<<VSLOT_OFFSET))
     {
         vs.offset.x = f->getlil<int>();

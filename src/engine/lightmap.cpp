@@ -86,7 +86,7 @@ HVARFR(ambient, 1, 0x191919, 0xFFFFFF,
 });
 
 VARFR(darkmap, 0, 0, 1, {
-    /*if ((darkmap == 1) && (ambient != 0) && (ambient > 0x010101)) {
+    /*if((darkmap == 1) && (ambient != 0) && (ambient > 0x010101)) {
         conoutf(CON_WARN, "ambient 0x010101 is recommended for darkmap");
     }*/ // commented out because ambient is set after darkmap on map load -Y
 });

@@ -341,7 +341,7 @@ namespace rawinput
     {
         SDL_SysWMinfo info;
         SDL_VERSION(&info.version);
-        if (SDL_GetWindowWMInfo(screen, &info))
+        if(SDL_GetWindowWMInfo(screen, &info))
         {
             return info.info.win.window;
         }

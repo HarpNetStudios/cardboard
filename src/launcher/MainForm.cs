@@ -84,7 +84,7 @@ namespace CardboardLauncher
 
                 success = info.status == 0;
 
-                if (success)
+                if(success)
                 {
                     config.gameToken = token;
                     userAuthLabel.Text = "User: " + info.username;
@@ -138,7 +138,7 @@ namespace CardboardLauncher
 
             LoadConfig();
             GrabInfo(config.gameToken);
-            if (config.homeDir == "") config.homeDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Project Crimson Alpha");
+            if(config.homeDir == "") config.homeDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Project Crimson Alpha");
             homeDirBox.Text = config.homeDir;
             qConnectServBox.Text = config.qConnectServ;
 
@@ -163,9 +163,9 @@ namespace CardboardLauncher
         
         public void setGameToken(string token, bool quiet=true)
         {
-            if (GrabInfo(token))
+            if(GrabInfo(token))
             {
-                if (token.Length.Equals(64))
+                if(token.Length.Equals(64))
                 {
                     if(!quiet) DisplayMessage("Successfully set game token!");
                     return;
@@ -189,7 +189,7 @@ namespace CardboardLauncher
 
         private void archGroup_Layout(object sender, LayoutEventArgs e)
         {
-            if (!Environment.Is64BitOperatingSystem)
+            if(!Environment.Is64BitOperatingSystem)
             {
                 archRadio32.Checked = true;
                 archGroup.Enabled = archRadio32.Enabled = archRadio64.Enabled = false;
@@ -203,7 +203,7 @@ namespace CardboardLauncher
         private void homeDirBtn_Click(object sender, EventArgs e)
         {
             homeDirBrowser.SelectedPath = homeDirBox.Text;
-            if (homeDirBrowser.ShowDialog() == DialogResult.OK)
+            if(homeDirBrowser.ShowDialog() == DialogResult.OK)
             {
                 homeDirBox.Text = homeDirBrowser.SelectedPath;
             }
@@ -225,7 +225,7 @@ namespace CardboardLauncher
             {
                 launchToken = "OFFLINE";
                 DialogResult offlineMessage = MessageBox.Show("Hey, you are about to start the game in OFFLINE mode!\n\nTo experience all that the game has to offer, including multiplayer, please log into your HNID account.\n\nAre you sure you want to continue?", "Offline Mode Warning", MessageBoxButtons.YesNo);
-                if (offlineMessage == DialogResult.No) return;
+                if(offlineMessage == DialogResult.No) return;
             }
             
             // Create new process definition
@@ -278,7 +278,7 @@ namespace CardboardLauncher
 
             string safeSite = "https://harpnetstudios.com/";
             Console.WriteLine(e.Url.ToString());
-            if (!e.Url.ToString().StartsWith(safeSite))
+            if(!e.Url.ToString().StartsWith(safeSite))
             {
                 webWarn.BackColor = Color.Red;
             }
@@ -289,7 +289,7 @@ namespace CardboardLauncher
         {
             GametokenDialog gtDialog = new GametokenDialog();
             gtDialog.gameToken = config.gameToken;
-            if (gtDialog.ShowDialog() == DialogResult.OK)
+            if(gtDialog.ShowDialog() == DialogResult.OK)
             {
                 setGameToken(gtDialog.gameToken, false);
             }
@@ -313,7 +313,7 @@ namespace CardboardLauncher
         private void pageSelectCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             int ps = pageSelectCombo.SelectedIndex;
-            if (ps == pageSelected) return; // Don't flash the screen trying to change the page, it looks bad. -Y
+            if(ps == pageSelected) return; // Don't flash the screen trying to change the page, it looks bad. -Y
 
             webWarn.Visible = false;
             advSettings.Visible = false;
@@ -366,7 +366,7 @@ namespace CardboardLauncher
 
         private void Title_MouseMove(object sender, MouseEventArgs e)
         {
-            if (this.drag)
+            if(this.drag)
             { // if we should be dragging it, we need to figure out some movement
                 Point p1 = new Point(e.X, e.Y);
                 Point p2 = this.PointToScreen(p1);

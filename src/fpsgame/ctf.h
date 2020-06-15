@@ -83,7 +83,7 @@ struct ctfclientmode : clientmode
         int holdcounter() const
         {
             if(!holdtime) return 0;
-            if (!hasowner() && droptime && droptime >= holdtime) return max((droptime - holdtime) - (lastmillis - droptime), 0);
+            if(!hasowner() && droptime && droptime >= holdtime) return max((droptime - holdtime) - (lastmillis - droptime), 0);
             return lastmillis - holdtime;
         }
     };
@@ -631,7 +631,7 @@ struct ctfclientmode : clientmode
 
     void died(fpsent* victim, fpsent* actor)
     {
-        if (m_hold) loopv(flags) if (flags[i].owner == victim) deadflag(i);
+        if(m_hold) loopv(flags) if(flags[i].owner == victim) deadflag(i);
     }
 
     vec interpflagpos(flag &f, float &angle)
@@ -959,7 +959,7 @@ struct ctfclientmode : clientmode
         f.version = version;
         f.interploc = interpflagpos(f, f.interpangle);
         f.interptime = lastmillis;
-		if (m_hold) conoutf(CON_GAMEINFO, "%s picked up the flag for %s", teamcolorname(d), teamcolorflag(f));//teamcolor("your team", d->team, "the enemy team"));
+		if(m_hold) conoutf(CON_GAMEINFO, "%s picked up the flag for %s", teamcolorname(d), teamcolorflag(f));//teamcolor("your team", d->team, "the enemy team"));
         else if(m_protect || f.droptime) conoutf(CON_GAMEINFO, "%s picked up %s", teamcolorname(d), teamcolorflag(f));
         else conoutf(CON_GAMEINFO, "%s stole %s", teamcolorname(d), teamcolorflag(f));
         ownflag(i, d, lastmillis, m_hold ? ctfteamflag(d->team) : -1);
@@ -997,16 +997,16 @@ struct ctfclientmode : clientmode
 			else d->flagpickup &= ~(1 << f.id);
 			
 		}
-		if (m_hold) return;
+		if(m_hold) return;
 		loopv(flags)
 			{
 			flag & f = flags[i];
-			if (!ctfflagteam(f.team) || f.team != ctfteamflag(d->team) || f.owner || (f.droptime && f.droploc.x < 0)) continue;
+			if(!ctfflagteam(f.team) || f.team != ctfteamflag(d->team) || f.owner || (f.droptime && f.droploc.x < 0)) continue;
 			const vec & loc = f.droptime ? f.droploc : f.spawnloc;
-			if (o.dist(loc) < FLAGRADIUS)
+			if(o.dist(loc) < FLAGRADIUS)
 			{
-				if (!tookflag && d->flagpickup & (1 << f.id)) continue;
-				if ((lookupmaterial(o) & MATF_CLIP) != MAT_GAMECLIP && (lookupmaterial(loc) & MATF_CLIP) != MAT_GAMECLIP)
+				if(!tookflag && d->flagpickup & (1 << f.id)) continue;
+				if((lookupmaterial(o) & MATF_CLIP) != MAT_GAMECLIP && (lookupmaterial(loc) & MATF_CLIP) != MAT_GAMECLIP)
 					addmsg(N_TAKEFLAG, "rcii", d, i, f.version);
                 d->flagpickup |= 1<<f.id;
             }

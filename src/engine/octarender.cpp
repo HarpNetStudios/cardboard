@@ -752,7 +752,7 @@ static inline void calctexgen(VSlot &vslot, int dim, vec4 &sgen, vec4 &tgen)
     int sdim = si[dim], tdim = ti[dim];
     sgen = vec4(0, 0, 0, soff); 
     tgen = vec4(0, 0, 0, toff);
-	if (r.swapxy)
+	if(r.swapxy)
     {
         sgen[tdim] = (dim <= 1 ? -sk : sk);
         tgen[sdim] = tk;

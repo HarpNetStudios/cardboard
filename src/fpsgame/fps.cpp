@@ -29,8 +29,8 @@ namespace game
 
 	void taunt()
 	{
-		if (player1->state != CS_ALIVE || player1->physstate < PHYS_SLOPE) return;
-		if (lastmillis - player1->lasttaunt < 1000) return;
+		if(player1->state != CS_ALIVE || player1->physstate < PHYS_SLOPE) return;
+		if(lastmillis - player1->lasttaunt < 1000) return;
 		player1->lasttaunt = lastmillis;
 		addmsg(N_TAUNT, "rc", player1);
 	}
@@ -38,11 +38,11 @@ namespace game
 
 	void togglespacepack()
 	{
-		if (!isconnected()) return;
-		if (!spacepackallowed) return;
-		//else if (!m_edit) return;
-		if (player1->state != CS_ALIVE && player1->state != CS_DEAD && player1->spacepack != true) return;
-		if (player1->state == CS_ALIVE) // only allow spacepack toggle when alive
+		if(!isconnected()) return;
+		if(!spacepackallowed) return;
+		//else if(!m_edit) return;
+		if(player1->state != CS_ALIVE && player1->state != CS_DEAD && player1->spacepack != true) return;
+		if(player1->state == CS_ALIVE) // only allow spacepack toggle when alive
 			player1->spacepack = !player1->spacepack;
 	}
 	COMMAND(togglespacepack, "");
@@ -68,10 +68,10 @@ namespace game
 
 	void follow(char* arg)
 	{
-		if (arg[0] ? spectating(player1) : following >= 0)
+		if(arg[0] ? spectating(player1) : following >= 0)
 		{
 			following = arg[0] ? parseplayer(arg) : -1;
-			if (following == player1->clientnum) following = -1;
+			if(following == player1->clientnum) following = -1;
 			followdir = 0;
 			conoutf("following: %s", following >= 0 ? "on" : "off");
 		}
@@ -80,16 +80,16 @@ namespace game
 
 	void nextfollow(int dir)
 	{
-		if (clients.empty());
-		else if (spectating(player1))
+		if(clients.empty());
+		else if(spectating(player1))
 		{
 			int cur = following >= 0 ? following : (dir < 0 ? clients.length() - 1 : 0);
 			loopv(clients)
 			{
 				cur = (cur + dir + clients.length()) % clients.length();
-				if (clients[cur] && canfollow(player1, clients[cur]))
+				if(clients[cur] && canfollow(player1, clients[cur]))
 				{
-					if (following < 0) conoutf("follow on");
+					if(following < 0) conoutf("follow on");
 					following = cur;
 					followdir = dir;
 					return;
@@ -120,30 +120,30 @@ namespace game
 
 	void respawnself()
 	{
-		if (ispaused()) return;
-		if (m_mp(gamemode))
+		if(ispaused()) return;
+		if(m_mp(gamemode))
 		{
 			int seq = (player1->lifesequence << 16) | ((lastmillis / 1000) & 0xFFFF);
-			if (player1->respawned != seq) { addmsg(N_TRYSPAWN, "rc", player1); player1->respawned = seq; }
+			if(player1->respawned != seq) { addmsg(N_TRYSPAWN, "rc", player1); player1->respawned = seq; }
 		}
 		else
 		{
 			spawnplayer(player1);
 			showscores(false);
 			lasthit = 0;
-			if (cmode) cmode->respawned(player1);
+			if(cmode) cmode->respawned(player1);
 		}
 	}
 
 	fpsent* pointatplayer()
 	{
-		loopv(players) if (players[i] != player1 && intersect(players[i], player1->o, worldpos)) return players[i];
+		loopv(players) if(players[i] != player1 && intersect(players[i], player1->o, worldpos)) return players[i];
 		return NULL;
 	}
 
 	void stopfollowing()
 	{
-		if (following < 0) return;
+		if(following < 0) return;
 		following = -1;
 		followdir = 0;
 		conoutf("follow off");
@@ -151,15 +151,15 @@ namespace game
 
 	fpsent* followingplayer()
 	{
-		if (player1->state != CS_SPECTATOR || following < 0) return NULL;
+		if(player1->state != CS_SPECTATOR || following < 0) return NULL;
 		fpsent* target = getclient(following);
-		if (target && target->state != CS_SPECTATOR) return target;
+		if(target && target->state != CS_SPECTATOR) return target;
 		return NULL;
 	}
 
 	fpsent* hudplayer()
 	{
-		if (thirdperson) return player1;
+		if(thirdperson) return player1;
 		fpsent* target = followingplayer();
 		return target ? target : player1;
 	}
@@ -167,7 +167,7 @@ namespace game
 	void setupcamera()
 	{
 		fpsent* target = followingplayer();
-		if (target)
+		if(target)
 		{
 			player1->yaw = target->yaw;
 			player1->pitch = target->state == CS_DEAD ? 0 : target->pitch;
@@ -265,27 +265,27 @@ namespace game
         ai::update();
         moveragdolls();
         gets2c();
-		if (connected)
+		if(connected)
 		{
 			#ifdef DISCORD
 				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode - STARTGAMEMODE].name, player1);
 			#endif
-			if (player1->state == CS_DEAD)
+			if(player1->state == CS_DEAD)
 			{
-				if (player1->ragdoll) moveragdoll(player1);
-				else if (lastmillis - player1->lastpain < 2000)
+				if(player1->ragdoll) moveragdoll(player1);
+				else if(lastmillis - player1->lastpain < 2000)
 				{
 					player1->fmove = player1->fstrafe = 0.0f;
 					moveplayer(player1, 10, true);
 				}
 			}
-			else if (!intermission)
+			else if(!intermission)
 			{
-				if (player1->ragdoll) cleanragdoll(player1);
+				if(player1->ragdoll) cleanragdoll(player1);
 				moveplayer(player1, 10, true);
 				swayhudgun(curtime);
 				entities::checkitems(player1);
-				if (cmode) cmode->checkitems(player1);
+				if(cmode) cmode->checkitems(player1);
 			}
 		}
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
@@ -517,10 +517,10 @@ namespace game
 				else
 					conoutf(contype, "\f2%s\f2 > %s > %s%s", aname, getweaponname(gun), dname, special?hs:"");
 			}
-			if (m_gun) {
-				if (d != actor)
+			if(m_gun) {
+				if(d != actor)
 				{
-					if (actor->frags >= 12) { intermission = true; if (cmode) cmode->gameover(); addmsg(N_FORCEINTERMISSION); }
+					if(actor->frags >= 12) { intermission = true; if(cmode) cmode->gameover(); addmsg(N_FORCEINTERMISSION); }
 					actor->ggtier = clamp(int(floor(actor->frags / 2))+1, GUN_SMG, GUN_GL);
 					conoutf("gun should be %d", actor->ggtier);
 					actor->attacking = false;
@@ -559,7 +559,7 @@ namespace game
             conoutf(CON_GAMEINFO, "\f2game has ended!");
             if(m_ctf) conoutf(CON_GAMEINFO, "\f2player frags: %d, flags: %d, deaths: %d, kdr: %.2f", player1->frags, player1->flags, player1->deaths, (float)player1->frags/player1->deaths);
             else if(m_collect) conoutf(CON_GAMEINFO, "\f2player frags: %d, skulls: %d, deaths: %d, kdr: %.2f", player1->frags, player1->flags, player1->deaths, (float)player1->frags/player1->deaths);
-			else if (m_parkour); // do nothing
+			else if(m_parkour); // do nothing
             else conoutf(CON_GAMEINFO, "\f2player frags: %d, deaths: %d, kdr: %.2f", player1->frags, player1->deaths, (float)player1->frags/player1->deaths);
             int accuracy = (player1->totaldamage*100)/max(player1->totalshots, 1);
             if(!m_parkour) conoutf(CON_GAMEINFO, "\f2player total damage dealt: %d, damage wasted: %d, accuracy(%%): %d", player1->totaldamage, player1->totalshots-player1->totaldamage, accuracy);
@@ -663,8 +663,8 @@ namespace game
 		// error handling
 		const cJSON* status = cJSON_GetObjectItemCaseSensitive(json, "status");
 		const cJSON* message = cJSON_GetObjectItemCaseSensitive(json, "message");
-		if (cJSON_IsNumber(status) && cJSON_IsString(message)) {
-			if (status->valueint > 0) {
+		if(cJSON_IsNumber(status) && cJSON_IsString(message)) {
+			if(status->valueint > 0) {
                 if(dbgtags) conoutf(CON_INFO, "\fs\f3getting tags for %s failed! (non-zero)\fr", d->name);
                 d->tagfetch = true;
 				return "";
@@ -683,13 +683,13 @@ namespace game
 				cJSON_ArrayForEach(tagitm, tags)
 				{
 					tag = cJSON_GetObjectItemCaseSensitive(tagitm, "tag");
-					if (cJSON_IsString(tag) && (tag->valuestring != NULL))
+					if(cJSON_IsString(tag) && (tag->valuestring != NULL))
 					{
 						color = cJSON_GetObjectItemCaseSensitive(tagitm, "color");
-						if (strcmp(tag->valuestring, "")) 
+						if(strcmp(tag->valuestring, "")) 
 						{
 							if(dbgtags) conoutf(CON_DEBUG, "tag is \"%s\"", tag->valuestring);
-							if (cJSON_IsString(color) && (color->valuestring != NULL) && (strcmp(color->valuestring, "")))
+							if(cJSON_IsString(color) && (color->valuestring != NULL) && (strcmp(color->valuestring, "")))
 							{
 								if(dbgtags) conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
 								concformatstring(conc, "\fs\f%s[%s]\fr", color->valuestring, tag->valuestring);
@@ -758,7 +758,7 @@ namespace game
 		maptime = maprealtime = 0;
 		maplimit = -1;
 
-		if (cmode) cmode->setup();
+		if(cmode) cmode->setup();
 
 		showscores(false);
 		disablezoom();
@@ -790,7 +790,7 @@ namespace game
 
         //conoutf(CON_GAMEINFO, "\f2game mode is %s", server::modename(gamemode));
 		const char* info = m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
-		if (showmodeinfo && info) conoutf(CON_GAMEINFO, "\f2%s: \f0%s", server::modename(gamemode), info);
+		if(showmodeinfo && info) conoutf(CON_GAMEINFO, "\f2%s: \f0%s", server::modename(gamemode), info);
 
         if(player1->playermodel != playermodel) switchplayermodel(playermodel);
 
@@ -880,10 +880,10 @@ namespace game
 	const char* colorname(fpsent* d, const char* name, const char* prefix, const char* suffix, const char* alt, bool tags)
 	{
         //if(!name) name = alt && d == player1 ? alt : d->name;
-		if (!name) name = d->name;
+		if(!name) name = d->name;
         bool dup = !name[0] || duplicatename(d, name, alt) || d->aitype != AI_NONE;
 		cidx = (cidx + 1) % 3;
-		if (d->aitype == AI_NONE && showtags && tags) {
+		if(d->aitype == AI_NONE && showtags && tags) {
 			prefix = gettags(d);
 			if(prefix == NULL) prefix = "";
 		}
@@ -1114,8 +1114,8 @@ namespace game
 		text_bounds(buf, tw, th);
 
 		vec2 offset = vec2(gameclockx, gameclocky).mul(vec2(w, h).div(gameclockscale));
-		if (gameclockalign == 1) offset.x -= tw;
-		else if (gameclockalign == 0) offset.x -= tw / 2.0f;
+		if(gameclockalign == 1) offset.x -= tw;
+		else if(gameclockalign == 0) offset.x -= tw / 2.0f;
 		offset.y -= th / 2.0f;
 
 		pushhudmatrix();
@@ -1163,10 +1163,10 @@ namespace game
 
         pophudmatrix();
 
-		if (!m_edit)
+		if(!m_edit)
 		{
-			if (gameclock) drawgameclock(w, h);
-			if (hudscore) drawhudscore(w, h);
+			if(gameclock) drawgameclock(w, h);
+			if(hudscore) drawhudscore(w, h);
 		}
     }
 

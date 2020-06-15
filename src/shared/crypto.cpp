@@ -848,7 +848,7 @@ void calcpubkey(gfint privkey, vector<char>& pubstr)
 
 bool calcpubkey(const char* privstr, vector<char> & pubstr)
 {
-	if (!privstr[0]) return false;
+	if(!privstr[0]) return false;
 	gfint privkey;
 	privkey.parse(privstr);
 	calcpubkey(privkey, pubstr);

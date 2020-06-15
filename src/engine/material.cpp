@@ -878,7 +878,7 @@ void rendermaterials()
         }
     }
 
-    if (lastorient >= 0) changematerial(lastmat, lastorient);
+    if(lastorient >= 0) changematerial(lastmat, lastorient);
 
     if(!depth) glDepthMask(GL_TRUE);
     if(blended) glDisable(GL_BLEND);

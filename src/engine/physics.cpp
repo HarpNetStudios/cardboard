@@ -1638,14 +1638,14 @@ FVARP(joymaxthreshold, 0.0f, 1.0f, 1.0f);
 
 void vecfrommovement(float yaw, float pitch, float move, float strafe, vec& m)
 {
-	if (move)
+	if(move)
 	{
 		m.x = move * -sinf(RAD * yaw);
 		m.y = move * cosf(RAD * yaw);
 	}
 	else m.x = m.y = 0;
 
-	if (pitch)
+	if(pitch)
 	{
 		m.x *= cosf(RAD * pitch);
 		m.y *= cosf(RAD * pitch);
@@ -1653,14 +1653,14 @@ void vecfrommovement(float yaw, float pitch, float move, float strafe, vec& m)
 	}
 	else m.z = 0;
 
-	if (strafe)
+	if(strafe)
 	{
 		m.x += strafe * cosf(RAD * yaw);
 		m.y += strafe * sinf(RAD * yaw);
 	}
 
 	const float mag = m.magnitude();
-	if (mag <= joyminthreshold || joyminthreshold >= joymaxthreshold)
+	if(mag <= joyminthreshold || joyminthreshold >= joymaxthreshold)
 	{
 		m = vec(0.0f);
 		return;
@@ -1701,11 +1701,11 @@ void calcfric(physent *pl, bool local, bool water, bool floating, int curtime, v
 void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curtime)
 {
     bool allowmove = game::allowmove(pl);
-    if(pl->physstate != PHYS_FALL)
+    if(pl->physstate >= PHYS_SLOPE)
     {
 		pl->jumpstate = 0;
     }
-    if (pl->physstate == PHYS_FALL && pl->candouble && pl->jumpstate < 2 && !water) {
+    if(pl->physstate == PHYS_FALL && pl->candouble && pl->jumpstate < 2 && !water) {
         pl->jumpstate = 1;
     }
     if(floating)
@@ -1724,7 +1724,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
             pl->jumping = false;
             if(pl->physstate != PHYS_FLOAT)
             {
-				if (pl->physstate == PHYS_FLOOR) {
+				if(pl->physstate == PHYS_FLOOR) {
 					pl->vel.z = max(pl->vel.z, JUMPVEL);
 					game::physicstrigger(pl, local, 1, 0);
 				}
@@ -1749,11 +1749,11 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
     }
     if(pl->jumpstate == 1 && pl->candouble)
     {
-		if (pl->jumping) {
+		if(pl->jumping) {
             
 			pl->falling.z = 10; // set back gravity to 10, so you can jump again with less down force immediately
 			pl->vel.z = max(pl->vel.z, pl->vel.z + (JUMPVEL / 2)); // physics impulse upwards
-			if (water) { pl->vel.x /= 2.0f; pl->vel.y /= 2.0f; } // dampen velocity change even harder, gives correct water feel
+			if(water) { pl->vel.x /= 2.0f; pl->vel.y /= 2.0f; } // dampen velocity change even harder, gives correct water feel
 
 			pl->jumpstate = 2;
 
@@ -1801,7 +1801,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
             if(pl==player) d.mul(floatspeed/100.0f);
         }
         //else if(!water && allowmove) d.mul((pl->fmove && !pl->fstrafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
-		else if (!water && allowmove) d.mul(1.3f * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
+		else if(!water && allowmove) d.mul(1.3f * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
     }
 	calcfric(pl, local, water, floating, curtime, d);
 
@@ -1826,7 +1826,7 @@ void modifygravity(physent *pl, bool water, int curtime)
     }
     if(!water || !game::allowmove(pl) || !pl->tryingtomove())
     {
-        if (!pl->spacepack || pl->spaceclip) pl->falling.add(g);
+        if(!pl->spacepack || pl->spaceclip) pl->falling.add(g);
     }
 
 
@@ -1857,20 +1857,20 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 	float secs = curtime / 1000.f;
 
 	// apply gravity
-	if (!floating && !ispack) modifygravity(pl, water, curtime);
+	if(!floating && !ispack) modifygravity(pl, water, curtime);
 	// apply any player generated changes in velocity
 	modifyvelocity(pl, local, water, floating, curtime);
 
 	vec d(pl->vel);
-	if (!floating && water && !editmode) d.mul(0.5f);
+	if(!floating && water && !editmode) d.mul(0.5f);
 	d.add(pl->falling);
 	d.mul(secs);
 
 	pl->blocked = false;
 
-	if (floating)                 // just apply velocity
+	if(floating)                 // just apply velocity
 	{
-		if (pl->physstate != PHYS_FLOAT)
+		if(pl->physstate != PHYS_FLOAT)
 		{
 			pl->physstate = PHYS_FLOAT;
 			pl->timeinair = 0;
@@ -1878,19 +1878,19 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 		}
 		pl->o.add(d);
 	}
-	else if (ispack && !inspclip) // using spacepack
+	else if(ispack && !inspclip) // using spacepack
 	{
 		const float f = 1.0f / moveres;
 		int collisions = 0;
 
-		if (pl->physstate != PHYS_FLOAT)
+		if(pl->physstate != PHYS_FLOAT)
 		{
 			pl->physstate = PHYS_FLOAT;
 			pl->timeinair = 0;
 			pl->falling = vec(0, 0, 0);
 		}
 		d.mul(f);
-		loopi(moveres) if (!spacemove(pl, d) && ++collisions < 5) i--; // discrete steps collision detection & sliding
+		loopi(moveres) if(!spacemove(pl, d) && ++collisions < 5) i--; // discrete steps collision detection & sliding
 	}
 	else                          // apply velocity with collision
 	{
@@ -1899,43 +1899,43 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 		int collisions = 0;
 
 		d.mul(f);
-		loopi(moveres) if (!move(pl, d) && ++collisions < 5) i--; // discrete steps collision detection & sliding
-		if (timeinair > 800 && !pl->timeinair && !water) // if we land after long time must have been a high jump, make thud sound
+		loopi(moveres) if(!move(pl, d) && ++collisions < 5) i--; // discrete steps collision detection & sliding
+		if(timeinair > 800 && !pl->timeinair && !water) // if we land after long time must have been a high jump, make thud sound
 		{
 			game::physicstrigger(pl, local, -1, 0);
 		}
 	}
 
-	if (pl->state == CS_ALIVE) updatedynentcache(pl);
+	if(pl->state == CS_ALIVE) updatedynentcache(pl);
 
 	// automatically apply smooth roll when strafing
 
-	if (pl->fstrafe && maxroll) pl->roll = clamp(pl->roll - pow(clamp(1.0f + pl->fstrafe * pl->roll / maxroll, 0.0f, 1.0f), 0.33f) * pl->fstrafe * curtime * straferoll, -maxroll, maxroll);
+	if(pl->fstrafe && maxroll) pl->roll = clamp(pl->roll - pow(clamp(1.0f + pl->fstrafe * pl->roll / maxroll, 0.0f, 1.0f), 0.33f) * pl->fstrafe * curtime * straferoll, -maxroll, maxroll);
 	else pl->roll *= curtime == PHYSFRAMETIME ? faderoll : pow(faderoll, curtime / float(PHYSFRAMETIME));
 
 	// play sounds on water transitions if not in edit mode
-	if (!editmode) {
-		if (pl->inwater && !water)
+	if(!editmode) {
+		if(pl->inwater && !water)
 		{
 			material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (pl->aboveeye - pl->eyeheight) / 2));
 			water = isliquid(material & MATF_VOLUME);
 		}
-		if (!pl->inwater && water) game::physicstrigger(pl, local, 0, -1, material & MATF_VOLUME);
-		else if (pl->inwater && !water) game::physicstrigger(pl, local, 0, 1, pl->inwater);
+		if(!pl->inwater && water) game::physicstrigger(pl, local, 0, -1, material & MATF_VOLUME);
+		else if(pl->inwater && !water) game::physicstrigger(pl, local, 0, 1, pl->inwater);
 		pl->inwater = water ? material & MATF_VOLUME : MAT_AIR;
 	}
 
-	if (pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_DEATH)) game::suicide(pl); //DEATH or being under the origin (z<0) kills you
-	if (pl->state == CS_ALIVE && (material & MAT_SPACECLIP)) //SPACECLIP prevents spacepack usage
+	if(pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_DEATH)) game::suicide(pl); //DEATH or being under the origin (z<0) kills you
+	if(pl->state == CS_ALIVE && (material & MAT_SPACECLIP)) //SPACECLIP prevents spacepack usage
 	{
 		//if(pl->spacepack) conoutf("\f3spaceclip");
 		pl->spaceclip = true;	
 	}
-	if (pl->state == CS_ALIVE && (material & MAT_JUMPRESET)) //JUMPRESET allows another double jump
+	if(pl->state == CS_ALIVE && (material & MAT_JUMPRESET)) //JUMPRESET allows another double jump
 	{
 		if(pl->jumpstate == 2) pl->jumpstate = 1;
 	}
-	else if (pl->state == CS_ALIVE && !(material & MAT_SPACECLIP) && pl->spaceclip) {
+	else if(pl->state == CS_ALIVE && !(material & MAT_SPACECLIP) && pl->spaceclip) {
 		pl->spaceclip = !pl->spaceclip;
 	}
 
@@ -2025,9 +2025,9 @@ void updatephysstate(physent *d)
     switch(d->physstate)
     {
 		case PHYS_FLOAT:
-		if (d->spacepack && !d->spaceclip)
+		if(d->spacepack && !d->spaceclip)
 		{
-			if (collide(d, vec(0, 0, 0)) && collidewall.z == SLOPEZ)
+			if(collide(d, vec(0, 0, 0)) && collidewall.z == SLOPEZ)
 				d->floor = collidewall;
 		}
 		break; // what the fuck

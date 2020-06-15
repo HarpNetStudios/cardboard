@@ -244,7 +244,7 @@ void gl_checkextensions()
     if(sscanf(version, " %u.%u", &glmajorversion, &glminorversion) != 2) glversion = 100;
     else glversion = glmajorversion*100 + glminorversion*10;
 
-    if (glversion < 210) fatal("OpenGL 2.1 or greater is required!");
+    if(glversion < 210) fatal("OpenGL 2.1 or greater is required!");
 
 #ifdef WIN32
     glActiveTexture_ =            (PFNGLACTIVETEXTUREPROC)            getprocaddress("glActiveTexture");
@@ -459,7 +459,7 @@ void gl_checkextensions()
     {
         reservevpparams = 10;
         rtsharefb = 0; // work-around for strange driver stalls involving when using many FBOs
-        if (std::regex_search(renderer, std::regex("GTX [1-2]0*"))) setvar("oqwait", 0); // work-around for strange driver stalls involving checkquery
+        if(std::regex_search(renderer, std::regex("GTX [1-2]0*"))) setvar("oqwait", 0); // work-around for strange driver stalls involving checkquery
         extern int filltjoints;
         if(glversion < 300 && !hasext("GL_EXT_gpu_shader4")) filltjoints = 0; // DX9 or less NV cards seem to not cause many sparklies
 
@@ -747,7 +747,7 @@ VAR(headachefov, 0, 0, 1);
 
 static int zoommillis = 0;
 VARF(zoom, -1, 0, 1,
-	if (zoom) zoommillis = totalmillis;
+	if(zoom) zoommillis = totalmillis;
 );
 
 void disablezoom()
@@ -759,24 +759,24 @@ void disablezoom()
 
 void computezoom()
 {
-	if (headachefov)
+	if(headachefov)
 	{
 		const float alt = camera1->o.dist(worldpos);
 
 		curfov = min(160.0f, (float)(atan(fov / alt) * 2 * (180.0f / PI)));
 		return;
 	}
-	if (!zoom) { curfov = fov; curavatarfov = avatarfov; return; }
-	if (zoom < 0 && curfov >= fov) { zoom = 0; curfov = fov; curavatarfov = avatarfov; return; } // don't zoom-out if not zoomed-in
+	if(!zoom) { curfov = fov; curavatarfov = avatarfov; return; }
+	if(zoom < 0 && curfov >= fov) { zoom = 0; curfov = fov; curavatarfov = avatarfov; return; } // don't zoom-out if not zoomed-in
 	int zoomvel = zoom > 0 ? zoominvel : zoomoutvel,
 		oldfov = zoom > 0 ? fov : zoomfov,
 		newfov = zoom > 0 ? zoomfov : fov,
 		oldavatarfov = zoom > 0 ? avatarfov : avatarzoomfov,
 		newavatarfov = zoom > 0 ? avatarzoomfov : avatarfov;
 	float t = zoomvel ? float(zoomvel - (totalmillis - zoommillis)) / zoomvel : 0;
-	if (t <= 0)
+	if(t <= 0)
 	{
-		if (!zoomvel && fabs(newfov - curfov) >= 1)
+		if(!zoomvel && fabs(newfov - curfov) >= 1)
 		{
 			curfov = newfov;
 			curavatarfov = newavatarfov;
@@ -817,15 +817,15 @@ bool isthirdperson() { return player!=camera1 || detachedcamera || reflecting; }
 void fixcamerarange()
 {
     const float MAXPITCH = 89.9f;
-	if ((player->spacepack && !player->spaceclip) && player->physstate != PHYS_FLOOR) {
-		if (camera1->pitch >= 180.0f) camera1->pitch = -179.9f;
-		if (camera1->pitch <= -180.0f) camera1->pitch = 179.9f;
+	if((player->spacepack && !player->spaceclip) && player->physstate != PHYS_FLOOR) {
+		if(camera1->pitch >= 180.0f) camera1->pitch = -179.9f;
+		if(camera1->pitch <= -180.0f) camera1->pitch = 179.9f;
 		while (camera1->yaw < 0.0f) camera1->yaw += 360.0f;
 		while (camera1->yaw >= 360.0f) camera1->yaw -= 360.0f;
 	}
 	else {
-		if (camera1->pitch > MAXPITCH) camera1->pitch = MAXPITCH;
-		if (camera1->pitch < -MAXPITCH) camera1->pitch = -MAXPITCH;
+		if(camera1->pitch > MAXPITCH) camera1->pitch = MAXPITCH;
+		if(camera1->pitch < -MAXPITCH) camera1->pitch = -MAXPITCH;
 		while (camera1->yaw < 0.0f) camera1->yaw += 360.0f;
 		while (camera1->yaw >= 360.0f) camera1->yaw -= 360.0f;
 	}
@@ -859,7 +859,7 @@ void mousemove(int dx, int dy)
         }
     }
     if(curaccel && curtime && (dx || dy)) cursens += curaccel * sqrtf(dx*dx + dy*dy)/curtime;
-    if ((camera1->pitch >= 90.0f || camera1->pitch <= -90.0f) && (player->spacepack && !player->spaceclip)) {
+    if((camera1->pitch >= 90.0f || camera1->pitch <= -90.0f) && (player->spacepack && !player->spaceclip)) {
 		camera1->yaw -= dx * cursens * mouseyaw;
 	}
 	else {
@@ -877,16 +877,16 @@ void mousemove(int dx, int dy)
 
 void joymove(float dx, float dy)
 {
-	if (!game::allowmouselook()) 
+	if(!game::allowmouselook()) 
 	{
 		setcammatrix();
 		return;
 	}
 
 	float cursens = joysens, curaccel = joyaccel;
-	if (zoom)
+	if(zoom)
 	{
-		if (zoomautosens)
+		if(zoomautosens)
 		{
 			cursens = float(joysens * zoomfov) / fov;
 			curaccel = float(joyaccel * zoomfov) / fov;
@@ -897,8 +897,8 @@ void joymove(float dx, float dy)
 			curaccel = zoomaccel;
 		}
 	}
-	if (curaccel && curtime && (dx || dy)) cursens += curaccel * sqrtf(dx * dx + dy * dy) / curtime;
-	if ((camera1->pitch >= 90.0f || camera1->pitch <= -90.0f) && (player->spacepack && !player->spaceclip)) {
+	if(curaccel && curtime && (dx || dy)) cursens += curaccel * sqrtf(dx * dx + dy * dy) / curtime;
+	if((camera1->pitch >= 90.0f || camera1->pitch <= -90.0f) && (player->spacepack && !player->spaceclip)) {
 		camera1->yaw -= dx * cursens * mouseyaw;
 	}
 	else {
@@ -907,7 +907,7 @@ void joymove(float dx, float dy)
 
 	camera1->pitch -= dy * cursens * mousepitch;
 	fixcamerarange();
-	if (camera1 != player && !detachedcamera)
+	if(camera1 != player && !detachedcamera)
 	{
 		player->yaw = camera1->yaw;
 		player->pitch = camera1->pitch;
@@ -2041,7 +2041,7 @@ void gl_drawframe()
     renderparticles(true);
 
 	extern int hidehud;
-	if (editmode && !hidehud)
+	if(editmode && !hidehud)
 	{
 		glDepthMask(GL_FALSE);
 		renderblendbrush();
@@ -2247,7 +2247,7 @@ void drawcrosshair(int w, int h)
 		vec m(1, 1, 1);
 		int index = game::selectcrosshair(m);
         if(index < 0) return;
-		if (crosshairfx)
+		if(crosshairfx)
 		{
 			r *= m.r; g *= m.g; b *= m.b;
 		}
@@ -2351,12 +2351,12 @@ void gl_drawhud()
     int conw = int(w/conscale), conh = int(h/conscale), abovehud = conh - FONTH, limitgui = abovehud;
     if(!hidehud && !mainmenu)
     {
-		if (!mainmenu)
+		if(!mainmenu)
 		{
 			pushhudmatrix();
 			hudmatrix.scale(conscale, conscale, 1);
 			flushhudmatrix();
-			if (showversion)
+			if(showversion)
 			{
 				oldstring versioninfo;
 				formatstring(versioninfo, "\fh%s %s %s (%s)", game::gametitle, game::gamestage, game::gameversion, __DATE__);
@@ -2404,7 +2404,7 @@ void gl_drawhud()
                     }
                 }
 
-				if (showvel && !editmode)
+				if(showvel && !editmode)
 				{
                     float speed = game::hudplayer()->vel.magnitude();
 					draw_textf("%3.1f cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, speed);
@@ -2479,7 +2479,7 @@ void gl_drawhud()
         }
 
 		bool windowhit = g3d_windowhit(true, false); // don't draw game hud when menu is up
-		if (!windowhit && !consoleprompt() && (hidestats || (!editmode && !showeditstats)))
+		if(!windowhit && !consoleprompt() && (hidestats || (!editmode && !showeditstats)))
         {
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             game::gameplayhud(w, h);

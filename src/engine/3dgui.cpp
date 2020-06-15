@@ -107,13 +107,13 @@ struct gui : g3d_gui
     //tab is always at top of page
     void tab(const char *rawName, int color)
     {
-		if (curdepth != 0) return;
-		if (color) tcolor = color;
+		if(curdepth != 0) return;
+		if(color) tcolor = color;
 		tpos++;
-		if (!rawName) rawName = intstr(tpos);
+		if(!rawName) rawName = intstr(tpos);
 
 		const char* name = (rawName[0] == 't' && rawName[1] == ':') ? getTranslation((rawName + 2)) : rawName;
-		if (name == noTranslation)
+		if(name == noTranslation)
 		{
 			name = rawName;
 		}
@@ -616,7 +616,7 @@ struct gui : g3d_gui
     void text_(const char *rawText, int x, int y, int color, bool shadow, bool force = false)
     {
 		const char* text = (rawText[0] == 't' && rawText[1] == ':') ? getTranslation((rawText + 2)) : rawText;
-		if (text == noTranslation)
+		if(text == noTranslation)
 		{
 			text = rawText;
 		}
@@ -713,9 +713,9 @@ struct gui : g3d_gui
         if(vslot.rotation)
         {
 			const texrotation &r = texrotations[vslot.rotation];
-			if (r.swapxy) { swap(xoff, yoff); loopk(4) swap(tc[k].x, tc[k].y); }
-			if (r.flipx) { xoff *= -1; loopk(4) tc[k].x *= -1; }
-			if (r.flipy) { yoff *= -1; loopk(4) tc[k].y *= -1; }
+			if(r.swapxy) { swap(xoff, yoff); loopk(4) swap(tc[k].x, tc[k].y); }
+			if(r.flipx) { xoff *= -1; loopk(4) tc[k].x *= -1; }
+			if(r.flipy) { yoff *= -1; loopk(4) tc[k].y *= -1; }
         }
         loopk(4) { tc[k].x = tc[k].x/xt - xoff/t->xs; tc[k].y = tc[k].y/yt - yoff/t->ys; }
         if(slot.loaded) gle::color(vec(color).mul(vslot.colorscale));
@@ -800,7 +800,7 @@ struct gui : g3d_gui
     int button_(const char *rawText, int color, const char *icon, bool clickable, bool center)
     {
 		const char* text = (rawText[0] == 't' && rawText[1] == ':') ? getTranslation((rawText + 2)) : rawText;
-		if (text == noTranslation)
+		if(text == noTranslation)
 		{
 			text = rawText;
 		}
@@ -1045,7 +1045,7 @@ struct gui : g3d_gui
         {
             list &l = lists[i];
             if(l.parent > parent) { parent = l.parent; depth++; }
-			else if (l.parent < parent)
+			else if(l.parent < parent)
 			{
 				while (parent > l.parent&& depth > 0)
 				{
@@ -1168,9 +1168,9 @@ VARP(guipushdist, 1, 4, 64);
 
 void pastegui() // this code might cause a memory leak, idk -Y
 {
-	if (!SDL_HasClipboardText()) return;
+	if(!SDL_HasClipboardText()) return;
 	char* cb = SDL_GetClipboardText();
-	if (!cb) return;
+	if(!cb) return;
 	size_t cblen = strlen(cb);
 	editor* e = currentfocus();
 	e->input(cb, cblen);

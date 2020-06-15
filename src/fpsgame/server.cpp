@@ -430,9 +430,9 @@ namespace server
 			loopv(events)
 			{
 				serverevent& ev = events[i];
-				if (gamemillis > ev.millis)
+				if(gamemillis > ev.millis)
 				{
-					if (ev.millis > 0) ev.flush();
+					if(ev.millis > 0) ev.flush();
 					events.remove(i--);
 				}
 			}
@@ -1512,15 +1512,15 @@ namespace server
             if(ci->local) return type;
         }
 		// only allow edit messages in coop-edit mode
-		if (type >= N_EDITENT && type <= N_EDITVAR && !m_edit) return -1;
+		if(type >= N_EDITENT && type <= N_EDITVAR && !m_edit) return -1;
 		// server only messages
 		static const int servtypes[] = { N_SERVINFO, N_INITCLIENT, N_WELCOME, N_MAPCHANGE, N_SERVMSG, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX, N_DIED, N_SPAWNSTATE, N_FORCEDEATH, N_TEAMINFO, N_ITEMACC, N_ITEMSPAWN, N_TIMEUP, N_CDIS, N_CURRENTMASTER, N_PONG, N_RESUME, N_BASESCORE, N_BASEINFO, N_BASEREGEN, N_SENDDEMOLIST, N_SENDDEMO, N_DEMOPLAYBACK, N_SENDMAP, N_DROPFLAG, N_SCOREFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_CLIENT, N_AUTHCHAL, N_INITAI, N_EXPIRETOKENS, N_DROPTOKENS, N_STEALTOKENS, N_DEMOPACKET };
-		if (ci)
+		if(ci)
         {
-			loopi(sizeof(servtypes) / sizeof(int)) if (type == servtypes[i]) return -1;
-			if (type < N_EDITENT || type > N_EDITVAR || !m_edit)
+			loopi(sizeof(servtypes) / sizeof(int)) if(type == servtypes[i]) return -1;
+			if(type < N_EDITENT || type > N_EDITVAR || !m_edit)
 			{
-				if (type != N_POS && ++ci->overflow >= 200) return -2;
+				if(type != N_POS && ++ci->overflow >= 200) return -2;
 			}
         }
         if(ci && ++ci->overflow >= 200) return -2;
@@ -1931,7 +1931,7 @@ namespace server
 		stopdemo();
 		pausegame(false);
 		changegamespeed(100);
-		if (smode) smode->cleanup();
+		if(smode) smode->cleanup();
 		serverevents::invalidate();
 
 		sendf(-1, 1, "ri", N_RESTARTGAME);
@@ -1945,26 +1945,26 @@ namespace server
 			clientinfo* ci = clients[i];
 			ci->state.timeplayed += lastmillis - ci->state.lasttimeplayed;
 		}
-		if (m_timed) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis) / 1000, 1) : 0);
+		if(m_timed) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis) / 1000, 1) : 0);
 		loopv(clients)
 		{
 			clientinfo* ci = clients[i];
 			ci->gamerestart();
 			ci->state.lasttimeplayed = lastmillis;
-			if (m_mp(gamemode) && ci->state.state != CS_SPECTATOR) sendspawn(ci);
+			if(m_mp(gamemode) && ci->state.state != CS_SPECTATOR) sendspawn(ci);
 		}
 
-		if (m_demo)
+		if(m_demo)
 		{
-			if (clients.length()) setupdemoplayback();
+			if(clients.length()) setupdemoplayback();
 		}
-		else if (demonextmatch)
+		else if(demonextmatch)
 		{
 			demonextmatch = false;
 			setupdemorecord();
 		}
 
-		if (smode) smode->setup();
+		if(smode) smode->setup();
 	}
 
     void changemap(const char *s, int mode)
@@ -2010,8 +2010,8 @@ namespace server
 			/*defformatstring(fname, "packages/base/%s.cmr", smapname);
 			stream *map = openrawfile(path(fname), "wb");
 			mapdata = map;
-			if (!mapdata) sendf(-1, 1, "ris", N_SERVMSG, "no map to send");
-			if ((ci->getmap = sendfile(-1, 2, mapdata, "ri", N_SENDMAP)))
+			if(!mapdata) sendf(-1, 1, "ris", N_SERVMSG, "no map to send");
+			if((ci->getmap = sendfile(-1, 2, mapdata, "ri", N_SENDMAP)))
 				ci->getmap->freeCallback = freegetmap; // RESUME HERE. WILL ERROR. */
             ci->state.lasttimeplayed = lastmillis;
             if(m_mp(gamemode) && ci->state.state!=CS_SPECTATOR) sendspawn(ci);
@@ -2061,9 +2061,9 @@ namespace server
 		loopv(clients)
 		{
 			clientinfo* ci = clients[i];
-			if (ci->state.aitype != AI_NONE || (ci->state.state == CS_SPECTATOR && !ci->privilege && !ci->local))
+			if(ci->state.aitype != AI_NONE || (ci->state.state == CS_SPECTATOR && !ci->privilege && !ci->local))
 				continue;
-			if (!ci->restartvote) return;
+			if(!ci->restartvote) return;
 		}
 		restartgamein(5);
 	}
@@ -2128,9 +2128,9 @@ namespace server
 	void restartvote(int favor, int sender)
 	{
 		clientinfo* ci = getinfo(sender);
-		if (!ci || (ci->state.state == CS_SPECTATOR && !ci->privilege && !ci->local)) return;
+		if(!ci || (ci->state.state == CS_SPECTATOR && !ci->privilege && !ci->local)) return;
 		ci->restartvote = favor;
-		if (favor && (ci->local || (ci->privilege && mastermode >= MM_VETO)))
+		if(favor && (ci->local || (ci->privilege && mastermode >= MM_VETO)))
 		{
 			sendservmsgf("%s forced restart", colorname(ci));
 			
@@ -2193,7 +2193,7 @@ namespace server
 	{
 		gamestate& ts = target->state;
 		if(!m_parkour) ts.dodamage(damage);
-		if (target != actor && !isteam(target->team, actor->team)) actor->state.damage += damage;
+		if(target != actor && !isteam(target->team, actor->team)) actor->state.damage += damage;
 		sendf(-1, 1, "ri6", N_DAMAGE, target->clientnum, actor->clientnum, damage, ts.health, gun);
 		if(target==actor) target->setpushed();
         if(!hitpush.iszero())
@@ -2320,7 +2320,7 @@ namespace server
                     int damage = h.rays*guns[gun].damage;
                     if(!m_parkour || target!=ci) // Why isn't mean the same as line 2230? Why is C/C++ retarded? -Y 10/06/18
                     {
-						if (!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.dir, h.headshot);
+						if(!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.dir, h.headshot);
                     }
                 }
                 break;
@@ -2414,7 +2414,7 @@ namespace server
                     {
                         int oldtime = sents[i].spawntime;
 						sents[i].spawntime -= curtime;
-						if (sents[i].spawntime <= 0)
+						if(sents[i].spawntime <= 0)
                         {
                             sents[i].spawntime = 0;
                             sents[i].spawned = true;
@@ -2661,24 +2661,24 @@ namespace server
         oldstring apiurl;
         formatstring(apiurl, "%s/game/check/pubtoken?id=1&token=%s", HNAPI, pubtoken);
         char* thing = web_get(apiurl, false);
-        if (!thing[0]) {
+        if(!thing[0]) {
             return false;
         }
         cJSON* json = cJSON_Parse(thing);
         // error handling
         const cJSON* status = cJSON_GetObjectItemCaseSensitive(json, "status");
         const cJSON* message = cJSON_GetObjectItemCaseSensitive(json, "message");
-        if (cJSON_IsNumber(status) && cJSON_IsString(message)) {
-            if (status->valueint > 0) {
+        if(cJSON_IsNumber(status) && cJSON_IsString(message)) {
+            if(status->valueint > 0) {
                 return false;
             }
             else {
                 // actual parse
                 const cJSON* name = NULL;
                 name = cJSON_GetObjectItemCaseSensitive(json, "username");
-                if (cJSON_IsString(name) && (name->valuestring != NULL))
+                if(cJSON_IsString(name) && (name->valuestring != NULL))
                 {
-                    if (!strcmp(name->valuestring, ci->name)) {
+                    if(!strcmp(name->valuestring, ci->name)) {
                         return true;
                     }
                     else {
@@ -2924,7 +2924,7 @@ namespace server
         if(ci && !ci->connected)
         {
             if(chan==0) return;
-            else if(chan!=1) { disconnect_client(sender, DISC_MSGERR); return; }
+            else if(chan!=1) { conoutf(CON_ERROR, "^f0Incorrect channel, report to Yellowberry."); disconnect_client(sender, DISC_MSGERR); return; }
             else while(p.length() < p.maxlen) switch(checktype(getint(p), ci))
             {
                 case N_CONNECT:
@@ -2974,6 +2974,7 @@ namespace server
                     break;
 
                 default:
+                    conoutf(CON_ERROR, "^f0Message parse error, report to Yellowberry.");
                     disconnect_client(sender, DISC_MSGERR);
                     return;
             }
@@ -3440,25 +3441,25 @@ namespace server
                 clientinfo *spinfo = (clientinfo *)getclientinfo(spectator); // no bots
                 if(!spinfo || !spinfo->connected || (spinfo->state.state==CS_SPECTATOR ? val : !val)) break;
 
-				if (spinfo->state.state != CS_SPECTATOR && val)
+				if(spinfo->state.state != CS_SPECTATOR && val)
 				{
-					if (spinfo->state.state == CS_ALIVE) suicide(spinfo);
-					if (smode) smode->leavegame(spinfo);
+					if(spinfo->state.state == CS_ALIVE) suicide(spinfo);
+					if(smode) smode->leavegame(spinfo);
 					spinfo->state.state = CS_SPECTATOR;
 					spinfo->state.timeplayed += lastmillis - spinfo->state.lasttimeplayed;
-					if (!spinfo->local && !spinfo->privilege) aiman::removeai(spinfo);
+					if(!spinfo->local && !spinfo->privilege) aiman::removeai(spinfo);
 				}
-				else if (spinfo->state.state == CS_SPECTATOR && !val)
+				else if(spinfo->state.state == CS_SPECTATOR && !val)
 				{
 					spinfo->state.state = CS_DEAD;
 					spinfo->state.respawn();
 					spinfo->state.lasttimeplayed = lastmillis;
 					aiman::addclient(spinfo);
-					if (spinfo->clientmap[0] || spinfo->mapcrc) checkmaps();
-					if (smode) smode->entergame(spinfo);
+					if(spinfo->clientmap[0] || spinfo->mapcrc) checkmaps();
+					if(smode) smode->entergame(spinfo);
 				}
 				sendf(-1, 1, "ri3", N_SPECTATOR, spectator, val);
-				if (!val && !hasmap(spinfo)) rotatemap(true);
+				if(!val && !hasmap(spinfo)) rotatemap(true);
                 break;
             }
 
@@ -3735,6 +3736,7 @@ namespace server
             #undef PARSEMESSAGES
 
             case -1:
+                conoutf(CON_ERROR, "^f0Bad packet ID, report to Yellowberry.");
                 disconnect_client(sender, DISC_MSGERR);
                 return;
 
@@ -3745,7 +3747,7 @@ namespace server
             default: genericmsg:
             {
                 int size = server::msgsizelookup(type);
-                if(size<=0) { disconnect_client(sender, DISC_MSGERR); return; }
+                if(size<=0) { conoutf(CON_ERROR, "^f0Default size 0, report to Yellowberry."); disconnect_client(sender, DISC_MSGERR); return; }
                 loopi(size-1) getint(p);
                 if(ci) switch(msgfilter[type])
                 {

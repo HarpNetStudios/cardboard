@@ -142,12 +142,12 @@ namespace game
 
 	int statuscolor(fpsent* d, int color)
 	{
-		if (d->privilege)
+		if(d->privilege)
 		{
 			color = d->privilege >= PRIV_ADMIN ? 0xFF8000 : (d->privilege >= PRIV_AUTH ? 0xC040C0 : 0x40FF80);
-			if (d->state == CS_DEAD) color = (color >> 1) & 0x7F7F7F;
+			if(d->state == CS_DEAD) color = (color >> 1) & 0x7F7F7F;
 		}
-		else if (d->state == CS_DEAD) color = 0x606060;
+		else if(d->state == CS_DEAD) color = 0x606060;
 		return color;
 	}
 
@@ -295,9 +295,9 @@ namespace game
 					loopscoregroup(o,
 					{
 						fpsent * p = o->ownernum >= 0 ? getclient(o->ownernum) : o;
-						if (!p) p = o;
+						if(!p) p = o;
 						g.pushlist();
-						if (p->state == CS_LAGGED) g.text("LAG", 0xFFFFDD);
+						if(p->state == CS_LAGGED) g.text("LAG", 0xFFFFDD);
 						else
 						{
 							g.textf("%d", 0xFFFFDD, NULL, p->ping);
@@ -309,7 +309,7 @@ namespace game
 					});
 					g.poplist();
 				}
-				else if (showping)
+				else if(showping)
                 {
                     g.pushlist();
                     g.text("ping", fgcolor);
@@ -369,7 +369,7 @@ namespace game
                 }
                 g.poplist();
 
-				if ((multiplayer(false) || demoplayback) && showspectatorping)
+				if((multiplayer(false) || demoplayback) && showspectatorping)
 				{
 					g.space(1);
 					g.pushlist();
@@ -379,8 +379,8 @@ namespace game
 					{
 						fpsent * o = spectators[i];
 						fpsent * p = o->ownernum >= 0 ? getclient(o->ownernum) : o;
-						if (!p) p = o;
-						if (p->state == CS_LAGGED) g.text("LAG", 0xFFFFDD);
+						if(!p) p = o;
+						if(p->state == CS_LAGGED) g.text("LAG", 0xFFFFDD);
 						else g.textf("%d", 0xFFFFDD, NULL, p->ping);
 					}
 					g.poplist();
@@ -480,21 +480,21 @@ namespace game
 	void drawhudscore(int w, int h)
 	{
 		int numgroups = groupplayers();
-		if (!numgroups) return;
+		if(!numgroups) return;
 		
 		fpsent * p = followingplayer();
-		if (!p) p = player1;
+		if(!p) p = player1;
 		scoregroup * g = groups[0];
 		int score = INT_MIN, score2 = 0;
 		if(hudscoreself) score2 = INT_MIN;
-		if (m_teammode)
+		if(m_teammode)
 		{
 			score = g->score;
-			if (numgroups > 1) score2 = groups[1]->score;
+			if(numgroups > 1) score2 = groups[1]->score;
 		}
 		else
 		{
-			if (hudscoreself) score = m_parkour ? p->deaths : p->frags;
+			if(hudscoreself) score = m_parkour ? p->deaths : p->frags;
 			else 
 			{
 				score = m_parkour ? p->deaths : p->frags;
@@ -513,7 +513,7 @@ namespace game
 		
 		oldstring buf2;
 		int tw2 = 0, th2 = 0;
-		if (score2 > INT_MIN)
+		if(score2 > INT_MIN)
 		{
 			score2 = clamp(score2, -999, 9999);
 			formatstring(buf2, "%d", score2);
@@ -544,7 +544,7 @@ namespace game
 		{
 			color = 0x3030C0;
 			color2 = 0xC03030;
-			if (!strcmp(g->team, "red")) swap(color, color2);
+			if(!strcmp(g->team, "red")) swap(color, color2);
 		}
 		
 		draw_text(buf, int(offset.x), int(offset.y), (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, hudscorealpha);

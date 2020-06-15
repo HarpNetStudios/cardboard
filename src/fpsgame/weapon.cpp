@@ -30,7 +30,7 @@ namespace game
             } else {
                 d->candouble = false;
             }
-			if (d->attacking) d->attacking = false; // no more unlockable scrollwheel shenanigans -Y
+			if(d->attacking) d->attacking = false; // no more unlockable scrollwheel shenanigans -Y
         }
         d->gunselect = gun;
     }
@@ -65,7 +65,7 @@ namespace game
     void setweapon(const char *name, bool force = false)
     {
         int gun = getweapon(name);
-        if (m_gun & !force) return;
+        if(m_gun & !force) return;
         if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_GL) return;
         if(force || player1->ammo[gun]) gunselect(gun, player1);
         else playsound(S_NOAMMO);
@@ -74,7 +74,7 @@ namespace game
 
     void dbgreload(const char *name)
     {
-		if (m_gun) return;
+		if(m_gun) return;
         int gun = getweapon(name);
         if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_GL) return;
         player1->ammo[gun] = itemstats[gun-GUN_SMG].add*2;
@@ -84,7 +84,7 @@ namespace game
     void cycleweapon(int numguns, int *guns, bool force = false)
     {
         if(numguns<=0 || player1->state!=CS_ALIVE) return;
-		if (m_gun) return;
+		if(m_gun) return;
         int offset = 0;
         loopi(numguns) if(guns[i] == player1->gunselect) { offset = i+1; break; }
         loopi(numguns)
@@ -111,21 +111,21 @@ namespace game
     void weaponswitch(fpsent *d)
     {
         if(d->state!=CS_ALIVE) return;
-		if (m_gun) return;
-		if (oldweapswitch) {
+		if(m_gun) return;
+		if(oldweapswitch) {
 			int s = d->gunselect;
-			if (s != GUN_CG && d->ammo[GUN_CG])     s = GUN_CG;
-			else if (s != GUN_RL && d->ammo[GUN_RL])     s = GUN_RL;
-			else if (s != GUN_SG && d->ammo[GUN_SG])     s = GUN_SG;
-			else if (s != GUN_RIFLE && d->ammo[GUN_RIFLE])  s = GUN_RIFLE;
-			else if (s != GUN_GL && d->ammo[GUN_GL])     s = GUN_GL;
-			else if (s != GUN_SMG && d->ammo[GUN_SMG])    s = GUN_SMG;
+			if(s != GUN_CG && d->ammo[GUN_CG])     s = GUN_CG;
+			else if(s != GUN_RL && d->ammo[GUN_RL])     s = GUN_RL;
+			else if(s != GUN_SG && d->ammo[GUN_SG])     s = GUN_SG;
+			else if(s != GUN_RIFLE && d->ammo[GUN_RIFLE])  s = GUN_RIFLE;
+			else if(s != GUN_GL && d->ammo[GUN_GL])     s = GUN_GL;
+			else if(s != GUN_SMG && d->ammo[GUN_SMG])    s = GUN_SMG;
 			else                                          s = GUN_FIST;
 			gunselect(s, d);
 		}
 		else 
 		{
-			if (d->gunselect != d->lastgun && d->ammo[d->lastgun]) gunselect(d->lastgun, d); // make sure we don't switch to something we don't have ammo for.
+			if(d->gunselect != d->lastgun && d->ammo[d->lastgun]) gunselect(d->lastgun, d); // make sure we don't switch to something we don't have ammo for.
 			else gunselect(GUN_FIST, d);
 		}
     }
@@ -133,7 +133,7 @@ namespace game
     ICOMMAND(weapon, "V", (tagval *args, int numargs),
     {
         if(player1->state!=CS_ALIVE) return;
-		if (m_gun) return;
+		if(m_gun) return;
         loopi(7)
         {
             const char *name = i < numargs ? args[i].getstr() : "";
@@ -280,7 +280,7 @@ namespace game
             }
             vec old(bnc.o);
             bool stopped = false;
-			if (bnc.bouncetype == BNC_GRENADE)
+			if(bnc.bouncetype == BNC_GRENADE)
 			{
 				stopped = bounce(&bnc, 0.6f, 0.5f, 0.7f) || (bnc.lifetime -= time) < 0;
 			}
@@ -559,7 +559,7 @@ namespace game
 
 	bool isheadshot(dynent* d, vec from, vec to)
 	{
-		if ((to.z - (d->o.z - d->eyeheight)) / (d->eyeheight + d->aboveeye) > 0.8f) return true;
+		if((to.z - (d->o.z - d->eyeheight)) / (d->eyeheight + d->aboveeye) > 0.8f) return true;
 		return false;
 	}
 
@@ -655,7 +655,7 @@ namespace game
         {
             case GUN_FIST:
                 if(d->type==ENT_PLAYER && chainsawhudgun) sound = S_CHAINSAW_ATTACK;
-				if ((muzzlelight) && (darkmap)) adddynlight(hudgunorigin(gun, d->o, to, d), 25, vec(0.6f, 0.275f, 0.15f), 10, 10, DL_FLASH, 0, vec(0, 0, 0), d);
+				if((muzzlelight) && (darkmap)) adddynlight(hudgunorigin(gun, d->o, to, d), 25, vec(0.6f, 0.275f, 0.15f), 10, 10, DL_FLASH, 0, vec(0, 0, 0), d);
                 break;
 
             case GUN_SG:
@@ -689,7 +689,7 @@ namespace game
                 if(muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, 250, PART_MUZZLE_FLASH2, 0xFFFFFF, 3.0f, d);
 				pspeed = guns[gun].projspeed;
-				if (d->type == ENT_AI) pspeed /= 2;
+				if(d->type == ENT_AI) pspeed /= 2;
 				newprojectile(from, to, (float)pspeed, local, id, d, gun);
 				break;
 
@@ -898,9 +898,9 @@ namespace game
 		if(d->gunselect == GUN_SMG && d->ai) d->gunwait[d->gunselect] += int(d->gunwait[d->gunselect]*(((101-d->skill)+rnd(111-d->skill))/100.f));
         d->totalshots += (headshot ? guns[d->gunselect].specialdamage : guns[d->gunselect].damage)*guns[d->gunselect].rays;
 
-		if (!d->ammo[d->gunselect])
+		if(!d->ammo[d->gunselect])
 		{
-			if (d == player1)
+			if(d == player1)
 			{
 				msgsound(S_NOAMMO, d);
 				d->gunwait[d->gunselect] = 600;

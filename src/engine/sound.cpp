@@ -39,8 +39,8 @@ struct soundconfig
 
     int chooseslot(int flags) const
     {
-		if (flags & SND_NO_ALT || numslots <= 1) return slots;
-		if (flags & SND_USE_ALT) return slots + 1 + rnd(numslots - 1);
+		if(flags & SND_NO_ALT || numslots <= 1) return slots;
+		if(flags & SND_USE_ALT) return slots + 1 + rnd(numslots - 1);
 		return slots + rnd(numslots);
     }
 };
@@ -169,19 +169,19 @@ bool initaudio()
 {
 	static oldstring fallback = "";
 	static bool initfallback = true;
-	if (initfallback)
+	if(initfallback)
 	{
 		initfallback = false;
-		if (char* env = SDL_getenv("SDL_AUDIODRIVER")) copystring(fallback, env);
+		if(char* env = SDL_getenv("SDL_AUDIODRIVER")) copystring(fallback, env);
 	}
-	if (!fallback[0] && audiodriver[0])
+	if(!fallback[0] && audiodriver[0])
 	{
 		vector<char*> drivers;
 		explodelist(audiodriver, drivers);
 		loopv(drivers)
 		{
 			SDL_setenv("SDL_AUDIODRIVER", drivers[i], 1);
-			if (SDL_InitSubSystem(SDL_INIT_AUDIO) >= 0)
+			if(SDL_InitSubSystem(SDL_INIT_AUDIO) >= 0)
 			{
 				drivers.deletearrays();
 				return true;
@@ -190,7 +190,7 @@ bool initaudio()
 		drivers.deletearrays();
 	}
 	SDL_setenv("SDL_AUDIODRIVER", fallback, 1);
-	if (SDL_InitSubSystem(SDL_INIT_AUDIO) >= 0) return true;
+	if(SDL_InitSubSystem(SDL_INIT_AUDIO) >= 0) return true;
 	conoutf(CON_ERROR, "sound init failed: %s", SDL_GetError());
 	return false;
 }
@@ -206,11 +206,11 @@ void initsound()
         return;
 	}
 	
-	if (shouldinitaudio)
+	if(shouldinitaudio)
 	{
 		shouldinitaudio = false;
-		if (SDL_WasInit(SDL_INIT_AUDIO)) SDL_QuitSubSystem(SDL_INIT_AUDIO);
-		if (!usesound || !initaudio())
+		if(SDL_WasInit(SDL_INIT_AUDIO)) SDL_QuitSubSystem(SDL_INIT_AUDIO);
+		if(!usesound || !initaudio())
 		{
 			nosound = true;
 			return;
@@ -290,7 +290,7 @@ SVARFP(soundtrack, "adwh", {
 	execfile("data/streset.cfg", false);
 	defformatstring(soundtrackcfgname, "packages/music/%s/soundtrack.cfg", soundtrack);
 	execfile(soundtrackcfgname, false);
-	if (identexists("playsong")) execute("playsong"); 
+	if(identexists("playsong")) execute("playsong"); 
 	});
 SVARP(_soundtrack_title, "");
 SVARP(_soundtrack_author, "");
@@ -419,7 +419,7 @@ SVARFP(soundpack, "default", {
 		if(strcmp(soundpack,"default")){
 			oldstring gamer;
 			formatstring(gamer, "packages/soundpacks/%s", soundpack);
-			if (addzip(gamer, "packages/soundpacks", NULL, true)) resetsound();
+			if(addzip(gamer, "packages/soundpacks", NULL, true)) resetsound();
 			return;
 		}
 		resetsound(); 

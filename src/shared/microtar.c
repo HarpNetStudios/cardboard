@@ -79,7 +79,7 @@ static int write_null_bytes(mtar_t *tar, int n) {
   char nul = '\0';
   for (i = 0; i < n; i++) {
     err = twrite(tar, &nul, 1);
-    if (err) {
+    if(err) {
       return err;
     }
   }
@@ -91,14 +91,14 @@ static int raw_to_header(mtar_header_t *h, const mtar_raw_header_t *rh) {
   unsigned chksum1, chksum2;
 
   /* If the checksum starts with a null byte we assume the record is NULL */
-  if (*rh->checksum == '\0') {
+  if(*rh->checksum == '\0') {
     return MTAR_ENULLRECORD;
   }
 
   /* Build and compare checksum */
   chksum1 = checksum(rh);
   sscanf(rh->checksum, "%o", &chksum2);
-  if (chksum1 != chksum2) {
+  if(chksum1 != chksum2) {
     return MTAR_EBADCHKSUM;
   }
 
@@ -186,18 +186,18 @@ int mtar_open(mtar_t *tar, const char *filename, const char *mode) {
   tar->close = file_close;
 
   /* Assure mode is always binary */
-  if ( strchr(mode, 'r') ) mode = "rb";
-  if ( strchr(mode, 'w') ) mode = "wb";
-  if ( strchr(mode, 'a') ) mode = "ab";
+  if( strchr(mode, 'r') ) mode = "rb";
+  if( strchr(mode, 'w') ) mode = "wb";
+  if( strchr(mode, 'a') ) mode = "ab";
   /* Open file */
   tar->stream = fopen(filename, mode);
-  if (!tar->stream) {
+  if(!tar->stream) {
     return MTAR_EOPENFAIL;
   }
   /* Read first header to check it is valid if mode is `r` */
-  if (*mode == 'r') {
+  if(*mode == 'r') {
     err = mtar_read_header(tar, &h);
-    if (err != MTAR_ESUCCESS) {
+    if(err != MTAR_ESUCCESS) {
       mtar_close(tar);
       return err;
     }
@@ -232,7 +232,7 @@ int mtar_next(mtar_t *tar) {
   mtar_header_t h;
   /* Load header */
   err = mtar_read_header(tar, &h);
-  if (err) {
+  if(err) {
     return err;
   }
   /* Seek to next record */
@@ -246,13 +246,13 @@ int mtar_find(mtar_t *tar, const char *name, mtar_header_t *h) {
   mtar_header_t header;
   /* Start at beginning */
   err = mtar_rewind(tar);
-  if (err) {
+  if(err) {
     return err;
   }
   /* Iterate all files until we hit an error or find the file */
   while ( (err = mtar_read_header(tar, &header)) == MTAR_ESUCCESS ) {
-    if ( !strcmp(header.name, name) ) {
-      if (h) {
+    if( !strcmp(header.name, name) ) {
+      if(h) {
         *h = header;
       }
       return MTAR_ESUCCESS;
@@ -260,7 +260,7 @@ int mtar_find(mtar_t *tar, const char *name, mtar_header_t *h) {
     mtar_next(tar);
   }
   /* Return error */
-  if (err == MTAR_ENULLRECORD) {
+  if(err == MTAR_ENULLRECORD) {
     err = MTAR_ENOTFOUND;
   }
   return err;
@@ -274,12 +274,12 @@ int mtar_read_header(mtar_t *tar, mtar_header_t *h) {
   tar->last_header = tar->pos;
   /* Read raw header */
   err = tread(tar, &rh, sizeof(rh));
-  if (err) {
+  if(err) {
     return err;
   }
   /* Seek back to start of header */
   err = mtar_seek(tar, tar->last_header);
-  if (err) {
+  if(err) {
     return err;
   }
   /* Load raw header into header struct and return */
@@ -291,29 +291,29 @@ int mtar_read_data(mtar_t *tar, void *ptr, unsigned size) {
   int err;
   /* If we have no remaining data then this is the first read, we get the size,
    * set the remaining data and seek to the beginning of the data */
-  if (tar->remaining_data == 0) {
+  if(tar->remaining_data == 0) {
     mtar_header_t h;
     /* Read header */
     err = mtar_read_header(tar, &h);
-    if (err) {
+    if(err) {
       return err;
     }
     /* Seek past header and init remaining data */
     err = mtar_seek(tar, tar->pos + sizeof(mtar_raw_header_t));
-    if (err) {
+    if(err) {
       return err;
     }
     tar->remaining_data = h.size;
   }
   /* Read data */
   err = tread(tar, ptr, size);
-  if (err) {
+  if(err) {
     return err;
   }
   tar->remaining_data -= size;
   /* If there is no remaining data we've finished reading and seek back to the
    * header */
-  if (tar->remaining_data == 0) {
+  if(tar->remaining_data == 0) {
     return mtar_seek(tar, tar->last_header);
   }
   return MTAR_ESUCCESS;
@@ -358,12 +358,12 @@ int mtar_write_data(mtar_t *tar, const void *data, unsigned size) {
   int err;
   /* Write data */
   err = twrite(tar, data, size);
-  if (err) {
+  if(err) {
     return err;
   }
   tar->remaining_data -= size;
   /* Write padding if we've written all the data for this file */
-  if (tar->remaining_data == 0) {
+  if(tar->remaining_data == 0) {
     return write_null_bytes(tar, round_up(tar->pos, 512) - tar->pos);
   }
   return MTAR_ESUCCESS;

@@ -460,7 +460,7 @@ extern const texrotation texrotations[8] =
 
 void texrotate(ImageData &s, int numrots, int type = TEX_DIFFUSE)
 {
-	if (numrots >= 1 && numrots <= 7)
+	if(numrots >= 1 && numrots <= 7)
 	{
 		const texrotation &r = texrotations[numrots];
 		texreorient(s, r.flipx, r.flipy, r.swapxy, type);
@@ -1585,7 +1585,7 @@ const char* textypename(int i)
 
 void enabletexture(const bool on)
 {
-	if (on) hudshader->set();
+	if(on) hudshader->set();
 	else hudnotextureshader->set();
 }
 
@@ -1770,7 +1770,7 @@ static void clampvslotoffset(VSlot &dst, Slot *slot = NULL)
         Texture *t = slot->sts[0].t;
         int xs = t->xs, ys = t->ys;
         if(t->type & Texture::MIRROR) { xs *= 2; ys *= 2; }
-		if (texrotations[dst.rotation].swapxy) swap(xs, ys);
+		if(texrotations[dst.rotation].swapxy) swap(xs, ys);
         dst.offset.x %= xs; if(dst.offset.x < 0) dst.offset.x += xs;
         dst.offset.y %= ys; if(dst.offset.y < 0) dst.offset.y += ys;
     }
@@ -1990,7 +1990,7 @@ bool unpackvslot(ucharbuf &buf, VSlot &dst, bool delta)
                 break;
             case VSLOT_ROTATION:
                 dst.rotation = getint(buf);
-				if (!delta) dst.rotation = clamp(dst.rotation, 0, 7);
+				if(!delta) dst.rotation = clamp(dst.rotation, 0, 7);
                 break;
             case VSLOT_OFFSET:
                 dst.offset.x = getint(buf);
@@ -2149,7 +2149,9 @@ void autograss(char *name)
     if(slots.empty()) return;
     Slot &s = *slots.last();
     DELETEA(s.autograss);
-    s.autograss = name[0] ? newstring(makerelpath("packages", name, NULL, "<premul>")) : NULL;
+    s.autograss = newstring(name);
+    // removed due to weird grass bug -Y
+    //s.autograss = name[0] ? newstring(makerelpath("packages", name, NULL, "<premul>")) : NULL;
 }
 COMMAND(autograss, "s");
 
@@ -2267,7 +2269,7 @@ static void mergedepth(ImageData &c, ImageData &z)
 
 static void mergealpha(ImageData & c, ImageData & s)
 {
-    if (s.bpp < 3)
+    if(s.bpp < 3)
     {
         readwritergbatex(c, s,
             dst[3] = src[0];
@@ -2805,17 +2807,17 @@ ushort closestenvmap(const vec &o)
     {
         envmap &em = envmaps[i];
 		float dist;
-		if (envmapbb)
+		if(envmapbb)
 			{
-			if (!o.insidebb(vec(em.o).sub(em.radius), vec(em.o).add(em.radius))) continue;
+			if(!o.insidebb(vec(em.o).sub(em.radius), vec(em.o).add(em.radius))) continue;
 			dist = em.o.dist(o);
 		}
 		else
 		{
 			dist = em.o.dist(o);
-			if (dist > em.radius) continue;
+			if(dist > em.radius) continue;
 		}
-		if (dist < mindist)
+		if(dist < mindist)
         {
             minemid = EMID_RESERVED + i;
             mindist = dist;

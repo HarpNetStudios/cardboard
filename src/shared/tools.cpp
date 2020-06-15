@@ -245,7 +245,7 @@ static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, voi
     struct memoryStruct* mem = (struct memoryStruct*)userp;
 
     char* ptr = (char*)realloc(mem->memory, mem->size + realsize + 1);
-    if (ptr == NULL) {
+    if(ptr == NULL) {
         /* out of memory! this should never happen */
         conoutf(CON_ERROR, "not enough memory for web operation (realloc returned NULL)");
         return 0;
@@ -263,8 +263,8 @@ VARP(curltimeout, 1, 5, 60);
 
 char* web_get(char* targetUrl, bool debug)
 {
-    if (offline && !isdedicatedserver()) {
-        if (debug) conoutf(CON_ERROR, "cannot make web request in offline mode");
+    if(offline && !isdedicatedserver()) {
+        if(debug) conoutf(CON_ERROR, "cannot make web request in offline mode");
         return "";
     }
     CURL* curl;
@@ -306,13 +306,13 @@ char* web_get(char* targetUrl, bool debug)
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &url);
 
     // check for errors */
-    if (res != CURLE_OK) {
-        if (debug) conoutf(CON_ERROR, "curl_easy_perform() failed: %s", curl_easy_strerror(res));
+    if(res != CURLE_OK) {
+        if(debug) conoutf(CON_ERROR, "curl_easy_perform() failed: %s", curl_easy_strerror(res));
         return "";
     }
     else {
         // we now have the data, do stuff with it
-        if (debug) {
+        if(debug) {
             conoutf(CON_INFO, "%lu bytes retrieved", (unsigned long)chunk.size);
             conoutf(CON_INFO, "%d response, %s url", (int)response_code, url);
         }

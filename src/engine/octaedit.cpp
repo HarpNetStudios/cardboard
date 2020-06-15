@@ -197,8 +197,8 @@ bool noedit(bool view, bool msg)
     bool viewable = (isvisiblesphere(r, o) != VFC_NOT_VISIBLE);
     //if(!viewable && msg) conoutf(CON_ERROR, "selection not in view");
     //return !viewable;
-	if (viewable || !editinview) return false;
-	if (msg) conoutf(CON_ERROR, "selection not in view");
+	if(viewable || !editinview) return false;
+	if(msg) conoutf(CON_ERROR, "selection not in view");
 	return true;
 }
 
@@ -242,14 +242,14 @@ ICOMMAND(selswap, "", (), { if(noedit(true)) return; swap(sel, savedsel); });
 
 ICOMMAND(getselpos, "", (),
 	{
-		if (noedit(true)) return;
+		if(noedit(true)) return;
 		defformatstring(pos, "%s %s %s", floatstr(sel.o.x), floatstr(sel.o.y), floatstr(sel.o.z));
 		result(pos);
 	});
 
 void setselpos(int* x, int* y, int* z)
 {
-	if (noedit(moving != 0)) return;
+	if(noedit(moving != 0)) return;
 	havesel = true;
 	sel.o = ivec(*x, *y, *z).mask(~(gridsize - 1));
 }
@@ -257,8 +257,8 @@ COMMAND(setselpos, "iii");
 
 void movesel(int* dir, int* dim)
 {
-	if (noedit(moving != 0)) return;
-	if (*dim < 0 || *dim > 2) return;
+	if(noedit(moving != 0)) return;
+	if(*dim < 0 || *dim > 2) return;
 	sel.o[*dim] += *dir * sel.grid;
 }
 COMMAND(movesel, "ii");
@@ -801,7 +801,7 @@ void makeundo()                        // stores state of selected cubes before 
 static inline int countblock(cube *c, int n = 8)
 {
 	int r = 0;
-	loopi(n) if (c[i].children) r += countblock(c[i].children); else ++r;
+	loopi(n) if(c[i].children) r += countblock(c[i].children); else ++r;
     return r;
 }
 
@@ -2025,7 +2025,7 @@ void mpeditface(int dir, int mode, selinfo &sel, bool local)
             }
         }
     );
-    if (mode==1 && dir>0)
+    if(mode==1 && dir>0)
         sel.o[d] += sel.grid * seldir;
 }
 
@@ -2336,7 +2336,7 @@ ICOMMAND(getvshaderparam, "is", (int* tex, const char* name),
 	loopv(vslot.params)
 	{
 		SlotShaderParam & p = vslot.params[i];
-		if (!strcmp(p.name, name))
+		if(!strcmp(p.name, name))
 		{
 			defformatstring(str, "%s %s %s %s", floatstr(p.val[0]), floatstr(p.val[1]), floatstr(p.val[2]), floatstr(p.val[3]));
 			result(str);
@@ -2351,7 +2351,7 @@ ICOMMAND(getvshaderparamnames, "i", (int* tex),
 	loopv(vslot.params)
 	{
 		SlotShaderParam & p = vslot.params[i];
-		if (i) str.put(' ');
+		if(i) str.put(' ');
 		str.put(p.name, strlen(p.name));
 	}
 	str.add('\0');
@@ -2466,7 +2466,7 @@ void edittex_(int *dir)
 
 void settex(int* tex)
 {
-	if (noedit()) return;
+	if(noedit()) return;
 	filltexlist();
 	edittex(*tex, true);
 }
@@ -2513,13 +2513,13 @@ void gettexname(int *tex, int *subslot)
 
 void getslottex(int* idx)
 {
-    if (*idx < 0 || !slots.inrange(*idx)) { intret(-1); return; }
+    if(*idx < 0 || !slots.inrange(*idx)) { intret(-1); return; }
     Slot & slot = lookupslot(*idx, false);
     intret(slot.variants->index);
 }
 
 void getalltexname() {
-    if (noedit(true)) return;
+    if(noedit(true)) return;
     filltexlist();
     int j = 0;
     loopvrev(texmru)
@@ -2835,9 +2835,9 @@ struct texturegui : g3d_callback
                             edittex(vslot.index);
                             hudshader->set();
                         }
-						if (test & G3D_ROLLOVER)
+						if(test & G3D_ROLLOVER)
 						{
-							if (!slot.loaded && !slot.thumbnail)
+							if(!slot.loaded && !slot.thumbnail)
 								loadthumbnail(slot);
 							texhoveridx = ti;
 						}
@@ -2858,7 +2858,7 @@ struct texturegui : g3d_callback
 			int guitextcolour = 0xFFFFFF;
 			g.pushlist();
 			defformatstring(ds, "Texture %d: %s", prev.index, prev.sts[0].name);
-			if (ds[60]) //shorten strings, to avoid a jittery interface
+			if(ds[60]) //shorten strings, to avoid a jittery interface
 			{
 				ds[60] = '\0';
 				ds[59] = ds[58] = ds[57] = '.';
@@ -2866,7 +2866,7 @@ struct texturegui : g3d_callback
 			g.text(ds, guitextcolour, "info");
 
 			formatstring(ds, "Layer: %i\tShader: %s", vprev.layer, prev.shader->name);
-			if (ds[40]) //shorten strings, to avoid a jittery interface
+			if(ds[40]) //shorten strings, to avoid a jittery interface
 			{
 				ds[40] = '\0';
 				ds[39] = ds[38] = ds[37] = '.';
@@ -2960,9 +2960,9 @@ void rendertexturepanel(int w, int h)
                 if(vslot.rotation)
                 {
 					const texrotation &r = texrotations[vslot.rotation];
-					if (r.swapxy) { swap(xoff, yoff); loopk(4) swap(tc[k].x, tc[k].y); }
-					if (r.flipx) { xoff *= -1; loopk(4) tc[k].x *= -1; }
-					if (r.flipy) { yoff *= -1; loopk(4) tc[k].y *= -1; }
+					if(r.swapxy) { swap(xoff, yoff); loopk(4) swap(tc[k].x, tc[k].y); }
+					if(r.flipx) { xoff *= -1; loopk(4) tc[k].x *= -1; }
+					if(r.flipy) { yoff *= -1; loopk(4) tc[k].y *= -1; }
                 }
                 loopk(4) { tc[k].x = tc[k].x/sx - xoff/tex->xs; tc[k].y = tc[k].y/sy - yoff/tex->ys; }
                 glBindTexture(GL_TEXTURE_2D, tex->id);

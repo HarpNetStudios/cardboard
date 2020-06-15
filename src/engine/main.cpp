@@ -121,7 +121,7 @@ void writeinitcfg()
     f->printf("soundchans %d\n", soundchans);
     f->printf("soundfreq %d\n", soundfreq);
     f->printf("soundbufferlen %d\n", soundbufferlen);
-	if (audiodriver[0]) f->printf("audiodriver %s\n", escapestring(audiodriver));
+	if(audiodriver[0]) f->printf("audiodriver %s\n", escapestring(audiodriver));
     delete f;
 }
 
@@ -211,13 +211,13 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
         gle::deftexcoord0();
 
 		
-		if (!(mapshot || mapname)) {
+		if(!(mapshot || mapname)) {
 			/*background and logo*/
 			float bu = w * 0.67f / 256.0f + backgroundu, bv = h * 0.67f / 256.0f + backgroundv;
-			if (splash) settexture("data/splash.png", 0);
+			if(splash) settexture("data/splash.png", 0);
 			else settexture("data/background.png", 0);
 
-			if (splash) bgquad(0, 0, w, h);
+			if(splash) bgquad(0, 0, w, h);
 			else bgquad(0, 0, w, h, 0, 0, bu, bv);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
@@ -239,7 +239,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
 			/*cube 2 badge*/
 			badgex = (w - badgew - 20);
-			if (!splash && mainmenu)
+			if(!splash && mainmenu)
 			{
 				settexture("data/cube.png", 3);
 				bgquad(badgex, badgey, badgew, badgeh);
@@ -573,7 +573,7 @@ VARFNP(gamma, reqgamma, 30, 100, 300,
 
 void restoregamma()
 {
-	if (initing || reqgamma == 100) return;
+	if(initing || reqgamma == 100) return;
 	curgamma = reqgamma;
     setgamma(curgamma);
 }
@@ -1056,7 +1056,7 @@ void checkinput()
     SDL_Event event;
     //int lasttype = 0, lastbut = 0;
 	bool mousemoved = false;
-	if (rawinput::enabled) rawinput::flush();
+	if(rawinput::enabled) rawinput::flush();
     while(events.length() || pollevent(event))
     {
         if(events.length()) event = events.remove(0);
@@ -1128,12 +1128,12 @@ void checkinput()
                 break;
 
             case SDL_MOUSEMOTION:
-				if (rawinput::debugrawmouse)
+				if(rawinput::debugrawmouse)
 				{
 					conoutf("%d sdl mouse motion (%d, %d)",
 						lastmillis, event.motion.xrel, event.motion.yrel);
 				}
-				if (grabinput && !rawinput::enabled)
+				if(grabinput && !rawinput::enabled)
                 {
                     int dx = event.motion.xrel, dy = event.motion.yrel;
                     checkmousemotion(dx, dy);
@@ -1145,7 +1145,7 @@ void checkinput()
 
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP:
-				if (rawinput::enabled) break;
+				if(rawinput::enabled) break;
                 //if(lasttype==event.type && lastbut==event.button.button) break; // why?? get event twice without it
                 switch(event.button.button)
                 {
@@ -1324,8 +1324,8 @@ COMMANDN(testcurl, testcurl_, "s");
 VARFP(offline, 0, 0, 1, { getuserinfo_(false); });
 
 void getuserinfo_(bool debug, bool first) {
-	if (offline) return; // don't waste time trying to check everything if we are offline.
-	if (!strcmp(gametoken, "OFFLINE")) // check if playing without logging into launcher
+	if(offline) return; // don't waste time trying to check everything if we are offline.
+	if(!strcmp(gametoken, "OFFLINE")) // check if playing without logging into launcher
 	{
 		if(!first) conoutf(CON_ERROR, "\f3[HNID] Please restart the game and log in with your HNID to play online!");
 		offline = 1;
@@ -1334,7 +1334,7 @@ void getuserinfo_(bool debug, bool first) {
 	oldstring apiurl;
 	formatstring(apiurl, "%s/game/get/userinfo?id=1&token=%s", HNAPI, gametoken);
 	char* thing = web_get(apiurl, debug);
-	if (!thing[0]) {
+	if(!thing[0]) {
 		conoutf(CON_ERROR, "\f3[HNID] No data recieved from server, switching to offline mode");
 		offline = 1;
 		return; 
@@ -1344,10 +1344,10 @@ void getuserinfo_(bool debug, bool first) {
 	// error handling
 	const cJSON* status = cJSON_GetObjectItemCaseSensitive(json, "status");
 	const cJSON* message = cJSON_GetObjectItemCaseSensitive(json, "message");
-	if (cJSON_IsNumber(status) && cJSON_IsString(message)) {
-		if (status->valueint > 0) {
+	if(cJSON_IsNumber(status) && cJSON_IsString(message)) {
+		if(status->valueint > 0) {
 			conoutf(CON_ERROR, "\f3[HNID] Web error! status: %d, \"%s\"", status->valueint, message->valuestring);
-			if (!strcmp(message->valuestring, "no token found") || !strcmp(message->valuestring, "malformed token")) {
+			if(!strcmp(message->valuestring, "no token found") || !strcmp(message->valuestring, "malformed token")) {
 				offline = 1;
 				return;
 			}
@@ -1358,10 +1358,10 @@ void getuserinfo_(bool debug, bool first) {
 			name = cJSON_GetObjectItemCaseSensitive(json, "username");
             const cJSON* pubt = NULL;
             pubt = cJSON_GetObjectItemCaseSensitive(json, "public");
-			if (cJSON_IsString(name) && (name->valuestring != NULL))
+			if(cJSON_IsString(name) && (name->valuestring != NULL))
 			{
                 game::switchname(name->valuestring);
-                if (cJSON_IsString(pubt) && (pubt->valuestring != NULL))
+                if(cJSON_IsString(pubt) && (pubt->valuestring != NULL))
                 {
                     game::setpubtoken(pubt->valuestring);
                 }
@@ -1468,9 +1468,9 @@ int main(int argc, char **argv)
     }
 
 	// get gametoken, you son of a bitch
-	for (int i = 1; i < argc; i++) if (argv[i][0] == '-' && argv[i][1] == 'c') { setgametoken(&argv[i][2]); break; }
-	if (!gametoken[0]) fatal("no gametoken given");
-	if (!strcmp(gametoken, "OFFLINE")) offline = 1;
+	for (int i = 1; i < argc; i++) if(argv[i][0] == '-' && argv[i][1] == 'c') { setgametoken(&argv[i][2]); break; }
+	if(!gametoken[0]) fatal("no gametoken given");
+	if(!strcmp(gametoken, "OFFLINE")) offline = 1;
 
     execfile("init.cfg", false);
     for(int i = 1; i<argc; i++)
@@ -1480,22 +1480,22 @@ int main(int argc, char **argv)
 			// reordered alpha to make it easier to see what's being used already. -Y 03/14/19
 			case 'a': fsaa = atoi(&argv[i][2]); break;
 			case 'b': /* compat, ignore */ break;
-			case 'c': if (gametoken[0]) logoutf("Using game token: [REDACTED]"); break;
-			case 'd': dedicated = atoi(&argv[i][2]); if (dedicated <= 0) dedicated = 2; break;
+			case 'c': if(gametoken[0]) logoutf("Using game token: [REDACTED]"); break;
+			case 'd': dedicated = atoi(&argv[i][2]); if(dedicated <= 0) dedicated = 2; break;
 			case 'f': /* compat, ignore */ break;
 			case 'g': break;
-			case 'h': scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if (!findarg(argc, argv, "-w")) scr_w = -1; break;
+			case 'h': scr_h = clamp(atoi(&argv[i][2]), SCR_MINH, SCR_MAXH); if(!findarg(argc, argv, "-w")) scr_w = -1; break;
 			case 'k':
 			{
 				const char *dir = addpackagedir(&argv[i][2]);
-				if (dir) logoutf("Adding package directory: %s", dir);
+				if(dir) logoutf("Adding package directory: %s", dir);
 				break;
 			}
 			case 'l':
 			{
 				char pkgdir[] = "packages/";
 				load = strstr(path(&argv[i][2]), path(pkgdir));
-				if (load) load += sizeof(pkgdir) - 1;
+				if(load) load += sizeof(pkgdir) - 1;
 				else load = &argv[i][2];
 				break;
 			}
@@ -1670,7 +1670,7 @@ int main(int argc, char **argv)
         if(minimized) continue;
 
         inbetweenframes = false;
-		if (mainmenu) {
+		if(mainmenu) {
 			gl_drawmainmenu(); 
 			#ifdef DISCORD
 				discord::updatePresence(discord::D_MENU);

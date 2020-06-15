@@ -22,14 +22,14 @@ namespace joystick
 
 	void release()
 	{
-		if (stick)
+		if(stick)
 		{
-			if (SDL_JoystickGetAttached(stick))
+			if(SDL_JoystickGetAttached(stick))
 				SDL_JoystickClose(stick);
 			stick = NULL;
 			activeindex = -1;
 		}
-		if (isenabled)
+		if(isenabled)
 		{
 			isenabled = false;
 			SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
@@ -38,7 +38,7 @@ namespace joystick
 
 	void acquire(const int joystickindex)
     {
-        if (!isenabled)
+        if(!isenabled)
         {
             SDL_InitSubSystem(SDL_INIT_JOYSTICK);
             isenabled = true;
@@ -49,10 +49,10 @@ namespace joystick
 			conoutf(CON_ERROR, "\f3Failed to find any joysticks");
 			release();
 		}
-        else if (count > joystickindex)
+        else if(count > joystickindex)
         {
             stick = SDL_JoystickOpen(joystickindex);
-            if (!stick)
+            if(!stick)
             {
                 conoutf(CON_ERROR, "Failed to open joystick %d", joystickindex);
             }
@@ -82,8 +82,8 @@ namespace joystick
 
 	void setenabled(const int joystickindex)
     {
-        if (joystickindex == activeindex) return;
-        if (joystickindex >= 0)
+        if(joystickindex == activeindex) return;
+        if(joystickindex >= 0)
         {
             acquire(joystickindex);
         }
@@ -98,7 +98,7 @@ namespace joystick
 	float axis(const int value)
 	{
 		int val = value;
-		if ((val > -joydeadzone ) && (val < joydeadzone)) val = 0;
+		if((val > -joydeadzone ) && (val < joydeadzone)) val = 0;
 		const float scaled = -val / axismax;
 		//conoutf(CON_DEBUG, "axis: %f (%f)", scaled, value);
 		return scaled;
@@ -116,15 +116,15 @@ namespace joystick
 				break;
 			case AXIS_Y:
 				player->fmove = axis(e.value);
-				if (joydebug) conoutf("fmove: %f", player->fmove);
+				if(joydebug) conoutf("fmove: %f", player->fmove);
 				break;
 			case AXIS_ZX:
 				player->camx = -axis(e.value);
-				if (joydebug) conoutf("axis ZX: %f", player->camx);
+				if(joydebug) conoutf("axis ZX: %f", player->camx);
 				break;
 			case AXIS_ZY:
 				player->camy = -axis(e.value);
-				if (joydebug) conoutf("axis ZY: %f", player->camy);
+				if(joydebug) conoutf("axis ZY: %f", player->camy);
 				break;
 				
 		}
@@ -132,7 +132,7 @@ namespace joystick
 
 	int buttonsymbol(Uint8 sdlJoyButton)
 	{
-		if (sdlJoyButton >= buttonsym - hatsym)
+		if(sdlJoyButton >= buttonsym - hatsym)
 		{
 			conoutf(CON_ERROR, "Unsupported joystick button %d", sdlJoyButton);
 			return 0;
@@ -143,7 +143,7 @@ namespace joystick
 	void handlebutton(const SDL_JoyButtonEvent& e)
 	{
 		int symbol = buttonsymbol(e.button);
-		if (symbol)
+		if(symbol)
 		{
 			processkey(symbol, e.state == SDL_PRESSED);
 		}
@@ -153,7 +153,7 @@ namespace joystick
 	{
 		static int hatstates[hatlimit] =
 		{ SDL_HAT_CENTERED, SDL_HAT_CENTERED, SDL_HAT_CENTERED, SDL_HAT_CENTERED };
-		if (e.hat >= hatlimit)
+		if(e.hat >= hatlimit)
 		{
 			conoutf(CON_ERROR, "Unsupported joystick hat %d", e.hat);
 			return;
@@ -166,7 +166,7 @@ namespace joystick
 		for (int i = 0; i < 4; i++)
 		{
 			const int dir = dirs[i];
-			if ((previous & dir) != (current & dir))
+			if((previous & dir) != (current & dir))
 			{
 				int sym = hatsym - e.hat * 4 - i;
 				processkey(sym, current & dir);

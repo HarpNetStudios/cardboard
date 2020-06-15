@@ -440,19 +440,19 @@ bool consoleinput(const char *str, int len)
 void killforward(int count)
 {
 	int len = (int)strlen(commandbuf);
-	if (commandpos < 0) return;
+	if(commandpos < 0) return;
 	memmove(&commandbuf[commandpos], &commandbuf[commandpos + count], len - commandpos);
 	resetcomplete();
-	if (commandpos >= len - count) commandpos = -1;
+	if(commandpos >= len - count) commandpos = -1;
 }
 void killbackward(int count)
 {
 	int len = (int)strlen(commandbuf), i = commandpos >= 0 ? commandpos : len;
-	if (i < 1) return;
+	if(i < 1) return;
 	memmove(&commandbuf[i - count], &commandbuf[i], len - i + 1);
 	resetcomplete();
-	if (commandpos > 0) commandpos -= count;
-	else if (!commandpos && len <= 1) commandpos = -1;
+	if(commandpos > 0) commandpos -= count;
+	else if(!commandpos && len <= 1) commandpos = -1;
 }
 inline bool wordpart(char c)
 {
@@ -509,10 +509,10 @@ bool consolekey(int code, bool isdown)
 
             case SDLK_DELETE:
             {
-				if (modifier & KMOD_ALT)
+				if(modifier & KMOD_ALT)
 				{
 					int word = wordforward(commandpos);
-					if (word > 0) killforward(word - commandpos);
+					if(word > 0) killforward(word - commandpos);
 				}
 				else killforward(1);
                 break;
@@ -520,11 +520,11 @@ bool consolekey(int code, bool isdown)
 
             case SDLK_BACKSPACE:
             {
-				if (modifier & KMOD_ALT)
+				if(modifier & KMOD_ALT)
 				{
 					const int start = commandindex();
 					int back = start - wordbackward(start);
-					if (back > 0) killbackward(back);
+					if(back > 0) killbackward(back);
 				}
 				else killbackward(1);
                 break;
@@ -560,7 +560,7 @@ bool consolekey(int code, bool isdown)
                 break;
 
             case SDLK_v:
-				if (modifier & MOD_KEYS)
+				if(modifier & MOD_KEYS)
 				{
 					pasteconsole();
 					break;

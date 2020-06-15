@@ -436,17 +436,17 @@ struct fpsstate
             do spawngun2 = rnd(6)+1; while(spawngun1==spawngun2);
             baseammo(spawngun2);
         }
-		else if (m_ectf)
+		else if(m_ectf)
 		{
 			health = 1;
 			gunselect = GUN_RL;
 			ammo[GUN_RL] = INT_MAX;
 			ammo[GUN_GL] = INT_MAX; // fixed it -Y 09/17/19
 		}
-		else if (m_insta)
+		else if(m_insta)
 		{
 			health = 1;
-			if (!m_ectf) {
+			if(!m_ectf) {
 				gunselect = GUN_RIFLE;
 				ammo[GUN_RIFLE] = 100;
 			}
@@ -471,13 +471,13 @@ struct fpsstate
             ammo[GUN_SMG] = 40;
             ammo[GUN_GL] = 1;
         }
-		else if (m_ctf || m_collect) // CTF and variants
+		else if(m_ctf || m_collect) // CTF and variants
 		{
 			gunselect = GUN_SMG;
 			ammo[GUN_SMG] = 40;
 			ammo[GUN_GL] = 1;
         }
-		else if (m_gun)
+		else if(m_gun)
 		{
             if(ggtier <= 0) ggtier = 1;
 			loopi(6) ammo[i + 1] = INT_MAX;
