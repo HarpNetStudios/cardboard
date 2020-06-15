@@ -86,9 +86,9 @@ HVARFR(ambient, 1, 0x191919, 0xFFFFFF,
 });
 
 VARFR(darkmap, 0, 0, 1, {
-/*if ((darkmap == 1) && (ambient != 0) && (ambient > 0x010101)) {
-	conoutf(CON_WARN, "ambient 0x010101 is recommended for darkmap");
-}*/ // commented out because ambient is set after darkmap on map load -Y
+    /*if ((darkmap == 1) && (ambient != 0) && (ambient > 0x010101)) {
+        conoutf(CON_WARN, "ambient 0x010101 is recommended for darkmap");
+    }*/ // commented out because ambient is set after darkmap on map load -Y
 });
 
 HVARFR(skylight, 0, 0, 0xFFFFFF, 
@@ -122,7 +122,7 @@ void setsunlightdir()
 entity sunlightent;
 void setupsunlight()
 {
-	memclear(sunlightent);
+    memclear(sunlightent);
     sunlightent.type = ET_LIGHT;
     sunlightent.attr1 = 0;
     sunlightent.attr2 = int(sunlightcolor.x*sunlightscale);
@@ -133,6 +133,7 @@ void setupsunlight()
 }
 
 VARR(skytexturelight, 0, 1, 1);
+extern int useskytexture;
 
 static const surfaceinfo brightsurfaces[6] =
 {
@@ -577,8 +578,7 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
         float angle = sunlightdir.dot(normal);
         if(angle > 0 &&
            (!lmshadows ||
-            shadowray(w->shadowraycache, vec(sunlightdir).mul(tolerance).add(target), sunlightdir, 1e16f, RAY_SHADOW | (lmshadows > 1 ? RAY_ALPHAPOLY : 0) | (skytexturelight ? RAY_SKIPSKY : 0)) > 1e15f))
-        {
+               shadowray(w->shadowraycache, vec(sunlightdir).mul(tolerance).add(target), sunlightdir, 1e16f, RAY_SHADOW | (lmshadows > 1 ? RAY_ALPHAPOLY : 0) | (skytexturelight ? RAY_SKIPSKY | (useskytexture ? RAY_SKYTEX : 0) : 0)) > 1e15f)) {
             float intensity;
             switch(w->type&LM_TYPE)
             {
@@ -600,8 +600,8 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
         case LM_BUMPMAP0:
             if(avgray.iszero()) break;
             // transform to tangent space
-			extern const vec orientation_tangent[8][3];
-			extern const vec orientation_bitangent[8][3];
+            extern const vec orientation_tangent[8][3];
+            extern const vec orientation_bitangent[8][3];
             vec S(orientation_tangent[w->rotate][dimension(w->orient)]),
                 T(orientation_bitangent[w->rotate][dimension(w->orient)]);
             normal.orthonormalize(S, T);
@@ -630,36 +630,46 @@ static bool lumelsample(const vec &sample, int aasample, int stride)
     return false;
 }
 
-FVARR(skylightrange, 0.0f, 128.0f, 1e15f);
-VARR(skylightsamples, 16, 64, 128);
-static void calcskylight(lightmapworker* const w, const vec& o, const vec& normal, float tolerance, uchar* skylight, int flags = RAY_ALPHAPOLY, extentity* t = NULL)
+static void calcskylight(lightmapworker *w, const vec &o, const vec &normal, float tolerance, uchar *skylight, int flags = RAY_ALPHAPOLY, extentity *t = NULL)
 {
-	static vec rays[128];
-	static int lastsamples = 0;
-	if (normal.iszero()) return;
-	if (lastsamples != skylightsamples) loopi(skylightsamples) // generate uniform random rays in a sphere
-	{
-		float t = rndscale(PI2);
-		float z = rndscale(2) - 1;
-		float r = sqrtf(1.0f - z * z);
-		rays[i].x = r * cosf(t);
-		rays[i].y = r * sinf(t);
-		rays[i].z = z;
-	}
-	lastsamples = skylightsamples;
-    flags |= RAY_SHADOW;
-    if(skytexturelight) flags |= RAY_SKIPSKY;
-	float hit = 0.0f;
-	loopi(skylightsamples)
+    static const vec rays[17] =
     {
-		vec ray(rays[i]);
-		if (normal.dot(ray) < 0) ray.neg();
-		float test = w ? shadowray(w->shadowraycache, vec(ray).mul(tolerance).add(o), ray, 1e16f, flags, t)
-			: shadowray(w->shadowraycache, vec(ray).mul(tolerance).add(o), ray, 1e16f, flags, t);
-		hit += min(test, skylightrange) / skylightrange;
+        vec(cosf(21*RAD)*cosf(50*RAD), sinf(21*RAD)*cosf(50*RAD), sinf(50*RAD)),
+        vec(cosf(111*RAD)*cosf(50*RAD), sinf(111*RAD)*cosf(50*RAD), sinf(50*RAD)),
+        vec(cosf(201*RAD)*cosf(50*RAD), sinf(201*RAD)*cosf(50*RAD), sinf(50*RAD)),
+        vec(cosf(291*RAD)*cosf(50*RAD), sinf(291*RAD)*cosf(50*RAD), sinf(50*RAD)),
+
+        vec(cosf(66*RAD)*cosf(70*RAD), sinf(66*RAD)*cosf(70*RAD), sinf(70*RAD)),
+        vec(cosf(156*RAD)*cosf(70*RAD), sinf(156*RAD)*cosf(70*RAD), sinf(70*RAD)),
+        vec(cosf(246*RAD)*cosf(70*RAD), sinf(246*RAD)*cosf(70*RAD), sinf(70*RAD)),
+        vec(cosf(336*RAD)*cosf(70*RAD), sinf(336*RAD)*cosf(70*RAD), sinf(70*RAD)),
+       
+        vec(0, 0, 1),
+
+        vec(cosf(43*RAD)*cosf(60*RAD), sinf(43*RAD)*cosf(60*RAD), sinf(60*RAD)),
+        vec(cosf(133*RAD)*cosf(60*RAD), sinf(133*RAD)*cosf(60*RAD), sinf(60*RAD)),
+        vec(cosf(223*RAD)*cosf(60*RAD), sinf(223*RAD)*cosf(60*RAD), sinf(60*RAD)),
+        vec(cosf(313*RAD)*cosf(60*RAD), sinf(313*RAD)*cosf(60*RAD), sinf(60*RAD)),
+
+        vec(cosf(88*RAD)*cosf(80*RAD), sinf(88*RAD)*cosf(80*RAD), sinf(80*RAD)),
+        vec(cosf(178*RAD)*cosf(80*RAD), sinf(178*RAD)*cosf(80*RAD), sinf(80*RAD)),
+        vec(cosf(268*RAD)*cosf(80*RAD), sinf(268*RAD)*cosf(80*RAD), sinf(80*RAD)),
+        vec(cosf(358*RAD)*cosf(80*RAD), sinf(358*RAD)*cosf(80*RAD), sinf(80*RAD)),
+
+    };
+    flags |= RAY_SHADOW;
+    if(skytexturelight) flags |= RAY_SKIPSKY | (useskytexture ? RAY_SKYTEX : 0);
+    int hit = 0;
+    if(w) loopi(17) 
+    {
+        if(normal.dot(rays[i])>=0 && shadowray(w->shadowraycache, vec(rays[i]).mul(tolerance).add(o), rays[i], 1e16f, flags, t)>1e15f) hit++;
+    }
+    else loopi(17) 
+    {
+        if(normal.dot(rays[i])>=0 && shadowray(vec(rays[i]).mul(tolerance).add(o), rays[i], 1e16f, flags, t)>1e15f) hit++;
     }
 
-	loopk(3) skylight[k] = uchar(ambientcolor[k] + (max(skylightcolor[k], ambientcolor[k]) - ambientcolor[k]) * hit / skylightsamples);
+    loopk(3) skylight[k] = uchar(ambientcolor[k] + (max(skylightcolor[k], ambientcolor[k]) - ambientcolor[k])*hit/17.0f);
 }
 
 static inline bool hasskylight()
@@ -680,10 +690,10 @@ static inline void generatealpha(lightmapworker *w, float tolerance, const vec &
         float k = 8.0f/w->vslot->scale,
               s = (pos[sdim[dim]] * k - w->vslot->offset.y) / w->slot->layermaskscale,
               t = (pos[tdim[dim]] * (dim <= 1 ? -k : k) - w->vslot->offset.y) / w->slot->layermaskscale;
-		const texrotation &r = texrotations[w->rotate];
-		if (r.swapxy) swap(s, t);
-		if (r.flipx) s = -s;
-		if (r.flipy) t = -t;
+        const texrotation &r = texrotations[w->rotate];
+        if(r.swapxy) swap(s, t);
+        if(r.flipx) s = -s;
+        if(r.flipy) t = -t;
         const ImageData &mask = *w->slot->layermask;
         int mx = int(floor(s))%mask.w, my = int(floor(t))%mask.h;
         if(mx < 0) mx += mask.w;
@@ -738,7 +748,7 @@ static bool generatelightmap(lightmapworker *w, float lpu, const lerpvert *lv, i
         offsets1[i] = vec(xstep1).mul(aacoords[i][0]).add(vec(ystep1).mul(aacoords[i][1]));
         offsets2[i] = vec(xstep2).mul(aacoords[i][0]).add(vec(ystep2).mul(aacoords[i][1]));
     }
-    if((w->type&LM_TYPE) == LM_BUMPMAP0) memclear(w->raydata, (LM_MAXW + 4) * (LM_MAXH + 4));
+    if((w->type&LM_TYPE) == LM_BUMPMAP0) memclear(w->raydata, (LM_MAXW + 4)*(LM_MAXH + 4));
 
     origin1.sub(vec(ystep1).add(xstep1).mul(blurlms));
     origin2.sub(vec(ystep2).add(xstep2).mul(blurlms));
@@ -1443,7 +1453,7 @@ static lightmapinfo *setupsurfaces(lightmapworker *w, lightmaptask &task)
     surfaceinfo surfaces[6];
     vertinfo litverts[6*2*MAXFACEVERTS];
     int numlitverts = 0;
-	memclear(surfaces);
+    memclear(surfaces);
     loopi(6)
     {
         int usefaces = usefacemask&0xF;
@@ -2307,8 +2317,8 @@ static void rotatenormals(cube *c)
             y1 /= (USHRT_MAX+1)/LM_PACKH;
             x2 /= (USHRT_MAX+1)/LM_PACKW;
             y2 /= (USHRT_MAX+1)/LM_PACKH;
-			const texrotation &r = texrotations[vslot.rotation < 4 ? 4 - vslot.rotation : vslot.rotation];
-			rotatenormals(lmlv, x1, y1, x2 - x1, y1 - y1, r.flipx, r.flipy, r.swapxy);
+            const texrotation &r = texrotations[vslot.rotation < 4 ? 4-vslot.rotation : vslot.rotation];
+            rotatenormals(lmlv, x1, y1, x2-x1, y1-y1, r.flipx, r.flipy, r.swapxy);
         }
     }
 }
@@ -2573,7 +2583,7 @@ void initlights()
 static inline void fastskylight(const vec &o, float tolerance, uchar *skylight, int flags = RAY_ALPHAPOLY, extentity *t = NULL, bool fast = false)
 {
     flags |= RAY_SHADOW;
-    if(skytexturelight) flags |= RAY_SKIPSKY;
+    if(skytexturelight) flags |= RAY_SKIPSKY | (useskytexture ? RAY_SKYTEX : 0);
     if(fast)
     {
         static const vec ray(0, 0, 1);
@@ -2649,7 +2659,7 @@ void lightreaching(const vec &target, vec &color, vec &dir, bool fast, extentity
         color.add(vec(lightcol).mul(intensity));
         dir.add(vec(ray).mul(-intensity*lightcol.x*lightcol.y*lightcol.z));
     }
-    if(sunlight && shadowray(target, sunlightdir, 1e16f, RAY_SHADOW | RAY_POLY | (skytexturelight ? RAY_SKIPSKY : 0), t) > 1e15f) 
+    if(sunlight && shadowray(target, sunlightdir, 1e16f, RAY_SHADOW | RAY_POLY | (skytexturelight ? RAY_SKIPSKY | (useskytexture ? RAY_SKYTEX : 0) : 0), t) > 1e15f) 
     {
         vec lightcol = vec(sunlightcolor.x, sunlightcolor.y, sunlightcolor.z).mul(sunlightscale/255);
         color.add(lightcol);
@@ -2669,7 +2679,7 @@ void lightreaching(const vec &target, vec &color, vec &dir, bool fast, extentity
 
 entity *brightestlight(const vec &target, const vec &dir)
 {
-    if(sunlight && sunlightdir.dot(dir) > 0 && shadowray(target, sunlightdir, 1e16f, RAY_SHADOW | RAY_POLY | (skytexturelight ? RAY_SKIPSKY : 0)) > 1e15f)    
+    if(sunlight && sunlightdir.dot(dir) > 0 && shadowray(target, sunlightdir, 1e16f, RAY_SHADOW | RAY_POLY | (skytexturelight ? RAY_SKIPSKY | (useskytexture ? RAY_SKYTEX : 0) : 0)) > 1e15f)    
         return &sunlightent;
     const vector<extentity *> &ents = entities::getents();
     const vector<int> &lights = checklightcache(int(target.x), int(target.y));

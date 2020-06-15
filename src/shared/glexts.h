@@ -62,10 +62,8 @@
 
 #define glCompressedTexImage3D_ glCompressedTexImage3D
 #define glCompressedTexImage2D_ glCompressedTexImage2D
-#define glCompressedTexImage1D_ glCompressedTexImage1D
 #define glCompressedTexSubImage3D_ glCompressedTexSubImage3D
 #define glCompressedTexSubImage2D_ glCompressedTexSubImage2D
-#define glCompressedTexSubImage1D_ glCompressedTexSubImage1D
 #define glGetCompressedTexImage_ glGetCompressedTexImage
 
 #define glDrawRangeElements_ glDrawRangeElements
@@ -81,10 +79,8 @@ extern PFNGLCOPYTEXSUBIMAGE3DPROC glCopyTexSubImage3D_;
 
 extern PFNGLCOMPRESSEDTEXIMAGE3DPROC    glCompressedTexImage3D_;
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC    glCompressedTexImage2D_;
-extern PFNGLCOMPRESSEDTEXIMAGE1DPROC    glCompressedTexImage1D_;
 extern PFNGLCOMPRESSEDTEXSUBIMAGE3DPROC glCompressedTexSubImage3D_;
 extern PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC glCompressedTexSubImage2D_;
-extern PFNGLCOMPRESSEDTEXSUBIMAGE1DPROC glCompressedTexSubImage1D_;
 extern PFNGLGETCOMPRESSEDTEXIMAGEPROC   glGetCompressedTexImage_;
 
 extern PFNGLDRAWRANGEELEMENTSPROC glDrawRangeElements_;
@@ -309,6 +305,7 @@ extern PFNGLDRAWBUFFERSPROC glDrawBuffers_;
 #define GL_DEPTH_STENCIL                  0x84F9
 #define GL_UNSIGNED_INT_24_8              0x84FA
 #define GL_DEPTH24_STENCIL8               0x88F0
+#define GL_FRAMEBUFFER_BINDING            0x8CA6
 #define GL_READ_FRAMEBUFFER               0x8CA8
 #define GL_DRAW_FRAMEBUFFER               0x8CA9
 #define GL_FRAMEBUFFER_COMPLETE           0x8CD5

@@ -9,106 +9,155 @@ VARFP(waterfallrefract, 0, 0, 1, { cleanreflections(); preloadwatershaders(); })
 VARP(watersubdiv, 0, 2, 3);
 VARP(waterlod, 0, 1, 3);
 
-static int wx1, wy1, wx2, wy2, wsize;
-static float whscale, whoffset;
+static int wx1, wy1, wx2, wy2, wz, wsize, wsubdiv;
+static float whscale, whoffset, whphase;
 
-#define VERTW(vertw, defbody, body) \
-    static inline void def##vertw() \
-    { \
-        gle::defvertex(); \
-        defbody; \
-    } \
-    static inline void vertw(float v1, float v2, float v3) \
-    { \
-        float angle = (v1-wx1)*(v2-wy1)*(v1-wx2)*(v2-wy2)*whscale+whoffset; \
-        float s = angle - int(angle) - 0.5f; \
-        s *= 8 - fabs(s)*16; \
-        float h = WATER_AMPLITUDE*s-WATER_OFFSET; \
-        gle::attribf(v1, v2, v3+h); \
-        body; \
+static inline float vertwangle(float v1, float v2)
+{
+    return (v1-wx1)*(v2-wy1)*(v1-wx2)*(v2-wy2)*whscale+whoffset;
+}
+
+static inline float vertwphase(float angle)
+{
+    float s = angle - int(angle) - 0.5f;
+    s *= 8 - fabs(s)*16;
+    return WATER_AMPLITUDE*s-WATER_OFFSET;
+}
+
+static inline void vertw(float v1, float v2, float v3)
+{
+    float h = vertwphase(vertwangle(v1, v2));
+    gle::attribf(v1, v2, v3+h);
+}
+
+static inline void vertwq(float v1, float v2, float v3)
+{
+    gle::attribf(v1, v2, v3+whphase);
+}
+
+static inline void vertwn(float v1, float v2, float v3)
+{
+    float h = -WATER_OFFSET;
+    gle::attribf(v1, v2, v3+h);
+}
+
+struct waterstrip
+{
+    int x1, y1, x2, y2, z;
+    ushort size, subdiv;
+
+    int numverts() const { return 2*((y2-y1)/subdiv + 1)*((x2-x1)/subdiv); }
+
+    void save()
+    {
+        x1 = wx1;
+        y1 = wy1;
+        x2 = wx2;
+        y2 = wy2;
+        z = wz;
+        size = wsize;
+        subdiv = wsubdiv;
     }
-#define VERTWN(vertw, defbody, body) \
-    static inline void def##vertw() \
-    { \
-        gle::defvertex(); \
-        defbody; \
-    } \
-    static inline void vertw(float v1, float v2, float v3) \
-    { \
-        float h = -WATER_OFFSET; \
-        gle::attribf(v1, v2, v3+h); \
-        body; \
+
+    void restore()
+    {
+        wx1 = x1;
+        wy1 = y1;
+        wx2 = x2;
+        wy2 = y2;
+        wz = z;
+        wsize = size;
+        wsubdiv = subdiv;
+    }
+};
+vector<waterstrip> waterstrips;
+
+void flushwaterstrips()
+{
+    if(gle::attribbuf.length()) xtraverts += gle::end();
+    gle::defvertex();
+    int numverts = 0;
+    loopv(waterstrips) numverts += waterstrips[i].numverts();
+    gle::begin(GL_TRIANGLE_STRIP, numverts);
+    loopv(waterstrips)
+    {
+        waterstrips[i].restore();
+        whscale = 59.0f/(23.0f*wsize*wsize)/(2*M_PI);
+        for(int x = wx1; x<wx2; x += wsubdiv)
+        {
+            vertw(x,         wy1, wz);
+            vertw(x+wsubdiv, wy1, wz);
+            for(int y = wy1; y<wy2; y += wsubdiv)
+            {
+                vertw(x,         y+wsubdiv, wz);
+                vertw(x+wsubdiv, y+wsubdiv, wz);
+            }
+            x += wsubdiv;
+            if(x>=wx2) break;
+            vertw(x,         wy2, wz);
+            vertw(x+wsubdiv, wy2, wz);
+            for(int y = wy2; y>wy1; y -= wsubdiv)
+            {
+                vertw(x,         y-wsubdiv, wz);
+                vertw(x+wsubdiv, y-wsubdiv, wz);
+            }
+        }
+        gle::multidraw();
+    }
+    waterstrips.setsize(0);
+    wsize = 0;
+    xtraverts += gle::end();
+}
+
+void flushwater(int mat = MAT_WATER, bool force = true)
+{
+    if(wsize)
+    {
+        if(wsubdiv == wsize && wx2-wx1 <= wsize*2 && wy2-wy1 <= wsize*2)
+        {
+            if(gle::attribbuf.empty()) { gle::defvertex(); gle::begin(GL_QUADS); }
+            for(int x = wx1; x<wx2; x += wsubdiv) for(int y = wy1; y<wy2; y += wsubdiv)
+            {
+                vertwq(x,         y,         wz);
+                vertwq(x+wsubdiv, y,         wz);
+                vertwq(x+wsubdiv, y+wsubdiv, wz);
+                vertwq(x,         y+wsubdiv, wz);
+            }
+        }
+        else waterstrips.add().save();
+        wsize = 0;
     }
 
-VERTW(vertwt, {
-    gle::deftexcoord0();
-}, {
-    gle::attribf(v1/8.0f, v2/8.0f);
-})
-VERTWN(vertwtn, {
-    gle::deftexcoord0();
-}, {
-    gle::attribf(v1/8.0f, v2/8.0f);
-})
-
-static float lavaxk = 1.0f, lavayk = 1.0f, lavascroll = 0.0f;
-
-VERTW(vertl, {
-    gle::deftexcoord0();
-}, {
-    gle::attribf(lavaxk*(v1+lavascroll), lavayk*(v2+lavascroll));
-})
-VERTWN(vertln, {
-    gle::deftexcoord0();
-}, {
-    gle::attribf(lavaxk*(v1+lavascroll), lavayk*(v2+lavascroll));
-})
-
-#define renderwaterstrips(vertw, z) { \
-    def##vertw(); \
-    gle::begin(GL_TRIANGLE_STRIP, 2*(wy2-wy1 + 1)*(wx2-wx1)/subdiv); \
-    for(int x = wx1; x<wx2; x += subdiv) \
-    { \
-        vertw(x,        wy1, z); \
-        vertw(x+subdiv, wy1, z); \
-        for(int y = wy1; y<wy2; y += subdiv) \
-        { \
-            vertw(x,        y+subdiv, z); \
-            vertw(x+subdiv, y+subdiv, z); \
-        } \
-        gle::multidraw(); \
-    } \
-    xtraverts += gle::end(); \
+    if(force)
+    {
+        if(gle::attribbuf.length()) xtraverts += gle::end();
+        if(waterstrips.length()) flushwaterstrips();
+    }
 }
 
 void rendervertwater(int subdiv, int xo, int yo, int z, int size, int mat)
 {   
+    if(wsize == size && wsubdiv == subdiv && wz == z)
+    {
+        if(wx2 == xo)
+        {
+            if(wy1 == yo && wy2 == yo + size) { wx2 += size; return; }
+        }
+        else if(wy2 == yo && wx1 == xo && wx2 == xo + size) { wy2 += size; return; }
+    }
+
+    flushwater(mat, false);
+
     wx1 = xo;
     wy1 = yo;
-    wx2 = wx1 + size,
-    wy2 = wy1 + size;
-    wsize = size;
-    whscale = 59.0f/(23.0f*wsize*wsize)/(2*M_PI);
+    wx2 = xo + size,
+    wy2 = yo + size;
+    wz = z;
+    wsize = size; 
+    wsubdiv = subdiv;
 
     ASSERT((wx1 & (subdiv - 1)) == 0);
     ASSERT((wy1 & (subdiv - 1)) == 0);
-
-    switch(mat)
-    {
-        case MAT_WATER:
-        {
-            whoffset = fmod(float(lastmillis/600.0f/(2*M_PI)), 1.0f);
-            renderwaterstrips(vertwt, z);
-            break;
-        }
-
-        case MAT_LAVA:
-        {
-            whoffset = fmod(float(lastmillis/2000.0f/(2*M_PI)), 1.0f);
-            renderwaterstrips(vertl, z);
-            break;
-        }
-    }
 }
 
 int calcwatersubdiv(int x, int y, int z, int size)
@@ -163,28 +212,13 @@ int renderwaterlod(int x, int y, int z, int size, int mat)
     }
 }
 
-#define renderwaterquad(vertwn, z) \
-    { \
-        if(gle::attribbuf.empty()) { def##vertwn(); gle::begin(GL_QUADS); } \
-        vertwn(x, y, z); \
-        vertwn(x+rsize, y, z); \
-        vertwn(x+rsize, y+csize, z); \
-        vertwn(x, y+csize, z); \
-        xtraverts += 4; \
-    }
-
 void renderflatwater(int x, int y, int z, int rsize, int csize, int mat)
 {
-    switch(mat)
-    {
-        case MAT_WATER:
-            renderwaterquad(vertwtn, z);
-            break;
-
-        case MAT_LAVA:
-            renderwaterquad(vertln, z);
-            break;
-    }
+    if(gle::attribbuf.empty()) { gle::defvertex(); gle::begin(GL_QUADS); }
+    vertwn(x,       y,       z);
+    vertwn(x+rsize, y,       z);
+    vertwn(x+rsize, y+csize, z);
+    vertwn(x,       y+csize, z);
 }
 
 VARFP(vertwater, 0, 1, 1, allchanged());
@@ -196,12 +230,25 @@ static inline void renderwater(const materialsurface &m, int mat = MAT_WATER)
         rendervertwater(m.csize, m.o.x, m.o.y, m.o.z, m.csize, mat);
 }
 
-void renderlava(const materialsurface &m, Texture *tex, float scale)
+void setuplava(Texture *tex, float scale)
 {
-    lavaxk = 8.0f/(tex->xs*scale);
-    lavayk = 8.0f/(tex->ys*scale); 
-    lavascroll = lastmillis/1000.0f;
+    float xk = TEX_SCALE/(tex->xs*scale);
+    float yk = TEX_SCALE/(tex->ys*scale);
+    float scroll = lastmillis/1000.0f;
+    LOCALPARAMF(lavatexgen, xk, yk, scroll, scroll);
+    gle::normal(vec(0, 0, 1));
+    whoffset = fmod(float(lastmillis/2000.0f/(2*M_PI)), 1.0f);
+    whphase = vertwphase(whoffset);
+}
+
+void renderlava(const materialsurface &m)
+{
     renderwater(m, MAT_LAVA);
+}
+
+void flushlava()
+{
+    flushwater(MAT_LAVA);
 }
 
 /* reflective/refractive water */
@@ -302,7 +349,7 @@ void preloadwatershaders(bool force)
     useshaderbyname(waterrefract ? (waterfade ? "underwaterfade" : "underwaterrefract") : "underwater");
 
     extern int waterfallenv;
-    if(waterfallenv) useshaderbyname("waterfallenv");
+    useshaderbyname(waterfallenv ? "waterfallenv" : "waterfall");
     if(waterfallrefract) useshaderbyname(waterfallenv ? "waterfallenvrefract" : "waterfallrefract");
 }
 
@@ -425,6 +472,9 @@ void renderwater()
             glBindTexture(GL_TEXTURE_CUBE_MAP, lookupenvmap(mslot));
         }
 
+        whoffset = fmod(float(lastmillis/600.0f/(2*M_PI)), 1.0f);
+        whphase = vertwphase(whoffset);
+
         gle::color(getwatercolor(ref.material));
         int wfog = getwaterfog(ref.material), wspec = getwaterspec(ref.material);
 
@@ -437,7 +487,7 @@ void renderwater()
             entity *light = (m.light && m.light->type==ET_LIGHT ? m.light : NULL);
             if(light!=lastlight)
             {
-                xtraverts += gle::end();
+                flushwater();
                 vec lightpos = light ? light->o : vec(worldsize/2, worldsize/2, worldsize);
                 float lightrad = light && light->attr1 ? light->attr1 : worldsize*8.0f;
                 vec lightcol = (light ? vec(light->attr2, light->attr3, light->attr4) : vec(ambient)).div(255.0f).mul(wspec/100.0f);
@@ -449,7 +499,7 @@ void renderwater()
 
             if(!glaring && !waterrefract && m.depth!=lastdepth)
             {
-                xtraverts += gle::end();
+                flushwater();
                 float depth = !wfog ? 1.0f : min(0.75f*m.depth/wfog, 0.95f);
                 depth = max(depth, !below && (waterreflect || waterenvmap) ? 0.3f : 0.6f);
                 LOCALPARAMF(depth, depth, 1.0f-depth);
@@ -458,7 +508,7 @@ void renderwater()
 
             renderwater(m);
         }
-        xtraverts += gle::end();
+        flushwater();
     }
 
     if(!glaring && drawtex != DRAWTEX_MINIMAP)
@@ -548,12 +598,11 @@ void genwatertex(GLuint &tex, GLuint &fb, GLuint &db, bool refract = false)
     }
 
     if(!fb) glGenFramebuffers_(1, &fb);
-    glBindFramebuffer_(GL_FRAMEBUFFER, fb);
-
     int find = needsalpha ? 0 : 2;
     do
     {
         createtexture(tex, size, size, buf, 3, 1, colorfmt ? colorfmt : colorfmts[find]);
+        glBindFramebuffer_(GL_FRAMEBUFFER, fb);
         glFramebufferTexture2D_(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
         if(glCheckFramebufferStatus_(GL_FRAMEBUFFER)==GL_FRAMEBUFFER_COMPLETE) break;
     }

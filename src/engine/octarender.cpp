@@ -448,6 +448,7 @@ struct vacollect : verthash
         va->alphafront = 0;
         va->ebuf = 0;
         va->edata = 0;
+        va->texmask = 0;
         if(va->texs)
         {
             va->eslist = new elementset[va->texs];
@@ -487,16 +488,14 @@ struct vacollect : verthash
                 if(k.layer==LAYER_BLEND) { va->texs--; va->tris -= e.length[1]/3; va->blends++; va->blendtris += e.length[1]/3; }
                 else if(k.alpha==ALPHA_BACK) { va->texs--; va->tris -= e.length[1]/3; va->alphaback++; va->alphabacktris += e.length[1]/3; }
                 else if(k.alpha==ALPHA_FRONT) { va->texs--; va->tris -= e.length[1]/3; va->alphafront++; va->alphafronttris += e.length[1]/3; } 
+
+                Slot &slot = *lookupvslot(k.tex, false).slot;
+                loopvj(slot.sts) va->texmask |= 1<<slot.sts[j].type;
+                if(slot.shader->type&SHADER_ENVMAP) va->texmask |= 1<<TEX_ENVMAP;
             }
         }
 
-        va->texmask = 0;
-        loopi(va->texs+va->blends+va->alphaback+va->alphafront)
-        {
-            Slot &slot = *lookupvslot(va->eslist[i].texture, false).slot;
-            loopvj(slot.sts) va->texmask |= 1<<slot.sts[j].type;
-            if(slot.shader->type&SHADER_ENVMAP) va->texmask |= 1<<TEX_ENVMAP;
-        }
+        va->alphatris = va->alphabacktris + va->alphafronttris;
 
         if(grasstris.length())
         {
@@ -720,12 +719,12 @@ void addgrasstri(int face, vertex *verts, int numv, ushort texture, ushort lmid)
     by.z = by.x*g.v[1][px] - by.y*g.v[1][py] - 1;
     by.sub(bx);
 
-    float tc1u = verts[i1].lm.x/float(SHRT_MAX),
-          tc1v = verts[i1].lm.y/float(SHRT_MAX),
-          tc2u = (verts[i2].lm.x - verts[i1].lm.x)/float(SHRT_MAX),
-          tc2v = (verts[i2].lm.y - verts[i1].lm.y)/float(SHRT_MAX),
-          tc3u = (verts[i3].lm.x - verts[i1].lm.x)/float(SHRT_MAX),
-          tc3v = (verts[i3].lm.y - verts[i1].lm.y)/float(SHRT_MAX);
+    float tc1u = verts[i1].lm.x,
+          tc1v = verts[i1].lm.y,
+          tc2u = verts[i2].lm.x - verts[i1].lm.x,
+          tc2v = verts[i2].lm.y - verts[i1].lm.y,
+          tc3u = verts[i3].lm.x - verts[i1].lm.x,
+          tc3v = verts[i3].lm.y - verts[i1].lm.y;
         
     g.tcu = vec4(0, 0, 0, tc1u - (bx.z*tc2u + by.z*tc3u));
     g.tcu[px] = bx.x*tc2u + by.x*tc3u;
@@ -1223,7 +1222,7 @@ vtxarray *newva(const ivec &co, int size)
     vc.setupdata(va);
 
     wverts += va->verts;
-    wtris  += va->tris + va->blends + va->alphabacktris + va->alphafronttris;
+    wtris += va->tris + va->blends + va->alphatris;
     allocva++;
     valist.add(va);
 
@@ -1233,7 +1232,7 @@ vtxarray *newva(const ivec &co, int size)
 void destroyva(vtxarray *va, bool reparent)
 {
     wverts -= va->verts;
-    wtris -= va->tris + va->blends + va->alphabacktris + va->alphafronttris;
+    wtris -= va->tris + va->blends + va->alphatris;
     allocva--;
     valist.removeobj(va);
     if(!va->parent) varoot.removeobj(va);
@@ -1772,7 +1771,11 @@ void allchanged(bool load)
     clearvas(worldroot);
     resetqueries();
     resetclipplanes();
-    if(load) initenvmaps();
+    if(load)
+    {
+        setupsky();
+        initenvmaps();
+    }
     guessshadowdir();
     entitiesinoctanodes();
     tjoints.setsize(0);

@@ -1354,7 +1354,6 @@ void g3d_render()
     guis3d.sort(g3d_sort);
 
     readyeditors();
-    bool wasfocused = (fieldmode!=FIELDSHOW);
     fieldsactive = false;
 
     hascursor = false;
@@ -1364,14 +1363,11 @@ void g3d_render()
     loopv(guis3d) guis3d[i].draw();
     layoutpass = false;
 
-    if(guis2d.length() || guis3d.length())
+    if(guis3d.length())
     {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
 
-    if(guis3d.length())
-    {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_ALWAYS);
         glDepthMask(GL_FALSE);
@@ -1381,25 +1377,27 @@ void g3d_render()
         glDepthFunc(GL_LESS);
         glDepthMask(GL_TRUE);
         glDisable(GL_DEPTH_TEST);
-    }
 
+        glDisable(GL_BLEND);
+    }
+}
+
+void g3d_render2d()
+{
     if(guis2d.length())
     {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
         loopvrev(guis2d) guis2d[i].draw();
-    }
 
-    if(guis2d.length() || guis3d.length())
-    {
         glDisable(GL_BLEND);
     }
 
     flusheditors();
-    if(!fieldsactive) fieldmode = FIELDSHOW; //didn't draw any fields, so loose focus - mainly for menu closed
-    if((fieldmode!=FIELDSHOW) != wasfocused)
-    {
-        textinput(fieldmode!=FIELDSHOW, TI_GUI);
-        keyrepeat(fieldmode!=FIELDSHOW, KR_GUI);
-    }
+    if(!fieldsactive) fieldmode = FIELDSHOW; //didn't draw any fields, so lose focus - mainly for menu closed
+    textinput(fieldmode!=FIELDSHOW, TI_GUI);
+    keyrepeat(fieldmode!=FIELDSHOW, KR_GUI);
 
     mousebuttons = 0;
 }

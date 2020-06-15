@@ -72,73 +72,66 @@ struct QuadNode
     }
 };
 
-static float wfwave, wfscroll, wfxscale, wfyscale;
+static float wfwave;
 
-static void renderwaterfall(const materialsurface &m, float offset, const vec *normal = NULL)
+static const bvec4 matnormals[6] =
+{
+    bvec4(0x80, 0, 0),
+    bvec4(0x7F, 0, 0),
+    bvec4(0, 0x80, 0),
+    bvec4(0, 0x7F, 0),
+    bvec4(0, 0, 0x80),
+    bvec4(0, 0, 0x7F)
+};
+
+static void renderwaterfall(const materialsurface &m, float offset)
 {
     if(gle::attribbuf.empty())
     {
         gle::defvertex();
-        if(normal) gle::defnormal();
-        gle::deftexcoord0();
+        gle::defnormal(4, GL_BYTE);
         gle::begin(GL_QUADS);
     }
     float x = m.o.x, y = m.o.y, zmin = m.o.z, zmax = zmin;
     if(m.ends&1) zmin += -WATER_OFFSET-WATER_AMPLITUDE;
     if(m.ends&2) zmax += wfwave;
     int csize = m.csize, rsize = m.rsize;
-#define GENFACEORIENT(orient, v0, v1, v2, v3) \
+    switch(m.orient)
+    {
+    #define GENFACEORIENT(orient, v0, v1, v2, v3) \
         case orient: v0 v1 v2 v3 break;
-#undef GENFACEVERTX
-#define GENFACEVERTX(orient, vert, mx,my,mz, sx,sy,sz) \
-            { \
-                vec v(mx sx, my sy, mz sz); \
-                gle::attrib(v); \
-                GENFACENORMAL \
-                gle::attribf(wfxscale*v.y, wfyscale*(v.z+wfscroll)); \
-            }
-#undef GENFACEVERTY
-#define GENFACEVERTY(orient, vert, mx,my,mz, sx,sy,sz) \
-            { \
-                vec v(mx sx, my sy, mz sz); \
-                gle::attrib(v); \
-                GENFACENORMAL \
-                gle::attribf(wfxscale*v.x, wfyscale*(v.z+wfscroll)); \
-            }
-#define GENFACENORMAL gle::attrib(n);
-    if(normal) 
-    { 
-        vec n = *normal; 
-        switch(m.orient) { GENFACEVERTSXY(x, x, y, y, zmin, zmax, /**/, + csize, /**/, + rsize, + offset, - offset) }
+    #define GENFACEVERT(orient, vert, mx,my,mz, sx,sy,sz) \
+        { \
+            gle::attribf(mx sx, my sy, mz sz); \
+            gle::attrib(matnormals[orient]); \
+        }
+        GENFACEVERTSXY(x, x, y, y, zmin, zmax, /**/, + csize, /**/, + rsize, + offset, - offset)
+    #undef GENFACEORIENT
+    #undef GENFACEVERT
     }
-#undef GENFACENORMAL
-#define GENFACENORMAL
-    else switch(m.orient) { GENFACEVERTSXY(x, x, y, y, zmin, zmax, /**/, + csize, /**/, + rsize, + offset, - offset) }
-#undef GENFACENORMAL
-#undef GENFACEORIENT
-#undef GENFACEVERTX
-#define GENFACEVERTX(o,n, x,y,z, xv,yv,zv) GENFACEVERT(o,n, x,y,z, xv,yv,zv)
-#undef GENFACEVERTY
-#define GENFACEVERTY(o,n, x,y,z, xv,yv,zv) GENFACEVERT(o,n, x,y,z, xv,yv,zv)
 }
 
-static void drawmaterial(const materialsurface &m, float offset)
+static void drawmaterial(const materialsurface& m, float offset, const bvec4& color)
 {
     if(gle::attribbuf.empty())
     {
         gle::defvertex();
+        gle::defcolor(4, GL_UNSIGNED_BYTE);
         gle::begin(GL_QUADS);
     }
     float x = m.o.x, y = m.o.y, z = m.o.z, csize = m.csize, rsize = m.rsize;
     switch(m.orient)
     {
-#define GENFACEORIENT(orient, v0, v1, v2, v3) \
+    #define GENFACEORIENT(orient, v0, v1, v2, v3) \
         case orient: v0 v1 v2 v3 break;
-#define GENFACEVERT(orient, vert, mx,my,mz, sx,sy,sz) \
-            gle::attribf(mx sx, my sy, mz sz); 
+    #define GENFACEVERT(orient, vert, mx,my,mz, sx,sy,sz) \
+        { \
+            gle::attribf(mx sx, my sy, mz sz); \
+            gle::attrib(color); \
+        }
         GENFACEVERTS(x, x, y, y, z, z, /**/, + csize, /**/, + rsize, + offset, - offset)
-#undef GENFACEORIENT
-#undef GENFACEVERT
+    #undef GENFACEORIENT
+    #undef GENFACEVERT
     }
 }
 
@@ -548,31 +541,29 @@ void rendermatgrid(vector<materialsurface *> &vismats)
     enablepolygonoffset(GL_POLYGON_OFFSET_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     int lastmat = -1;
+    bvec4 color(0, 0, 0, 0);
     loopvrev(vismats)
     {
         materialsurface &m = *vismats[i];
         if(m.material != lastmat)
         {
-            xtraverts += gle::end();
-            bvec color;
             switch(m.material&~MATF_INDEX)
             {
-                case MAT_WATER:     color = bvec( 0,  0, 85); break; // blue
-                case MAT_CLIP:      color = bvec(85,  0,  0); break; // red
-                case MAT_GLASS:     color = bvec( 0, 85, 85); break; // cyan
-                case MAT_NOCLIP:    color = bvec( 0, 85,  0); break; // green
-                case MAT_LAVA:      color = bvec(85, 40,  0); break; // orange
-                case MAT_GAMECLIP:  color = bvec(85, 85,  0); break; // yellow
-                case MAT_DEATH:     color = bvec(40, 40, 40); break; // black
-                case MAT_ALPHA:     color = bvec(85,  0, 85); break; // pink
-				case MAT_SPACECLIP: color = bvec(60, 60, 60); break; // gray
-				case MAT_JUMPRESET: color = bvec(255, 0,  0); break; // very red
+                case MAT_WATER:      color = bvec4(  0,  0, 85, 255); break; // blue
+                case MAT_CLIP:       color = bvec4( 85,  0,  0, 255); break; // red
+                case MAT_GLASS:      color = bvec4(  0, 85, 85, 255); break; // cyan
+                case MAT_NOCLIP:     color = bvec4(  0, 85,  0, 255); break; // green
+                case MAT_LAVA:       color = bvec4( 85, 40,  0, 255); break; // orange
+                case MAT_GAMECLIP:   color = bvec4( 85, 85,  0, 255); break; // yellow
+                case MAT_DEATH:      color = bvec4( 40, 40, 40, 255); break; // black
+                case MAT_ALPHA:      color = bvec4( 85,  0, 85, 255); break; // pink
+				case MAT_SPACECLIP:  color = bvec4( 60, 60, 60, 255); break; // gray
+				case MAT_JUMPRESET:  color = bvec4(255,  0,  0, 255); break; // very red
                 default:continue;
             }
-            gle::color(color);
             lastmat = m.material;
         }
-        drawmaterial(m, -0.1f);
+        drawmaterial(m, -0.1f, color);
     }
     xtraverts += gle::end();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -597,42 +588,45 @@ GETMATIDXVAR(glass, color, const bvec &)
 
 VARP(glassenv, 0, 1, 1);
 
-static void drawglass(const materialsurface &m, float offset, const vec *normal = NULL)
+static void drawglass(const materialsurface& m, float offset)
 {
     if(gle::attribbuf.empty())
     {
         gle::defvertex();
-        if(normal) gle::defnormal();
-        gle::deftexcoord0(3);
+        gle::defnormal(4, GL_BYTE);
         gle::begin(GL_QUADS);
     }
+    float x = m.o.x, y = m.o.y, z = m.o.z, csize = m.csize, rsize = m.rsize;
+    switch(m.orient)
+    {
     #define GENFACEORIENT(orient, v0, v1, v2, v3) \
         case orient: v0 v1 v2 v3 break;
     #define GENFACEVERT(orient, vert, mx,my,mz, sx,sy,sz) \
         { \
-            vec v(mx sx, my sy, mz sz); \
-            vec reflect = vec(v).sub(camera1->o); \
-            reflect[dimension(orient)] = -reflect[dimension(orient)]; \
-            gle::attrib(v); \
-            GENFACENORMAL \
-            gle::attrib(reflect); \
+            gle::attribf(mx sx, my sy, mz sz); \
+            gle::attrib(matnormals[orient]); \
         }
-    #define GENFACENORMAL gle::attrib(n);
-    float x = m.o.x, y = m.o.y, z = m.o.z, csize = m.csize, rsize = m.rsize;
-    if(normal)
-    {
-        vec n = *normal;
-        switch(m.orient) { GENFACEVERTS(x, x, y, y, z, z, /**/, + csize, /**/, + rsize, + offset, - offset) }     
-    }
-    #undef GENFACENORMAL
-    #define GENFACENORMAL
-    else switch(m.orient) { GENFACEVERTS(x, x, y, y, z, z, /**/, + csize, /**/, + rsize, + offset, - offset) }
-    #undef GENFACENORMAL
+        GENFACEVERTS(x, x, y, y, z, z, /**/, + csize, /**/, + rsize, + offset, - offset)
     #undef GENFACEORIENT
     #undef GENFACEVERT
+    }
 }
 
 VARFP(waterfallenv, 0, 1, 1, preloadwatershaders());
+
+static inline void changematerial(int mat, int orient)
+{
+    switch(mat&~MATF_INDEX)
+    {
+        case MAT_LAVA:
+            if(orient==O_TOP) flushlava();
+            else xtraverts += gle::end();
+            break;
+        default:
+            xtraverts += gle::end();
+            break;
+    }
+}
 
 void rendermaterials()
 {
@@ -646,15 +640,6 @@ void rendermaterials()
     int lastorient = -1, lastmat = -1, usedwaterfall = -1;
     bool depth = true, blended = false;
     ushort envmapped = EMID_NONE;
-    static const vec normals[6] =
-    {
-        vec(-1, 0, 0),
-        vec( 1, 0, 0),
-        vec(0, -1, 0),
-        vec(0,  1, 0),
-        vec(0, 0, -1),
-        vec(0, 0,  1)
-    };
 
     GLOBALPARAM(camera, camera1->o);
 
@@ -665,32 +650,31 @@ void rendermaterials()
         glEnable(GL_BLEND); blended = true;
         foggednotextureshader->set();
         zerofogcolor(); lastfogtype = 0;
+        bvec4 color(0, 0, 0, 0);
         loopv(vismats)
         {
             const materialsurface &m = *vismats[i];
             if(lastmat!=m.material)
             {
-                xtraverts += gle::end();
-                bvec color;
                 switch(m.material&~MATF_INDEX)
                 {
-                    case MAT_WATER:     color = bvec(255, 128,   0); break; // blue
-                    case MAT_CLIP:      color = bvec(  0, 255, 255); break; // red
-                    case MAT_GLASS:     color = bvec(255,   0,   0); break; // cyan
-                    case MAT_NOCLIP:    color = bvec(255,   0, 255); break; // green
-                    case MAT_LAVA:      color = bvec(  0, 128, 255); break; // orange
-                    case MAT_GAMECLIP:  color = bvec(  0,   0, 255); break; // yellow
-                    case MAT_DEATH:     color = bvec(192, 192, 192); break; // black
-                    case MAT_ALPHA:     color = bvec(  0, 255,   0); break; // pink
-					case MAT_SPACECLIP: color = bvec(230, 230, 230); break; // gray
-					case MAT_JUMPRESET: color = bvec(  0, 127, 127); break; // very red
+                    case MAT_WATER:      color = bvec4(255, 128,   0, 255); break; // blue
+                    case MAT_CLIP:       color = bvec4(  0, 255, 255, 255); break; // red
+                    case MAT_GLASS:      color = bvec4(255,   0,   0, 255); break; // cyan
+                    case MAT_NOCLIP:     color = bvec4(255,   0, 255, 255); break; // green
+                    case MAT_LAVA:       color = bvec4(  0, 128, 255, 255); break; // orange
+                    case MAT_GAMECLIP:   color = bvec4(  0,   0, 255, 255); break; // yellow
+                    case MAT_DEATH:      color = bvec4(192, 192, 192, 255); break; // black
+                    case MAT_ALPHA:      color = bvec4(  0, 255,   0, 255); break; // pink
+					case MAT_SPACECLIP:  color = bvec4(230, 230, 230, 255); break; // gray
+					case MAT_JUMPRESET:  color = bvec4(  0, 127, 127, 255); break; // very red
                     default: continue;
                 }
-                gle::color(color);
                 lastmat = m.material;
             }
-            drawmaterial(m, -0.1f);
+            drawmaterial(m, -0.1f, color);
         }
+        xtraverts += gle::end();
     }
     else loopv(vismats)
     {
@@ -708,15 +692,8 @@ void rendermaterials()
                     if(!mslot->loaded || !mslot->sts.inrange(1)) continue;
                     else
                     {
-                        xtraverts += gle::end();
+                        changematerial(lastmat, lastorient);
                         glBindTexture(GL_TEXTURE_2D, mslot->sts[1].t->id);
-                        float angle = fmod(float(lastmillis/600.0f/(2*M_PI)), 1.0f), 
-                              s = angle - int(angle) - 0.5f;
-                        s *= 8 - fabs(s)*16;
-                        wfwave = vertwater ? WATER_AMPLITUDE*s-WATER_OFFSET : -WATER_OFFSET;
-                        wfscroll = 16.0f*lastmillis/1000.0f;
-                        wfxscale = TEX_SCALE/(mslot->sts[1].t->xs*mslot->scale);
-                        wfyscale = TEX_SCALE/(mslot->sts[1].t->ys*mslot->scale);
 
                         bvec wfcol = getwaterfallcolor(m.material);
                         if(wfcol.iszero()) wfcol = getwatercolor(m.material);
@@ -729,12 +706,11 @@ void rendermaterials()
                             fogtype = 1;
                             if(blended) { glDisable(GL_BLEND); blended = false; }
                             if(!depth) { glDepthMask(GL_TRUE); depth = true; }
-                            break;
                         }
                         else if((!waterfallrefract || reflecting || refracting) && !waterfallenv)
                         {
                             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-                            foggedshader->set();
+                            SETSHADER(waterfall);
                             fogtype = 0;
                             if(!blended) { glEnable(GL_BLEND); blended = true; }
                             if(depth) { glDepthMask(GL_FALSE); depth = false; }
@@ -769,7 +745,7 @@ void rendermaterials()
                             if(usedwaterfall != m.material)
                             {
                                 Texture *dudv = mslot->sts.inrange(5) ? mslot->sts[5].t : notexture;
-                                float scale = 8.0f/(dudv->ys*mslot->scale);
+                                float scale = TEX_SCALE/(dudv->ys*mslot->scale);
                                 LOCALPARAMF(dudvoffset, 0, scale*16*lastmillis/1000.0f);
 
                                 glActiveTexture_(GL_TEXTURE1);
@@ -792,6 +768,15 @@ void rendermaterials()
                                 usedwaterfall = m.material;
                             }
                         }
+                        float angle = fmod(float(lastmillis/600.0f/(2*M_PI)), 1.0f), 
+                              s = angle - int(angle) - 0.5f;
+                        s *= 8 - fabs(s)*16;
+                        wfwave = vertwater ? WATER_AMPLITUDE*s-WATER_OFFSET : -WATER_OFFSET;
+                        float scroll = 16.0f*lastmillis/1000.0f;
+                        float xscale = TEX_SCALE/(mslot->sts[1].t->xs*mslot->scale);
+                        float yscale = -TEX_SCALE/(mslot->sts[1].t->ys*mslot->scale);
+                        LOCALPARAMF(waterfalltexgen, xscale, yscale, 0.0f, scroll);
+
                     }
                     break;
 
@@ -803,18 +788,8 @@ void rendermaterials()
                     {
                         int subslot = m.orient==O_TOP ? 0 : 1;
                         if(!mslot->sts.inrange(subslot)) continue;
-                        xtraverts += gle::end();
+                        changematerial(lastmat, lastorient);
                         glBindTexture(GL_TEXTURE_2D, mslot->sts[subslot].t->id);
-                    }
-                    if(m.orient!=O_TOP)
-                    {
-                        float angle = fmod(float(lastmillis/2000.0f/(2*M_PI)), 1.0f),
-                              s = angle - int(angle) - 0.5f;
-                        s *= 8 - fabs(s)*16;
-                        wfwave = vertwater ? WATER_AMPLITUDE*s-WATER_OFFSET : -WATER_OFFSET;
-                        wfscroll = 16.0f*lastmillis/3000.0f;
-                        wfxscale = TEX_SCALE/(mslot->sts[1].t->xs*mslot->scale);
-                        wfyscale = TEX_SCALE/(mslot->sts[1].t->ys*mslot->scale);
                     }
                     if(lastmat!=m.material)
                     {
@@ -832,11 +807,23 @@ void rendermaterials()
                         if(glaring) SETSHADER(lavaglare); else SETSHADER(lava);
                         fogtype = 1;
                     }
+                    if(m.orient!=O_TOP)
+                    {
+                        float angle = fmod(float(lastmillis/2000.0f/(2*M_PI)), 1.0f),
+                              s = angle - int(angle) - 0.5f;
+                        s *= 8 - fabs(s)*16;
+                        wfwave = vertwater ? WATER_AMPLITUDE*s-WATER_OFFSET : -WATER_OFFSET;
+                        float scroll = 16.0f*lastmillis/3000.0f;
+                        float xscale = TEX_SCALE/(mslot->sts[1].t->xs*mslot->scale);
+                        float yscale = -TEX_SCALE/(mslot->sts[1].t->ys*mslot->scale);
+                        LOCALPARAMF(lavatexgen, xscale, yscale, 0.0f, scroll);
+                    }
+                    else setuplava(mslot->sts[0].t, mslot->scale);
                     break;
 
                 case MAT_GLASS:
                     if((m.envmap==EMID_NONE || !glassenv || envmapped==m.envmap) && lastmat==m.material) break;
-                    xtraverts += gle::end();
+                    changematerial(lastmat, lastorient);
                     if(m.envmap!=EMID_NONE && glassenv && envmapped!=m.envmap)
                     {
                         glBindTexture(GL_TEXTURE_CUBE_MAP, lookupenvmap(m.envmap));
@@ -877,22 +864,21 @@ void rendermaterials()
         switch(matvol)
         {
             case MAT_WATER:
-                renderwaterfall(m, 0.1f, waterfallenv ? &normals[m.orient] : NULL);
+                renderwaterfall(m, 0.1f);
                 break;
 
             case MAT_LAVA:
-                if(m.orient==O_TOP) renderlava(m, mslot->sts[0].t, mslot->scale);
+                if(m.orient==O_TOP) renderlava(m);
                 else renderwaterfall(m, 0.1f);
                 break;
 
             case MAT_GLASS:
-                if(m.envmap!=EMID_NONE && glassenv) drawglass(m, 0.1f, &normals[m.orient]);
-                else drawmaterial(m, 0.1f);
+                drawglass(m, 0.1f);
                 break;
         }
     }
 
-    xtraverts += gle::end();
+    if (lastorient >= 0) changematerial(lastmat, lastorient);
 
     if(!depth) glDepthMask(GL_TRUE);
     if(blended) glDisable(GL_BLEND);

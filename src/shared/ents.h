@@ -65,12 +65,12 @@ struct physent                                  // base entity type, can be affe
     vec deltapos, newpos;                       // movement interpolation
     float yaw, pitch, roll;
     float maxspeed;                             // cubes per second, 100 for player
-    int timeinair;
     float radius, eyeheight, aboveeye;          // bounding box size
     float xradius, yradius, zmargin;
     vec floor;                                  // the normal of floor the dynent is on
 
-    int inwater;
+    ushort timeinair;
+    uchar inwater;
     bool jumping;
     int jumpstate;								// state of the jump, 1 for single, 2 for double
     bool candouble;								// used to see if the player can double jump
@@ -207,9 +207,10 @@ struct dynent : physent                         // animated characters, or chara
     animinterpinfo animinterp[MAXANIMPARTS];
     ragdolldata *ragdoll;
     occludequery *query;
-    int occluded, lastrendered;
+    int lastrendered;
+    uchar occluded;
 
-    dynent() : ragdoll(NULL), query(NULL), occluded(0), lastrendered(0)
+    dynent() : ragdoll(NULL), query(NULL), lastrendered(0), occluded(0)
     {
         reset();
     }

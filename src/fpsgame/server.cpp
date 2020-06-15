@@ -1107,13 +1107,13 @@ namespace server
         }
     }
 
-    void senddemo(clientinfo *ci, int num)
+    void senddemo(clientinfo* ci, int num, int tag)
     {
         if(ci->getdemo) return;
         if(!num) num = demos.length();
         if(!demos.inrange(num-1)) return;
         demofile &d = demos[num-1];
-        if((ci->getdemo = sendf(ci->clientnum, 2, "rim", N_SENDDEMO, d.len, d.data)))
+        if((ci->getdemo = sendf(ci->clientnum, 2, "riim", N_SENDDEMO, tag, d.len, d.data)))
             ci->getdemo->freeCallback = freegetdemo;
     }
 
@@ -1129,14 +1129,37 @@ namespace server
         loopv(clients) sendwelcome(clients[i]);
     }
 
+    SVARP(demodir, "demo");
+
+    const char *getdemofile(const char *file, bool init)
+    {
+        if(!demodir[0]) return NULL;
+        static oldstring buf;
+        copystring(buf, demodir);
+        int dirlen = strlen(buf);
+        if(buf[dirlen] != '/' && buf[dirlen] != '\\' && dirlen+1 < (int)sizeof(buf)) { buf[dirlen++] = '/'; buf[dirlen] = '\0'; }
+        if(init)
+        {
+            const char *dir = findfile(buf, "w");
+            if(!fileexists(dir, "w")) createdir(dir);
+        }
+        concatstring(buf, file);
+        return buf;
+    }
+
+
     void setupdemoplayback()
     {
         if(demoplayback) return;
         demoheader hdr;
         oldstring msg;
         msg[0] = '\0';
-        defformatstring(file, "%s.cdm", smapname);
-        demoplayback = opengzfile(file, "rb");
+        oldstring file;
+        copystring(file, smapname);
+        int len = strlen(file);
+        if(len < 4 || strcasecmp(&file[len-4], ".cdm")) concatstring(file, ".cdm");
+        if(const char *buf = getdemofile(file, false)) demoplayback = opengzfile(buf, "rb");
+        if(!demoplayback) demoplayback = opengzfile(file, "rb");
         if(!demoplayback) formatstring(msg, "could not read demo \"%s\"", file);
         else if(demoplayback->read(&hdr, sizeof(demoheader))!=sizeof(demoheader) || memcmp(hdr.magic, DEMO_MAGIC, sizeof(hdr.magic)))
             formatstring(msg, "\"%s\" is not a demo file", file);
@@ -3499,9 +3522,9 @@ namespace server
 
             case N_GETDEMO:
             {
-                int n = getint(p);
+                int n = getint(p), tag = getint(p);
                 if(!ci->privilege && !ci->local && ci->state.state==CS_SPECTATOR) break;
-                senddemo(ci, n);
+                senddemo(ci, n, tag);
                 break;
             }
 
