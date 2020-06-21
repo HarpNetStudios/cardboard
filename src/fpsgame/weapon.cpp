@@ -365,12 +365,7 @@ namespace game
     {
         vec p = d->o;
         p.z += 0.6f*(d->eyeheight + d->aboveeye) - d->eyeheight;
-        int blddiv = 100;
-        if(extrablood) {
-            blddiv = 1;
-        } else {
-            blddiv = 100;
-        }
+        int blddiv = extrablood ? 1 : 100;
         if(blood) particle_splash(PART_BLOOD, damage/blddiv, 1000, p, bloodcolor ^ 0xFFFFFF, 2.96f);
         if(thirdperson)
         {
@@ -392,12 +387,8 @@ namespace game
     {
         if(!blood || damage <= 0) return;
         vec from = d->abovehead();
-        int gibdiv = 250;
-        if(extrablood) {
-            gibdiv = 25;
-        } else {
-            gibdiv = 250;
-        }
+        int gibdiv = extrablood ? 25 : 250;
+
         loopi(min(damage/gibdiv, 40)+1) spawnbouncer(from, vel, d, BNC_GIBS);
     }
 
@@ -407,8 +398,9 @@ namespace game
 
         if(at==player1 && d!=at && !isteam(at->team, f->team))
         {
-            extern int hitsound;
+            extern int hitsound, p_hitmark;
             if(hitsound && lasthit != lastmillis && !m_parkour) playsound(S_HIT);
+            else if(m_parkour && p_hitmark) playsound(S_HIT);
             lasthit = lastmillis;
         }
 
@@ -559,7 +551,11 @@ namespace game
 
 	bool isheadshot(dynent* d, vec from, vec to)
 	{
-		if((to.z - (d->o.z - d->eyeheight)) / (d->eyeheight + d->aboveeye) > 0.8f) return true;
+        if ((to.z - (d->o.z - d->eyeheight)) / (d->eyeheight + d->aboveeye) > 0.8f) {
+            //conoutf("is headshot");
+            return true;
+        }
+        //conoutf("is NOT headshot");
 		return false;
 	}
 
@@ -800,7 +796,7 @@ namespace game
         target.sub(from).mul(min(1.0f, dist)).add(from);
     }
 
-	bool headshot = false;
+    bool headshot = false;
 
     void raydamage(vec &from, vec &to, fpsent *d)
     {
@@ -860,10 +856,7 @@ namespace game
         }
         if(d->gunselect)
         {
-            if(!m_bottomless)
-            {
-                d->ammo[d->gunselect]--; //subtract ammo
-            }
+            if(!m_bottomless) d->ammo[d->gunselect]--; //subtract ammo
         }
 
         vec from = d->o, to = targ, dir = vec(to).sub(from).safenormalize();

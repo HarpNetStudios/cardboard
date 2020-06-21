@@ -416,26 +416,26 @@ namespace game
         fpsent *h = hudplayer();
         if(h!=player1 && actor==h && d!=actor)
         {
-            if(hitsound && lasthit != lastmillis) playsound(S_HIT);
-            else if(!(m_parkour && !p_hitmark))
-            {
-                playsound(S_HIT); // TODO: Make this actually work.
-                return;
-            }
+            if(hitsound && lasthit != lastmillis && !m_parkour) playsound(S_HIT);
+            else if(m_parkour && p_hitmark) playsound(S_HIT);
             lasthit = lastmillis;
         }
-        if(d==h)
+        if(!m_parkour) 
         {
-            damageblend(damage);
-            damagecompass(damage, actor->o);
+            if (d == h)
+            {
+                damageblend(damage);
+                damagecompass(damage, actor->o);
+            }
+            damageeffect(damage, d, d != h);
+
+            ai::damaged(d, actor);
+
+            if (d == h) playsound(S_PAIN6);
+            else playsound(S_PAIN1 + rnd(5), &d->o);
         }
-        damageeffect(damage, d, d!=h);
-
-		ai::damaged(d, actor);
-
-        if(d->health<=0) { if(local) killed(d, actor, gun); }
-        else if(d==h) playsound(S_PAIN6);
-        else playsound(S_PAIN1+rnd(5), &d->o);
+        
+        if (d->health <= 0) { if (local) killed(d, actor, gun); }
     }
 
     VARP(deathscore, 0, 1, 1);

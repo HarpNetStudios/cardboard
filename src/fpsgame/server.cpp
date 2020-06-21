@@ -263,7 +263,7 @@ namespace server
 
         enum
         {
-            PUSHMILLIS = 3000
+            PUSHMILLIS = 10000 // does this fix the double jump bug?
         };
 
         int calcpushrange()
@@ -2323,6 +2323,7 @@ namespace server
                     totalrays += h.rays;
                     if(totalrays>maxrays) continue;
                     int damage = h.rays*guns[gun].damage;
+                    //if(h.headshot) damage += guns[gun].bonus;
                     if(!m_parkour || target!=ci) // Why isn't mean the same as line 2230? Why is C/C++ retarded? -Y 10/06/18
                     {
 						if(!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.dir, h.headshot);
@@ -2442,7 +2443,10 @@ namespace server
             {
                 clientinfo &c = *clients[i];
                 if(c.state.aitype != AI_NONE) continue;
-                if(c.checkexceeded()) disconnect_client(c.clientnum, DISC_MSGERR);
+                if(c.checkexceeded()) {
+                    conoutf(CON_ERROR, "Check exceeded. Contact Yellowberry.");
+                    disconnect_client(c.clientnum, DISC_MSGERR);
+                }
                 else c.scheduleexceeded();
             }
         }
