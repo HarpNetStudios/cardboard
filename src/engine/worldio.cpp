@@ -1338,7 +1338,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 
     if(!failed)
     {
-		if(!cube2 || cube2==2) {
+		if(cube2==0 || cube2==2) {
 			if(hdr.version >= 7) loopi(hdr.lightmaps)
 			{
 				renderprogress(i/(float)hdr.lightmaps, "loading lightmaps...");

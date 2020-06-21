@@ -16,9 +16,12 @@ VARFP(maxcon, 10, 200, MAXCONLINES, { while(conlines.length() > maxcon) delete[]
 
 #define CONSTRLEN 512
 
+VARP(contags, 0, 1, 1);
+
 void conline(int type, const char *sf)        // add a line to the console buffer
 {
-    char *buf = conlines.length() >= maxcon ? conlines.remove().line : newstring("", CONSTRLEN-1);
+    int prev = conlines.empty() || !contags ? 0 : conlines.added().type;
+    char *buf = type&CON_TAG_MASK && type == prev ? conlines.pop().line : (conlines.length() >= maxcon ? conlines.remove().line : newstring("", CONSTRLEN-1));
     cline &cl = conlines.add();
     cl.line = buf;
     cl.type = type;
@@ -32,22 +35,6 @@ void conoutfv(int type, const char *fmt, va_list args)
     vformatstring(buf, fmt, args, sizeof(buf));
     conline(type, buf);
     logoutf("%s", buf);
-}
-
-void conoutf(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(CON_INFO, fmt, args);
-    va_end(args); 
-}
-
-void conoutf(int type, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    conoutfv(type, fmt, args);
-    va_end(args);
 }
 
 VAR(fullconsole, 0, 0, 1);
@@ -84,6 +71,7 @@ int conskip = 0, miniconskip = 0;
 
 void setconskip(int &skip, int filter, int n)
 {
+    filter &= CON_FLAGS;
     int offset = abs(n), dir = n < 0 ? -1 : 1;
     skip = clamp(skip, 0, conlines.length()-1);
     while(offset)
@@ -105,6 +93,7 @@ ICOMMAND(clearconsole, "", (), { while(conlines.length()) delete[] conlines.pop(
 
 int drawconlines(int conskip, int confade, int conwidth, int conheight, int conoff, int filter, int y = 0, int dir = 1)
 {
+    filter &= CON_FLAGS;
     int numl = conlines.length(), offset = min(conskip, numl);
 
     if(confade)
@@ -154,9 +143,9 @@ int renderconsole(int w, int h, int abovehud)                   // render buffer
     extern void consolebox(int x1, int y1, int x2, int y2);
     if(fullconsole) consolebox(conpad, conpad, conwidth+conpad+2*conoff, conheight+conpad+2*conoff);
     
-    int y = drawconlines(conskip, fullconsole ? 0 : confade, conwidth, conheight, conpad+conoff, fullconsole ? fullconfilter : confilter&(~CON_IRC));
+    int y = drawconlines(conskip, fullconsole ? 0 : confade, conwidth, conheight, conpad+conoff, fullconsole ? fullconfilter : confilter);
     if(!fullconsole && (miniconsize && miniconwidth))
-        drawconlines(miniconskip, miniconfade, (miniconwidth*(w - 2*(conpad + conoff)))/100, min(FONTH*miniconsize, abovehud - y), conpad+conoff, miniconfilter|CON_IRC, abovehud, -1);
+        drawconlines(miniconskip, miniconfade, (miniconwidth*(w - 2*(conpad + conoff)))/100, min(FONTH*miniconsize, abovehud - y), conpad+conoff, miniconfilter, abovehud, -1);
     return fullconsole ? conheight + 2*(conpad + conoff) : y;
 }
 

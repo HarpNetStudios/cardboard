@@ -2137,7 +2137,7 @@ void drawdamagecompass(int w, int h)
     if(dirs) gle::end();
 }
 
-int damageblendmillis = 0;
+extern int damageblendmillis = 0;
 
 VARFP(damagescreen, 0, 1, 1, { if(!damagescreen) damageblendmillis = 0; });
 VARP(damagescreenfactor, 1, 7, 100);

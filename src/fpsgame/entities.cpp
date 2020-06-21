@@ -141,17 +141,20 @@ namespace entities
     void pickupeffects(int n, fpsent *d)
     {
         if(!ents.inrange(n)) return;
-        int type = ents[n]->type;
+        extentity* e = ents[n];
+        int type = e->type;
         if(type<I_AMMO || type>I_HEALTH) return;
-        ents[n]->clearspawned();
+        e->clearspawned();
+        e->clearnopickup();
         if(!d) return;
         itemstat &is = itemstats[type-I_HEALTH];
-        if(d!=player1 || isthirdperson())
+        fpsent* h = followingplayer();
+        if (d != h || isthirdperson())
         {
             //particle_text(d->abovehead(), is.name, PART_TEXT, 2000, 0xFFC864, 4.0f, -8);
             particle_icon(d->abovehead(), is.icon%4, is.icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
         }
-        playsound(itemstats[type-I_HEALTH].sound, d!=player1 ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
+        playsound(itemstats[type-I_HEALTH].sound, d!=h ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
         d->pickup(type);
     }
 
@@ -166,12 +169,9 @@ namespace entities
             {
                 int snd = S_TELEPORT, flags = 0;
                 if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
-                if(d == player1) playsound(snd, NULL, NULL, flags);
-                else
-                {
-                    playsound(snd, &e.o, NULL, flags);
-                    if(ents.inrange(td) && ents[td]->type == TELEDEST) playsound(snd, &ents[td]->o, NULL, flags);
-                }
+                fpsent* h = followingplayer();
+                playsound(snd, d == h ? NULL : &e.o, NULL, flags);
+                if (d != h && ents.inrange(td) && ents[td]->type == TELEDEST) playsound(snd, &ents[td]->o, NULL, flags);
             }
         }
         if(local && d->clientnum >= 0)
@@ -196,8 +196,7 @@ namespace entities
             {
                 int snd = S_JUMPPAD, flags = 0;
                 if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
-                if(d == player1) playsound(snd, NULL, NULL, flags);
-                else playsound(snd, &e.o, NULL, flags);
+                playsound(snd, d == followingplayer() ? NULL : &e.o, NULL, flags);
             }
         }
         if(local && d->clientnum >= 0)
@@ -246,25 +245,26 @@ namespace entities
 
     void trypickup(int n, fpsent *d)
     {
-        switch(ents[n]->type)
+        extentity* e = ents[n];
+        switch (e->type)
         {
             default:
-                if(d->canpickup(ents[n]->type))
+                if (d->canpickup(e->type))
                 {
                     addmsg(N_ITEMPICKUP, "rci", d, n);
-                    ents[n]->clearspawned(); // even if someone else gets it first
+                    e->setnopickup(); // even if someone else gets it first
                 }
                 break;
 
             case TELEPORT:
             {
-                if(d->lastpickup==ents[n]->type && lastmillis-d->lastpickupmillis<500) break;
-                if(ents[n]->attr3 > 0)
+                if(d->lastpickup==e->type && lastmillis-d->lastpickupmillis<500) break;
+                if(e->attr3 > 0)
                 {
-                    defformatstring(hookname, "can_teleport_%d", ents[n]->attr3);
+                    defformatstring(hookname, "can_teleport_%d", e->attr3);
                     if(identexists(hookname) && !execute(hookname)) break;
                 }
-                d->lastpickup = ents[n]->type;
+                d->lastpickup = e->type;
                 d->lastpickupmillis = lastmillis;
                 teleport(n, d);
                 break;
@@ -272,11 +272,11 @@ namespace entities
 
             case JUMPPAD:
             {
-                if(d->lastpickup==ents[n]->type && lastmillis-d->lastpickupmillis<300) break;
-                d->lastpickup = ents[n]->type;
+                if(d->lastpickup==e->type && lastmillis-d->lastpickupmillis<300) break;
+                d->lastpickup = e->type;
                 d->lastpickupmillis = lastmillis;
                 jumppadeffects(d, n, true);
-                vec v((int)(char)ents[n]->attr3*10.0f, (int)(char)ents[n]->attr2*10.0f, ents[n]->attr1*12.5f);
+                vec v((int)(char)e->attr3*10.0f, (int)(char)e->attr2*10.0f, e->attr1*12.5f);
                 if(d->ai) d->ai->becareful = true;
 				d->falling = vec(0, 0, 0);
 				d->physstate = PHYS_FALL;
@@ -295,7 +295,7 @@ namespace entities
         {
             extentity &e = *ents[i];
             if(e.type==NOTUSED) continue;
-            if(!e.spawned() && e.type!=TELEPORT && e.type!=JUMPPAD) continue;
+            if((!e.spawned() || e.nopickup()) && e.type!=TELEPORT && e.type!=JUMPPAD) continue;
             float dist = e.o.dist(o);
             if(dist<(e.type==TELEPORT ? 16 : 12)) trypickup(i, d);
         }
@@ -312,18 +312,23 @@ namespace entities
         putint(p, -1);
     }
 
-    void resetspawns() { loopv(ents) ents[i]->clearspawned(); }
+    void resetspawns() { loopv(ents) { extentity *e = ents[i]; e->clearspawned(); e->clearnopickup(); } }
 
     void spawnitems(bool force)
     {
         if(m_noitems) return;
-        loopv(ents) if(ents[i]->type==I_AMMO && (!m_noammo || ents[i]->type!=I_AMMO))
+        loopv(ents)
         {
-            ents[i]->setspawned(force || !server::delayspawn(ents[i]->type));
+            extentity *e = ents[i];
+            if(e->type==I_AMMO && (!m_noammo || e->type!=I_AMMO))
+            {
+                e->setspawned(force || !server::delayspawn(e->type));
+                e->clearnopickup();
+            }
         }
     }
 
-    void setspawn(int i, bool on) { if(ents.inrange(i)) ents[i]->setspawned(on); }
+    void setspawn(int i, bool on) { if(ents.inrange(i)) { extentity *e = ents[i]; e->setspawned(on); e->clearnopickup(); } }
 
     extentity *newentity() { return new fpsentity(); }
     void deleteentity(extentity *e) { delete (fpsentity *)e; }

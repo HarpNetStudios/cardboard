@@ -77,7 +77,7 @@ VARP(connectport, 0, 0, 0xFFFF);
 
 void connectserv(const char *servername, int serverport, const char *serverpassword)
 {  	
-	if(offline == 1) { conoutf("\f3cannot connect to servers in offline mode!"); return; }
+	if (offline == 1) { conoutf(CON_ERROR, "\f3cannot connect to servers in offline mode!"); return; }
 	getuserinfo_(false);
 	globalgamestate = -1;
 
@@ -100,7 +100,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
         conoutf("attempting to connect to %s:%d", servername, serverport);
         if(!resolverwait(servername, &address))
         {
-            conoutf("\f3could not resolve server %s", servername);
+            conoutf(CON_ERROR, "\f3could not resolve server %s", servername);
             return;
         }
     }
@@ -117,7 +117,7 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
         clienthost = enet_host_create(NULL, 2, server::numchannels(), rate*1024, rate*1024);
         if(!clienthost)
         {
-            conoutf("\f3could not connect to server");
+            conoutf(CON_ERROR, "\f3could not connect to server");
             return;
         }
         clienthost->duplicatePeers = 0;
@@ -187,7 +187,7 @@ void trydisconnect(bool local)
         disconnect(!discmillis);
     }
     else if(local && haslocalclients()) localdisconnect();
-    else conoutf("not connected");
+    else conoutf(CON_WARN, "not connected");
 }
 
 ICOMMAND(connect, "sis", (char *name, int *port, char *pw), connectserv(name, *port, pw));
@@ -233,7 +233,7 @@ void gets2c()           // get updates from the server
         ++connattempts; 
         if(connattempts > 3)
         {
-            conoutf("\f3could not connect to server");
+            conoutf(CON_ERROR, "\f3could not connect to server");
             abortconnect();
             return;
         }
@@ -262,7 +262,7 @@ void gets2c()           // get updates from the server
             if(event.data>=DISC_NUM) event.data = DISC_NONE;
             if(event.peer==connpeer)
             {
-                conoutf("\f3could not connect to server");
+                conoutf(CON_ERROR, "\f3could not connect to server");
                 abortconnect();
             }
             else
@@ -270,8 +270,8 @@ void gets2c()           // get updates from the server
                 if(!discmillis || event.data)
                 {
                     const char *msg = disconnectreason(event.data);
-                    if(msg) conoutf("\f3server network error, disconnecting (%s) ...", msg);
-                    else conoutf("\f3server network error, disconnecting...");
+                    if(msg) conoutf(CON_ERROR, "\f3server network error, disconnecting (%s) ...", msg);
+                    else conoutf(CON_ERROR, "\f3server network error, disconnecting...");
                 }
                 disconnect();
             }

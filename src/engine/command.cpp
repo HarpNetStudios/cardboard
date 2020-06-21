@@ -1523,21 +1523,21 @@ void freecode(uint *code)
 
 void printvar(ident *id, int i)
 {
-    if(i < 0) conoutf("%s = %d", id->name, i);
+    if(i < 0) conoutf(CON_INFO, id->index, "%s = %d", id->name, i);
     else if(id->flags&IDF_HEX && id->maxval==0xFFFFFF)
-        conoutf("%s = 0x%.6X (%d, %d, %d)", id->name, i, (i>>16)&0xFF, (i>>8)&0xFF, i&0xFF);
+        conoutf(CON_INFO, id->index, "%s = 0x%.6X (%d, %d, %d)", id->name, i, (i>>16)&0xFF, (i>>8)&0xFF, i&0xFF);
     else
-        conoutf(id->flags&IDF_HEX ? "%s = 0x%X" : "%s = %d", id->name, i);
+        conoutf(CON_INFO, id->index, id->flags&IDF_HEX ? "%s = 0x%X" : "%s = %d", id->name, i);
 }
 
 void printfvar(ident *id, float f)
 {
-    conoutf("%s = %s", id->name, floatstr(f));
+    conoutf(CON_INFO, id->index, "%s = %s", id->name, floatstr(f));
 }
 
 void printsvar(ident *id, const char *s)
 {
-    conoutf(strchr(s, '"') ? "%s = [%s]" : "%s = \"%s\"", id->name, s);
+    conoutf(CON_INFO, id->index, strchr(s, '"') ? "%s = [%s]" : "%s = \"%s\"", id->name, s);
 }
 
 void printvar(ident *id)
@@ -3216,7 +3216,7 @@ ICOMMAND(<s, "ss", (char *a, char *b), intret(strcmp(a,b)<0));
 ICOMMAND(>s, "ss", (char *a, char *b), intret(strcmp(a,b)>0));
 ICOMMAND(<=s, "ss", (char *a, char *b), intret(strcmp(a,b)<=0));
 ICOMMAND(>=s, "ss", (char *a, char *b), intret(strcmp(a,b)>=0));
-ICOMMAND(echo, "C", (char *s), conoutf("\f1%s", s));
+ICOMMAND(echo, "C", (char* s), conoutf(CON_ECHO, "\f1%s", s));
 ICOMMAND(error, "C", (char *s), conoutf(CON_ERROR, "%s", s));
 ICOMMAND(strstr, "ss", (char *a, char *b), { char *s = strstr(a, b); intret(s ? s-a : -1); });
 ICOMMAND(strlen, "s", (char *s), intret(strlen(s)));

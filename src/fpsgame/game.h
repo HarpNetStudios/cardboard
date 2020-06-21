@@ -585,6 +585,7 @@ struct fpsent : dynent, fpsstate
         lastcollect = vec(-1e10f, -1e10f, -1e10f);
         stopattacksound();
         lastnode = -1;
+        damageblendmillis = 0;
     }
 
 

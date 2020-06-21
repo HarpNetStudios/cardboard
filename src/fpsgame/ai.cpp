@@ -148,7 +148,7 @@ namespace ai
         bool resetthisguy = false;
         if(!d->name[0])
         {
-            if(aidebug) conoutf("%s assigned to %s at skill %d", colorname(d, name), o ? colorname(o) : "?", sk);
+            if(aidebug) conoutf(CON_DEBUG, "%s assigned to %s at skill %d", colorname(d, name), o ? colorname(o) : "?", sk);
             else conoutf("\f0join:\f7 %s", colorname(d, name));
             resetthisguy = true;
         }
@@ -156,10 +156,10 @@ namespace ai
         {
             if(d->ownernum != ocn)
             {
-                if(aidebug) conoutf("%s reassigned to %s", colorname(d, name), o ? colorname(o) : "?");
+                if(aidebug) conoutf(CON_DEBUG, "%s reassigned to %s", colorname(d, name), o ? colorname(o) : "?");
                 resetthisguy = true;
             }
-            if(d->skill != sk && aidebug) conoutf("%s changed skill to %d", colorname(d, name), sk);
+            if(d->skill != sk && aidebug) conoutf(CON_DEBUG, "%s changed skill to %d", colorname(d, name), sk);
         }
 
         copystring(d->name, name, MAXNAMELEN+1);
@@ -441,7 +441,7 @@ namespace ai
         loopv(entities::ents)
         {
             extentity &e = *(extentity *)entities::ents[i];
-            if(!e.spawned() || !d->canpickup(e.type)) continue;
+            if(!e.spawned() || e.nopickup() || !d->canpickup(e.type)) continue;
             tryitem(d, e, i, b, interests, force);
         }
     }
@@ -686,7 +686,7 @@ namespace ai
                 if(entities::ents.inrange(b.target))
                 {
                     extentity &e = *(extentity *)entities::ents[b.target];
-                    if(!e.spawned() || e.type != I_AMMO || d->hasmaxammo(e.type)) return 0;
+                    if(!e.spawned() || e.nopickup() || e.type != I_AMMO || d->hasmaxammo(e.type)) return 0;
                     //if(d->feetpos().squaredist(e.o) <= CLOSEDIST*CLOSEDIST)
                     //{
                     //    b.idle = 1;
