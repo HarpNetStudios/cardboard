@@ -587,6 +587,7 @@ struct fpsent : dynent, fpsstate
         lastnode = -1;
     }
 
+
 	int respawnwait(int secs, int delay = 0)
 	{
 		return max(0, secs - (::lastmillis - lastpain - delay) / 1000);
