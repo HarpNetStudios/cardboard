@@ -1685,9 +1685,9 @@ namespace server
     {
         if(clients.empty() || (!hasnonlocalclients() && !demorecord)) return false;
         enet_uint32 curtime = enet_time_get()-lastsend;
-        if(curtime<33 && !force) return false;
+        if(curtime<10 && !force) return false; // don't update faster than 100fps, 33=30fps, 15=~66.67fps
         bool flush = buildworldstate();
-        lastsend += curtime - (curtime%33);
+        lastsend += curtime - (curtime%10);
         return flush;
     }
 
@@ -3275,7 +3275,7 @@ namespace server
                 QUEUE_MSG;
                 getstring(text, p);
                 filtertext(ci->name, text, false, false, MAXNAMELEN);
-                if(!ci->name[0]) copystring(ci->name, "unnamed");
+                if(!ci->name[0]) copystring(ci->name, "CardboardPlayer");
                 QUEUE_STR(ci->name);
                 break;
             }

@@ -128,7 +128,7 @@ namespace game
     void switchname(const char *name)
     {
         filtertext(player1->name, name, false, false, MAXNAMELEN);
-        if(!player1->name[0]) copystring(player1->name, "unnamed");
+        if(!player1->name[0]) copystring(player1->name, "CardboardPlayer");
         addmsg(N_SWITCHNAME, "rs", player1->name);
     }
     void printname()
@@ -1078,7 +1078,7 @@ namespace game
     void c2sinfo(bool force) // send update to the server
     {
         static int lastupdate = -1000;
-        if(totalmillis - lastupdate < 33 && !force) return; // don't update faster than 30fps
+        if(totalmillis - lastupdate < 10 && !force) return; // don't update faster than 100fps, 33=30fps, 15=~66.67fps
         lastupdate = totalmillis;
         sendpositions();
         sendmessages();
@@ -1432,7 +1432,7 @@ namespace game
                 getstring(text, p);
                 filtertext(text, text, false, false, MAXNAMELEN);
 				//checkroles(text);
-                if(!text[0]) copystring(text, "unnamed");
+                if(!text[0]) copystring(text, "CardboardPlayer");
                 if(d->name[0])          // already connected
                 {
                     if(strcmp(d->name, text) && !isignored(d->clientnum))
@@ -1455,7 +1455,7 @@ namespace game
                 if(d)
                 {
                     filtertext(text, text, false, false, MAXNAMELEN);
-                    if(!text[0]) copystring(text, "unnamed");
+                    if(!text[0]) copystring(text, "CardboardPlayer");
                     if(strcmp(text, d->name))
                     {
                         if(!isignored(d->clientnum)) conoutf("%s is now known as %s", colorname(d), colorname(d, text));

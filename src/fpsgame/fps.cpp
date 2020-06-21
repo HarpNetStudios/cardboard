@@ -335,6 +335,7 @@ namespace game
 
     void spawnplayer(fpsent *d)   // place at random spawn
     {
+        damageblend(0); // fixes damage screen not going away? -Y
         pickgamespawn(d); //findplayerspawn(d, d==player1 && respawnent  >=0 ? respawnent : -1, (!m_teammode ? 0 : (strcmp(player1->team,"red") ? 2 : 1)));
         spawnstate(d);
         if(d==player1)
@@ -392,8 +393,11 @@ namespace game
 
     bool allowmove(physent *d)
     {
+        /*
         if(d->type!=ENT_PLAYER) return true;
         return !((fpsent *)d)->lasttaunt || lastmillis-((fpsent *)d)->lasttaunt>=1000;
+        */
+        return true;
     }
 
     VARP(hitsound, 0, 0, 1);
@@ -790,7 +794,7 @@ namespace game
 
         //conoutf(CON_GAMEINFO, "\f2game mode is %s", server::modename(gamemode));
 		const char* info = m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
-		if(showmodeinfo && info) conoutf(CON_GAMEINFO, "\f2%s: \f0%s", server::modename(gamemode), info);
+		if(showmodeinfo && info) conoutf(CON_GAMEINFO, "\f2%s: \f0%s", server::modename(gamemode), info); // gamemode info, triggered twice on first map load?????? -Y
 
         if(player1->playermodel != playermodel) switchplayermodel(playermodel);
 
@@ -1131,6 +1135,48 @@ namespace game
 	extern int hudscore;
 	extern void drawhudscore(int w, int h);
 
+    VARP(showphyscompass, 0, 0, 1);
+    HVARP(physcompassvelcolor, 0, 0xFFFFFF, 0xFFFFFF);
+    HVARP(physcompassinputcolor, 0, 0xFF0000, 0xFFFFFF);
+
+    void drawphyscompassvector(int &color, float w, float yaw, float magnitude)
+    {
+        pushhudmatrix();
+        hudmatrix.rotate_around_z(yaw);
+        flushhudmatrix();
+        gle::defvertex(2);
+        gle::color(bvec((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF), 0xff);
+        gle::begin(GL_TRIANGLE_STRIP);
+        const float h = magnitude * 150.0f;
+        const float x = -0.5f * w, y = 0.0f;
+        gle::attribf(x    , y);
+        gle::attribf(x + w, y);
+        gle::attribf(x    , y + h);
+        gle::attribf(x + w, y + h);
+        gle::end();
+        pophudmatrix();
+    }
+
+    void drawphyscompass(fpsent *d, int w, int h)
+    {
+        enabletexture(false);
+        pushhudmatrix();
+        hudmatrix.translate(vec(400.0f, 1400.0f, 0.0f));
+        hudmatrix.rotate_around_z(90.0f * RAD);
+        flushhudmatrix();
+
+        const float velyaw = atan2f(d->vel.y, d->vel.x) - d->yaw*RAD;
+        const float velmag = min(3.0f, d->vel.magnitude2() / d->maxspeed);
+        drawphyscompassvector(physcompassvelcolor, 10.0f, velyaw, velmag);
+
+        const float inputyaw = atan2f(d->fmove, d->fstrafe);
+        const float inputmag = min(1.0f, vec2(d->fmove, d->fstrafe).magnitude());
+        drawphyscompassvector(physcompassinputcolor, 7.5f, inputyaw, inputmag);
+
+        pophudmatrix();
+        enabletexture(true);
+    }
+
     void gameplayhud(int w, int h)
     {
         pushhudmatrix();
@@ -1158,6 +1204,7 @@ namespace game
         if(d->state!=CS_EDITING)
         {
             if(d->state!=CS_SPECTATOR) drawhudicons(d);
+            if(showphyscompass) drawphyscompass(d, w, h);
             if(cmode) cmode->drawhud(d, w, h);
         }
 
