@@ -261,6 +261,83 @@ static size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, voi
 
 VARP(curltimeout, 1, 5, 60);
 
+char* web_auth(char* targetUrl, oldstring gametoken, bool debug)
+{
+    if (offline && !isdedicatedserver()) {
+        if (debug) conoutf(CON_ERROR, "cannot make web request in offline mode");
+        return "";
+    }
+    CURL* curl;
+    CURLcode res;
+
+    struct memoryStruct chunk;
+
+    char* url; // thing
+    long response_code;
+
+    chunk.memory = (char*)malloc(1);  // will be grown as needed by the realloc above */
+    chunk.size = 0;    // no data at this point */
+
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    // init the curl session */
+    curl = curl_easy_init();
+
+    struct curl_slist* headers = NULL;
+
+    oldstring apiurl;
+    oldstring gthead;
+    formatstring(apiurl, "%s/game/auth/login?id=1", HNAPI);
+    formatstring(gthead, "X-Game-Token: %s", gametoken);
+
+    headers = curl_slist_append(headers, gthead);
+
+    // set headers
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    // specify URL to get */
+    curl_easy_setopt(curl, CURLOPT_URL, targetUrl);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
+
+    // send all data to this function  */
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeMemoryCallback);
+
+    // we pass our 'chunk' struct to the callback function */
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&chunk);
+
+    // some servers don't like requests that are made without a user-agent field, so we provide one
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cardboard-Engine/1.0.0");
+
+    // set timeout to 5 seconds so the game doesn't break when servers aren't responding
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, curltimeout);
+
+    // get it! */
+    res = curl_easy_perform(curl);
+
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+    curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &url);
+
+    // check for errors */
+    if (res != CURLE_OK) {
+        if (debug) conoutf(CON_ERROR, "curl_easy_perform() failed: %s", curl_easy_strerror(res));
+        return "";
+    }
+    else {
+        // we now have the data, do stuff with it
+        if (debug) {
+            conoutf(CON_INFO, "%lu bytes retrieved", (unsigned long)chunk.size);
+            conoutf(CON_INFO, "%d response, %s url", (int)response_code, url);
+        }
+
+        return chunk.memory;
+    }
+
+    /* cleanup curl stuff */
+    curl_easy_cleanup(curl);
+
+    free(chunk.memory);
+}
+
 char* web_get(char* targetUrl, bool debug)
 {
     if(offline && !isdedicatedserver()) {
@@ -313,6 +390,74 @@ char* web_get(char* targetUrl, bool debug)
     else {
         // we now have the data, do stuff with it
         if(debug) {
+            conoutf(CON_INFO, "%lu bytes retrieved", (unsigned long)chunk.size);
+            conoutf(CON_INFO, "%d response, %s url", (int)response_code, url);
+        }
+
+        return chunk.memory;
+    }
+
+    /* cleanup curl stuff */
+    curl_easy_cleanup(curl);
+
+    free(chunk.memory);
+}
+
+char* web_post(char* targetUrl, char* postFields, bool debug) // Might work, idk, I don't have an endpoint to test with -Y
+{
+    if (offline && !isdedicatedserver()) {
+        if (debug) conoutf(CON_ERROR, "cannot make web request in offline mode");
+        return "";
+    }
+    CURL* curl;
+    CURLcode res;
+
+    struct memoryStruct chunk;
+
+    char* url; // thing
+    long response_code;
+
+    chunk.memory = (char*)malloc(1);  // will be grown as needed by the realloc above */
+    chunk.size = 0;    // no data at this point */
+
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    // init the curl session */
+    curl = curl_easy_init();
+
+    // specify URL to get */
+    curl_easy_setopt(curl, CURLOPT_URL, targetUrl);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
+
+    // send all data to this function  */
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeMemoryCallback);
+
+    // we pass our 'chunk' struct to the callback function */
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&chunk);
+
+    // specify the POST data
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postFields);
+
+    // some servers don't like requests that are made without a user-agent field, so we provide one
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cardboard-Engine/1.0.0");
+
+    // set timeout to 5 seconds so the game doesn't break when servers aren't responding
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, curltimeout);
+
+    // get it! */
+    res = curl_easy_perform(curl);
+
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+    curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &url);
+
+    // check for errors */
+    if (res != CURLE_OK) {
+        if (debug) conoutf(CON_ERROR, "curl_easy_perform() failed: %s", curl_easy_strerror(res));
+        return "";
+    }
+    else {
+        // we now have the data, do stuff with it
+        if (debug) {
             conoutf(CON_INFO, "%lu bytes retrieved", (unsigned long)chunk.size);
             conoutf(CON_INFO, "%d response, %s url", (int)response_code, url);
         }

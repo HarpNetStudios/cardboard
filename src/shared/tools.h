@@ -1406,7 +1406,9 @@ extern oldstring gametoken;
 
 // cURL stuff
 
-extern char* web_get(char* targetUrl, bool debug);
+extern char* web_get(char* targetUrl, bool debug = false);
+extern char* web_post(char* targetUrl, char* postFields, bool debug = false);
+extern char* web_auth(char* targetUrl, oldstring gametoken, bool debug = false);
 extern int offline;
     
 #endif

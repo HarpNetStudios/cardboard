@@ -1321,6 +1321,13 @@ void testcurl_(char* targetUrl) {
 
 COMMANDN(testcurl, testcurl_, "s");
 
+void testcurlpost_(char* targetUrl, char* postFields) {
+    char* thing = web_post(targetUrl, postFields, true);
+    conoutf(CON_ECHO, "%s", thing);
+}
+
+COMMANDN(testcurlpost, testcurlpost_, "ss");
+
 VARFP(offline, 0, 0, 1, { getuserinfo_(false); });
 
 void getuserinfo_(bool debug, bool first) {
@@ -1332,8 +1339,8 @@ void getuserinfo_(bool debug, bool first) {
 		return;
 	}
 	oldstring apiurl;
-	formatstring(apiurl, "%s/game/get/userinfo?id=1&token=%s", HNAPI, gametoken);
-	char* thing = web_get(apiurl, debug);
+	formatstring(apiurl, "%s/game/get/userinfo?id=1", HNAPI);
+	char* thing = web_auth(apiurl, gametoken, debug);
 	if(!thing[0]) {
 		conoutf(CON_ERROR, "\f3[HNID] No data recieved from server, switching to offline mode");
 		offline = 1;

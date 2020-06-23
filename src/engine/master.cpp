@@ -26,6 +26,8 @@
 
 FILE *logfile = NULL;
 
+bool isdedicatedserver() { return true; } // A nasty hack, but it works, so whatever. -Y
+
 struct userinfo
 {
     char *name;
