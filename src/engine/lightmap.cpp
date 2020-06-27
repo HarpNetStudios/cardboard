@@ -423,7 +423,7 @@ static inline bool htcmp(const lightmapinfo &k, const layoutinfo &v)
         vcolor += kbpp*LM_PACKW;
     }
     if((ktype&LM_TYPE) != LM_BUMPMAP0) return true;
-    const bvec *kdir = k.raybuf, *vdir = (const bvec *)lightmaps[v.lmid+1 - LMID_RESERVED].data;
+    const bvec *kdir = k.raybuf, *vdir = (const bvec *)lightmaps[v.lmid+1 - LMID_RESERVED].data + (v.x + v.y*LM_PACKW);
     loopi(kh)
     {
         if(memcmp(kdir, vdir, kw*sizeof(bvec))) return false;

@@ -285,9 +285,7 @@ char* web_auth(char* targetUrl, oldstring gametoken, bool debug)
 
     struct curl_slist* headers = NULL;
 
-    oldstring apiurl;
     oldstring gthead;
-    formatstring(apiurl, "%s/game/auth/login?id=1", HNAPI);
     formatstring(gthead, "X-Game-Token: %s", gametoken);
 
     headers = curl_slist_append(headers, gthead);

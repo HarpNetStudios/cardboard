@@ -74,9 +74,12 @@ namespace CardboardLauncher
 
         private bool GrabInfo(string token)
         {
+            if(token=="")return false;
             try
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://harpnetstudios.com/hnid/api/v1/game/get/userinfo?id=" + gameId + "&token=" + token);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://harpnetstudios.com/hnid/api/v1/game/auth/login?id=" + gameId);
+                WebHeaderCollection whc = request.Headers;
+                whc.Add("X-Game-Token: "+token);
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 string content = new StreamReader(response.GetResponseStream()).ReadToEnd();
                 UserInfo info = JsonConvert.DeserializeObject<UserInfo>(content);
@@ -97,11 +100,18 @@ namespace CardboardLauncher
                 playOfflineChkBox.Checked = playOfflineChkBox.Enabled = !success;
                 playButton.Enabled = success || playOfflineChkBox.Checked;
             }
-            catch (Exception e)
+            catch(WebException e)
             {
-                DisplayMessage("Exception! "+e.Message,"Account Server - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string text = "Exception! "+e.Message;
+                if(e.Status == WebExceptionStatus.ProtocolError)
+                {
+                    text = "Web Exception! " + e.Message+"\n";
+                    text += string.Format("\nStatus Code : {0}", ((int)((HttpWebResponse)e.Response).StatusCode));
+                    text += string.Format("\nStatus Description : {0}", ((HttpWebResponse)e.Response).StatusDescription);
+                    text += string.Format("\nServer : {0}", ((HttpWebResponse)e.Response).Server);
+                }
+                DisplayMessage(text,"Account Server - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
 
             return success;
         }

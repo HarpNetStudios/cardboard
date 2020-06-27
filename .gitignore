@@ -26,3 +26,6 @@
 *.exp
 
 *msvc.lib
+
+# Directories that aren't public
+/res/_Private

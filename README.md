@@ -44,7 +44,7 @@ make
 make install
 ```
 
-- Open `cardboard_unix` (in the root directory) with your favorite text editor, and replace `-cOFFLINE` with `-c{your game token}` Confused? (Check here!)[]
+- Open `cardboard_unix` (in the root directory) with your favorite text editor, and replace `-cOFFLINE` with `-c{your game token}` Confused? [Check here!](https://harpnetstudios.com/my/account/gametokens)
 
 - And lastly, run `chmod +x cardboard_unix` and `./cardboard_unix` to start it
 

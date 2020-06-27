@@ -722,17 +722,16 @@ namespace game
 
         bool looped = false;
         if(d->attacksound >= 0 && d->attacksound != sound) d->stopattacksound();
-        if(d->idlesound >= 0) d->stopidlesound();
-        fpsent* h = followingplayer();
-        switch(sound)
+        if (d->idlesound >= 0) d->stopidlesound();
+        switch (sound)
         {
             case S_CHAINSAW_ATTACK:
-                if(d->attacksound >= 0) looped = true;
+                if (d->attacksound >= 0) looped = true;
                 d->attacksound = sound;
-                d->attackchan = playsound(sound, d==h ? NULL : &d->o, NULL, 0, -1, 100, d->attackchan);
+                d->attackchan = playsound(sound, d == hudplayer() ? NULL : &d->o, NULL, 0, -1, 100, d->attackchan);
                 break;
             default:
-                playsound(sound, d == h ? NULL : &d->o);
+                playsound(sound, d == hudplayer() ? NULL : &d->o);
                 break;
         }
     }

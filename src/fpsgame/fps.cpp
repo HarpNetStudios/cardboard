@@ -310,7 +310,11 @@ namespace game
         loopv(players)
         {
             const fpsent *o = players[i];
-            if(o != p && (o->state != CS_ALIVE || isteam(o->team, p->team))) continue;
+            if(o == p)
+            {
+                if(o->state != CS_ALIVE && lastmillis - o->lastpain > 3000) continue;
+            }
+            else if(o->state != CS_ALIVE || isteam(o->team, p->team)) continue;
 
             vec dir = vec(o->o).sub(e.o);
             float dist = dir.squaredlen();
@@ -1260,8 +1264,11 @@ namespace game
 
         if(crosshair!=1 && !editmode && !m_insta && healthcrosshair)
         {
-            if(d->health<=250) color = vec(1, 0, 0);
-            else if(d->health<=500) color = vec(1, 0.5f, 0);
+            if (d->health <= 200) color = vec(1, 0, 0);
+            else if (d->health <= 600) color = vec(1, (d->health - 200) / 400.0f, 0);
+            else if (d->health <= 1000) color = vec(1, 1, (d->health - 600) / 400.0f);
+            else if (d->health <= 2000) color = vec((2000 - d->health) / 1000.0f, 1, (2000 - d->health) / 1000.0f);
+            else color = vec(0, 1, 0);
         }
         if(d->gunwait[d->gunselect] && delaycrosshair) color.mul(0.5f);
         return crosshair;
@@ -1302,6 +1309,25 @@ namespace game
 
     bool serverinfoentry(g3d_gui *g, int i, const char *name, int port, const char *sdesc, const char *map, int ping, const vector<int> &attr, int np)
     {
+        const char* pingcolor;
+        if (attr.length() >= 4) {
+            if (ping < 70) {
+                pingcolor = "\f0";
+            }
+            else if (ping < 135) {
+                pingcolor = "\f2";
+            }
+            else if (ping < 200) {
+                pingcolor = "\f6";
+            }
+            else {
+                pingcolor = "\f3";
+            }
+        }
+        else {
+            pingcolor = "";
+        }
+
         if(ping < 0 || attr.empty() || attr[0]!=PROTOCOL_VERSION)
         {
             switch(i)
@@ -1342,7 +1368,7 @@ namespace game
             case 0:
             {
                 const char *icon = attr.inrange(3) && np >= attr[3] ? "serverfull" : (attr.inrange(4) ? mastermodeicon(attr[4], "serverunk") : "serverunk");
-                if(g->buttonf("%d ", 0xFFFFDD, icon, ping)&G3D_UP) return true;
+                if(g->buttonf("%s%d ", 0xFFFFDD, icon, pingcolor, ping)&G3D_UP) return true;
                 break;
             }
 

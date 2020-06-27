@@ -2180,11 +2180,12 @@ VARP(cursorsize, 0, 30, 50);
 VARP(crosshairfx, 0, 1, 1);
 vec xhaircolor(1.0f, 1.0f, 1.0f);
 HVARFP(crosshaircolor, 0, 0xFFFFFF, 0xFFFFFF, {
-		const float factor = 1.0f / 0xff;
-		xhaircolor.x = factor * (crosshaircolor >> 16 & 0xff);
-		xhaircolor.y = factor * (crosshaircolor >> 8 & 0xff);
-		xhaircolor.z = factor * (crosshaircolor & 0xff);
+        const float factor = 1.0f / 0xff;
+        xhaircolor.x = factor * (crosshaircolor >> 16 & 0xff);
+        xhaircolor.y = factor * (crosshaircolor >> 8 & 0xff);
+        xhaircolor.z = factor * (crosshaircolor & 0xff);
 	});
+VARP(crosshairforceadditive, 0, 0, 1);
 
 #define MAXCROSSHAIRS 4
 static Texture *crosshairs[MAXCROSSHAIRS] = { NULL, NULL, NULL, NULL };
@@ -2260,7 +2261,8 @@ void drawcrosshair(int w, int h)
         }
         chsize = crosshairsize < 0 ? max(crosshair->w, crosshair->h) : crosshairsize*w/900.0f;
     }
-    if(crosshair->type&Texture::ALPHA) glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if(crosshairforceadditive) glBlendFunc(GL_ONE, GL_ONE);
+    else if(crosshair->type&Texture::ALPHA) glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     else glBlendFunc(GL_ONE, GL_ONE);
     float x = cx*w - (windowhit ? 0 : chsize/2.0f);
     float y = cy*h - (windowhit ? 0 : chsize/2.0f);
