@@ -86,7 +86,7 @@ CLIENT_OBJS= \
 	shared/tools.o \
 	shared/zip.o \
 	shared/microtar.o \
-	shared/cJSON/cJSON.o \
+	shared/cJSON.o \
 	engine/3dgui.o \
 	engine/bih.o \
 	engine/blend.o \
@@ -152,7 +152,7 @@ SERVER_OBJS= \
 	shared/crypto-standalone.o \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
-	shared/cJSON/cJSON.o \
+	shared/cJSON.o \
 	shared/microtar.o \
 	engine/command-standalone.o \
 	engine/server-standalone.o \
@@ -164,7 +164,7 @@ MASTER_OBJS= \
 	shared/crypto-standalone.o \
 	shared/stream-standalone.o \
 	shared/tools-standalone.o \
-	shared/cJSON/cJSON.o \
+	shared/cJSON.o \
 	shared/microtar.o \
 	engine/command-standalone.o \
 	engine/master-standalone.o
@@ -272,7 +272,7 @@ shared/zip.o: shared/cube.h shared/tools.h shared/geom.h shared/ents.h
 shared/zip.o: shared/command.h shared/glexts.h shared/glemu.h
 shared/zip.o: shared/iengine.h shared/igame.h
 shared/microtar.o: shared/microtar.h
-shared/cJSON/cJSON.o: shared/cJSON/cJSON.h
+shared/cJSON.o: shared/cJSON.h
 engine/3dgui.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/3dgui.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/3dgui.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
