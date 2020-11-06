@@ -55,8 +55,8 @@
 #endif
 
 #ifdef DISCORD
-#include <discord-game-sdk/discord_game_sdk.h>
-#include <discord-game-sdk/discord.h>
+#include <discord/discord_game_sdk.h>
+#include <discord/discord.h>
 #endif
 
 #include <enet/enet.h>

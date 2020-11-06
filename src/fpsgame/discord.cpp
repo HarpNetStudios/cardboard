@@ -79,20 +79,23 @@ namespace discord
 					"duabo",
 					"flux",
 					"fz_burn",
+					"garena1",
 					"highland",
 					"hr",
 					"illusion",
+					"indust1"
 					"maze",
 					"neo_falls",
 					"neo_noir",
 					"precipice",
+					"realm",
 					"retrograde",
 					"ruins",
 					"secondevermap",
 					"zigguraut",
 				};
 				const char* s = game::getclientmap();
-				const char* fin = "logo-large";
+				const char* fin = "unknown-map";
 				int len = sizeof(x) / sizeof(x[0]);
 				int i;
 
