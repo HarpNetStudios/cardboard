@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cardboard", "cardboard.vcxproj", "{0DB9F6E7-318A-4CF0-A02A-8E6A834B792A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardboardLauncher", "..\launcher\CardboardLauncher.csproj", "{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,30 +45,6 @@ Global
 		{0DB9F6E7-318A-4CF0-A02A-8E6A834B792A}.Template|Win32.Build.0 = Template|Win32
 		{0DB9F6E7-318A-4CF0-A02A-8E6A834B792A}.Template|x64.ActiveCfg = Template|x64
 		{0DB9F6E7-318A-4CF0-A02A-8E6A834B792A}.Template|x64.Build.0 = Template|x64
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Debug|Win32.Build.0 = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Debug|x64.Build.0 = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Profile|Any CPU.ActiveCfg = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Profile|Any CPU.Build.0 = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Profile|Win32.ActiveCfg = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Profile|Win32.Build.0 = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Profile|x64.ActiveCfg = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Profile|x64.Build.0 = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Release|Win32.ActiveCfg = Release|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Release|Win32.Build.0 = Release|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Release|x64.ActiveCfg = Release|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Release|x64.Build.0 = Release|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Template|Any CPU.ActiveCfg = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Template|Any CPU.Build.0 = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Template|Win32.ActiveCfg = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Template|Win32.Build.0 = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Template|x64.ActiveCfg = Debug|Any CPU
-		{1F4A3E03-306C-428C-8B27-E53BEE0DFBC6}.Template|x64.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

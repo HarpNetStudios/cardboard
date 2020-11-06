@@ -163,9 +163,6 @@
     <ClCompile Include="..\fpsgame\weapon.cpp">
       <Filter>fpsgame</Filter>
     </ClCompile>
-    <ClCompile Include="..\shared\cJSON\cJSON.c">
-      <Filter>shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\engine\translate.cpp">
       <Filter>engine</Filter>
     </ClCompile>
@@ -222,6 +219,9 @@
     </ClCompile>
     <ClCompile Include="..\fpsgame\discord.cpp">
       <Filter>fpsgame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\cJSON.c">
+      <Filter>shared</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -410,6 +410,9 @@
     </ClInclude>
     <ClInclude Include="..\shared\discord\voice_manager.h">
       <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\cJSON.h">
+      <Filter>shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
