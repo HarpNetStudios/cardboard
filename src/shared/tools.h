@@ -803,9 +803,9 @@ template <class T> struct vector
     T *insert(int i, const T *e, int n)
     {
         if(alen-ulen < n) growbuf(ulen+n);
-        loopj(n) add(T());
+        for(int j = 0; j < int(n); ++j) add(T());
         for(int p = ulen-1; p>=i+n; p--) buf[p] = buf[p-n];
-        loopj(n) buf[i+j] = e[j];
+        for(int j = 0; j < int(n); ++j) buf[i+j] = e[j];
         return &buf[i];
     }
 
