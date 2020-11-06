@@ -81,7 +81,6 @@ enum
     M_CTF        = 1<<8,
     M_PROTECT    = 1<<9,
     M_HOLD       = 1<<10,
-    M_OVERTIME   = 1<<11,
     M_EDIT       = 1<<12,
     M_DEMO       = 1<<13,
     M_LOCAL      = 1<<14,
@@ -160,7 +159,6 @@ static struct gamemodeinfo
 #define m_hold         (m_checkall(gamemode, M_CTF | M_HOLD))
 #define m_collect      (m_check(gamemode, M_COLLECT))
 #define m_teammode     (m_check(gamemode, M_TEAM))
-#define m_overtime     (m_check(gamemode, M_OVERTIME))
 #define isteam(a,b)    (m_teammode && strcmp(a, b)==0)
 
 #define m_parkour      (m_check(gamemode, M_PARKOUR))

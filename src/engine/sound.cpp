@@ -1,11 +1,7 @@
 // sound.cpp: basic positional sound using sdl_mixer
 
 #include "engine.h"
-#ifdef __APPLE__
-  #include "SDL2_mixer/SDL_mixer.h"
-#else
-  #include "SDL_mixer.h"
-#endif
+#include "SDL_mixer.h"
 
 bool nosound = true;
 
@@ -666,8 +662,6 @@ void checkmapsounds()
 
 VAR(stereo, 0, 1, 1);
 
-VAR(maxsoundradius, 1, 340, 0);
-
 bool updatechannel(soundchannel &chan)
 {
     if(!chan.slot) return false;
@@ -676,7 +670,7 @@ bool updatechannel(soundchannel &chan)
     {
         vec v;
         float dist = chan.loc.dist(camera1->o, v);
-        int rad = maxsoundradius;
+        int rad = 0;
         if(chan.ent)
         {
             rad = chan.ent->attr2;
@@ -686,7 +680,7 @@ bool updatechannel(soundchannel &chan)
                 dist -= chan.ent->attr3;
             }
         }
-        else if(chan.radius > 0) rad = maxsoundradius ? min(maxsoundradius, chan.radius) : chan.radius;
+        else if(chan.radius > 0) rad = chan.radius;
         if(rad > 0) vol -= int(clamp(dist/rad, 0.0f, 1.0f)*soundvol); // simple mono distance attenuation
         if(stereo && (v.x != 0 || v.y != 0) && dist>0)
         {
@@ -774,11 +768,12 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
     if(!sounds.configs.inrange(n)) { conoutf(CON_WARN, "unregistered sound: %d", n); return -1; }
     soundconfig &config = sounds.configs[n];
 
-    if(loc && (maxsoundradius || radius > 0))
+    if(loc)
     {
         // cull sounds that are unlikely to be heard
-        int rad = radius > 0 ? (maxsoundradius ? min(maxsoundradius, radius) : radius) : maxsoundradius;
-        if(camera1->o.dist(*loc) > 1.5f*rad)
+        int maxrad = game::maxsoundradius(n);
+        if(radius <= 0 || maxrad < radius) radius = maxrad;
+        if(camera1->o.dist(*loc) > 1.5f*radius)
         {
             if(channels.inrange(chanid) && sounds.playing(channels[chanid], config))
             {

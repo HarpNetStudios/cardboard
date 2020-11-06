@@ -1264,6 +1264,7 @@ namespace game
             else d->state = getint(p);
             d->frags = getint(p);
             d->flags = getint(p);
+            d->deaths = getint(p);
             if(d==player1) getint(p);
 			getint(p); // yeah
         }
@@ -1407,6 +1408,8 @@ namespace game
 
             case N_MAPCHANGE:
                 getstring(text, p);
+                filtertext(text, text, false);
+                fixmapname(text);
                 changemapserv(text, getint(p));
                 mapchanged = true;
                 if(getint(p)) entities::spawnitems();

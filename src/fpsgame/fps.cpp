@@ -305,25 +305,26 @@ namespace game
     float ratespawn(dynent *d, const extentity &e)
     {
         fpsent *p = (fpsent *)d;
-        float maxrange = m_noitems && (!cmode || m_ctf_only) ? 160.0f : 400.0f;
+        vec loc = vec(e.o).addz(p->eyeheight);
+        float maxrange = !m_noitems ? 400.0f : (cmode ? 300.0f : 110.0f);
         float minplayerdist = maxrange;
         loopv(players)
         {
             const fpsent *o = players[i];
             if(o == p)
             {
-                if(o->state != CS_ALIVE && lastmillis - o->lastpain > 3000) continue;
+                if(m_noitems || (o->state != CS_ALIVE && lastmillis - o->lastpain > 3000)) continue;
             }
             else if(o->state != CS_ALIVE || isteam(o->team, p->team)) continue;
 
-            vec dir = vec(o->o).sub(e.o);
+            vec dir = vec(o->o).sub(loc);
             float dist = dir.squaredlen();
             if(dist >= minplayerdist*minplayerdist) continue;
             dist = sqrtf(dist);
             dir.mul(1/dist);
 
             // scale actual distance if not in line of sight
-            if(raycube(e.o, dir, dist) < dist) dist *= 1.5f;
+            if(raycube(loc, dir, dist) < dist) dist *= 1.5f;
             minplayerdist = min(minplayerdist, dist);
         }
         float rating = 1.0f - proximityscore(minplayerdist, 80.0f, maxrange);
@@ -449,7 +450,11 @@ namespace game
         if(m_lms) d->state = CS_SPECTATOR;
 		else d->state = CS_DEAD;
         d->lastpain = lastmillis;
-        if(!restore) gibeffect(max(-d->health, 0), d->vel, d);
+        if(!restore)
+        {
+            gibeffect(max(-d->health, 0), d->vel, d);
+            d->deaths++;
+        }
         if(d==player1)
         {
             if(deathscore) showscores(true);
@@ -457,7 +462,6 @@ namespace game
             if(!restore) for(int i = 0; i < int(NUMGUNS); ++i) savedammo[i] = player1->ammo[i];
             d->attacking = false;
 			d->secattacking = false;
-            if(!restore) d->deaths++;
             //d->pitch = 0;
             d->roll = 0;
             playsound(S_DIE1+rnd(2));
@@ -480,8 +484,8 @@ namespace game
         if(d->state==CS_EDITING)
         {
             d->editstate = CS_DEAD;
-            if(d==player1) d->deaths++;
-            else d->resetinterp();
+            d->deaths++;
+            if(d!=player1) d->resetinterp();
             return;
         }
         else if((d->state!=CS_ALIVE && d->state != CS_LAGGED && d->state != CS_SPAWNING) || intermission) return;
@@ -1325,6 +1329,25 @@ namespace game
 
     void lighteffects(dynent *e, vec &color, vec &dir)
     {
+    }
+
+    int maxsoundradius(int n)
+    {
+        switch(n)
+        {
+            case S_JUMP:
+            case S_LAND:
+            case S_WEAPLOAD:
+            case S_ITEMAMMO:
+            case S_ITEMHEALTH:
+            case S_ITEMPUP:
+            case S_ITEMSPAWN:
+            case S_NOAMMO:
+            case S_PUPOUT:
+                return 340;
+            default:
+                return 500;
+        }
     }
 
     bool serverinfostartcolumn(g3d_gui *g, int i)

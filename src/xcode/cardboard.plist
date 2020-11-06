@@ -4,56 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>cdm</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>cardboard.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>Cardboard Engine demo</string>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-			<key>LSTypeIsPackage</key>
-			<false/>
-			<key>NSPersistentStoreTypeKey</key>
-			<string>Binary</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>cmr</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>cardboard.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>Cardboard Engine map</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSTypeIsPackage</key>
-			<false/>
-			<key>NSPersistentStoreTypeKey</key>
-			<string>Binary</string>
-		</dict>
-	</array>
-	<key>LSMinimumSystemVersionByArchitecture</key>
-	<dict>
-		<key>x86_64</key>
-		<string>10.6.0</string>
-		<key>i386</key>
-		<string>10.4.0</string>
-		<key>ppc</key>
-		<string>10.4.0</string>
-	</dict>
 	<key>CFBundleExecutable</key>
 	<string>cardboard</string>
-	<key>CFBundleHelpBookFolder</key>
-	<string>help</string>
-	<key>CFBundleHelpBookName</key>
-	<string>Cardboard Engine help</string>
 	<key>CFBundleIconFile</key>
 	<string>cardboard</string>
 	<key>CFBundleIdentifier</key>
@@ -62,26 +14,17 @@
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.5.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>CardboardServer</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>cardboard</string>
-			</array>
-		</dict>
-	</array>
-	<key>CFBundleVersion</key>
-	<string>1.5</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.action-games</string>
+	<key>LSUIElement</key>
+	<string>1</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
-	<string>SDLApplication</string>
+	<string>NSApplication</string>
 </dict>
 </plist>

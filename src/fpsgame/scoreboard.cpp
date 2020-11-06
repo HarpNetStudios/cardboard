@@ -13,6 +13,7 @@ namespace game
     VARP(highlightscore, 0, 1, 1);
     VARP(showconnecting, 0, 0, 1);
 	VARP(hidefrags, 0, 1, 1);
+    VARP(showdeaths, 0, 0, 1);
 
     static hashset<teaminfo> teaminfos;
 
@@ -254,6 +255,15 @@ namespace game
                 loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, m_parkour ? o->deaths : o->frags));
                 g.poplist();
             }
+
+            if(showdeaths && !m_parkour)
+            {
+                g.pushlist();
+                g.strut(6);
+                g.text("deaths", fgcolor);
+                loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, o->deaths));
+                g.poplist();
+             }
 
             g.pushlist();
             g.text("name", fgcolor);
