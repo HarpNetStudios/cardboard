@@ -371,6 +371,31 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
     {250, 1000, S_ITEMHEALTH,  "H", HICON_HEALTH,      -1},
 };
 
+// all official maps, used for savemap
+
+static const char* officialmaps[] =
+{
+    "color",
+    "cosmic",
+    "duabo",
+    "flux",
+    "fz_burn",
+    "garena1",
+    "highland",
+    "hr",
+    "illusion",
+    "indust1"
+    "maze",
+    "neo_falls",
+    "neo_noir",
+    "precipice",
+    "realm",
+    "retrograde",
+    "ruins",
+    "secondevermap",
+    "zigguraut",
+};
+
 #define MAXRAYS 20
 //#define EXP_SELFDAMDIV 2
 

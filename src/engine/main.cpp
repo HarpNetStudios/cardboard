@@ -1306,6 +1306,20 @@ void testcurl_(char* targetUrl) {
 
 COMMANDN(testcurl, testcurl_, "s");
 
+void testb64e_(unsigned char* targetUrl) {
+    char* thing = b64_encode(targetUrl, strlen((char*)targetUrl));
+    conoutf(CON_ECHO, "%s", thing);
+}
+
+COMMANDN(testb64e, testb64e_, "s");
+
+void testb64d_(char* targetUrl) {
+    unsigned char* thing = b64_decode(targetUrl, strlen(targetUrl));
+    conoutf(CON_ECHO, "%s", thing);
+}
+
+COMMANDN(testb64d, testb64d_, "s");
+
 void testcurlpost_(char* targetUrl, char* postFields) {
     char* thing = web_post(targetUrl, postFields, true);
     conoutf(CON_ECHO, "%s", thing);

@@ -87,6 +87,9 @@ CLIENT_OBJS= \
 	shared/zip.o \
 	shared/microtar.o \
 	shared/cJSON.o \
+	shared/b64/buffer.o \
+	shared/b64/encode.o \
+	shared/b64/decode.o \
 	engine/3dgui.o \
 	engine/bih.o \
 	engine/blend.o \
@@ -154,6 +157,9 @@ SERVER_OBJS= \
 	shared/tools-standalone.o \
 	shared/cJSON.o \
 	shared/microtar.o \
+	shared/b64/buffer.o \
+	shared/b64/encode.o \
+	shared/b64/decode.o \
 	engine/command-standalone.o \
 	engine/server-standalone.o \
 	engine/worldio-standalone.o \
@@ -166,6 +172,9 @@ MASTER_OBJS= \
 	shared/tools-standalone.o \
 	shared/cJSON.o \
 	shared/microtar.o \
+	shared/b64/buffer.o \
+	shared/b64/encode.o \
+	shared/b64/decode.o \
 	engine/command-standalone.o \
 	engine/master-standalone.o
 
@@ -273,6 +282,9 @@ shared/zip.o: shared/command.h shared/glexts.h shared/glemu.h
 shared/zip.o: shared/iengine.h shared/igame.h
 shared/microtar.o: shared/microtar.h
 shared/cJSON.o: shared/cJSON.h
+shared/b64/buffer.o: shared/b64/b64.h
+shared/b64/encode.o: shared/b64/b64.h
+shared/b64/decode.o: shared/b64/b64.h
 engine/3dgui.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/3dgui.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/3dgui.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h

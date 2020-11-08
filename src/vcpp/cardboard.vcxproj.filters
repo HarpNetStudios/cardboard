@@ -223,6 +223,15 @@
     <ClCompile Include="..\shared\cJSON.c">
       <Filter>shared</Filter>
     </ClCompile>
+    <ClCompile Include="..\shared\b64\decode.c">
+      <Filter>shared\b64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\b64\encode.c">
+      <Filter>shared\b64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\b64\buffer.c">
+      <Filter>shared\b64</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\command.h">
@@ -414,6 +423,9 @@
     <ClInclude Include="..\shared\cJSON.h">
       <Filter>shared</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared\b64\b64.h">
+      <Filter>shared\b64</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="shared">
@@ -436,6 +448,9 @@
     </Filter>
     <Filter Include="shared\discord">
       <UniqueIdentifier>{4046b8b6-ab84-460e-bf7d-f194a6aa64d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared\b64">
+      <UniqueIdentifier>{c4e0bb67-4fa4-4b6f-8d4d-1a7b64abde38}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

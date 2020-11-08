@@ -991,9 +991,20 @@ void loadvslots(stream *f, int numvslots)
     delete[] prev;
 }
 
+VAR(forcesavemap, 0, 0, 1);
+
 bool save_world(const char *mname, bool nolms)
 {
     if(!*mname) mname = game::getclientmap();
+    if (!forcesavemap)
+    {
+        int mapslen = sizeof(officialmaps) / sizeof(officialmaps[0]);
+
+        for (int i = 0; i < mapslen; ++i)
+        {
+            if (!strcmp(officialmaps[i], mname)) { conoutf(CON_ERROR, "\f3could not override official map \f4%s\f3! please choose another name!", mname); return false; }
+        }
+    }
     setmapfilenames(mname);
     if(savebak) backup(cmrname, bakname);
     stream *f = opengzfile(cmrname, "wb");

@@ -50,9 +50,7 @@ namespace discord
 				activity.SetState("SOMETHING BROKE");
 				activity.SetDetails("Tell the #bugs channel about what you did!");
 				activity.GetAssets().SetLargeImage("logo-large");
-				activity.GetAssets().SetLargeText("https://hnss.ga/bug-report");
 				activity.GetAssets().SetSmallImage("turkey-test");
-				activity.GetAssets().SetSmallText("https://hnss.ga/bug-report");
 				break;
 			}
 			if(gamestate != D_MENU) {
@@ -73,49 +71,29 @@ namespace discord
 				}
 				activity.GetAssets().SetLargeImage(game::getclientmap());
 
-				char* x[] = { // all maps with discord rpc keys
-					"color",
-					"cosmic",
-					"duabo",
-					"flux",
-					"fz_burn",
-					"garena1",
-					"highland",
-					"hr",
-					"illusion",
-					"indust1"
-					"maze",
-					"neo_falls",
-					"neo_noir",
-					"precipice",
-					"realm",
-					"retrograde",
-					"ruins",
-					"secondevermap",
-					"zigguraut",
-				};
 				const char* s = game::getclientmap();
 				const char* fin = "unknown-map";
-				int len = sizeof(x) / sizeof(x[0]);
-				int i;
+				int len = sizeof(officialmaps) / sizeof(officialmaps[0]);
 
-				for (i = 0; i < len; ++i)
+				for (int i = 0; i < len; ++i)
 				{
-					if(!strcmp(x[i], s)) fin = game::getclientmap();
+					if(!strcmp(officialmaps[i], s)) fin = game::getclientmap();
 				}
 
 				activity.GetAssets().SetLargeImage(fin);
 
 				activity.GetAssets().SetLargeText(game::getclientmap());
 				if(address) {
-					if(enet_address_get_host_ip(address, partykey, sizeof(partykey)) >= 0)
+					if(enet_address_get_host_ip(address, partykey, strlen(partykey)) >= 0)
 					{
-						defformatstring(newpartykey, "%s:%u", partykey, address->port);
-						defformatstring(partyid, "%s%s", "srv=", newpartykey);
+						defformatstring(partyid, "%s:%u", partykey, address->port);
+						defformatstring(newpartykey, "S%s", partyid);
+						const char* b64key = b64_encode((unsigned char*)newpartykey, strlen(newpartykey));
 						activity.GetParty().SetId(partyid);
 						activity.GetParty().GetSize().SetCurrentSize(game::players.length());
 						activity.GetParty().GetSize().SetMaxSize(game::players.length() + 1);
-						activity.GetSecrets().SetJoin(newpartykey);
+						activity.GetSecrets().SetJoin(b64key);
+						conoutf(CON_ECHO, "discord join secret: %s", b64key);
 					}
 				}
 				else {

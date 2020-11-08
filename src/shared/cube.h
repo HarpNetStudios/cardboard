@@ -59,6 +59,7 @@
 #include <discord/discord.h>
 #endif
 
+#include <b64/b64.h>
 #include <enet/enet.h>
 #include <curl/curl.h>
 #include <cJSON.h>
