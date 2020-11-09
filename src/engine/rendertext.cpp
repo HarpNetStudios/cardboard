@@ -1,7 +1,7 @@
 #include "engine.h"
 
 // a gentle reminder to rework the awful font system
-#include "sdl_ttf.h"
+#include "SDL_ttf.h"
 
 static hashnameset<font> fonts;
 static font *fontdef = NULL;

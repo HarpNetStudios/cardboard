@@ -29,3 +29,7 @@
 
 # Directories that aren't public
 /res/_Private
+
+# Leave me alone
+launcher.json
+Newtonsoft.Json.dll

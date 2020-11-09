@@ -12,13 +12,26 @@ jobs:
         with:
           lfs: true
       - name: Setup MSBuild
-        uses: warrenbuckley/Setup-MSBuild@v1
-      - name: Build for Windows 32
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Build for Windows x86
         working-directory: ./src/vcpp
         run: msbuild /p:PlatformToolset=v142 /property:Platform=Win32 /p:Configuration=Release cardboard.sln
-      - name: Build for Windows
+      - name: Build for Windows x64
         working-directory: ./src/vcpp
         run: msbuild /p:PlatformToolset=v142 /property:Platform=x64 /p:Configuration=Release cardboard.sln
+      - name: Get latest launcher binaries
+        uses: i3h/download-release-asset@v1
+        with:
+          owner: "HarpNetStudios"
+          repo: "CardboardLauncher"
+          tag: "latest"
+          file: "CardboardLauncher.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract and prepare launcher binaries
+        run: |
+          Expand-Archive -Path CardboardLauncher.zip -DestinationPath "."
+          Rename-Item -Path CardboardLauncher.exe -NewName launcher.exe
+          Remove-Item -Path CardboardLauncher.zip
       - name: Archive Windows binaries
         run: Compress-Archive -Path .\bin, .\bin64, .\data, .\docs, .\license, .\packages, .\res, .\launcher.exe, .\launcher.json, .\Newtonsoft.Json.dll, .\server_msvc.bat, .\config.cfg, .\init.cfg, .\server-init.cfg, .\restore.cfg -DestinationPath cardboard_windows.zip
       - uses: actions/upload-artifact@v1
@@ -34,7 +47,10 @@ jobs:
       - name: Install C and C++ header files
         run: |
           sudo apt-get update
-          sudo apt-get install -y libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libcurl4-openssl-dev
+          sudo apt-get install -y libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-ttf-dev libcurl4-openssl-dev
+      - name: Fix enet permissions
+        working-directory: ./src/enet
+        run: chmod +x ./check_cflags.sh
       - name: Build for Ubuntu
         working-directory: ./src
         run: make

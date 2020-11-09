@@ -27,7 +27,7 @@ jobs:
       - name: Install C and C++ header files
         run: |
           sudo apt-get update
-          sudo apt-get install -y libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libcurl4-openssl-dev
+          sudo apt-get install -y libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-ttf-dev libcurl4-openssl-dev
       - name: Fix enet permissions
         working-directory: ./src/enet
         run: chmod +x ./check_cflags.sh
