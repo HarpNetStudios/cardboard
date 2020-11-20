@@ -1,0 +1,266 @@
+1/6/2004 (my bday ;))
+
+Name: evillair's Quake 3:Arena eQ2 Texture Set
+Short Name: eQ2
+Author: Yves Allaire aka "evillair"
+Email: yves@evillair.net
+URL: http://evillair.net
+
+=============================================================================================
+
+[Description]
+Quake 3: Arena texture set based on many of the Quake2 textures. 
+They have been remade (changed) by myself and many more created to expand of what was done.
+
+=============================================================================================
+[Instructions for Q3Radiant/GTKRadiant users]
+
+Basic Usage:
+Extract the .zip file into your "baseq3" folder.
+
+Add: "eq2" (no quotes) to your shaderlist.txt file to see them in Q3Radient/GTKRadient
+
+>> Suggested usage:
+>> I'd encourage you to make your own directories for my textures for your map like so ... 
+
+>> "baseq3/textures/mymapname/" (place my textures under "mymapname".)
+
+>> "baseq3/scripts/mymapname.shader" Add my shaders here. Making sure to edit the paths in the original shader file. (Find\Replace "/eq2/" to "/yourmapname/" (no quotes)))
+
+=============================================================================================
+
+[Thanks]
+Everyone who had kind words to say about my other sets and
+the people at the mapcenter forums (http://mapcenter.digitalarenas.com)Quake3World.com Level Editing Forum.
+All the people who helped me out in IRC #mapceneter on enterthegame
+
+Everyone who has used/will use my textures in their maps.
+This is why I make them. :)
+
+=============================================================================================
+
+[Copyright/Permissions]
+-You may edit any shaders (.shader file) as you see fit.
+-You may change the color of any "texturename.blend.tga/.jpg" or hue to fit the style of your map.
+-You may use these texture in your maps/mods/tc's as long as you give me credit.
+-You may not edit, modify any textures within this archive unless given permission to do so by the author unless specified above.  
+-You may convert these textures to other game formats but only with the author's permission (me).
+
+[HarpNet Note]
+Yves has since relicensed these textures under a different set of terms, see LICENSE.txt file for details.
+
+QUAKE, QUAKE II and QUAKE3:ARENA are registered trademarks
+of id Software, Inc.
+
+=============================================================================================
+Enjoy!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+nothing down here.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+really, there's nothing here.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+go back up!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+go now!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+I told you, there's nothing here.
+
+
+
+
+:)
+
