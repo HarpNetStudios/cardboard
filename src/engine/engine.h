@@ -456,7 +456,6 @@ namespace joystick
 	void release();
 }
 
-extern void pushevent(const SDL_Event &e);
 extern bool interceptkey(int sym);
 
 extern float loadprogress;
