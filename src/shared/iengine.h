@@ -218,6 +218,7 @@ extern vec menuinfrontofplayer();
 extern void newgui(char *name, char *contents, char *header = NULL, char *init = NULL);
 extern void showgui(const char *name);
 extern int cleargui(int n = 0);
+extern int scoreboard2d;
 
 // octa
 extern int lookupmaterial(const vec &o);

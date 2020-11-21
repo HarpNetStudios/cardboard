@@ -1,9 +1,10 @@
 // creation of scoreboard
 #include "game.h"
 
+VARP(scoreboard2d, 0, 1, 1); //!!FIXME (3dgui.cpp 1302) - Coal 11/20/20
+
 namespace game
 {
-    VARP(scoreboard2d, 0, 1, 1);
     VARP(showservinfo, 0, 1, 1);
     VARP(showclientnum, 0, 0, 1);
     VARP(showpj, 0, 0, 1);

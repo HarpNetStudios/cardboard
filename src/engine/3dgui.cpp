@@ -272,7 +272,7 @@ struct gui : g3d_gui
         }
         else
         {
-            bool hit = ishit(w, h);
+            bool hit = isselected(w, h); // I SHIT - Coal 11/20/20
             if(ishorizontal()) curx += w;
             else cury += h;
             return (hit && visible()) ? mousebuttons|G3D_ROLLOVER : 0;
@@ -286,7 +286,7 @@ struct gui : g3d_gui
         return oldval;
     }
 
-    bool ishit(int w, int h, int x = curx, int y = cury)
+    bool isselected(int w, int h, int x = curx, int y = cury)
     {
         if(shouldmergehits) return windowhit==this && (ishorizontal() ? hitx>=x && hitx<x+w : hity>=y && hity<y+h);
         if(ishorizontal()) h = ysize;
@@ -299,7 +299,7 @@ struct gui : g3d_gui
         autotab();
         if(scale==0) scale = 1;
         int size = (int)(scale*2*FONTH)-SHADOW;
-        if(visible()) icon_(t, overlaid, curx, cury, size, ishit(size+SHADOW, size+SHADOW));
+        if(visible()) icon_(t, overlaid, curx, cury, size, isselected(size+SHADOW, size+SHADOW));
         return layout(size+SHADOW, size+SHADOW);
     }
 
@@ -308,7 +308,7 @@ struct gui : g3d_gui
         autotab();
         if(scale==0) scale = 1;
         int size = (int)(scale*2*FONTH)-SHADOW;
-        if(visible()) previewslot(vslot, overlaid, curx, cury, size, ishit(size+SHADOW, size+SHADOW));
+        if(visible()) previewslot(vslot, overlaid, curx, cury, size, isselected(size+SHADOW, size+SHADOW));
         return layout(size+SHADOW, size+SHADOW);
     }
 
@@ -319,7 +319,7 @@ struct gui : g3d_gui
         int size = (int)(sizescale*2*FONTH)-SHADOW;
         if(visible())
         {
-            bool hit = ishit(size+SHADOW, size+SHADOW);
+            bool hit = isselected(size+SHADOW, size+SHADOW);
             float xs = size, ys = size, xi = curx, yi = cury;
             if(overlaid && hit && actionon)
             {
@@ -364,7 +364,7 @@ struct gui : g3d_gui
         int size = (int)(sizescale*2*FONTH)-SHADOW;
         if(visible())
         {
-            bool hit = ishit(size+SHADOW, size+SHADOW);
+            bool hit = isselected(size+SHADOW, size+SHADOW);
             float xs = size, ys = size, xi = curx, yi = cury;
             if(overlaid && hit && actionon)
             {
@@ -420,7 +420,7 @@ struct gui : g3d_gui
         int size = (int)(sizescale*2*FONTH)-SHADOW;
         if(visible())
         {
-            bool hit = ishit(size+SHADOW, size+SHADOW);
+            bool hit = isselected(size+SHADOW, size+SHADOW);
             float xs = size, ys = size, xi = curx, yi = cury;
             if(overlaid && hit && actionon)
             {
@@ -473,13 +473,13 @@ struct gui : g3d_gui
             int px, py, offset = vmin < vmax ? clamp(val, vmin, vmax) : clamp(val, vmax, vmin);
             if(ishorizontal())
             {
-                hit = ishit(FONTH, ysize, x, y);
+                hit = isselected(FONTH, ysize, x, y);
                 px = x + (FONTH-w)/2;
                 py = y + (ysize-FONTH) - ((ysize-FONTH)*(offset-vmin))/((vmax==vmin) ? 1 : (vmax-vmin)); //vmin at bottom
             }
             else
             {
-                hit = ishit(xsize, FONTH, x, y);
+                hit = isselected(xsize, FONTH, x, y);
                 px = x + FONTH/2 - w/2 + ((xsize-w)*(offset-vmin))/((vmax==vmin) ? 1 : (vmax-vmin)); //vmin at left
                 py = y;
             }
@@ -540,7 +540,7 @@ struct gui : g3d_gui
         {
             e->rendered = true;
 
-            bool hit = ishit(w, h);
+            bool hit = isselected(w, h);
             if(hit)
             {
                 if(mousebuttons&G3D_DOWN) //mouse request focus
@@ -813,7 +813,7 @@ struct gui : g3d_gui
 
         if(visible())
         {
-            bool hit = ishit(w, FONTH);
+            bool hit = isselected(w, FONTH);
             if(hit && clickable) color = 0xFF0000;
             int x = curx;
             if(isvertical() && center) x += (xsize-w)/2;
@@ -1299,7 +1299,8 @@ bool g3d_movecursor(int dx, int dy)
 }
 
 VARNP(guifollow, useguifollow, 0, 1, 1);
-VARNP(gui2d, usegui2d, 0, 1, 1);
+VARFNP(gui2d, usegui2d, 0, 1, 1, { extern int scoreboard2d; scoreboard2d = usegui2d; extern int texgui2d; texgui2d = usegui2d;}); //!!FIXME (scoreboard.cpp 4) - Coal 11/20/20
+
 
 void g3d_addgui(g3d_callback *cb, vec &origin, int flags)
 {
