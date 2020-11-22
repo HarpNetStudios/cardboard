@@ -378,6 +378,7 @@ static const char* officialmaps[] =
     "color",
     "cosmic",
     "duabo",
+    "enorbite",
     "flux",
     "fz_burn",
     "garena1",

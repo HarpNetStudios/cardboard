@@ -14,7 +14,7 @@ jobs:
         with:
           lfs: true
       - name: Setup MSBuild
-        uses: warrenbuckley/Setup-MSBuild@v1
+        uses: microsoft/setup-msbuild@v1.0.2
       - name: Build for Windows
         working-directory: ./src/vcpp
         run: msbuild /p:PlatformToolset=v142 /property:Platform=x64 cardboard.sln
