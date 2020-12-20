@@ -46,9 +46,9 @@ void *operator new[](size_t, bool);
 template<class T>
 static inline void swap(T &a, T &b)
 {
-    T t = a;
-    a = b;
-    b = t;
+	T t = a;
+	a = b;
+	b = t;
 }
 #ifdef max
 #undef max
@@ -59,17 +59,17 @@ static inline void swap(T &a, T &b)
 template<class T>
 static inline T max(T a, T b)
 {
-    return a > b ? a : b;
+	return a > b ? a : b;
 }
 template<class T>
 static inline T min(T a, T b)
 {
-    return a < b ? a : b;
+	return a < b ? a : b;
 }
 template<class T, class U>
 static inline T clamp(T a, U b, U c)
 {
-    return max(T(b), min(a, T(c)));
+	return max(T(b), min(a, T(c)));
 }
 template<class T, class U>
 static inline T lerp(T v0, U v1, U t) {
@@ -90,19 +90,19 @@ static inline T map(T x, U in_min, U in_max, U out_min, U out_max)
 #pragma intrinsic(_BitScanForward)
 static inline int bitscan(uint mask)
 {
-    ulong i;
-    return _BitScanForward(&i, mask) ? i : -1;
+	ulong i;
+	return _BitScanForward(&i, mask) ? i : -1;
 }
 #else
 static inline int bitscan(uint mask)
 {
-    if(!mask) return -1;
-    int i = 1;
-    if(!(mask&0xFFFF)) { i += 16; mask >>= 16; }
-    if(!(mask&0xFF)) { i += 8; mask >>= 8; }
-    if(!(mask&0xF)) { i += 4; mask >>= 4; }
-    if(!(mask&3)) { i += 2; mask >>= 2; }
-    return i - (mask&1);
+	if(!mask) return -1;
+	int i = 1;
+	if(!(mask&0xFFFF)) { i += 16; mask >>= 16; }
+	if(!(mask&0xFF)) { i += 8; mask >>= 8; }
+	if(!(mask&0xF)) { i += 4; mask >>= 4; }
+	if(!(mask&3)) { i += 2; mask >>= 2; }
+	return i - (mask&1);
 }
 #endif
 #endif
@@ -169,10 +169,10 @@ template<size_t N> inline void vformatstring(char (&d)[N], const char *fmt, va_l
 
 inline char *copystring(char *d, const char *s, size_t len)
 {
-    size_t slen = min(strlen(s), len-1);
-    memcpy(d, s, slen);
-    d[slen] = 0;
-    return d;
+	size_t slen = min(strlen(s), len-1);
+	memcpy(d, s, slen);
+	d[slen] = 0;
+	return d;
 }
 template<size_t N> inline char *copystring(char (&d)[N], const char *s) { return copystring(d, s, N); }
 
@@ -181,40 +181,40 @@ template<size_t N> inline char *concatstring(char (&d)[N], const char *s) { retu
 
 inline char *prependstring(char *d, const char *s, size_t len)
 {
-    size_t slen = min(strlen(s), len);
-    memmove(&d[slen], d, min(len - slen, strlen(d) + 1));
-    memcpy(d, s, slen);
-    d[len-1] = 0;
-    return d;
+	size_t slen = min(strlen(s), len);
+	memmove(&d[slen], d, min(len - slen, strlen(d) + 1));
+	memcpy(d, s, slen);
+	d[len-1] = 0;
+	return d;
 }
 template<size_t N> inline char *prependstring(char (&d)[N], const char *s) { return prependstring(d, s, N); }
 
 inline void nformatstring(char *d, int len, const char *fmt, ...) PRINTFARGS(3, 4);
 inline void nformatstring(char *d, int len, const char *fmt, ...)
 {
-    va_list v;
-    va_start(v, fmt);
-    vformatstring(d, fmt, v, len);
-    va_end(v);
+	va_list v;
+	va_start(v, fmt);
+	vformatstring(d, fmt, v, len);
+	va_end(v);
 }
 
 template<size_t N> inline void formatstring(char (&d)[N], const char *fmt, ...) PRINTFARGS(2, 3);
 template<size_t N> inline void formatstring(char (&d)[N], const char *fmt, ...)
 {
-    va_list v;
-    va_start(v, fmt);
-    vformatstring(d, fmt, v, int(N));
-    va_end(v);
+	va_list v;
+	va_start(v, fmt);
+	vformatstring(d, fmt, v, int(N));
+	va_end(v);
 }
 
 template<size_t N> inline void concformatstring(char (&d)[N], const char *fmt, ...) PRINTFARGS(2, 3);
 template<size_t N> inline void concformatstring(char (&d)[N], const char *fmt, ...)
 {
-    va_list v;
-    va_start(v, fmt);
-    int len = strlen(d);
-    vformatstring(d + len, fmt, v, int(N) - len);
-    va_end(v);
+	va_list v;
+	va_start(v, fmt);
+	int len = strlen(d);
+	vformatstring(d + len, fmt, v, int(N) - len);
+	va_end(v);
 }
 
 #define defformatstring(d,...) oldstring d; formatstring(d, __VA_ARGS__)
@@ -222,7 +222,7 @@ template<size_t N> inline void concformatstring(char (&d)[N], const char *fmt, .
 
 template<size_t N> inline bool matchstring(const char *s, size_t len, const char (&d)[N])
 {
-    return len == N-1 && !memcmp(s, d, N-1);
+	return len == N-1 && !memcmp(s, d, N-1);
 }
 
 inline char *newstring(size_t l)                { return new char[l+1]; }
@@ -241,100 +241,100 @@ template<class T, size_t N> inline void memclear(T(&p)[N]) { memset((void*)p, 0,
 template <class T>
 struct databuf
 {
-    enum
-    {
-        OVERREAD  = 1<<0,
-        OVERWROTE = 1<<1
-    };
+	enum
+	{
+		OVERREAD  = 1<<0,
+		OVERWROTE = 1<<1
+	};
 
-    T *buf;
-    int len, maxlen;
-    uchar flags;
+	T *buf;
+	int len, maxlen;
+	uchar flags;
 
-    databuf() : buf(NULL), len(0), maxlen(0), flags(0) {}
+	databuf() : buf(NULL), len(0), maxlen(0), flags(0) {}
 
-    template<class U>
-    databuf(T *buf, U maxlen) : buf(buf), len(0), maxlen((int)maxlen), flags(0) {}
+	template<class U>
+	databuf(T *buf, U maxlen) : buf(buf), len(0), maxlen((int)maxlen), flags(0) {}
 
-    void reset()
-    {
-        len = 0;
-        flags = 0;
-    }
+	void reset()
+	{
+		len = 0;
+		flags = 0;
+	}
 
-    void reset(T *buf_, int maxlen_)
-    {
-        reset();
-        buf = buf_;
-        maxlen = maxlen_;
-    }
+	void reset(T *buf_, int maxlen_)
+	{
+		reset();
+		buf = buf_;
+		maxlen = maxlen_;
+	}
 
-    const T &get()
-    {
-        static T overreadval = 0;
-        if(len<maxlen) return buf[len++];
-        flags |= OVERREAD;
-        return overreadval;
-    }
+	const T &get()
+	{
+		static T overreadval = 0;
+		if(len<maxlen) return buf[len++];
+		flags |= OVERREAD;
+		return overreadval;
+	}
 
-    databuf subbuf(int sz)
-    {
-        sz = clamp(sz, 0, maxlen-len);
-        len += sz;
-        return databuf(&buf[len-sz], sz);
-    }
+	databuf subbuf(int sz)
+	{
+		sz = clamp(sz, 0, maxlen-len);
+		len += sz;
+		return databuf(&buf[len-sz], sz);
+	}
 
-    T *pad(int numvals)
-    {
-        T *vals = &buf[len];
-        len += min(numvals, maxlen-len);
-        return vals;
-    }
+	T *pad(int numvals)
+	{
+		T *vals = &buf[len];
+		len += min(numvals, maxlen-len);
+		return vals;
+	}
 
-    void put(const T &val)
-    {
-        if(len<maxlen) buf[len++] = val;
-        else flags |= OVERWROTE;
-    }
+	void put(const T &val)
+	{
+		if(len<maxlen) buf[len++] = val;
+		else flags |= OVERWROTE;
+	}
 
-    void put(const T *vals, int numvals)
-    {
-        if(maxlen-len<numvals) flags |= OVERWROTE;
-        memcpy(&buf[len], (const void *)vals, min(maxlen-len, numvals)*sizeof(T));
-        len += min(maxlen-len, numvals);
-    }
+	void put(const T *vals, int numvals)
+	{
+		if(maxlen-len<numvals) flags |= OVERWROTE;
+		memcpy(&buf[len], (const void *)vals, min(maxlen-len, numvals)*sizeof(T));
+		len += min(maxlen-len, numvals);
+	}
 
-    int get(T *vals, int numvals)
-    {
-        int read = min(maxlen-len, numvals);
-        if(read<numvals) flags |= OVERREAD;
-        memcpy(vals, (void *)&buf[len], read*sizeof(T));
-        len += read;
-        return read;
-    }
+	int get(T *vals, int numvals)
+	{
+		int read = min(maxlen-len, numvals);
+		if(read<numvals) flags |= OVERREAD;
+		memcpy(vals, (void *)&buf[len], read*sizeof(T));
+		len += read;
+		return read;
+	}
 
-    void offset(int n)
-    {
-        n = min(n, maxlen);
-        buf += n;
-        maxlen -= n;
-        len = max(len-n, 0);
-    }
+	void offset(int n)
+	{
+		n = min(n, maxlen);
+		buf += n;
+		maxlen -= n;
+		len = max(len-n, 0);
+	}
 
-    T *getbuf() const { return buf; }
-    bool empty() const { return len==0; }
-    int length() const { return len; }
-    int remaining() const { return maxlen-len; }
-    bool overread() const { return (flags&OVERREAD)!=0; }
-    bool overwrote() const { return (flags&OVERWROTE)!=0; }
+	T *getbuf() const { return buf; }
+	bool empty() const { return len==0; }
+	int length() const { return len; }
+	int remaining() const { return maxlen-len; }
+	bool overread() const { return (flags&OVERREAD)!=0; }
+	bool overwrote() const { return (flags&OVERWROTE)!=0; }
 
-    bool check(int n) { return remaining() >= n; }
+	bool check(int n) { return remaining() >= n; }
 
-    void forceoverread()
-    {
-        len = maxlen;
-        flags |= OVERREAD;
-    }
+	void forceoverread()
+	{
+		len = maxlen;
+		flags |= OVERREAD;
+	}
 };
 
 typedef databuf<char> charbuf;
@@ -342,60 +342,60 @@ typedef databuf<uchar> ucharbuf;
 
 struct packetbuf : ucharbuf
 {
-    ENetPacket *packet;
-    int growth;
+	ENetPacket *packet;
+	int growth;
 
-    packetbuf(ENetPacket *packet) : ucharbuf(packet->data, packet->dataLength), packet(packet), growth(0) {}
-    packetbuf(int growth, int pflags = 0) : growth(growth)
-    {
-        packet = enet_packet_create(NULL, growth, pflags);
-        buf = (uchar *)packet->data;
-        maxlen = packet->dataLength;
-    }
-    ~packetbuf() { cleanup(); }
+	packetbuf(ENetPacket *packet) : ucharbuf(packet->data, packet->dataLength), packet(packet), growth(0) {}
+	packetbuf(int growth, int pflags = 0) : growth(growth)
+	{
+		packet = enet_packet_create(NULL, growth, pflags);
+		buf = (uchar *)packet->data;
+		maxlen = packet->dataLength;
+	}
+	~packetbuf() { cleanup(); }
 
-    void reliable() { packet->flags |= ENET_PACKET_FLAG_RELIABLE; }
+	void reliable() { packet->flags |= ENET_PACKET_FLAG_RELIABLE; }
 
-    void resize(int n)
-    {
-        enet_packet_resize(packet, n);
-        buf = (uchar *)packet->data;
-        maxlen = packet->dataLength;
-    }
+	void resize(int n)
+	{
+		enet_packet_resize(packet, n);
+		buf = (uchar *)packet->data;
+		maxlen = packet->dataLength;
+	}
 
-    void checkspace(int n)
-    {
-        if(len + n > maxlen && packet && growth > 0) resize(max(len + n, maxlen + growth));
-    }
+	void checkspace(int n)
+	{
+		if(len + n > maxlen && packet && growth > 0) resize(max(len + n, maxlen + growth));
+	}
 
-    ucharbuf subbuf(int sz)
-    {
-        checkspace(sz);
-        return ucharbuf::subbuf(sz);
-    }
+	ucharbuf subbuf(int sz)
+	{
+		checkspace(sz);
+		return ucharbuf::subbuf(sz);
+	}
 
-    void put(const uchar &val)
-    {
-        checkspace(1);
-        ucharbuf::put(val);
-    }
+	void put(const uchar &val)
+	{
+		checkspace(1);
+		ucharbuf::put(val);
+	}
 
-    void put(const uchar *vals, int numvals)
-    {
-        checkspace(numvals);
-        ucharbuf::put(vals, numvals);
-    }
+	void put(const uchar *vals, int numvals)
+	{
+		checkspace(numvals);
+		ucharbuf::put(vals, numvals);
+	}
 
-    ENetPacket *finalize()
-    {
-        resize(len);
-        return packet;
-    }
+	ENetPacket *finalize()
+	{
+		resize(len);
+		return packet;
+	}
 
-    void cleanup()
-    {
-        if(growth > 0 && packet && !packet->referenceCount) { enet_packet_destroy(packet); packet = NULL; buf = NULL; len = maxlen = 0; }
-    }
+	void cleanup()
+	{
+		if(growth > 0 && packet && !packet->referenceCount) { enet_packet_destroy(packet); packet = NULL; buf = NULL; len = maxlen = 0; }
+	}
 };
 
 template<class T>
@@ -403,130 +403,130 @@ static inline float heapscore(const T &n) { return n; }
 
 struct sortless
 {
-    template<class T> bool operator()(const T &x, const T &y) const { return x < y; }
-    bool operator()(char *x, char *y) const { return strcmp(x, y) < 0; }
-    bool operator()(const char *x, const char *y) const { return strcmp(x, y) < 0; }
+	template<class T> bool operator()(const T &x, const T &y) const { return x < y; }
+	bool operator()(char *x, char *y) const { return strcmp(x, y) < 0; }
+	bool operator()(const char *x, const char *y) const { return strcmp(x, y) < 0; }
 };
 
 struct sortnameless
 {
-    template<class T> bool operator()(const T &x, const T &y) const { return sortless()(x.name, y.name); }
-    template<class T> bool operator()(T *x, T *y) const { return sortless()(x->name, y->name); }
-    template<class T> bool operator()(const T *x, const T *y) const { return sortless()(x->name, y->name); }
+	template<class T> bool operator()(const T &x, const T &y) const { return sortless()(x.name, y.name); }
+	template<class T> bool operator()(T *x, T *y) const { return sortless()(x->name, y->name); }
+	template<class T> bool operator()(const T *x, const T *y) const { return sortless()(x->name, y->name); }
 };
 
 template<class T, class F>
 static inline void insertionsort(T *start, T *end, F fun)
 {
-    for(T *i = start+1; i < end; i++)
-    {
-        if(fun(*i, i[-1]))
-        {
-            T tmp = *i;
-            *i = i[-1];
-            T *j = i-1;
-            for(; j > start && fun(tmp, j[-1]); --j)
-                *j = j[-1];
-            *j = tmp;
-        }
-    }
+	for(T *i = start+1; i < end; i++)
+	{
+		if(fun(*i, i[-1]))
+		{
+			T tmp = *i;
+			*i = i[-1];
+			T *j = i-1;
+			for(; j > start && fun(tmp, j[-1]); --j)
+				*j = j[-1];
+			*j = tmp;
+		}
+	}
 
 }
 
 template<class T, class F>
 static inline void insertionsort(T *buf, int n, F fun)
 {
-    insertionsort(buf, buf+n, fun);
+	insertionsort(buf, buf+n, fun);
 }
 
 template<class T>
 static inline void insertionsort(T *buf, int n)
 {
-    insertionsort(buf, buf+n, sortless());
+	insertionsort(buf, buf+n, sortless());
 }
 
 template<class T, class F>
 static inline void quicksort(T *start, T *end, F fun)
 {
-    while(end-start > 10)
-    {
-        T *mid = &start[(end-start)/2], *i = start+1, *j = end-2, pivot;
-        if(fun(*start, *mid)) /* start < mid */
-        {
-            if(fun(end[-1], *start)) { pivot = *start; *start = end[-1]; end[-1] = *mid; } /* end < start < mid */
-            else if(fun(end[-1], *mid)) { pivot = end[-1]; end[-1] = *mid; } /* start <= end < mid */
-            else { pivot = *mid; } /* start < mid <= end */
-        }
-        else if(fun(*start, end[-1])) { pivot = *start; *start = *mid; } /*mid <= start < end */
-        else if(fun(*mid, end[-1])) { pivot = end[-1]; end[-1] = *start; *start = *mid; } /* mid < end <= start */
-        else { pivot = *mid; swap(*start, end[-1]); }  /* end <= mid <= start */
-        *mid = end[-2];
-        do
-        {
-            while(fun(*i, pivot)) if(++i >= j) goto partitioned;
-            while(fun(pivot, *--j)) if(i >= j) goto partitioned;
-            swap(*i, *j);
-        }
-        while(++i < j);
-    partitioned:
-        end[-2] = *i;
-        *i = pivot;
+	while(end-start > 10)
+	{
+		T *mid = &start[(end-start)/2], *i = start+1, *j = end-2, pivot;
+		if(fun(*start, *mid)) /* start < mid */
+		{
+			if(fun(end[-1], *start)) { pivot = *start; *start = end[-1]; end[-1] = *mid; } /* end < start < mid */
+			else if(fun(end[-1], *mid)) { pivot = end[-1]; end[-1] = *mid; } /* start <= end < mid */
+			else { pivot = *mid; } /* start < mid <= end */
+		}
+		else if(fun(*start, end[-1])) { pivot = *start; *start = *mid; } /*mid <= start < end */
+		else if(fun(*mid, end[-1])) { pivot = end[-1]; end[-1] = *start; *start = *mid; } /* mid < end <= start */
+		else { pivot = *mid; swap(*start, end[-1]); }  /* end <= mid <= start */
+		*mid = end[-2];
+		do
+		{
+			while(fun(*i, pivot)) if(++i >= j) goto partitioned;
+			while(fun(pivot, *--j)) if(i >= j) goto partitioned;
+			swap(*i, *j);
+		}
+		while(++i < j);
+	partitioned:
+		end[-2] = *i;
+		*i = pivot;
 
-        if(i-start < end-(i+1))
-        {
-            quicksort(start, i, fun);
-            start = i+1;
-        }
-        else
-        {
-            quicksort(i+1, end, fun);
-            end = i;
-        }
-    }
+		if(i-start < end-(i+1))
+		{
+			quicksort(start, i, fun);
+			start = i+1;
+		}
+		else
+		{
+			quicksort(i+1, end, fun);
+			end = i;
+		}
+	}
 
-    insertionsort(start, end, fun);
+	insertionsort(start, end, fun);
 }
 
 template<class T, class F>
 static inline void quicksort(T *buf, int n, F fun)
 {
-    quicksort(buf, buf+n, fun);
+	quicksort(buf, buf+n, fun);
 }
 
 template<class T>
 static inline void quicksort(T *buf, int n)
 {
-    quicksort(buf, buf+n, sortless());
+	quicksort(buf, buf+n, sortless());
 }
 
 template<class T> struct isclass
 {
-    template<class C> static char test(void (C::*)(void));
-    template<class C> static int test(...);
-    enum { yes = sizeof(test<T>(0)) == 1 ? 1 : 0, no = yes^1 };
+	template<class C> static char test(void (C::*)(void));
+	template<class C> static int test(...);
+	enum { yes = sizeof(test<T>(0)) == 1 ? 1 : 0, no = yes^1 };
 };
 
 static inline uint hthash(const char *key)
 {
-    uint h = 5381;
-    for(int i = 0, k; (k = key[i]); i++) h = ((h<<5)+h)^k;    // bernstein k=33 xor
-    return h;
+	uint h = 5381;
+	for(int i = 0, k; (k = key[i]); i++) h = ((h<<5)+h)^k;    // bernstein k=33 xor
+	return h;
 }
 
 static inline bool htcmp(const char *x, const char *y)
 {
-    return !strcmp(x, y);
+	return !strcmp(x, y);
 }
 
 struct stringslice
 {
-    const char *str;
-    int len;
-    stringslice() {}
-    stringslice(const char *str, int len) : str(str), len(len) {}
-    stringslice(const char *str, const char *end) : str(str), len(int(end-str)) {}
+	const char *str;
+	int len;
+	stringslice() {}
+	stringslice(const char *str, int len) : str(str), len(len) {}
+	stringslice(const char *str, const char *end) : str(str), len(int(end-str)) {}
 
-    const char *end() const { return &str[len]; }
+	const char *end() const { return &str[len]; }
 };
 
 inline char *newstring(const stringslice &s) { return newstring(s.str, s.len); }
@@ -537,561 +537,561 @@ inline int stringlen(const stringslice &s) { return s.len; }
 
 inline char *copystring(char *d, const stringslice &s, size_t len)
 {
-    size_t slen = min(size_t(s.len), len-1);
-    memcpy(d, s.str, slen);
-    d[slen] = 0;
-    return d;
+	size_t slen = min(size_t(s.len), len-1);
+	memcpy(d, s.str, slen);
+	d[slen] = 0;
+	return d;
 }
 template<size_t N> inline char *copystring(char (&d)[N], const stringslice &s) { return copystring(d, s, N); }
 
 static inline uint memhash(const void *ptr, int len)
 {
-    const uchar *data = (const uchar *)ptr;
-    uint h = 5381;
-    for (int i = 0; i < int(len); ++i) h = ((h<<5)+h)^data[i];
-    return h;
+	const uchar *data = (const uchar *)ptr;
+	uint h = 5381;
+	for (int i = 0; i < int(len); ++i) h = ((h<<5)+h)^data[i];
+	return h;
 }
 
 static inline uint hthash(const stringslice &s) { return memhash(s.str, s.len); }
 
 static inline bool htcmp(const stringslice &x, const char *y)
 {
-    return x.len == (int)strlen(y) && !memcmp(x.str, y, x.len);
+	return x.len == (int)strlen(y) && !memcmp(x.str, y, x.len);
 }
 
 static inline uint hthash(int key)
 {
-    return key;
+	return key;
 }
 
 static inline bool htcmp(int x, int y)
 {
-    return x==y;
+	return x==y;
 }
 
 #ifndef STANDALONE
 static inline uint hthash(GLuint key)
 {
-    return key;
+	return key;
 }
 
 static inline bool htcmp(GLuint x, GLuint y)
 {
-    return x==y;
+	return x==y;
 }
 #endif
 
 template <class T> struct vector
 {
-    static const int MINSIZE = 8;
+	static const int MINSIZE = 8;
 
-    T *buf;
-    int alen, ulen;
+	T *buf;
+	int alen, ulen;
 
-    vector() : buf(NULL), alen(0), ulen(0)
-    {
-    }
+	vector() : buf(NULL), alen(0), ulen(0)
+	{
+	}
 
-    vector(const vector &v) : buf(NULL), alen(0), ulen(0)
-    {
-        *this = v;
-    }
+	vector(const vector &v) : buf(NULL), alen(0), ulen(0)
+	{
+		*this = v;
+	}
 
-    ~vector() { shrink(0); if(buf) delete[] (uchar *)buf; }
+	~vector() { shrink(0); if(buf) delete[] (uchar *)buf; }
 
-    vector<T> &operator=(const vector<T> &v)
-    {
-        shrink(0);
-        if(v.length() > alen) growbuf(v.length());
-        loopv(v) add(v[i]);
-        return *this;
-    }
+	vector<T> &operator=(const vector<T> &v)
+	{
+		shrink(0);
+		if(v.length() > alen) growbuf(v.length());
+		loopv(v) add(v[i]);
+		return *this;
+	}
 
-    T &add(const T &x)
-    {
-        if(ulen==alen) growbuf(ulen+1);
-        new (&buf[ulen]) T(x);
-        return buf[ulen++];
-    }
+	T &add(const T &x)
+	{
+		if(ulen==alen) growbuf(ulen+1);
+		new (&buf[ulen]) T(x);
+		return buf[ulen++];
+	}
 
-    T &add()
-    {
-        if(ulen==alen) growbuf(ulen+1);
-        new (&buf[ulen]) T;
-        return buf[ulen++];
-    }
+	T &add()
+	{
+		if(ulen==alen) growbuf(ulen+1);
+		new (&buf[ulen]) T;
+		return buf[ulen++];
+	}
 
-    T &dup()
-    {
-        if(ulen==alen) growbuf(ulen+1);
-        new (&buf[ulen]) T(buf[ulen-1]);
-        return buf[ulen++];
-    }
+	T &dup()
+	{
+		if(ulen==alen) growbuf(ulen+1);
+		new (&buf[ulen]) T(buf[ulen-1]);
+		return buf[ulen++];
+	}
 
-    void move(vector<T> &v)
-    {
-        if(!ulen)
-        {
-            swap(buf, v.buf);
-            swap(ulen, v.ulen);
-            swap(alen, v.alen);
-        }
-        else
-        {
-            growbuf(ulen+v.ulen);
-            if(v.ulen) memcpy(&buf[ulen], (void  *)v.buf, v.ulen*sizeof(T));
-            ulen += v.ulen;
-            v.ulen = 0;
-        }
-    }
+	void move(vector<T> &v)
+	{
+		if(!ulen)
+		{
+			swap(buf, v.buf);
+			swap(ulen, v.ulen);
+			swap(alen, v.alen);
+		}
+		else
+		{
+			growbuf(ulen+v.ulen);
+			if(v.ulen) memcpy(&buf[ulen], (void  *)v.buf, v.ulen*sizeof(T));
+			ulen += v.ulen;
+			v.ulen = 0;
+		}
+	}
 
-    bool inrange(size_t i) const { return i<size_t(ulen); }
-    bool inrange(int i) const { return i>=0 && i<ulen; }
+	bool inrange(size_t i) const { return i<size_t(ulen); }
+	bool inrange(int i) const { return i>=0 && i<ulen; }
 
-    T &pop() { return buf[--ulen]; }
-    T &last() { return buf[ulen-1]; }
-    void drop() { ulen--; buf[ulen].~T(); }
-    bool empty() const { return ulen==0; }
+	T &pop() { return buf[--ulen]; }
+	T &last() { return buf[ulen-1]; }
+	void drop() { ulen--; buf[ulen].~T(); }
+	bool empty() const { return ulen==0; }
 
-    int capacity() const { return alen; }
-    int length() const { return ulen; }
-    T &operator[](int i) { ASSERT(i>=0 && i<ulen); return buf[i]; }
-    const T &operator[](int i) const { ASSERT(i >= 0 && i<ulen); return buf[i]; }
+	int capacity() const { return alen; }
+	int length() const { return ulen; }
+	T &operator[](int i) { ASSERT(i>=0 && i<ulen); return buf[i]; }
+	const T &operator[](int i) const { ASSERT(i >= 0 && i<ulen); return buf[i]; }
 
-    void disown() { buf = NULL; alen = ulen = 0; }
+	void disown() { buf = NULL; alen = ulen = 0; }
 
-    void shrink(int i) { ASSERT(i<=ulen); if(isclass<T>::no) ulen = i; else while(ulen>i) drop(); }
-    void setsize(int i) { ASSERT(i<=ulen); ulen = i; }
+	void shrink(int i) { ASSERT(i<=ulen); if(isclass<T>::no) ulen = i; else while(ulen>i) drop(); }
+	void setsize(int i) { ASSERT(i<=ulen); ulen = i; }
 
 	void deletecontents(int n = 0) { while (ulen > n) delete pop(); }
 	void deletearrays(int n = 0) { while (ulen > n) delete[] pop(); }
 
-    T *getbuf() { return buf; }
-    const T *getbuf() const { return buf; }
-    bool inbuf(const T *e) const { return e >= buf && e < &buf[ulen]; }
+	T *getbuf() { return buf; }
+	const T *getbuf() const { return buf; }
+	bool inbuf(const T *e) const { return e >= buf && e < &buf[ulen]; }
 
-    template<class F>
-    void sort(F fun, int i = 0, int n = -1)
-    {
-        quicksort(&buf[i], n < 0 ? ulen-i : n, fun);
-    }
+	template<class F>
+	void sort(F fun, int i = 0, int n = -1)
+	{
+		quicksort(&buf[i], n < 0 ? ulen-i : n, fun);
+	}
 
-    void sort() { sort(sortless()); }
-    void sortname() { sort(sortnameless()); }
+	void sort() { sort(sortless()); }
+	void sortname() { sort(sortnameless()); }
 
-    void shuffle(){
-    	extern uint randomMT();
-    	for(int i = 0; i < ulen; i++){
-    		int indx = rnd(ulen);
-    		T temp = buf[i];
-    		buf[i] = buf[indx];
-    		buf[indx] = temp;
-    	}
-    }
+	void shuffle(){
+		extern uint randomMT();
+		for(int i = 0; i < ulen; i++){
+			int indx = rnd(ulen);
+			T temp = buf[i];
+			buf[i] = buf[indx];
+			buf[indx] = temp;
+		}
+	}
 
-    void growbuf(int sz)
-    {
-        int olen = alen;
+	void growbuf(int sz)
+	{
+		int olen = alen;
 		if(alen <= 0) alen = max(MINSIZE, sz);
-        else while(alen < sz) alen += alen/2;
-        if(alen <= olen) return;
-        uchar *newbuf = new uchar[alen*sizeof(T)];
-        if(olen > 0)
-        {
-            if(ulen > 0) memcpy(newbuf, (void *)buf, ulen*sizeof(T));
-            delete[] (uchar *)buf;
-        }
-        buf = (T *)newbuf;
-    }
+		else while(alen < sz) alen += alen/2;
+		if(alen <= olen) return;
+		uchar *newbuf = new uchar[alen*sizeof(T)];
+		if(olen > 0)
+		{
+			if(ulen > 0) memcpy(newbuf, (void *)buf, ulen*sizeof(T));
+			delete[] (uchar *)buf;
+		}
+		buf = (T *)newbuf;
+	}
 
-    databuf<T> reserve(int sz)
-    {
-        if(alen-ulen < sz) growbuf(ulen+sz);
-        return databuf<T>(&buf[ulen], sz);
-    }
+	databuf<T> reserve(int sz)
+	{
+		if(alen-ulen < sz) growbuf(ulen+sz);
+		return databuf<T>(&buf[ulen], sz);
+	}
 
-    void advance(int sz)
-    {
-        ulen += sz;
-    }
+	void advance(int sz)
+	{
+		ulen += sz;
+	}
 
-    void addbuf(const databuf<T> &p)
-    {
-        advance(p.length());
-    }
+	void addbuf(const databuf<T> &p)
+	{
+		advance(p.length());
+	}
 
-    T *pad(int n)
-    {
-        T *buf = reserve(n).buf;
-        advance(n);
-        return buf;
-    }
+	T *pad(int n)
+	{
+		T *buf = reserve(n).buf;
+		advance(n);
+		return buf;
+	}
 
-    void put(const T &v) { add(v); }
+	void put(const T &v) { add(v); }
 
-    void put(const T *v, int n)
-    {
-        databuf<T> buf = reserve(n);
-        buf.put(v, n);
-        addbuf(buf);
-    }
+	void put(const T *v, int n)
+	{
+		databuf<T> buf = reserve(n);
+		buf.put(v, n);
+		addbuf(buf);
+	}
 
-    void remove(int i, int n)
-    {
-        for(int p = i+n; p<ulen; p++) buf[p-n] = buf[p];
-        ulen -= n;
-    }
+	void remove(int i, int n)
+	{
+		for(int p = i+n; p<ulen; p++) buf[p-n] = buf[p];
+		ulen -= n;
+	}
 
-    T remove(int i)
-    {
-        T e = buf[i];
-        for(int p = i+1; p<ulen; p++) buf[p-1] = buf[p];
-        ulen--;
-        return e;
-    }
+	T remove(int i)
+	{
+		T e = buf[i];
+		for(int p = i+1; p<ulen; p++) buf[p-1] = buf[p];
+		ulen--;
+		return e;
+	}
 
-    T removeunordered(int i)
-    {
-        T e = buf[i];
-        ulen--;
-        if(ulen>0) buf[i] = buf[ulen];
-        return e;
-    }
+	T removeunordered(int i)
+	{
+		T e = buf[i];
+		ulen--;
+		if(ulen>0) buf[i] = buf[ulen];
+		return e;
+	}
 
-    template<class U>
-    int find(const U &o)
-    {
-        for(int i = 0; i < int(ulen); ++i) if(buf[i]==o) return i;
-        return -1;
-    }
+	template<class U>
+	int find(const U &o)
+	{
+		for(int i = 0; i < int(ulen); ++i) if(buf[i]==o) return i;
+		return -1;
+	}
 
-    void addunique(const T &o)
-    {
-        if(find(o) < 0) add(o);
-    }
+	void addunique(const T &o)
+	{
+		if(find(o) < 0) add(o);
+	}
 
-    void removeobj(const T &o)
-    {
-        for(int i = 0; i < int(ulen); ++i) if(buf[i] == o)
-        {
-            int dst = i;
-            for(int j = i+1; j < ulen; j++) if(!(buf[j] == o)) buf[dst++] = buf[j];
-            setsize(dst);
-            break;
-        }
-    }
+	void removeobj(const T &o)
+	{
+		for(int i = 0; i < int(ulen); ++i) if(buf[i] == o)
+		{
+			int dst = i;
+			for(int j = i+1; j < ulen; j++) if(!(buf[j] == o)) buf[dst++] = buf[j];
+			setsize(dst);
+			break;
+		}
+	}
 
-    void replacewithlast(const T &o)
-    {
-        if(!ulen) return;
-        for(int i = 0; i < int(ulen-1); ++i) if(buf[i]==o)
-        {
-            buf[i] = buf[ulen-1];
-            break;
-        }
-        ulen--;
-    }
+	void replacewithlast(const T &o)
+	{
+		if(!ulen) return;
+		for(int i = 0; i < int(ulen-1); ++i) if(buf[i]==o)
+		{
+			buf[i] = buf[ulen-1];
+			break;
+		}
+		ulen--;
+	}
 
-    T &insert(int i, const T &e)
-    {
-        add(T());
-        for(int p = ulen-1; p>i; p--) buf[p] = buf[p-1];
-        buf[i] = e;
-        return buf[i];
-    }
+	T &insert(int i, const T &e)
+	{
+		add(T());
+		for(int p = ulen-1; p>i; p--) buf[p] = buf[p-1];
+		buf[i] = e;
+		return buf[i];
+	}
 
-    T *insert(int i, const T *e, int n)
-    {
-        if(alen-ulen < n) growbuf(ulen+n);
-        for(int j = 0; j < int(n); ++j) add(T());
-        for(int p = ulen-1; p>=i+n; p--) buf[p] = buf[p-n];
-        for(int j = 0; j < int(n); ++j) buf[i+j] = e[j];
-        return &buf[i];
-    }
+	T *insert(int i, const T *e, int n)
+	{
+		if(alen-ulen < n) growbuf(ulen+n);
+		for(int j = 0; j < int(n); ++j) add(T());
+		for(int p = ulen-1; p>=i+n; p--) buf[p] = buf[p-n];
+		for(int j = 0; j < int(n); ++j) buf[i+j] = e[j];
+		return &buf[i];
+	}
 
-    void reverse()
-    {
-        for(int i = 0; i < int(ulen/2); ++i) swap(buf[i], buf[ulen-1-i]);
-    }
+	void reverse()
+	{
+		for(int i = 0; i < int(ulen/2); ++i) swap(buf[i], buf[ulen-1-i]);
+	}
 
-    static int heapparent(int i) { return (i - 1) >> 1; }
-    static int heapchild(int i) { return (i << 1) + 1; }
+	static int heapparent(int i) { return (i - 1) >> 1; }
+	static int heapchild(int i) { return (i << 1) + 1; }
 
-    void buildheap()
-    {
-        for(int i = ulen/2; i >= 0; i--) downheap(i);
-    }
+	void buildheap()
+	{
+		for(int i = ulen/2; i >= 0; i--) downheap(i);
+	}
 
-    int upheap(int i)
-    {
-        float score = heapscore(buf[i]);
-        while(i > 0)
-        {
-            int pi = heapparent(i);
-            if(score >= heapscore(buf[pi])) break;
-            swap(buf[i], buf[pi]);
-            i = pi;
-        }
-        return i;
-    }
+	int upheap(int i)
+	{
+		float score = heapscore(buf[i]);
+		while(i > 0)
+		{
+			int pi = heapparent(i);
+			if(score >= heapscore(buf[pi])) break;
+			swap(buf[i], buf[pi]);
+			i = pi;
+		}
+		return i;
+	}
 
-    T &addheap(const T &x)
-    {
-        add(x);
-        return buf[upheap(ulen-1)];
-    }
+	T &addheap(const T &x)
+	{
+		add(x);
+		return buf[upheap(ulen-1)];
+	}
 
-    int downheap(int i)
-    {
-        float score = heapscore(buf[i]);
-        for(;;)
-        {
-            int ci = heapchild(i);
-            if(ci >= ulen) break;
-            float cscore = heapscore(buf[ci]);
-            if(score > cscore)
-            {
-               if(ci+1 < ulen && heapscore(buf[ci+1]) < cscore) { swap(buf[ci+1], buf[i]); i = ci+1; }
-               else { swap(buf[ci], buf[i]); i = ci; }
-            }
-            else if(ci+1 < ulen && heapscore(buf[ci+1]) < score) { swap(buf[ci+1], buf[i]); i = ci+1; }
-            else break;
-        }
-        return i;
-    }
+	int downheap(int i)
+	{
+		float score = heapscore(buf[i]);
+		for(;;)
+		{
+			int ci = heapchild(i);
+			if(ci >= ulen) break;
+			float cscore = heapscore(buf[ci]);
+			if(score > cscore)
+			{
+			   if(ci+1 < ulen && heapscore(buf[ci+1]) < cscore) { swap(buf[ci+1], buf[i]); i = ci+1; }
+			   else { swap(buf[ci], buf[i]); i = ci; }
+			}
+			else if(ci+1 < ulen && heapscore(buf[ci+1]) < score) { swap(buf[ci+1], buf[i]); i = ci+1; }
+			else break;
+		}
+		return i;
+	}
 
-    T removeheap()
-    {
-        T e = removeunordered(0);
-        if(ulen) downheap(0);
-        return e;
-    }
+	T removeheap()
+	{
+		T e = removeunordered(0);
+		if(ulen) downheap(0);
+		return e;
+	}
 
-    template<class K> 
-    int htfind(const K &key)
-    {
-        for(int i = 0; i < int(ulen); ++i) if(htcmp(key, buf[i])) return i;
-        return -1;
-    }
+	template<class K> 
+	int htfind(const K &key)
+	{
+		for(int i = 0; i < int(ulen); ++i) if(htcmp(key, buf[i])) return i;
+		return -1;
+	}
 
 	#define UNIQUE(overwrite, cleanup) \
-        for(int i = 1; i < ulen; i++) if(htcmp(buf[i-1], buf[i])) \
-        { \
-            int n = i; \
-            while(++i < ulen) if(!htcmp(buf[n-1], buf[i])) { overwrite; n++; } \
-            cleanup; \
-            break; \
-        }
-    void unique() // contents must be initially sorted
-    {
-        UNIQUE(buf[n] = buf[i], setsize(n));
-    }
-    void uniquedeletecontents()
-    {
-        UNIQUE(swap(buf[n], buf[i]), deletecontents(n));
-    }
-    void uniquedeletearrays()
-    {
-        UNIQUE(swap(buf[n], buf[i]), deletearrays(n));
-    }
-    #undef UNIQUE
+		for(int i = 1; i < ulen; i++) if(htcmp(buf[i-1], buf[i])) \
+		{ \
+			int n = i; \
+			while(++i < ulen) if(!htcmp(buf[n-1], buf[i])) { overwrite; n++; } \
+			cleanup; \
+			break; \
+		}
+	void unique() // contents must be initially sorted
+	{
+		UNIQUE(buf[n] = buf[i], setsize(n));
+	}
+	void uniquedeletecontents()
+	{
+		UNIQUE(swap(buf[n], buf[i]), deletecontents(n));
+	}
+	void uniquedeletearrays()
+	{
+		UNIQUE(swap(buf[n], buf[i]), deletearrays(n));
+	}
+	#undef UNIQUE
 };
 
 template<class H, class E, class K, class T> struct hashbase
 {
-    typedef E elemtype;
-    typedef K keytype;
-    typedef T datatype;
+	typedef E elemtype;
+	typedef K keytype;
+	typedef T datatype;
 
-    enum { CHUNKSIZE = 64 };
+	enum { CHUNKSIZE = 64 };
 
-    struct chain { E elem; chain *next; };
-    struct chainchunk { chain chains[CHUNKSIZE]; chainchunk *next; };
+	struct chain { E elem; chain *next; };
+	struct chainchunk { chain chains[CHUNKSIZE]; chainchunk *next; };
 
-    int size;
-    int numelems;
-    chain **chains;
+	int size;
+	int numelems;
+	chain **chains;
 
-    chainchunk *chunks;
-    chain *unused;
+	chainchunk *chunks;
+	chain *unused;
 
-    enum { DEFAULTSIZE = 1<<10 };
+	enum { DEFAULTSIZE = 1<<10 };
 
-    hashbase(int size = DEFAULTSIZE)
-      : size(size)
-    {
-        numelems = 0;
-        chunks = NULL;
-        unused = NULL;
-        chains = new chain *[size];
-        memset(chains, 0, size*sizeof(chain *));
-    }
+	hashbase(int size = DEFAULTSIZE)
+	  : size(size)
+	{
+		numelems = 0;
+		chunks = NULL;
+		unused = NULL;
+		chains = new chain *[size];
+		memset(chains, 0, size*sizeof(chain *));
+	}
 
-    ~hashbase()
-    {
-        DELETEA(chains);
-        deletechunks();
-    }
+	~hashbase()
+	{
+		DELETEA(chains);
+		deletechunks();
+	}
 
-    chain *insert(uint h)
-    {
-        if(!unused)
-        {
-            chainchunk *chunk = new chainchunk;
-            chunk->next = chunks;
-            chunks = chunk;
-            for(int i = 0; i < int(CHUNKSIZE-1); ++i) chunk->chains[i].next = &chunk->chains[i+1];
-            chunk->chains[CHUNKSIZE-1].next = unused;
-            unused = chunk->chains;
-        }
-        chain *c = unused;
-        unused = unused->next;
-        c->next = chains[h];
-        chains[h] = c;
-        numelems++;
-        return c;
-    }
+	chain *insert(uint h)
+	{
+		if(!unused)
+		{
+			chainchunk *chunk = new chainchunk;
+			chunk->next = chunks;
+			chunks = chunk;
+			for(int i = 0; i < int(CHUNKSIZE-1); ++i) chunk->chains[i].next = &chunk->chains[i+1];
+			chunk->chains[CHUNKSIZE-1].next = unused;
+			unused = chunk->chains;
+		}
+		chain *c = unused;
+		unused = unused->next;
+		c->next = chains[h];
+		chains[h] = c;
+		numelems++;
+		return c;
+	}
 
-    template<class U>
-    T &insert(uint h, const U &key)
-    {
-        chain *c = insert(h);
-        H::setkey(c->elem, key);
-        return H::getdata(c->elem);
-    }
+	template<class U>
+	T &insert(uint h, const U &key)
+	{
+		chain *c = insert(h);
+		H::setkey(c->elem, key);
+		return H::getdata(c->elem);
+	}
 
-    #define HTFIND(success, fail) \
-        uint h = hthash(key)&(this->size-1); \
-        for(chain *c = this->chains[h]; c; c = c->next) \
-        { \
-            if(htcmp(key, H::getkey(c->elem))) return success H::getdata(c->elem); \
-        } \
-        return (fail);
+	#define HTFIND(success, fail) \
+		uint h = hthash(key)&(this->size-1); \
+		for(chain *c = this->chains[h]; c; c = c->next) \
+		{ \
+			if(htcmp(key, H::getkey(c->elem))) return success H::getdata(c->elem); \
+		} \
+		return (fail);
 
-    template<class U>
-    T *access(const U &key)
-    {
-        HTFIND(&, NULL);
-    }
+	template<class U>
+	T *access(const U &key)
+	{
+		HTFIND(&, NULL);
+	}
 
-    template<class U, class V>
-    T &access(const U &key, const V &elem)
-    {
-        HTFIND( , insert(h, key) = elem);
-    }
+	template<class U, class V>
+	T &access(const U &key, const V &elem)
+	{
+		HTFIND( , insert(h, key) = elem);
+	}
 
-    template<class U>
-    T &operator[](const U &key)
-    {
-        HTFIND( , insert(h, key));
-    }
+	template<class U>
+	T &operator[](const U &key)
+	{
+		HTFIND( , insert(h, key));
+	}
 
-    template<class U>
-    T &find(const U &key, T &notfound)
-    {
-        HTFIND( , notfound);
-    }
+	template<class U>
+	T &find(const U &key, T &notfound)
+	{
+		HTFIND( , notfound);
+	}
 
-    template<class U>
-    const T &find(const U &key, const T &notfound)
-    {
-        HTFIND( , notfound);
-    }
+	template<class U>
+	const T &find(const U &key, const T &notfound)
+	{
+		HTFIND( , notfound);
+	}
 
-    template<class U>
-    bool remove(const U &key)
-    {
-        uint h = hthash(key)&(size-1);
-        for(chain **p = &chains[h], *c = chains[h]; c; p = &c->next, c = c->next)
-        {
-            if(htcmp(key, H::getkey(c->elem)))
-            {
-                *p = c->next;
-                c->elem.~E();
-                new (&c->elem) E;
-                c->next = unused;
-                unused = c;
-                numelems--;
-                return true;
-            }
-        }
-        return false;
-    }
+	template<class U>
+	bool remove(const U &key)
+	{
+		uint h = hthash(key)&(size-1);
+		for(chain **p = &chains[h], *c = chains[h]; c; p = &c->next, c = c->next)
+		{
+			if(htcmp(key, H::getkey(c->elem)))
+			{
+				*p = c->next;
+				c->elem.~E();
+				new (&c->elem) E;
+				c->next = unused;
+				unused = c;
+				numelems--;
+				return true;
+			}
+		}
+		return false;
+	}
 
-    void deletechunks()
-    {
-        for(chainchunk *nextchunk; chunks; chunks = nextchunk)
-        {
-            nextchunk = chunks->next;
-            delete chunks;
-        }
-    }
+	void deletechunks()
+	{
+		for(chainchunk *nextchunk; chunks; chunks = nextchunk)
+		{
+			nextchunk = chunks->next;
+			delete chunks;
+		}
+	}
 
-    void clear()
-    {
-        if(!numelems) return;
-        memset(chains, 0, size*sizeof(chain *));
-        numelems = 0;
-        unused = NULL;
-        deletechunks();
-    }
+	void clear()
+	{
+		if(!numelems) return;
+		memset(chains, 0, size*sizeof(chain *));
+		numelems = 0;
+		unused = NULL;
+		deletechunks();
+	}
 
-    static inline chain *enumnext(void *i) { return ((chain *)i)->next; }
-    static inline K &enumkey(void *i) { return H::getkey(((chain *)i)->elem); }
-    static inline T &enumdata(void *i) { return H::getdata(((chain *)i)->elem); }
+	static inline chain *enumnext(void *i) { return ((chain *)i)->next; }
+	static inline K &enumkey(void *i) { return H::getkey(((chain *)i)->elem); }
+	static inline T &enumdata(void *i) { return H::getdata(((chain *)i)->elem); }
 };
 
 template<class T> struct hashset : hashbase<hashset<T>, T, T, T>
 {
-    typedef hashbase<hashset<T>, T, T, T> basetype;
+	typedef hashbase<hashset<T>, T, T, T> basetype;
 
-    hashset(int size = basetype::DEFAULTSIZE) : basetype(size) {}
+	hashset(int size = basetype::DEFAULTSIZE) : basetype(size) {}
 
-    static inline const T &getkey(const T &elem) { return elem; }
-    static inline T &getdata(T &elem) { return elem; }
-    template<class K> static inline void setkey(T &elem, const K &key) {}
+	static inline const T &getkey(const T &elem) { return elem; }
+	static inline T &getdata(T &elem) { return elem; }
+	template<class K> static inline void setkey(T &elem, const K &key) {}
 
-    template<class V>
-    T &add(const V &elem)
-    {
-        return basetype::access(elem, elem);
-    }
+	template<class V>
+	T &add(const V &elem)
+	{
+		return basetype::access(elem, elem);
+	}
 };
 
 template<class T> struct hashnameset : hashbase<hashnameset<T>, T, const char *, T>
 {
-    typedef hashbase<hashnameset<T>, T, const char *, T> basetype;
+	typedef hashbase<hashnameset<T>, T, const char *, T> basetype;
 
-    hashnameset(int size = basetype::DEFAULTSIZE) : basetype(size) {}
+	hashnameset(int size = basetype::DEFAULTSIZE) : basetype(size) {}
 
-    template<class U> static inline const char *getkey(const U &elem) { return elem.name; }
-    template<class U> static inline const char *getkey(U *elem) { return elem->name; }
-    static inline T &getdata(T &elem) { return elem; }
-    template<class K> static inline void setkey(T &elem, const K &key) {}
+	template<class U> static inline const char *getkey(const U &elem) { return elem.name; }
+	template<class U> static inline const char *getkey(U *elem) { return elem->name; }
+	static inline T &getdata(T &elem) { return elem; }
+	template<class K> static inline void setkey(T &elem, const K &key) {}
 
-    template<class V>
-    T &add(const V &elem)
-    {
-        return basetype::access(getkey(elem), elem);
-    }
+	template<class V>
+	T &add(const V &elem)
+	{
+		return basetype::access(getkey(elem), elem);
+	}
 };
 
 template<class K, class T> struct hashtableentry
 {
-    K key;
-    T data;
+	K key;
+	T data;
 };
 
 template<class K, class T> struct hashtable : hashbase<hashtable<K, T>, hashtableentry<K, T>, K, T>
 {
-    typedef hashbase<hashtable<K, T>, hashtableentry<K, T>, K, T> basetype;
-    typedef typename basetype::elemtype elemtype;
+	typedef hashbase<hashtable<K, T>, hashtableentry<K, T>, K, T> basetype;
+	typedef typename basetype::elemtype elemtype;
 
-    hashtable(int size = basetype::DEFAULTSIZE) : basetype(size) {}
+	hashtable(int size = basetype::DEFAULTSIZE) : basetype(size) {}
 
-    static inline K &getkey(elemtype &elem) { return elem.key; }
-    static inline T &getdata(elemtype &elem) { return elem.data; }
-    template<class U> static inline void setkey(elemtype &elem, const U &key) { elem.key = key; }
+	static inline K &getkey(elemtype &elem) { return elem.key; }
+	static inline T &getdata(elemtype &elem) { return elem.data; }
+	template<class U> static inline void setkey(elemtype &elem, const U &key) { elem.key = key; }
 };
 
 #define enumeratekt(ht,k,e,t,f,b) for(int i = 0; i < int((ht).size); ++i) for(void *ec = (ht).chains[i]; ec;) { k &e = (ht).enumkey(ec); t &f = (ht).enumdata(ec); ec = (ht).enumnext(ec); b; }
@@ -1099,138 +1099,138 @@ template<class K, class T> struct hashtable : hashbase<hashtable<K, T>, hashtabl
 
 struct unionfind
 {
-    struct ufval
-    {
-        int rank, next;
+	struct ufval
+	{
+		int rank, next;
 
-        ufval() : rank(0), next(-1) {}
-    };
+		ufval() : rank(0), next(-1) {}
+	};
 
-    vector<ufval> ufvals;
+	vector<ufval> ufvals;
 
-    int find(int k)
-    {
-        if(k>=ufvals.length()) return k;
-        while(ufvals[k].next>=0) k = ufvals[k].next;
-        return k;
-    }
+	int find(int k)
+	{
+		if(k>=ufvals.length()) return k;
+		while(ufvals[k].next>=0) k = ufvals[k].next;
+		return k;
+	}
 
-    int compressfind(int k)
-    {
-        if(ufvals[k].next<0) return k;
-        return ufvals[k].next = compressfind(ufvals[k].next);
-    }
+	int compressfind(int k)
+	{
+		if(ufvals[k].next<0) return k;
+		return ufvals[k].next = compressfind(ufvals[k].next);
+	}
 
-    void unite (int x, int y)
-    {
-        while(ufvals.length() <= max(x, y)) ufvals.add();
-        x = compressfind(x);
-        y = compressfind(y);
-        if(x==y) return;
-        ufval &xval = ufvals[x], &yval = ufvals[y];
-        if(xval.rank < yval.rank) xval.next = y;
-        else
-        {
-            yval.next = x;
-            if(xval.rank==yval.rank) yval.rank++;
-        }
-    }
+	void unite (int x, int y)
+	{
+		while(ufvals.length() <= max(x, y)) ufvals.add();
+		x = compressfind(x);
+		y = compressfind(y);
+		if(x==y) return;
+		ufval &xval = ufvals[x], &yval = ufvals[y];
+		if(xval.rank < yval.rank) xval.next = y;
+		else
+		{
+			yval.next = x;
+			if(xval.rank==yval.rank) yval.rank++;
+		}
+	}
 };
 
 template <class T, int SIZE> struct queue
 {
-    int head, tail, len;
-    T data[SIZE];
+	int head, tail, len;
+	T data[SIZE];
 
-    queue() { clear(); }
+	queue() { clear(); }
 
-    void clear() { head = tail = len = 0; }
+	void clear() { head = tail = len = 0; }
 
-    int capacity() const { return SIZE; }
-    int length() const { return len; }
-    bool empty() const { return !len; }
-    bool full() const { return len == SIZE; }
+	int capacity() const { return SIZE; }
+	int length() const { return len; }
+	bool empty() const { return !len; }
+	bool full() const { return len == SIZE; }
 
-    bool inrange(size_t i) const { return i<size_t(len); }
-    bool inrange(int i) const { return i>=0 && i<len; }
+	bool inrange(size_t i) const { return i<size_t(len); }
+	bool inrange(int i) const { return i>=0 && i<len; }
 
-    T &added() { return data[tail > 0 ? tail-1 : SIZE-1]; }
-    T &added(int offset) { return data[tail-offset > 0 ? tail-offset-1 : tail-offset-1 + SIZE]; }
-    T &adding() { return data[tail]; }
-    T &adding(int offset) { return data[tail+offset >= SIZE ? tail+offset - SIZE : tail+offset]; }
-    T &add()
-    {
-        T &t = data[tail];
-        tail++;
-        if(tail >= SIZE) tail -= SIZE;
-        if(len < SIZE) len++;
-        return t;
-    }
-    T &add(const T &e) { return add() = e; }
+	T &added() { return data[tail > 0 ? tail-1 : SIZE-1]; }
+	T &added(int offset) { return data[tail-offset > 0 ? tail-offset-1 : tail-offset-1 + SIZE]; }
+	T &adding() { return data[tail]; }
+	T &adding(int offset) { return data[tail+offset >= SIZE ? tail+offset - SIZE : tail+offset]; }
+	T &add()
+	{
+		T &t = data[tail];
+		tail++;
+		if(tail >= SIZE) tail -= SIZE;
+		if(len < SIZE) len++;
+		return t;
+	}
+	T &add(const T &e) { return add() = e; }
 
-    databuf<T> reserve(int sz)
-    {
-        if(!len) head = tail = 0;
-        return databuf<T>(&data[tail], min(sz, SIZE-tail));
-    }
+	databuf<T> reserve(int sz)
+	{
+		if(!len) head = tail = 0;
+		return databuf<T>(&data[tail], min(sz, SIZE-tail));
+	}
 
-    void advance(int sz)
-    {
-        if(len + sz > SIZE) sz = SIZE - len;
-        tail += sz;
-        if(tail >= SIZE) tail -= SIZE;
-        len += sz;
-    }
+	void advance(int sz)
+	{
+		if(len + sz > SIZE) sz = SIZE - len;
+		tail += sz;
+		if(tail >= SIZE) tail -= SIZE;
+		len += sz;
+	}
 
-    void addbuf(const databuf<T> &p)
-    {
-        advance(p.length());
-    }
+	void addbuf(const databuf<T> &p)
+	{
+		advance(p.length());
+	}
 
-    T &pop()
-    {
-        tail--;
-        if(tail < 0) tail += SIZE;
-        len--;
-        return data[tail];
-    }
+	T &pop()
+	{
+		tail--;
+		if(tail < 0) tail += SIZE;
+		len--;
+		return data[tail];
+	}
 
-    T &removing() { return data[head]; }
-    T &removing(int offset) { return data[head+offset >= SIZE ? head+offset - SIZE : head+offset]; }
-    T &remove()
-    {
-        T &t = data[head];
-        head++;
-        if(head >= SIZE) head -= SIZE;
-        len--; 
-        return t;
-    }
+	T &removing() { return data[head]; }
+	T &removing(int offset) { return data[head+offset >= SIZE ? head+offset - SIZE : head+offset]; }
+	T &remove()
+	{
+		T &t = data[head];
+		head++;
+		if(head >= SIZE) head -= SIZE;
+		len--; 
+		return t;
+	}
 
-    T remove(int offset)
-    {
-        T val = removing(offset);
-        if(head+offset >= SIZE) for(int i = head+offset - SIZE + 1; i < tail; i++) data[i-1] = data[i];
-        else if(head < tail) for(int i = head+offset + 1; i < tail; i++) data[i-1] = data[i];
-        else
-        {
-            for(int i = head+offset + 1; i < SIZE; i++) data[i-1] = data[i];
-            data[SIZE-1] = data[0];
-            for(int i = 1; i < tail; i++) data[i-1] = data[i];
-        }
-        tail--;
-        if(tail < 0) tail += SIZE;
-        len--;
-        return val;
-     }
+	T remove(int offset)
+	{
+		T val = removing(offset);
+		if(head+offset >= SIZE) for(int i = head+offset - SIZE + 1; i < tail; i++) data[i-1] = data[i];
+		else if(head < tail) for(int i = head+offset + 1; i < tail; i++) data[i-1] = data[i];
+		else
+		{
+			for(int i = head+offset + 1; i < SIZE; i++) data[i-1] = data[i];
+			data[SIZE-1] = data[0];
+			for(int i = 1; i < tail; i++) data[i-1] = data[i];
+		}
+		tail--;
+		if(tail < 0) tail += SIZE;
+		len--;
+		return val;
+	 }
 
-    T &operator[](int offset) { return removing(offset); }
-    const T &operator[](int offset) const { return removing(offset); }
+	T &operator[](int offset) { return removing(offset); }
+	const T &operator[](int offset) const { return removing(offset); }
 };
 
 template <class T, int SIZE> struct reversequeue : queue<T, SIZE>
 {
-    T &operator[](int offset) { return queue<T, SIZE>::added(offset); }
-    const T &operator[](int offset) const { return queue<T, SIZE>::added(offset); }
+	T &operator[](int offset) { return queue<T, SIZE>::added(offset); }
+	const T &operator[](int offset) const { return queue<T, SIZE>::added(offset); }
 };
 
 const int islittleendian = 1;
@@ -1289,71 +1289,71 @@ struct stream
 {
 #ifdef WIN32
 #if defined(__GNUC__) && !defined(__MINGW32__)
-    typedef off64_t offset;
+	typedef off64_t offset;
 #else
-    typedef __int64 offset;
+	typedef __int64 offset;
 #endif
 #else
-    typedef off_t offset;
+	typedef off_t offset;
 #endif
 
-    virtual ~stream() {}
-    virtual void close() = 0;
-    virtual bool end() = 0;
-    virtual offset tell() { return -1; }
-    virtual offset rawtell() { return tell(); }
-    virtual bool seek(offset pos, int whence = SEEK_SET) { return false; }
-    virtual offset size();
-    virtual offset rawsize() { return size(); }
-    virtual size_t read(void *buf, size_t len) { return 0; }
-    virtual size_t write(const void *buf, size_t len) { return 0; }
-    virtual bool flush() { return true; }
-    virtual int getchar() { uchar c; return read(&c, 1) == 1 ? c : -1; }
-    virtual bool putchar(int n) { uchar c = n; return write(&c, 1) == 1; }
-    virtual bool getline(char *str, size_t len);
-    virtual bool putstring(const char *str) { size_t len = strlen(str); return write(str, len) == len; }
-    virtual bool putline(const char *str) { return putstring(str) && putchar('\n'); }
-    virtual size_t printf(const char *fmt, ...) PRINTFARGS(2, 3);
-    virtual uint getcrc() { return 0; }
+	virtual ~stream() {}
+	virtual void close() = 0;
+	virtual bool end() = 0;
+	virtual offset tell() { return -1; }
+	virtual offset rawtell() { return tell(); }
+	virtual bool seek(offset pos, int whence = SEEK_SET) { return false; }
+	virtual offset size();
+	virtual offset rawsize() { return size(); }
+	virtual size_t read(void *buf, size_t len) { return 0; }
+	virtual size_t write(const void *buf, size_t len) { return 0; }
+	virtual bool flush() { return true; }
+	virtual int getchar() { uchar c; return read(&c, 1) == 1 ? c : -1; }
+	virtual bool putchar(int n) { uchar c = n; return write(&c, 1) == 1; }
+	virtual bool getline(char *str, size_t len);
+	virtual bool putstring(const char *str) { size_t len = strlen(str); return write(str, len) == len; }
+	virtual bool putline(const char *str) { return putstring(str) && putchar('\n'); }
+	virtual size_t printf(const char *fmt, ...) PRINTFARGS(2, 3);
+	virtual uint getcrc() { return 0; }
 
-    template<class T> size_t put(const T *v, size_t n) { return write(v, n*sizeof(T))/sizeof(T); } 
-    template<class T> bool put(T n) { return write(&n, sizeof(n)) == sizeof(n); }
-    template<class T> bool putlil(T n) { return put<T>(lilswap(n)); }
-    template<class T> bool putbig(T n) { return put<T>(bigswap(n)); }
+	template<class T> size_t put(const T *v, size_t n) { return write(v, n*sizeof(T))/sizeof(T); } 
+	template<class T> bool put(T n) { return write(&n, sizeof(n)) == sizeof(n); }
+	template<class T> bool putlil(T n) { return put<T>(lilswap(n)); }
+	template<class T> bool putbig(T n) { return put<T>(bigswap(n)); }
 
-    template<class T> size_t get(T *v, size_t n) { return read(v, n*sizeof(T))/sizeof(T); }
-    template<class T> T get() { T n; return read(&n, sizeof(n)) == sizeof(n) ? n : 0; }
-    template<class T> T getlil() { return lilswap(get<T>()); }
-    template<class T> T getbig() { return bigswap(get<T>()); }
+	template<class T> size_t get(T *v, size_t n) { return read(v, n*sizeof(T))/sizeof(T); }
+	template<class T> T get() { T n; return read(&n, sizeof(n)) == sizeof(n) ? n : 0; }
+	template<class T> T getlil() { return lilswap(get<T>()); }
+	template<class T> T getbig() { return bigswap(get<T>()); }
 
 #ifndef STANDALONE
-    SDL_RWops *rwops();
+	SDL_RWops *rwops();
 #endif
 };
 
 template<class T>
 struct streambuf
 {
-    stream *s;
+	stream *s;
 
-    streambuf(stream *s) : s(s) {}
-    
-    T get() { return s->get<T>(); }
-    size_t get(T *vals, size_t numvals) { return s->get(vals, numvals); }
-    void put(const T &val) { s->put(&val, 1); }
-    void put(const T *vals, size_t numvals) { s->put(vals, numvals); } 
-    size_t length() { return s->size(); }
+	streambuf(stream *s) : s(s) {}
+	
+	T get() { return s->get<T>(); }
+	size_t get(T *vals, size_t numvals) { return s->get(vals, numvals); }
+	void put(const T &val) { s->put(&val, 1); }
+	void put(const T *vals, size_t numvals) { s->put(vals, numvals); } 
+	size_t length() { return s->size(); }
 };
 
 enum
 {
-    CT_PRINT   = 1<<0,
-    CT_SPACE   = 1<<1,
-    CT_DIGIT   = 1<<2,
-    CT_ALPHA   = 1<<3,
-    CT_LOWER   = 1<<4,
-    CT_UPPER   = 1<<5,
-    CT_UNICODE = 1<<6
+	CT_PRINT   = 1<<0,
+	CT_SPACE   = 1<<1,
+	CT_DIGIT   = 1<<2,
+	CT_ALPHA   = 1<<3,
+	CT_LOWER   = 1<<4,
+	CT_UPPER   = 1<<5,
+	CT_UNICODE = 1<<6
 };
 extern const uchar cubectype[256];
 static inline int iscubeprint(uchar c) { return cubectype[c]&CT_PRINT; }
@@ -1365,24 +1365,24 @@ static inline int iscubeupper(uchar c) { return cubectype[c]&CT_UPPER; }
 static inline int iscubepunct(uchar c) { return cubectype[c] == CT_PRINT; }
 static inline int cube2uni(uchar c)
 { 
-    extern const int cube2unichars[256]; 
-    return cube2unichars[c]; 
+	extern const int cube2unichars[256]; 
+	return cube2unichars[c]; 
 }
 static inline uchar uni2cube(int c)
 {
-    extern const int uni2cubeoffsets[8];
-    extern const uchar uni2cubechars[];
-    return uint(c) <= 0x7FF ? uni2cubechars[uni2cubeoffsets[c>>8] + (c&0xFF)] : 0;
+	extern const int uni2cubeoffsets[8];
+	extern const uchar uni2cubechars[];
+	return uint(c) <= 0x7FF ? uni2cubechars[uni2cubeoffsets[c>>8] + (c&0xFF)] : 0;
 }
 static inline uchar cubelower(uchar c)
 {
-    extern const uchar cubelowerchars[256];
-    return cubelowerchars[c];
+	extern const uchar cubelowerchars[256];
+	return cubelowerchars[c];
 }
 static inline uchar cubeupper(uchar c)
 {
-    extern const uchar cubeupperchars[256];
-    return cubeupperchars[c];
+	extern const uchar cubeupperchars[256];
+	return cubeupperchars[c];
 }
 extern size_t decodeutf8(uchar *dst, size_t dstlen, const uchar *src, size_t srclen, size_t *carry = NULL);
 extern size_t encodeutf8(uchar *dstbuf, size_t dstlen, const uchar *srcbuf, size_t srclen, size_t *carry = NULL);
@@ -1436,11 +1436,11 @@ template<size_t N> static inline void filtertext(char (&dst)[N], const char *src
 
 struct ipmask
 {
-    enet_uint32 ip, mask;
+	enet_uint32 ip, mask;
 
-    void parse(const char *name);
-    int print(char *buf) const;
-    bool check(enet_uint32 host) const { return (host & mask) == ip; }
+	void parse(const char *name);
+	int print(char *buf) const;
+	bool check(enet_uint32 host) const { return (host & mask) == ip; }
 };
 
 extern char* pmodeltoname(int model);
@@ -1453,6 +1453,6 @@ extern char* web_get(char* targetUrl, bool debug = false);
 extern char* web_post(char* targetUrl, char* postFields, bool debug = false);
 extern char* web_auth(char* targetUrl, oldstring gametoken, bool debug = false);
 extern int offline;
-    
+
 #endif
 

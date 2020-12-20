@@ -51,12 +51,12 @@ namespace game
 
     static const playermodelinfo playermodels[6] = // new player
     {
-        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "prototype", "prototype_blue", "prototype_red", true },
-        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "prototype", "prototype_blue", "prototype_red", true },
-        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "prototype", "prototype_blue", "prototype_red", true },
-        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "prototype", "prototype_blue", "prototype_red", true },
-        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "prototype", "prototype_blue", "prototype_red", true },
-        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "prototype", "prototype_blue", "prototype_red", true },
+        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "icon_sarah", "prototype_blue", "prototype_red", true },
+        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "icon_amber", "prototype_blue", "prototype_red", true },
+        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "icon_ashley", "prototype_blue", "prototype_red", true },
+        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "icon_bea", "prototype_blue", "prototype_red", true },
+        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "icon_savannah", "prototype_blue", "prototype_red", true },
+        { "player/prototype", "player/prototype/blue", "player/prototype/red", "player/prototype/hudguns", NULL, "icon_emily", "prototype_blue", "prototype_red", true },
     };
 
     int chooserandomplayermodel(int seed)

@@ -385,7 +385,7 @@ static const char* officialmaps[] =
     "highland",
     "hr",
     "illusion",
-    "indust1"
+    "indust1",
     "maze",
     "neo_falls",
     "neo_noir",

@@ -2235,13 +2235,21 @@ void drawcrosshair(int w, int h)
 
 	float r = xhaircolor.x, g = xhaircolor.y, b = xhaircolor.z, cx = 0.5f, cy = 0.5f, chsize;
     Texture *crosshair;
-    if(windowhit)
+    /*if(windowhit)
     {
 		r = g = b = 1.0f;
         static Texture *cursor = NULL;
         if(!cursor) cursor = textureload("data/guicursor.png", 3, true);
         crosshair = cursor;
         chsize = cursorsize*w/900.0f;
+        g3d_cursorpos(cx, cy);
+    }*/
+    if (windowhit) {
+        r = g = b = 1.0f;
+        static Texture* cursor = NULL;
+        if (!cursor) cursor = textureload("data/guicursor.png", 3, true);
+        crosshair = cursor;
+        chsize = cursorsize * w / 900.0f;
         g3d_cursorpos(cx, cy);
     }
     else

@@ -366,7 +366,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
           fv1 = 0/64.0f, fv2 = 52/64.0f;*/
 	float fh = h/30, fw = w,
 		fx = 0,
-		fy = (h / 30) * 29.8f,
+		fy = h-(h / 30),
 		fu1 = 0 / 512.0f, fu2 = 511 / 512.0f,
 		fv1 = 0 / 64.0f, fv2 = 52 / 64.0f;
     settexture("data/loading_frame.png", 3);
@@ -443,7 +443,7 @@ void keyrepeat(bool on, int mask)
 {
     if(on) keyrepeatmask |= mask;
     else keyrepeatmask &= ~mask;
-}
+} 
 
 void textinput(bool on, int mask)
 {
@@ -861,8 +861,8 @@ void setupscreen()
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&2 ? 1 : 0);
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&2 ? fsaa : 0);
         }
-		defformatstring(vers, "%s %s %s", game::gametitle, game::gamestage, game::gameversion);
-        screen = SDL_CreateWindow(vers, winx, winy, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
+		defformatstring(vers, "%s %s %s (Cardboard Engine)", game::gametitle, game::gamestage, game::gameversion);
+        screen = SDL_CreateWindow(vers, winx, winy, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | flags); // | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS
 		SetSDLIcon(screen);
         if(!screen) continue;
 
@@ -1163,8 +1163,8 @@ void checkinput()
             case SDL_MOUSEMOTION:
 				if(rawinput::debugrawmouse)
 				{
-					conoutf("%d sdl mouse motion (%d, %d)",
-						lastmillis, event.motion.xrel, event.motion.yrel);
+					conoutf("%d sdl mouse motion (%d, %d) [%d, %d]",
+						lastmillis, event.motion.xrel, event.motion.yrel, event.motion.x, event.motion.y);
 				}
 				if(grabinput && !rawinput::enabled)
                 {
@@ -1182,7 +1182,7 @@ void checkinput()
                 //if(lasttype==event.type && lastbut==event.button.button) break; // why?? get event twice without it
                 switch(event.button.button)
                 {
-                    case SDL_BUTTON_LEFT: processkey(-1, event.button.state==SDL_PRESSED); break;
+                    case SDL_BUTTON_LEFT: processkey(-1, event.button.state == SDL_PRESSED); break;
                     case SDL_BUTTON_MIDDLE: processkey(-2, event.button.state==SDL_PRESSED); break;
                     case SDL_BUTTON_RIGHT: processkey(-3, event.button.state==SDL_PRESSED); break;
                     case SDL_BUTTON_X1: processkey(-6, event.button.state==SDL_PRESSED); break;
@@ -1651,8 +1651,6 @@ int main(int argc, char **argv)
 		lastmillis += curtime;
         totalmillis = millis;
         updatetime();
-
-		//SDL_SetWindowTitle(screen, SDL_GetWindowTitle(screen));
 
         checkinput();
         menuprocess();
