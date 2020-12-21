@@ -551,6 +551,9 @@
     <None Include="..\..\packages\lang\ru_RU.cfg">
       <Filter>config\lang</Filter>
     </None>
+    <None Include="..\..\data\default_keys.cfg">
+      <Filter>config</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\ADDING_REMOVING_FILES.txt" />

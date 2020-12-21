@@ -34,7 +34,7 @@ void cleanup()
 
 extern void writeinitcfg();
 
-void quit()                     // normal exit
+void quit() // normal exit
 {
     writeinitcfg();
     writeservercfg();
@@ -46,7 +46,7 @@ void quit()                     // normal exit
     exit(EXIT_SUCCESS);
 }
 
-void fatal(const char *s, ...)    // failure exit
+void fatal(const char *s, ...) // failure exit
 {
     static int errors = 0;
     errors++;
@@ -216,7 +216,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
 		
 		if(!(mapshot || mapname)) {
-			/*background and logo*/
+			// background and logo
 			float bu = w * 0.67f / 256.0f + backgroundu, bv = h * 0.67f / 256.0f + backgroundv;
 			if(splash) settexture("data/splash.png", 0);
 			else settexture("data/background.png", 0);
@@ -233,7 +233,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 				bgquad(lx, ly, lw, lh);
 			}
 		
-			/*cardboard badge*/
+			// cardboard badge
 			float badgeh = 0.12f*min(w, h), badgew = badgeh, badgex = 20, badgey = (h - badgeh - 20);
 			if(!splash)
 			{
@@ -241,7 +241,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 				bgquad(badgex, badgey, badgew, badgeh);
 			}
 
-			/*cube 2 badge*/
+			// cube 2 badge
 			badgex = (w - badgew - 20);
 			if(!splash && mainmenu)
 			{
@@ -316,7 +316,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
     if(!restore) setbackgroundinfo(caption, mapshot, mapname, mapinfo);
 
-	if(splash) playsound(S_KILLBONUS);  // sound for splash screen
+	if(splash) playsound(S_KILL);  // sound for splash screen
 }
 
 VAR(progressbackground, 0, 0, 1);
@@ -337,7 +337,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
         lastprogress = ticks;
     }
 
-    clientkeepalive();      // make sure our connection doesn't time out while loading maps etc.
+    clientkeepalive(); // make sure our connection doesn't time out while loading maps etc.
 
     SDL_PumpEvents(); // keep the event queue awake to avoid 'beachball' cursor
 

@@ -4,7 +4,7 @@ namespace game
 {
 	char* gametitle = "Carmine Impact"; // game name: are you dumb
 	char* gamestage = "Alpha"; // stage: alpha, beta, release, whatever
-	char* gameversion = "2.5"; // version: major.minor(.patch)
+	char* gameversion = "2.6RC1"; // version: major.minor(.patch)
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
@@ -550,6 +550,7 @@ namespace game
                 }
 			}
 		}
+        if(d!=actor && actor==player1) playsound(S_KILL);
 		deathstate(d);
 		ai::killed(d, actor);
 		#ifdef DISCORD // this updates every time anyone gets a kill, shouldn't be an issue.

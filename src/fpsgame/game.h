@@ -224,7 +224,7 @@ enum
 
     S_FLAGFAIL,
 
-	S_KILLBONUS
+	S_KILL,
 };
 
 // network messages codes, c2s, c2c, s2c
@@ -381,7 +381,8 @@ static const char* officialmaps[] =
     "enorbite",
     "flux",
     "fz_burn",
-    "garena1",
+    "g3_arena",
+    "g3_obliterate_alpha",
     "highland",
     "hr",
     "illusion",

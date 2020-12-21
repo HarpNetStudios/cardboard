@@ -1259,6 +1259,7 @@
     <None Include="..\..\config.cfg" />
     <None Include="..\..\data\blendbrush.cfg" />
     <None Include="..\..\data\defaults.cfg" />
+    <None Include="..\..\data\default_keys.cfg" />
     <None Include="..\..\data\default_map_models.cfg" />
     <None Include="..\..\data\default_map_settings.cfg" />
     <None Include="..\..\data\font.cfg" />

@@ -6,7 +6,7 @@
 
 #ifdef DISCORD
 
-discord::Core* core{};
+discord::Core* discordCore{};
 
 namespace discord
 {
@@ -18,10 +18,21 @@ namespace discord
 
 	void initDiscord() {
 		conoutf(CON_DEBUG, "Attempting to initialize Discord integration...");
-		whatAmI = discord::Core::Create(623616609952464936, DiscordCreateFlags_NoRequireDiscord, &core);
+		whatAmI = discord::Core::Create(623616609952464936, DiscordCreateFlags_NoRequireDiscord, &discordCore);
 		if(discord::connected()) {
-			core->SetLogHook(LogLevel::Debug, discordLogging);
+			discordCore->SetLogHook(LogLevel::Debug, discordLogging);
 			conoutf(CON_DEBUG, "Discord intergation initialized successfully!");
+			discordCore->ActivityManager().OnActivityJoin.Connect([](const char* secret) { 
+					conoutf(CON_DEBUG, "Join: %s", secret);
+					unsigned char* yes = b64_decode(secret, strlen(secret));
+					conoutf(CON_DEBUG, "Decoded: %s", yes);
+				});
+			discordCore->ActivityManager().OnActivitySpectate.Connect([](const char* secret) {
+					conoutf(CON_DEBUG, "Spectate: %s", secret); 
+				});
+			discordCore->ActivityManager().OnActivityJoinRequest.Connect([](discord::User const& user) {
+					conoutf(CON_DEBUG, "Join Request: %s", user.GetUsername());
+				});
 		}
 	}
 
@@ -107,7 +118,7 @@ namespace discord
 				activity.GetAssets().SetLargeImage("logo-large");
 			}
 
-			fpsent* pl = (fpsent*)d;
+			fpsent* pl = (fpsent*) d;
 
 			if(pl) // if there is actually a player involved
 			{
@@ -117,7 +128,7 @@ namespace discord
 				defformatstring(plname, "%s (%d)", pl->name, pl->frags);
 				activity.GetAssets().SetSmallText(plname);
 			}
-			core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
+			discordCore->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
 				
 			});
 			globalgamestate = gamestate;
@@ -125,7 +136,7 @@ namespace discord
 	}
 
 	void discordCallbacks() {
-		if(discord::connected()) core->RunCallbacks();
+		if(discord::connected()) discordCore->RunCallbacks();
 	}
 }
 #endif
