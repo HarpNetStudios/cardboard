@@ -19,8 +19,6 @@
 		B92DC0FC09D08CF9008219BD /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B92DC0F909D08CF9008219BD /* SDL2_image.framework */; };
 		B92DC0FD09D08CF9008219BD /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B92DC0FA09D08CF9008219BD /* SDL2_mixer.framework */; };
 		B92DC0FE09D08CF9008219BD /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B92DC0FB09D08CF9008219BD /* SDL2.framework */; };
-		B941988C09207E810029DAD1 /* SDLMain.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A47A9D01A0482F01D3D55B /* SDLMain.h */; };
-		B94198A809207E810029DAD1 /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F5A47A9E01A0483001D3D55B /* SDLMain.m */; };
 		B94198C309207E810029DAD1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B94198C409207E810029DAD1 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2F67ED704C74A3F00A80002 /* OpenGL.framework */; };
 		B9AC7ACF0D06DB44005506F8 /* 3dgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9AC7A840D06DB44005506F8 /* 3dgui.cpp */; };
@@ -81,13 +79,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		2D9FA6A423B9B042004A1465 /* glemu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glemu.cpp; sourceTree = "<group>"; };
 		2D9FA6A623B9B057004A1465 /* glemu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glemu.h; sourceTree = "<group>"; };
-		666E40EF0B67D87F005B491F /* macutils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = macutils.mm; sourceTree = "<group>"; };
 		B2F67ED704C74A3F00A80002 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		B90ADD0009B344D800A5B00B /* callbacks.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = callbacks.c; sourceTree = "<group>"; };
 		B90ADD1309B344D800A5B00B /* host.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = host.c; sourceTree = "<group>"; };
@@ -103,11 +99,7 @@
 		B92DC0F909D08CF9008219BD /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = /Library/Frameworks/SDL2_image.framework; sourceTree = "<absolute>"; };
 		B92DC0FA09D08CF9008219BD /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = /Library/Frameworks/SDL2_mixer.framework; sourceTree = "<absolute>"; };
 		B92DC0FB09D08CF9008219BD /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = /Library/Frameworks/SDL2.framework; sourceTree = "<absolute>"; };
-		B930D0900A3D9BC700BDFB85 /* ConsoleView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ConsoleView.h; sourceTree = "<group>"; };
-		B930D0910A3D9BC700BDFB85 /* ConsoleView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = ConsoleView.m; sourceTree = "<group>"; };
 		B94198CB09207E810029DAD1 /* cardboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cardboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B96D0D5B0920971300B6C936 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
-		B96D0D6C0920976E00B6C936 /* main.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B97E99CE085F4B3E002F9BC6 /* cardboard.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = cardboard.icns; sourceTree = "<group>"; };
 		B9AC7A840D06DB44005506F8 /* 3dgui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = 3dgui.cpp; sourceTree = "<group>"; };
 		B9AC7A850D06DB44005506F8 /* bih.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bih.cpp; sourceTree = "<group>"; };
@@ -207,9 +199,6 @@
 		D1D6C6AC0EAEA703009B1A5C /* blob.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blob.cpp; sourceTree = "<group>"; };
 		D1D6C6AD0EAEA703009B1A5C /* depthfx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = depthfx.h; sourceTree = "<group>"; };
 		D1DE11180E21986800FA387C /* extinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extinfo.h; sourceTree = "<group>"; };
-		D1DB53E50D70F1C3003AE25C /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F5A47A9D01A0482F01D3D55B /* SDLMain.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SDLMain.h; sourceTree = SOURCE_ROOT; };
-		F5A47A9E01A0483001D3D55B /* SDLMain.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = SDLMain.m; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -228,19 +217,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		080E96DDFE201D6D7F000001 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				B930D0900A3D9BC700BDFB85 /* ConsoleView.h */,
-				B930D0910A3D9BC700BDFB85 /* ConsoleView.m */,
-				666E40EF0B67D87F005B491F /* macutils.mm */,
- 				B96D0D6C0920976E00B6C936 /* main.m */,
-				F5A47A9D01A0482F01D3D55B /* SDLMain.h */,
-				F5A47A9E01A0483001D3D55B /* SDLMain.m */,
-			);
-			name = Classes;
-			sourceTree = "<group>";
-		};
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -273,7 +249,6 @@
 		29B97314FDCFA39411CA2CEA /* cardboard */ = {
 			isa = PBXGroup;
 			children = (
-				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
  				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -298,7 +273,6 @@
 			children = (
 				B9CACA12092099DF00A13F04 /* cardboard.plist */,
 				B97E99CE085F4B3E002F9BC6 /* cardboard.icns */,
-				B96D0D5A0920971300B6C936 /* MainMenu.nib */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				D1DB53E70D70F1CD003AE25C /* Localizable.strings */,
 			);
@@ -510,7 +484,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B94198A809207E810029DAD1 /* SDLMain.m in Sources */,
 				B90ADD4509B344D800A5B00B /* callbacks.c in Sources */,
 				B90ADD5709B344D800A5B00B /* host.c in Sources */,
 				B90ADD6A09B344D800A5B00B /* list.c in Sources */,
@@ -518,7 +491,6 @@
 				B90ADD7209B344D800A5B00B /* peer.c in Sources */,
 				B90ADD7309B344D800A5B00B /* protocol.c in Sources */,
 				B90ADD7609B344D800A5B00B /* unix.c in Sources */,
-				666E40F00B67D87F005B491F /* macutils.mm in Sources */,
 				B9AC7ACF0D06DB44005506F8 /* 3dgui.cpp in Sources */,
 				B9AC7AD00D06DB44005506F8 /* bih.cpp in Sources */,
 				B9AC7AD20D06DB44005506F8 /* client.cpp in Sources */,
@@ -577,33 +549,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				089C165DFE840E0CC02AAC07 /* English */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		B96D0D5A0920971300B6C936 /* MainMenu.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B96D0D5B0920971300B6C936 /* English */,
-			);
-			name = MainMenu.nib;
-			sourceTree = "<group>";
-		};
-		D1DB53E70D70F1CD003AE25C /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				D1DB53E50D70F1C3003AE25C /* English */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 			3E18417F123861470098590C /* Release */ = {

@@ -666,7 +666,7 @@ namespace server
 	VAR(maxdemos, 0, 5, 25);
 	VAR(maxdemosize, 0, 16, 31);
 	VAR(restrictdemos, 0, 1, 1);
-	VAR(autorecorddemo, 0, 0, 1);
+	VARF(autorecorddemo, 0, 0, 1, demonextmatch = autorecorddemo!=0);
 
 	VAR(restrictpausegame, 0, 1, 1);
 	VAR(restrictgamespeed, 0, 1, 1);
@@ -952,10 +952,15 @@ namespace server
 		for (int i = 0; i < int(sizeof(team)/sizeof(team[0])); ++i)
 		{
 			addteaminfo(teamnames[i]);
-			if(!persistteams) loopvj(team[i])
+			loopvj(team[i])
 			{
 				clientinfo *ci = team[i][j];
 				if(!strcmp(ci->team, teamnames[i])) continue;
+				if(persistteams && ci->team[0] && (!smode || smode->canchangeteam(ci, teamnames[i], ci->team)))
+				{
+					addteaminfo(ci->team);
+					continue;
+				}
 				copystring(ci->team, teamnames[i], MAXTEAMLEN+1);
 				sendf(-1, 1, "riisi", N_SETTEAM, ci->clientnum, teamnames[i], -1);
 			}
@@ -1183,12 +1188,12 @@ namespace server
 		if(!demoplayback) demoplayback = opengzfile(file, "rb");
 		if(!demoplayback) formatstring(msg, "could not read demo \"%s\"", file);
 		else if(demoplayback->read(&hdr, sizeof(demoheader))!=sizeof(demoheader) || memcmp(hdr.magic, DEMO_MAGIC, sizeof(hdr.magic)))
-			formatstring(msg, "\"%s\" is not a demo file", file);
+			formatstring(msg, "\"%s\" is not a demo file (corrupted header)", file);
 		else
 		{
 			lilswap(&hdr.version, 2);
-			if(hdr.version!=DEMO_VERSION) formatstring(msg, "demo \"%s\" requires an %s version of this game", file, hdr.version<DEMO_VERSION ? "older" : "newer");
-			else if(hdr.protocol!=PROTOCOL_VERSION) formatstring(msg, "demo \"%s\" requires an %s version of this game", file, hdr.protocol<PROTOCOL_VERSION ? "older" : "newer");
+			if(hdr.version!=DEMO_VERSION) formatstring(msg, "demo \"%s\" requires an %s version of this game (demo version %d)", file, hdr.version<DEMO_VERSION ? "older" : "newer", hdr.version);
+			else if(hdr.protocol!=PROTOCOL_VERSION) formatstring(msg, "demo \"%s\" requires an %s version of this game (protocol version %d)", file, hdr.protocol<PROTOCOL_VERSION ? "older" : "newer", hdr.protocol);
 		}
 		if(msg[0])
 		{
@@ -1270,7 +1275,13 @@ namespace server
 			gamemillis = offset;
 			readdemo();
 		}
-		if(gamemillis > prevmillis && !interm) sendf(-1, 1, "ri2", N_TIMEUP, max((gamelimit - gamemillis)/1000, 1));
+		if(gamemillis > prevmillis)
+        {
+            if(!interm) sendf(-1, 1, "ri2", N_TIMEUP, max((gamelimit - gamemillis)/1000, 1));
+#ifndef STANDALONE
+            cleardamagescreen();
+#endif
+        }
 	}
 
 	ICOMMAND(seekdemo, "sN$", (char *t, int *numargs, ident *id),
@@ -2058,14 +2069,14 @@ namespace server
 
 		sendf(-1, 1, "risii", N_MAPCHANGE, smapname, gamemode, 1);
 
-		clearteaminfo();
-		if(m_teammode) autoteam();
-
 		if(m_capture) smode = &capturemode;
 		else if(m_ctf) smode = &ctfmode;
 		else if(m_collect) smode = &collectmode;
 		else if(m_race) smode = &racemode;
 		else smode = NULL;
+
+		clearteaminfo();
+		if(m_teammode) autoteam();
 
 		if(m_timed && smapname[0]) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis)/1000, 1) : 0);
 		loopv(clients)

@@ -176,10 +176,12 @@ namespace game
 		}
 	}
 
-	bool allowthirdperson()
+
+	bool allowthirdperson(bool msg)
 	{
-		return !multiplayer(false) || player1->state == CS_SPECTATOR || player1->state == CS_EDITING || m_edit || m_parkour;
+		return player1->state==CS_SPECTATOR || player1->state==CS_EDITING || m_edit || m_parkour || !multiplayer(msg);
 	}
+	ICOMMAND(allowthirdperson, "b", (int *msg), intret(allowthirdperson(*msg!=0) ? 1 : 0));
 
     bool detachcamera()
     {
@@ -580,7 +582,7 @@ namespace game
             showscores(true);
             disablezoom();
 
-            if(identexists("intermission")) execute("intermission");
+            execident("intermission");
         }
     }
 
@@ -811,12 +813,12 @@ namespace game
         disablezoom();
         lasthit = 0;
 
-        if(identexists("mapstart")) execute("mapstart");
+        execident("mapstart");
     }
 
     void loadingmap(const char *name)
     {
-        if(identexists("playsong")) execute("playsong");
+        execident("playsong");
     }
 
 	COMMAND(startgame, "");
@@ -1234,13 +1236,15 @@ namespace game
 
     }
 
+    VARP(demohud, 0, 1, 1);
+
     void gameplayhud(int w, int h)
     {
         pushhudmatrix();
         hudmatrix.scale(h/1800.0f, h/1800.0f, 1);
         flushhudmatrix();
 
-        if(player1->state==CS_SPECTATOR)
+        if(player1->state==CS_SPECTATOR || (demoplayback && demohud && player1->state == CS_SPECTATOR))
         {
             int pw, ph, tw, th, fw, fh;
             text_bounds("  ", pw, ph);
@@ -1514,7 +1518,7 @@ namespace game
 
     void loadconfigs()
     {
-        if(identexists("playsong")) execute("playsong");
+        execident("playsong");
 
         execfile("auth.cfg", false);
     }

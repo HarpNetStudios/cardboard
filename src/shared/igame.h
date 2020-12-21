@@ -88,7 +88,7 @@ namespace game
     extern int selectcrosshair(vec &color);
     extern void lighteffects(dynent *d, vec &color, vec &dir);
     extern void setupcamera();
-	extern bool allowthirdperson();
+	extern bool allowthirdperson(bool msg = false);
     extern bool detachcamera();
     extern bool collidecamera();
     extern void adddynlights();

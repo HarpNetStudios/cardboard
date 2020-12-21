@@ -309,7 +309,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 
 struct demoheader
 {
-    char magic[16];
+    char magic[14]; // THIS IS IMPORTANT
     int version, protocol;
 };
 

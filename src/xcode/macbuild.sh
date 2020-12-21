@@ -2,14 +2,17 @@
 while [ -n "$1" ]; do
  case "$1" in
   clean)
-   xcodebuild -project src/xcode/cardboard.xcodeproj clean -configuration Release
+   xcodebuild -project cardboard.xcodeproj clean -configuration Release
    ;;
-  all)
+  build)
    xcodebuild -project src/xcode/cardboard.xcodeproj -configuration Release -alltargets
    ;;
   install)
-   cp -v src/xcode/build/Release/cardboard.app/Contents/MacOS/cardboard cardboard.app/Contents/MacOS/cardboard_universal
-   chmod +x cardboard.app/Contents/MacOS/cardboard_universal
+   cp -v build/Release/cardboard.app/Contents/MacOS/cardboard ../../cardboard.app/Contents/MacOS/cardboard_universal
+   chmod +x ../../cardboard.app/Contents/MacOS/cardboard_universal
+   ;;
+  package)
+   exec ./package.sh
    ;;
  esac
  shift

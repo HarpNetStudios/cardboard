@@ -463,17 +463,24 @@ void textinput(bool on, int mask)
     }
 }
 
+#ifdef WIN32
+// SDL_WarpMouseInWindow behaves erratically on Windows, so force relative mouse instead.
+VARN(relativemouse, userelativemouse, 1, 1, 0);
+#else
 VARNP(relativemouse, userelativemouse, 0, 1, 1);
+#endif
 
 bool shouldgrab = false, grabinput = false, minimized = false, canrelativemouse = true, relativemouse = false;
 
 #ifdef SDL_VIDEO_DRIVER_X11
- VAR(sdl_xgrab_bug, 0, 1, 1);
+VAR(sdl_xgrab_bug, 0, 0, 1);
 #endif
 
 void inputgrab(bool on, bool delay = false)
 {
+#ifdef SDL_VIDEO_DRIVER_X11
     bool wasrelativemouse = relativemouse;
+#endif
     if(on)
     {
         SDL_ShowCursor(SDL_FALSE);
@@ -572,8 +579,14 @@ void screenres(int w, int h)
         {
             if(fullscreen == 2) gl_resize();
             else resetfullscreen();
+            initwindowpos = true;
         }
-        else SDL_SetWindowSize(screen, scr_w, scr_h);
+        else
+        {
+            SDL_SetWindowSize(screen, scr_w, scr_h);
+            SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+            initwindowpos = false;
+        }
     }
     else
     {
@@ -837,6 +850,11 @@ void setupscreen()
 
     SDL_GL_ResetAttributes();
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    #if !defined(WIN32) && !defined(__APPLE__)
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+    #endif
     static const int configs[] =
     {
         0x3, /* try everything */
@@ -964,11 +982,6 @@ void resetgl()
 COMMAND(resetgl, "");
 
 static queue<SDL_Event, 32> events;
-
-static inline void pushevent(const SDL_Event &e)
-{
-    events.add(e);
-}
 
 static inline bool filterevent(const SDL_Event &event)
 {
@@ -1525,6 +1538,13 @@ int main(int argc, char **argv)
         logoutf("init: sdl");
 
         if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
+
+#ifdef SDL_VIDEO_DRIVER_X11
+            SDL_version version;
+            SDL_GetVersion(&version);
+            if (SDL_VERSIONNUM(version.major, version.minor, version.patch) <= SDL_VERSIONNUM(2, 0, 12))
+                sdl_xgrab_bug = 1;
+#endif
     }
 
     logoutf("init: net");

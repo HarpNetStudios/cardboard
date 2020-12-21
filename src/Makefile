@@ -57,11 +57,11 @@ ifneq (,$(STRIP))
   STRIP= $(TOOLCHAIN)strip
 endif
 endif
-OSXMIN= 10.6
+OSXMIN= 10.9
 override CC+= -arch x86_64 -mmacosx-version-min=$(OSXMIN)
 override CXX+= -arch x86_64 -mmacosx-version-min=$(OSXMIN)
 CLIENT_INCLUDES= $(INCLUDES) -Iinclude
-CLIENT_LIBS= -Fxcode/Frameworks -framework SDL2 -framework SDL2_image
+CLIENT_LIBS= -F../cardboard.app/Contents/Frameworks/ -framework SDL2 -framework SDL2_image
 CLIENT_LIBS+= -framework SDL2_mixer -framework SDL2_ttf -framework CoreAudio
 CLIENT_LIBS+= -framework AudioToolbox -framework AudioUnit -framework OpenGL -framework Cocoa -lz -Lenet -lenet -lcurl
 else
@@ -180,16 +180,6 @@ MASTER_OBJS= \
 
 SERVER_MASTER_OBJS= $(SERVER_OBJS) $(filter-out $(SERVER_OBJS),$(MASTER_OBJS))
 
-ifneq (,$(findstring DARWIN,$(PLATFORM)))
-CLIENT_OBJS+= xcode/macutils.o xcode/main.o xcode/Launcher.o
-
-%.o: %.mm
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-%.o: %.m
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-endif
-
 default: all
 
 all: client server
@@ -229,6 +219,9 @@ install: all
 else
 client:	libenet $(CLIENT_OBJS)
 	$(CXX) $(CXXFLAGS) -o cardboard_client $(CLIENT_OBJS) $(CLIENT_LIBS)
+ifneq (,$(findstring DARWIN,$(PLATFORM)))
+	install_name_tool -add_rpath @executable_path/../Frameworks sauer_client
+endif
 
 server:	libenet $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o cardboard_server $(SERVER_OBJS) $(SERVER_LIBS)
@@ -242,12 +235,17 @@ shared/cube2font.o: shared/cube2font.c
 cube2font: shared/cube2font.o
 	$(CXX) $(CXXFLAGS) -o cube2font shared/cube2font.o `freetype-config --libs` -lz
 
+ifneq (,$(findstring DARWIN,$(PLATFORM)))
+install: client
+	cp sauer_client ../sauerbraten.app/Contents/MacOS/sauerbraten_universal
+else
 install: all
 	cp cardboard_client	../bin_unix/$(PLATFORM_PREFIX)_client
 	cp cardboard_server	../bin_unix/$(PLATFORM_PREFIX)_server
 ifneq (,$(STRIP))
 	$(STRIP) ../bin_unix/$(PLATFORM_PREFIX)_client
 	$(STRIP) ../bin_unix/$(PLATFORM_PREFIX)_server
+endif
 endif
 endif
 

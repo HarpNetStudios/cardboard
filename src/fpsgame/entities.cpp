@@ -292,7 +292,7 @@ namespace entities
                 if(e->attr3 > 0)
                 {
                     defformatstring(hookname, "can_teleport_%d", e->attr3);
-                    if(identexists(hookname) && !execute(hookname)) break;
+                    if(!execidentbool(hookname, true)) break;
                 }
                 d->lastpickup = e->type;
                 d->lastpickupmillis = lastmillis;
@@ -489,7 +489,7 @@ namespace entities
         if(identexists(aliasname))
         {
             triggerstate = state;
-            execute(aliasname);
+            execident(aliasname);
         }
     }
 

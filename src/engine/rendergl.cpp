@@ -2138,7 +2138,7 @@ void drawdamagecompass(int w, int h)
     if(dirs) gle::end();
 }
 
-extern int damageblendmillis = 0;
+int damageblendmillis = 0;
 
 VARFP(damagescreen, 0, 1, 1, { if(!damagescreen) damageblendmillis = 0; });
 VARP(damagescreenfactor, 1, 7, 100);
@@ -2171,6 +2171,12 @@ void drawdamagescreen(int w, int h)
     gle::colorf(fade, fade, fade, fade);
 
     hudquad(0, 0, w, h);
+}
+
+void cleardamagescreen()
+{
+    damageblendmillis = 0;
+    for (int i = 0; i < 8; i++) damagedirs[i] = 0;
 }
 
 VAR(hidestats, 0, 0, 1);
@@ -2454,8 +2460,7 @@ void gl_drawhud()
                     abovehud -= FONTH;
                     draw_textf("cube %s%d%s", FONTH/2, abovehud, selchildcount<0 ? "1/" : "", abs(selchildcount), showmat && selchildmat > 0 ? getmaterialdesc(selchildmat, ": ") : "");
 
-                    char *editinfo = executestr("edithud");
-                    if(editinfo)
+                    if(char *editinfo = execidentstr("edithud"))
                     {
                         if(editinfo[0])
                         {
@@ -2468,21 +2473,17 @@ void gl_drawhud()
                         DELETEA(editinfo);
                     }
                 }
-                else if(identexists("gamehud"))
+                else if(char *gameinfo = execidentstr("gamehud"))
                 {
-                    char *gameinfo = executestr("gamehud");
-                    if(gameinfo)
+                    if(gameinfo[0])
                     {
-                        if(gameinfo[0])
-                        {
-                            int tw, th;
-                            text_bounds(gameinfo, tw, th);
-                            th += FONTH-1; th -= th%FONTH;
-                            roffset += max(th, FONTH);
-                            draw_text(gameinfo, conw-max(5*FONTH, 2*FONTH+tw), conh-FONTH/2-roffset);
-                        }
-                        DELETEA(gameinfo);
+                        int tw, th;
+                        text_bounds(gameinfo, tw, th);
+                        th += FONTH-1; th -= th%FONTH;
+                        roffset += max(th, FONTH);
+                        draw_text(gameinfo, conw-max(5*FONTH, 2*FONTH+tw), conh-FONTH/2-roffset);
                     }
+                    DELETEA(gameinfo);
                 }
 
                 pophudmatrix();

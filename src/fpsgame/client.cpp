@@ -286,9 +286,7 @@ namespace game
 			conoutf(CON_ERROR, "editing requires allowedit to be set to 1");
 			return false;
 		}
-		if(identexists("allowedittoggle") && !execute("allowedittoggle"))
-			return false;
-		return true;
+		return execidentbool("allowedittoggle", true);
 	}
 
 	void edittoggled(bool on)
@@ -1852,8 +1850,7 @@ namespace game
 				demoplayback = on!=0;
 				player1->clientnum = getint(p);
 				gamepaused = false;
-				const char *alias = on ? "demostart" : "demoend";
-				if(identexists(alias)) execute(alias);
+				execident(on ? "demostart" : "demoend");
 				break;
 			}
 

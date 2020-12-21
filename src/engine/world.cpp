@@ -1231,6 +1231,7 @@ void resetmap()
     clearslots();
     clearparticles();
     cleardecals();
+    cleardamagescreen();
     clearsleep();
     cancelsel();
     pruneundos();

@@ -734,7 +734,7 @@ struct undolist
 };
 
 undolist undos, redos;
-VARP(undomegs, 0, 5, 100);                              // bounded by n megs
+VARP(undomegs, 0, 8, 100);                              // bounded by n megs
 int totalundos = 0;
 
 void pruneundos(int maxremain)                          // bound memory
@@ -2920,6 +2920,14 @@ void showtexgui(int *n)
 
 // 0/noargs = toggle, 1 = on, other = off - will autoclose if too far away or exit editmode
 COMMAND(showtexgui, "i");
+
+bool cleartexgui()
+{
+    if(!gui.menuon) return false;
+    gui.showtextures(false);
+    return true;
+}
+ICOMMAND(cleartexgui, "", (), intret(cleartexgui() ? 1 : 0));
 
 void rendertexturepanel(int w, int h)
 {
