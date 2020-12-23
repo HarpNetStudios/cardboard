@@ -1457,6 +1457,12 @@ void setgametoken(const char* token) {
 	if(player!=NULL) getuserinfo_(false);
 }
 
+#ifdef DISCORD
+    VARN(ext_discord, ext_discord_enabled, 1, 1, 0);
+#else
+    VARN(ext_discord, ext_discord_enabled, 1, 0, 0);
+#endif
+
 int main(int argc, char **argv)
 {
     #ifdef WIN32

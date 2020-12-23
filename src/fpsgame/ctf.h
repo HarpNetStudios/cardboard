@@ -828,7 +828,8 @@ struct ctfclientmode : clientmode
 
     const char *teamcolorflag(flag &f)
     {
-        return m_hold ? "the flag" : teamcolor("your flag", ctfflagteam(f.team), "the enemy flag");
+        defformatstring(flagname, "the %s flag", ctfflagteam(f.team));
+        return m_hold ? "the flag" : teamcolor(flagname, ctfflagteam(f.team));
     }
 
     void dropflag(fpsent *d, int i, int version, const vec &droploc)
@@ -946,10 +947,11 @@ struct ctfclientmode : clientmode
             particle_textcopy(d->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
         }
         d->flags = dflags;
-        conoutf(CON_GAMEINFO, "%s scored for %s", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"));
+        defformatstring(scoredteam, "the %s team", ctfflagteam(team));
+        conoutf(CON_GAMEINFO, "%s scored for %s", teamcolorname(d), teamcolor(scoredteam, ctfflagteam(team)));
         playsound(team==ctfteamflag(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
 
-        if(score >= FLAGLIMIT) conoutf(CON_GAMEINFO, "%s captured %d flags", teamcolor("your team", ctfflagteam(team), "the enemy team"), score);
+        if(score >= FLAGLIMIT) conoutf(CON_GAMEINFO, "%s captured %d flags", teamcolor(scoredteam, ctfflagteam(team)), score);
     }
 
     void takeflag(fpsent *d, int i, int version)
@@ -959,7 +961,8 @@ struct ctfclientmode : clientmode
         f.version = version;
         f.interploc = interpflagpos(f, f.interpangle);
         f.interptime = lastmillis;
-		if(m_hold) conoutf(CON_GAMEINFO, "%s picked up the flag for %s", teamcolorname(d), teamcolorflag(f));//teamcolor("your team", d->team, "the enemy team"));
+        defformatstring(scoredteam, "the %s team", ctfflagteam(f.team));
+		if(m_hold) conoutf(CON_GAMEINFO, "%s picked up the flag for %s", teamcolorname(d), teamcolor(scoredteam, ctfflagteam(f.team)));
         else if(m_protect || f.droptime) conoutf(CON_GAMEINFO, "%s picked up %s", teamcolorname(d), teamcolorflag(f));
         else conoutf(CON_GAMEINFO, "%s stole %s", teamcolorname(d), teamcolorflag(f));
         ownflag(i, d, lastmillis, m_hold ? ctfteamflag(d->team) : -1);

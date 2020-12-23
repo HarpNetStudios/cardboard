@@ -2066,7 +2066,6 @@ namespace server
 		}
 
 		if(!m_mp(gamemode)) kicknonlocalclients(DISC_LOCAL);
-
 		sendf(-1, 1, "risii", N_MAPCHANGE, smapname, gamemode, 1);
 
 		if(m_capture) smode = &capturemode;
@@ -2253,6 +2252,7 @@ namespace server
 	}
 
 	VAR(overtime, 0, 0, 1);
+	VAR(overtimeadd, 30, 120, 240);
 
 	bool checkovertime()
 	{
@@ -2292,7 +2292,7 @@ namespace server
 		}
 		if(!tied) return false;
 		sendservmsg("the game is tied with overtime");
-		gamelimit = max(gamemillis, gamelimit) + 2*60000;
+		gamelimit = max(gamemillis, gamelimit) + overtimeadd*1000;
 		sendf(-1, 1, "ri2", N_TIMEUP, max((gamelimit - gamemillis)/1000, 1));
 		return true;
 	}
@@ -2318,7 +2318,7 @@ namespace server
 		if(smode) smode->intermission();
 	}
 
-	void dodamage(clientinfo* target, clientinfo* actor, int damage, int gun, const vec& hitpush, bool special)
+	void dodamage(clientinfo* target, clientinfo* actor, int damage, int gun, const vec& hitpush, int headshot)
 	{
 		gamestate& ts = target->state;
 		if(!m_parkour) ts.dodamage(damage);
@@ -2339,13 +2339,13 @@ namespace server
 			if(fragvalue>0)
 			{
 				int friends = 0, enemies = 0; // note: friends also includes the fragger
-				if(m_teammode) loopv(clients) if(strcmp(clients[i]->team, actor->team)) enemies++; else friends++; // tdm bug?
+				if(m_teammode) loopv(clients) if(strcmp(clients[i]->team, actor->team)) enemies++; else friends++;
 				else { friends = 1; enemies = clients.length()-1; }
 				actor->state.effectiveness += fragvalue*friends/float(max(enemies, 1));
 			}
 			teaminfo *t = m_teammode ? teaminfos.access(actor->team) : NULL;
 			if(t) t->frags += fragvalue;
-			sendf(-1, 1, "ri6", N_DIED, target->clientnum, actor->clientnum, actor->state.frags, t ? t->frags : 0, gun, special);
+			sendf(-1, 1, "ri7", N_DIED, target->clientnum, actor->clientnum, actor->state.frags, t ? t->frags : 0, gun, headshot);
 			target->position.setsize(0);
 			if(smode) smode->died(target, actor);
 			ts.state = CS_DEAD;
@@ -2365,7 +2365,7 @@ namespace server
 		ci->state.deaths++;
 		teaminfo *t = m_teammode ? teaminfos.access(ci->team) : NULL;
 		if(t) t->frags += fragvalue;
-		sendf(-1, 1, "ri6", N_DIED, ci->clientnum, ci->clientnum, gs.frags, -1, 0);
+		sendf(-1, 1, "ri7", N_DIED, ci->clientnum, ci->clientnum, gs.frags, t ? t->frags : 0, 0, false);
 		ci->position.setsize(0);
 		if(smode) smode->died(ci, NULL);
 		gs.state = CS_DEAD;
@@ -2407,7 +2407,7 @@ namespace server
 
 			int damage = guns[gun].damage;
 			damage = int(damage*(1-h.dist/EXP_DISTSCALE/guns[gun].exprad));
-			if(!(m_parkour || target==ci))
+			if(!m_parkour && target!=ci)
 			{
 				if(!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.dir, h.headshot);
 			}
@@ -2448,7 +2448,7 @@ namespace server
 					if(totalrays>maxrays) continue;
 					int damage = h.rays*guns[gun].damage;
 					//if(h.headshot) damage += guns[gun].bonus;
-					if(!m_parkour || target!=ci) // Why isn't mean the same as line 2230? Why is C/C++ retarded? -Y 10/06/18
+					if(!m_parkour && target!=ci)
 					{
 						if(!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.dir, h.headshot);
 					}

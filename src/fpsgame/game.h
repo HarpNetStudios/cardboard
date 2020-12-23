@@ -89,7 +89,7 @@ enum
     M_COLLECT    = 1<<17,
     M_PARKOUR    = 1<<18,
     M_GRENADE    = 1<<19,
-    M_GUN        = 1<<20,
+    M_UNUSED     = 1<<20,
 	M_LMS        = 1<<21,
 	M_ECTF       = 1<<22,
 	M_BOTTOMLESS = 1<<23,
@@ -127,7 +127,7 @@ static struct gamemodeinfo
     { "Instagib Tactics", M_NOITEMS | M_TACTICS | M_INSTA, "You spawn with two random weapons and armour and die instantly from one shot. There are no items. Frag everyone to score points."},
     { "Team Instagib Tactics", M_NOITEMS | M_TACTICS | M_INSTA | M_TEAM, "You spawn with two random weapons and armour and die instantly from one shot. There are no items. Frag the enemy team to score points for your team."},
     { "Grenade Battle", M_NOITEMS | M_GRENADE, "You spawn with full grenade launcher ammo. There are no items. Frag everyone to score points."}, // 20
-    { "Gun Game", M_NOITEMS | M_GUN | M_BOTTOMLESS, "You spawn with the lowest tier weapon and work your way up. There are no items. Frag everyone to score points."}, // 21
+    { "UNUSED", M_LOCAL, "UNUSED"}, // 21
     { "Last Man Standing", M_LMS, "You spawn with ten lives. Frag everyone to score points. Be the last one alive to win."}, // 22
 	{ "Explosive CTF", M_INSTA | M_BOTTOMLESS | M_TEAM | M_CTF | M_NOITEMS | M_ECTF, "Rockets! Grenades! Instagib! CTF! Exciting!"}, // 23
 	{ "Test Mode", M_TEST, "It might be something stupid, or it might be cool. It also might crash your game."}, // 24
@@ -163,10 +163,9 @@ static struct gamemodeinfo
 
 #define m_parkour      (m_check(gamemode, M_PARKOUR))
 #define m_grenade      (m_check(gamemode, M_GRENADE))
-#define m_gun          (m_check(gamemode, M_GUN))
 #define m_lms          (m_check(gamemode, M_LMS))
 #define m_ectf         (m_checkall(gamemode, M_CTF | M_ECTF))
-#define m_r1ctf        (m_checkall(gamemode, M_CTF | M_R1CTF)))
+#define m_r1ctf        (m_checkall(gamemode, M_CTF | M_R1CTF))
 #define m_race         (m_check(gamemode, M_RACE))
 
 #define m_demo         (m_check(gamemode, M_DEMO))
@@ -269,7 +268,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 {
     N_CONNECT, 0, N_SERVINFO, 0, N_WELCOME, 1, N_INITCLIENT, 0, N_POS, 0, N_TEXT, 0, N_SOUND, 2, N_CDIS, 2,
     N_SHOOT, 0, N_EXPLODE, 0, N_SUICIDE, 1,
-    N_DIED, 6, N_DAMAGE, 6, N_HITPUSH, 7, N_SHOTFX, 10, N_EXPLODEFX, 4,
+    N_DIED, 7, N_DAMAGE, 6, N_HITPUSH, 7, N_SHOTFX, 10, N_EXPLODEFX, 4,
     N_TRYSPAWN, 1, N_SPAWNSTATE, 14, N_SPAWN, 3, N_FORCEDEATH, 2,
     N_GUNSELECT, 2, N_TAUNT, 1,
 	N_RESTARTVOTE, 2, N_RESTARTGAME, 1,
@@ -303,8 +302,8 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 #define CARDBOARD_SERVER_PORT 35000
 #define CARDBOARD_SERVINFO_PORT 35001
 #define CARDBOARD_MASTER_PORT 35002
-#define PROTOCOL_VERSION 1006           // bump when protocol changes
-#define DEMO_VERSION 1                  // bump when demo format changes
+#define PROTOCOL_VERSION 1007           // bump when protocol changes
+#define DEMO_VERSION 2                  // bump when demo format changes
 #define DEMO_MAGIC "CARDBOARD_DEMO"
 
 struct demoheader
@@ -414,7 +413,6 @@ struct fpsstate
 	int gunwait[NUMGUNS];
     int ammo[NUMGUNS];
     int aitype, skill;
-    int ggtier;
 
     // race
     int racetime;
@@ -423,7 +421,7 @@ struct fpsstate
     int racerank;
     int racestate;
 
-    fpsstate() : health(1000), maxhealth(1000), aitype(AI_NONE), skill(0), ggtier(-1) {}
+    fpsstate() : health(1000), maxhealth(1000), aitype(AI_NONE), skill(0){}
 
 	void baseammo(int gun, int k = 2, int scale = 1)
 	{
@@ -538,12 +536,6 @@ struct fpsstate
 			ammo[GUN_SMG] = 40;
 			ammo[GUN_GL] = 1;
         }
-		else if(m_gun)
-		{
-            if(ggtier <= 0) ggtier = 1;
-			for(int i = 0; i < 6; ++i) ammo[i + 1] = INT_MAX;
-            gunselect = ggtier;
-		}
         else if(m_race)
         {
             // racetime = 0;
@@ -784,7 +776,7 @@ namespace game
     extern fpsent *newclient(int cn);
 	extern const char* colorname(fpsent* d, const char* name = NULL, const char* prefix = "", const char* suffix = "", const char* alt = NULL, bool tags = false);
 	extern const char *teamcolorname(fpsent *d, const char *alt = "you", bool tags = false);
-    extern const char *teamcolor(const char *name, bool sameteam, const char *alt = NULL);
+    //extern const char *teamcolor(const char *name, bool sameteam, const char *alt = NULL);
     extern const char *teamcolor(const char *name, const char *team, const char *alt = NULL);
 	extern bool spectating(physent* d);
 	extern void teamsound(bool sameteam, int n, const vec* loc = NULL);
@@ -801,7 +793,7 @@ namespace game
     extern void spawnplayer(fpsent * d);
     extern void deathstate(fpsent *d, bool restore = false);
     extern void damaged(int damage, fpsent *d, fpsent *actor, int gun, bool local = true);
-    extern void killed(fpsent *d, fpsent *actor, int gun, int special = 0);
+    extern void killed(fpsent *d, fpsent *actor, int gun, int headshot = 0);
     extern void timeupdate(int timeremain);
     extern void msgsound(int n, physent *d = NULL);
     extern void drawicon(int icon, float x, float y, float sz = 120);

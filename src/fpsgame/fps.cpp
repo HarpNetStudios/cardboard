@@ -4,7 +4,7 @@ namespace game
 {
 	char* gametitle = "Carmine Impact"; // game name: are you dumb
 	char* gamestage = "Alpha"; // stage: alpha, beta, release, whatever
-	char* gameversion = "2.6RC1"; // version: major.minor(.patch)
+	char* gameversion = "2.6RC2"; // version: major.minor(.patch)
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
@@ -12,7 +12,7 @@ namespace game
 		char* k = newstring(len);
 		filtertext(k, vers, true, false, len);
 		stringret(k);
-	})
+	});
 
 	bool intermission = false;
 	int maptime = 0, maprealtime = 0, maplimit = -1;
@@ -408,6 +408,7 @@ namespace game
     }
 
     VARP(hitsound, 0, 0, 1);
+    VARP(killsound, 0, 0, 1);
 
     VARP(p_hitmark, 0, 0, 1);
 
@@ -481,7 +482,7 @@ namespace game
 
     VARP(verbosekill, 0, 0, 1);
 
-    void killed(fpsent *d, fpsent *actor, int gun, int special)
+    void killed(fpsent *d, fpsent *actor, int gun, int headshot)
     {
         if(d->state==CS_EDITING)
         {
@@ -494,69 +495,52 @@ namespace game
 
         if(cmode) cmode->died(d, actor);
 
-        fpsent *h = followingplayer();
-        if(!h) h = player1;
-		if(special != -1) {
-			int contype = d==h || actor==h ? CON_FRAG_SELF : CON_FRAG_OTHER;
-			const char *hs = "\f3 (headshot)";
-			const char *dname = "", *aname = "";
-			if(m_teammode && teamcolorfrags)
-			{
-				dname = teamcolorname(d, "you");
-				aname = teamcolorname(actor, "you");
-			}
+		fpsent *h = followingplayer();
+		if(!h) h = player1;
+		int contype = d==h || actor==h ? CON_FRAG_SELF : CON_FRAG_OTHER;
+		const char *hs = " \f3(headshot)";
+		const char *dname = "", *aname = "";
+
+        bool is_headshot = headshot == 1;
+
+		if(m_teammode && teamcolorfrags)
+		{
+			dname = teamcolorname(d, "you");
+			aname = teamcolorname(actor, "you");
+		}
+		else
+		{
+			dname = colorname(d, NULL, "", "", "you");
+			aname = colorname(actor, NULL, "", "", "you");
+		}
+		if(verbosekill)
+		{
+			if(actor->type==ENT_AI)
+				conoutf(contype, "\f2%s\f2 got killed by %s with %s%s!", dname, aname, getweaponname(gun), is_headshot?hs:"");
+			else if(d==actor)
+				conoutf(contype, "\f2%s\f2 suicided%s", dname, d==player1 ? "!" : "");
 			else
 			{
-				dname = colorname(d, NULL, "", "", "you");
-				aname = colorname(actor, NULL, "", "", "you");
-			}
-			if(verbosekill)
-			{
-				if(actor->type==ENT_AI)
-					conoutf(contype, "\f2%s\f2 got killed by %s with %s%s!", dname, aname, getweaponname(gun), special?hs:"");
-				else if(d==actor)
-					conoutf(contype, "\f2%s\f2 suicided%s", dname, d==player1 ? "!" : "");
-				else
-				{
-					if(d==player1) conoutf(contype, "\f2%s\f2 got fragged by %s with %s%s!", dname, aname, getweaponname(gun), special?hs:"");
-					else conoutf(contype, "\f2%s\f2 fragged %s with %s%s!", aname, dname, getweaponname(gun), special?hs:"");
-				}
-			}
-			else
-			{
-				if(actor->type==ENT_AI)
-					conoutf(contype, "\f2%s\f2 > %s > %s%s", dname, getweaponname(gun), aname, special?hs:"");
-				else if(d==actor)
-					conoutf(contype, "\f2world > %s", dname);
-				else
-					conoutf(contype, "\f2%s\f2 > %s > %s%s", aname, getweaponname(gun), dname, special?hs:"");
-			}
-			if(m_gun) {
-				if(d != actor)
-				{
-					if(actor->frags >= 12) { intermission = true; if(cmode) cmode->gameover(); addmsg(N_FORCEINTERMISSION); }
-					actor->ggtier = clamp(int(floor(actor->frags / 2))+1, GUN_SMG, GUN_GL);
-					conoutf("gun should be %d", actor->ggtier);
-					actor->attacking = false;
-					actor->secattacking = false;
-					actor->gunselect = actor->ggtier;
-				}
-                else
-                {
-                    actor->ggtier = clamp(actor->ggtier - 2, GUN_SMG, GUN_GL);
-                    actor->attacking = false;
-                    actor->secattacking = false;
-                    actor->gunselect = actor->ggtier;
-                }
+				if(d==player1) conoutf(contype, "\f2%s\f2 got fragged by %s with %s%s!", dname, aname, getweaponname(gun), is_headshot?hs:"");
+				else conoutf(contype, "\f2%s\f2 fragged %s with %s%s!", aname, dname, getweaponname(gun), is_headshot?hs:"");
 			}
 		}
-        if(d!=actor && actor==player1) playsound(S_KILL);
+		else
+		{
+			if(actor->type==ENT_AI)
+				conoutf(contype, "\f2%s\f2 > %s > %s%s", dname, getweaponname(gun), aname, is_headshot?hs:"");
+			else if(d==actor)
+				conoutf(contype, "\f2world > %s", dname);
+			else
+				conoutf(contype, "\f2%s\f2 > %s > %s%s", aname, getweaponname(gun), dname, is_headshot?hs:"");
+		}
+		if(d!=actor && actor==player1 && killsound) playsound(S_KILL);
 		deathstate(d);
 		ai::killed(d, actor);
 		#ifdef DISCORD // this updates every time anyone gets a kill, shouldn't be an issue.
 			discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode - STARTGAMEMODE].name, player1, true);
 		#endif
-    }
+	}
 
     void timeupdate(int secs)
     {
@@ -945,7 +929,7 @@ namespace game
     {
         //return teamcolor(name, team && isteam(team, player1->team), alt);
 		cidx = (cidx + 1) % 3;
-		formatstring(cname[cidx], !strcmp(team, "red") ? "\fs\f1%s\fr" : "\fs\f3%s\fr", name);
+		formatstring(cname[cidx], strcmp(team, "red") ? "\fs\f1%s\fr" : "\fs\f3%s\fr", name);
 		return cname[cidx];
     }
 

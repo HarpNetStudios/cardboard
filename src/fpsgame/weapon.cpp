@@ -8,7 +8,8 @@ namespace game
 
     struct hitmsg
     {
-        int target, lifesequence, info1, info2, headshot;
+        int target, lifesequence, info1, info2;
+        int headshot;
         ivec dir;
     };
     vector<hitmsg> hits;
@@ -65,26 +66,15 @@ namespace game
     void setweapon(const char *name, bool force = false)
     {
         int gun = getweapon(name);
-        if(m_gun & !force) return;
         if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_GL) return;
         if(force || player1->ammo[gun]) gunselect(gun, player1);
         else playsound(S_NOAMMO);
     }
     ICOMMAND(setweapon, "s", (char *name), setweapon(name));
 
-    void dbgreload(const char *name)
-    {
-		if(m_gun) return;
-        int gun = getweapon(name);
-        if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_GL) return;
-        player1->ammo[gun] = itemstats[gun-GUN_SMG].add*2;
-    }
-    ICOMMAND(dbgreload, "s", (char *name), dbgreload(name));
-
     void cycleweapon(int numguns, int *guns, bool force = false)
     {
         if(numguns<=0 || player1->state!=CS_ALIVE) return;
-		if(m_gun) return;
         int offset = 0;
         for(int i = 0; i < int(numguns); ++i) if(guns[i] == player1->gunselect) { offset = i+1; break; }
         for(int i = 0; i < int(numguns); ++i)
@@ -111,7 +101,6 @@ namespace game
     void weaponswitch(fpsent *d)
     {
         if(d->state!=CS_ALIVE) return;
-		if(m_gun) return;
 		if(oldweapswitch) {
 			int s = d->gunselect;
 			if(s != GUN_CG && d->ammo[GUN_CG])     s = GUN_CG;
@@ -133,7 +122,6 @@ namespace game
     ICOMMAND(weapon, "V", (tagval *args, int numargs),
     {
         if(player1->state!=CS_ALIVE) return;
-		if(m_gun) return;
         for(int i = 0; i < 7; ++i)
         {
             const char *name = i < numargs ? args[i].getstr() : "";
@@ -392,7 +380,7 @@ namespace game
         for(int i = 0; i < int(min(damage/gibdiv, 40)+1); ++i) spawnbouncer(from, vel, d, BNC_GIBS);
     }
 
-    void hit(int damage, dynent *d, fpsent *at, const vec &vel, int gun, float info1, int info2 = 1, bool headshot = false)
+    void hit(int damage, dynent *d, fpsent *at, const vec &vel, int gun, float info1, int info2 = 1, int headshot = 0)
     {
 		fpsent* f = (fpsent*)d;
 
@@ -417,7 +405,7 @@ namespace game
             h.lifesequence = f->lifesequence;
             h.info1 = int(info1*DMF);
             h.info2 = info2;
-			h.headshot = headshot ? 1 : 0;
+			h.headshot = headshot;
             h.dir = f==at ? ivec(0, 0, 0) : ivec(vec(vel).mul(DNF));
             if(at==player1)
             {
@@ -435,7 +423,7 @@ namespace game
         }
     }
 
-    void hitpush(int damage, dynent *d, fpsent *at, vec &from, vec &to, int gun, int rays, bool headshot)
+    void hitpush(int damage, dynent *d, fpsent *at, vec &from, vec &to, int gun, int rays, int headshot)
     {
         hit(damage, d, at, vec(to).sub(from).safenormalize(), gun, from.dist(to), rays, headshot);
     }
@@ -549,14 +537,13 @@ namespace game
         }
     }
 
+    VAR(dbgheadshot, 0, 0, 1);
+
 	bool isheadshot(dynent* d, vec from, vec to)
 	{
-        if ((to.z - (d->o.z - d->eyeheight)) / (d->eyeheight + d->aboveeye) > 0.8f) {
-            //conoutf("is headshot");
-            return true;
-        }
-        //conoutf("is NOT headshot");
-		return false;
+        bool result = (to.z - (d->o.z - d->eyeheight)) / (d->eyeheight + d->aboveeye) > 0.8f;
+        if(dbgheadshot) conoutf("is %sheadshot", !result?"NOT ":"");
+		return result;
 	}
 
     bool projdamage(dynent *o, projectile &p, vec &v, int qdam)
@@ -583,7 +570,7 @@ namespace game
             dv.mul(time/max(dist*1000/p.speed, float(time)));
             vec v = vec(p.o).add(dv);
             bool exploded = false;
-			bool headshot = false;
+			int headshot = 0;
             hits.setsize(0);
             if(p.local)
             {
@@ -795,8 +782,6 @@ namespace game
         target.sub(from).mul(min(1.0f, dist)).add(from);
     }
 
-    bool headshot = false;
-
     void raydamage(vec &from, vec &to, fpsent *d)
     {
         int qdam = guns[d->gunselect].damage;
@@ -827,8 +812,8 @@ namespace game
         }
         else if((o = intersectclosest(from, to, d, dist)))
         {
-			headshot = isheadshot(o, from, to);
             shorten(from, to, dist);
+            int headshot = isheadshot(o, from, to);
             hitpush(qdam, o, d, from, to, d->gunselect, 1, headshot);
         }
         else if(d->gunselect!=GUN_FIST) adddecal(DECAL_BULLET, to, vec(from).sub(to).safenormalize(), d->gunselect==GUN_RIFLE ? 3.0f : 2.0f);
@@ -874,7 +859,6 @@ namespace game
         else if(guns[d->gunselect].spread) offsetray(from, to, guns[d->gunselect].spread, guns[d->gunselect].range, to);
 
         hits.setsize(0);
-		headshot = isheadshot(d, from, to);
         if(!guns[d->gunselect].projspeed) raydamage(from, to, d);
 
         shoteffects(d->gunselect, from, to, d, true, 0, prevaction);
@@ -889,7 +873,7 @@ namespace game
 
 		d->gunwait[d->gunselect] = guns[d->gunselect].attackdelay;
 		if(d->gunselect == GUN_SMG && d->ai) d->gunwait[d->gunselect] += int(d->gunwait[d->gunselect]*(((101-d->skill)+rnd(111-d->skill))/100.f));
-        d->totalshots += (headshot ? guns[d->gunselect].specialdamage : guns[d->gunselect].damage)*guns[d->gunselect].rays;
+        d->totalshots += guns[d->gunselect].damage*guns[d->gunselect].rays;
 
 		if(!d->ammo[d->gunselect])
 		{

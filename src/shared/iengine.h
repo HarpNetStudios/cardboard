@@ -617,6 +617,8 @@ namespace discord
 }
 #endif
 
+extern int ext_discord_enabled;
+
 // zip 
 extern bool addzip(const char* name, const char* mount, const char* strip, bool internal);
 extern bool removezip(const char* name);

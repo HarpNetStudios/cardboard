@@ -143,10 +143,8 @@ namespace game
 	{
 		conoutf("your name is: %s", colorname(player1));
 	}
-	ICOMMAND(name, "", (),
-	{
-		result(colorname(player1));
-	});
+	ICOMMAND(name, "", (), result(colorname(player1)));
+
 	ICOMMAND(getname, "", (), result(player1->name));
 
 	ICOMMAND(gettags, "", (), result(player1->tags));
@@ -164,14 +162,8 @@ namespace game
 	{
 		if(*numargs > 0)
 		{
-			if(!strcmp(s,"blue") || !strcmp(s,"red"))
-			{
-				switchteam(s);
-			} 
-			else 
-			{
-				conoutf("invalid team: %s", s);
-			}
+			if(!strcmp(s,"blue") || !strcmp(s,"red")) switchteam(s);
+			else conoutf("invalid team: %s", s);
 		}
 		else if(!*numargs) printteam();
 		else result(player1->team);
@@ -240,12 +232,12 @@ namespace game
 	}
 	COMMAND(genauthkey, "s");
 
-	void getpubkey(const char* desc)
+	void getpubkey(const char *desc)
 	{
-		authkey * k = findauthkey(desc);
-		if(!k) { if(desc[0]) conoutf("no authkey found: %s", desc); else conoutf("no global authkey found"); return; }
+		authkey *k = findauthkey(desc);
+		if(!k) { if(desc[0]) conoutf(CON_ERROR, "no authkey found: %s", desc); else conoutf("no global authkey found"); return; }
 		vector<char> pubkey;
-		if(!calcpubkey(k->key, pubkey)) { conoutf("failed calculating pubkey"); return; }
+		if(!calcpubkey(k->key, pubkey)) { conoutf(CON_ERROR, "failed calculating pubkey"); return; }
 		result(pubkey.getbuf());
 	}
 	COMMAND(getpubkey, "s");
@@ -588,7 +580,6 @@ namespace game
 	ICOMMANDS("m_lobby", "i", (int *mode), { int gamemode = *mode; intret(m_lobby); });
 	ICOMMANDS("m_parkour", "i", (int *mode), { int gamemode = *mode; intret(m_parkour); });
 	ICOMMANDS("m_grenade", "i", (int *mode), { int gamemode = *mode; intret(m_grenade); });
-	ICOMMANDS("m_gun", "i", (int *mode), { int gamemode = *mode; intret(m_gun); });
 	ICOMMANDS("m_lms", "i", (int *mode), { int gamemode = *mode; intret(m_lms); });
 	ICOMMANDS("m_ectf", "i", (int* mode), { int gamemode = *mode; intret(m_ectf); });
 	ICOMMANDS("m_bottomless", "i", (int* mode), { int gamemode = *mode; intret(m_bottomless); });
@@ -769,14 +760,14 @@ namespace game
 					formatstring(str, "0x%.6X (%d, %d, %d)", val, (val>>16)&0xFF, (val>>8)&0xFF, val&0xFF);
 				else
 					formatstring(str, id->flags&IDF_HEX ? "0x%X" : "%d", val);
-				conoutf("%s set map var \"%s\" to %s", colorname(d), id->name, str);
+				conoutf(CON_INFO, id->index, "%s set map var \"%s\" to %s", colorname(d), id->name, str);
 				break;
 			}
 			case ID_FVAR:
-				conoutf("%s set map var \"%s\" to %s", colorname(d), id->name, floatstr(*id->storage.f));
+				conoutf(CON_INFO, id->index, "%s set map var \"%s\" to %s", colorname(d), id->name, floatstr(*id->storage.f));
 				break;
 			case ID_SVAR:
-				conoutf("%s set map var \"%s\" to \"%s\"", colorname(d), id->name, *id->storage.s);
+				conoutf(CON_INFO, id->index, "%s set map var \"%s\" to \"%s\"", colorname(d), id->name, *id->storage.s);
 				break;
 		}
 	}
@@ -1408,6 +1399,7 @@ namespace game
 				getstring(text, p);
 				filtertext(text, text, false);
 				fixmapname(text);
+				//conoutf(CON_DEBUG, "N_MAPCHANGE called.");
 				changemapserv(text, getint(p));
 				mapchanged = true;
 				if(getint(p)) entities::spawnitems();
@@ -1597,7 +1589,7 @@ namespace game
 
 			case N_DIED:
 			{
-				int vcn = getint(p), acn = getint(p), frags = getint(p), tfrags = getint(p), gun = getint(p), special = getint(p);
+				int vcn = getint(p), acn = getint(p), frags = getint(p), tfrags = getint(p), gun = getint(p), hs = getint(p);
 				fpsent *victim = getclient(vcn),
 					   *actor = getclient(acn);
 				if(!actor) break;
@@ -1610,7 +1602,7 @@ namespace game
 					particle_textcopy(actor->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
 				}
 				if(!victim) break;
-				killed(victim, actor, gun, special);
+				killed(victim, actor, gun, hs);
 				break;
 			}
 
@@ -2099,7 +2091,7 @@ namespace game
 
 	void getmap()
 	{
-		if(!m_edit) { conoutf(CON_ERROR, "\"getmap\" only works in Multiplayer Edit mode"); return; }
+		if(!m_edit) { conoutf(CON_ERROR, "\"getmap\" only works in Cooperative Edit mode"); return; }
 		conoutf("getting map...");
 		addmsg(N_GETMAP, "r");
 	}
@@ -2158,7 +2150,7 @@ namespace game
 
 	void sendmap()
 	{
-		if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { conoutf(CON_ERROR, "\"sendmap\" only works in Multiplayer Edit mode"); return; }
+		if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { conoutf(CON_ERROR, "\"sendmap\" only works in Cooperative Edit mode"); return; }
 		conoutf("sending map...");
 		defformatstring(mname, "sendmap_%d", lastmillis);
 		save_world(mname, true);
