@@ -923,6 +923,164 @@ void resetsound()
 
 COMMAND(resetsound, "");
 
+// Mumble positional audio
+// TODO: Update to version 2, add context and identity support.
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <sys/mman.h>
+#include <fcntl.h> /* For O_* constants */
+#endif // _WIN32
+
+struct LinkedMem {
+#ifdef _WIN32
+    UINT32	uiVersion;
+    DWORD	uiTick;
+#else
+    uint32_t uiVersion;
+    uint32_t uiTick;
+#endif
+    float	fAvatarPosition[3];
+    float	fAvatarFront[3];
+    float	fAvatarTop[3];
+    wchar_t	name[256];
+    float	fCameraPosition[3];
+    float	fCameraFront[3];
+    float	fCameraTop[3];
+    wchar_t	identity[256];
+#ifdef _WIN32
+    UINT32	context_len;
+#else
+    uint32_t context_len;
+#endif
+    unsigned char context[256];
+    wchar_t description[2048];
+};
+
+#ifdef WIN32
+static HANDLE mumblelink = NULL;
+static LinkedMem *mumbleinfo = NULL;
+#define VALID_MUMBLELINK (mumblelink && mumbleinfo)
+#elif defined(_POSIX_SHARED_MEMORY_OBJECTS)
+static int mumblelink = -1;
+static MumbleInfo* mumbleinfo = (MumbleInfo*)-1;
+#define VALID_MUMBLELINK (mumblelink >= 0 && mumbleinfo != (MumbleInfo *)-1)
+#endif
+
+VARFP(mumble, 0, 1, 1, { if (mumble) initmumble(); else closemumble(); });
+
+void initmumble() {
+    if (!mumble) return;
+    #ifdef _WIN32
+        mumblelink = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, L"MumbleLink");
+        if (mumblelink == NULL) return;
+
+        mumbleinfo = (LinkedMem*)MapViewOfFile(mumblelink, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(LinkedMem));
+        if (mumbleinfo == NULL) {
+            CloseHandle(mumblelink);
+            mumblelink = NULL;
+            return;
+        }
+    #else
+        char memname[256];
+        snprintf(memname, 256, "/MumbleLink.%d", getuid());
+
+        mumblelink = shm_open(memname, O_RDWR, S_IRUSR | S_IWUSR);
+
+        if (mumblelink < 0) {
+            return;
+        }
+
+        mumbleinfo = (LinkedMem*)(mmap(NULL, sizeof(struct LinkedMem), PROT_READ | PROT_WRITE, MAP_SHARED, mumblelink, 0));
+
+        if (mumbleinfo == (void*)(-1)) {
+            mumbleinfo = NULL;
+            return;
+        }
+    #endif
+}
+
+void closemumble()
+{
+#ifdef WIN32
+    if (mumbleinfo) { UnmapViewOfFile(mumbleinfo); mumbleinfo = NULL; }
+    if (mumblelink) { CloseHandle(mumblelink); mumblelink = NULL; }
+#elif defined(_POSIX_SHARED_MEMORY_OBJECTS)
+    if (mumbleinfo != (MumbleInfo*)-1) { munmap(mumbleinfo, sizeof(MumbleInfo)); mumbleinfo = (MumbleInfo*)-1; }
+    if (mumblelink >= 0) { close(mumblelink); mumblelink = -1; }
+#endif
+}
+
+static inline vec mumblevec(const vec& v, bool pos = false)
+{
+    // change from X left, Z up, Y forward to X right, Y up, Z forward
+    // 8 cube units = 1 meter
+    vec m(-v.x, v.z, v.y);
+    if (pos) m.div(8);
+    return m;
+}
+
+void updatemumble() {
+    if (!mumbleinfo) return;
+
+    if (mumbleinfo->uiVersion != 2) {
+        wcsncpy(mumbleinfo->name, L"Cardboard", 256);
+        wcsncpy(mumbleinfo->description, L"Mumble positional audio support for the Cardboard Engine.", 2048);
+        mumbleinfo->uiVersion = 2;
+    }
+    mumbleinfo->uiTick++;
+
+    // Left handed coordinate system.
+    // X positive towards "right".
+    // Y positive towards "up".
+    // Z positive towards "front".
+    //
+    // 1 unit = 1 meter
+
+    // Unit vector pointing out of the avatar's eyes aka "At"-vector.
+    vec front = mumblevec(vec(RAD*player->yaw, RAD*player->pitch));
+    mumbleinfo->fAvatarFront[0] = front.x;
+    mumbleinfo->fAvatarFront[1] = front.y;
+    mumbleinfo->fAvatarFront[2] = front.z;
+
+    // Unit vector pointing out of the top of the avatar's head aka "Up"-vector (here Top points straight up).
+    vec top = mumblevec(vec(RAD*player->yaw, RAD*(player->pitch+90)));
+    mumbleinfo->fAvatarTop[0] = top.x;
+    mumbleinfo->fAvatarTop[1] = top.y;
+    mumbleinfo->fAvatarTop[2] = top.z;
+
+    // Position of the avatar (here standing slightly off the origin)
+    vec pos = mumblevec(player->o, true);
+    mumbleinfo->fAvatarPosition[0] = pos.x;
+    mumbleinfo->fAvatarPosition[1] = pos.y;
+    mumbleinfo->fAvatarPosition[2] = pos.z;
+
+    // Same as avatar but for the camera.
+    vec campos = mumblevec(camera1->o, true);
+    mumbleinfo->fCameraPosition[0] = campos.x;
+    mumbleinfo->fCameraPosition[1] = campos.y;
+    mumbleinfo->fCameraPosition[2] = campos.z;
+
+    vec camfront = mumblevec(vec(RAD*camera1->yaw, RAD*camera1->pitch));
+    mumbleinfo->fCameraFront[0] = camfront.x;
+    mumbleinfo->fCameraFront[1] = camfront.y;
+    mumbleinfo->fCameraFront[2] = camfront.z;
+
+    vec camtop = mumblevec(vec(RAD*camera1->yaw, RAD*(camera1->pitch+90)));
+    mumbleinfo->fCameraTop[0] = camtop.x;
+    mumbleinfo->fCameraTop[1] = camtop.y;
+    mumbleinfo->fCameraTop[2] = camtop.z;
+
+    // Identifier which uniquely identifies a certain player in a context (e.g. the ingame name).
+    wcsncpy(mumbleinfo->identity, L"asdf1234", 256);
+    // Context should be equal for players which should be able to hear each other positional and
+    // differ for those who shouldn't (e.g. it could contain the server+port and team)
+    memcpy(mumbleinfo->context, "ContextBlob\x00\x01\x02\x03\x04", 16);
+    mumbleinfo->context_len = 16;
+}
+
+/*
 #ifdef WIN32
 
 #include <wchar.h>
@@ -1029,4 +1187,5 @@ void updatemumble()
     mumbleinfo->top = mumblevec(vec(RAD*player->yaw, RAD*(player->pitch+90)));
 #endif
 }
+*/
 

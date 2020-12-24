@@ -1452,6 +1452,7 @@ extern oldstring gametoken;
 extern char* web_get(char* targetUrl, bool debug = false);
 extern char* web_post(char* targetUrl, char* postFields, bool debug = false);
 extern char* web_auth(char* targetUrl, oldstring gametoken, bool debug = false);
+extern void  web_download(char* targetUrl, char* filename, bool debug = false);
 extern int offline;
 
 #endif

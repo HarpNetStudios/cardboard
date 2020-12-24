@@ -1368,6 +1368,12 @@ void testcurl_(char* targetUrl) {
 
 COMMANDN(testcurl, testcurl_, "s");
 
+void testcurlprogress_() {
+    web_download("http://ipv4.download.thinkbroadband.com/5MB.zip", "5MB.zip", true);
+}
+
+COMMANDN(testcurlprogress, testcurlprogress_, "");
+
 void testb64e_(unsigned char* targetUrl) {
     char* thing = b64_encode(targetUrl, strlen((char*)targetUrl));
     conoutf(CON_ECHO, "%s", thing);

@@ -468,3 +468,86 @@ char* web_post(char* targetUrl, char* postFields, bool debug) // Might work, idk
 
     free(chunk.memory);
 }
+
+size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) {
+    size_t written = fwrite(ptr, size, nmemb, stream);
+    return written;
+}
+
+int render_web_file(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
+    bool upload = false;
+    if (ultotal > 0) upload = true;
+
+    float progress;
+    if (upload) progress = ulnow / ultotal;
+    else progress = dlnow / dltotal;
+
+    defformatstring(webfiletext, "%s file %d%% (%l/%l)", upload?"Uploading":"Downloading", (int)progress, upload?ulnow:dlnow, upload?ultotal:dltotal);
+
+    renderprogress(progress,webfiletext);
+
+    return 0;
+}
+
+void web_download(char* targetUrl, char* filename, bool debug)
+{
+#ifndef _DEBUG
+    if (offline && !isdedicatedserver()) {
+        if (debug) conoutf(CON_ERROR, "cannot make web request in offline mode");
+        return;
+    }
+#endif
+    CURL* curl;
+    FILE* fp;
+    CURLcode res;
+
+    char* url; // thing
+    long response_code;
+
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    // init the curl session */
+    curl = curl_easy_init();
+
+    fp = fopen(filename, "wb");
+    // specify URL to get */
+    curl_easy_setopt(curl, CURLOPT_URL, targetUrl);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
+
+    // send all data to this function  */
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+
+    // we pass our 'chunk' struct to the callback function */
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+
+    // some servers don't like requests that are made without a user-agent field, so we provide one
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cardboard-Engine/1.0.0");
+
+    curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, render_web_file);
+
+    // set timeout to 5 seconds so the game doesn't break when servers aren't responding
+    //curl_easy_setopt(curl, CURLOPT_TIMEOUT, curltimeout);
+
+    // get it! */
+    res = curl_easy_perform(curl);
+
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+    curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &url);
+
+    // check for errors */
+    if (res != CURLE_OK) {
+        if (debug) conoutf(CON_ERROR, "curl_easy_perform() failed: %s", curl_easy_strerror(res));
+        return;
+    }
+    else {
+        // we now have the data, do stuff with it
+        if (debug) {
+            conoutf(CON_INFO, "%d response, %s url", (int)response_code, url);
+        }
+    }
+
+    /* cleanup curl stuff */
+    curl_easy_cleanup(curl);
+
+    fclose(fp);
+}
