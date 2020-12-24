@@ -292,9 +292,11 @@ void startmusic(char *name, char *cmd)
 COMMANDN(music, startmusic, "ss");
 SVARFP(soundtrack, "adwh", {
 	execfile("data/streset.cfg", false);
-	defformatstring(soundtrackcfgname, "packages/music/%s/soundtrack.cfg", soundtrack);
-	execfile(soundtrackcfgname, false);
-	if(identexists("playsong")) execute("playsong"); 
+	defformatstring(st_arch, "packages/music/%s", soundtrack);
+	addzip(st_arch, "packages/music", NULL, true);
+	defformatstring(st_cfgname, "packages/music/%s/soundtrack.cfg", soundtrack);
+	execfile(st_cfgname, false);
+	execident("playsong");
 	});
 SVARP(_soundtrack_title, "");
 SVARP(_soundtrack_author, "");
@@ -421,8 +423,7 @@ VARFP(fixwav, 0, 1, 1, initwarning("sound configuration", INIT_LOAD, CHANGE_SOUN
 //SVARP(soundpack, "default");
 SVARFP(soundpack, "default", { 
 		if(strcmp(soundpack,"default")){
-			oldstring gamer;
-			formatstring(gamer, "packages/soundpacks/%s", soundpack);
+			defformatstring(gamer, "packages/soundpacks/%s", soundpack);
 			if(addzip(gamer, "packages/soundpacks", NULL, true)) resetsound();
 			return;
 		}
@@ -1076,7 +1077,7 @@ void updatemumble() {
     wcsncpy(mumbleinfo->identity, L"asdf1234", 256);
     // Context should be equal for players which should be able to hear each other positional and
     // differ for those who shouldn't (e.g. it could contain the server+port and team)
-    memcpy(mumbleinfo->context, "ContextBlob\x00\x01\x02\x03\x04", 16);
+    memcpy(mumbleinfo->context, "ContextBlob\x00\x01\x02\x03\x04", 16); // "127.0.0.1:35000_red"
     mumbleinfo->context_len = 16;
 }
 

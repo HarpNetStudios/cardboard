@@ -280,7 +280,7 @@ bool addzip(const char* name, const char* mount = NULL, const char* strip = NULL
     FILE *f = fopen(findfile(pname, "rb"), "rb");
     if(!f)
     {
-		conoutf(CON_ERROR, "could not open file %s", pname);
+		if(!internal) conoutf(CON_ERROR, "could not open file %s", pname);
         return false;
     }
     zipdirectoryheader h;

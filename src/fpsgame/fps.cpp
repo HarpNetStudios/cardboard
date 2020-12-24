@@ -343,7 +343,8 @@ namespace game
     void spawnplayer(fpsent *d)   // place at random spawn
     {
         damageblend(0); // fixes damage screen not going away? -Y
-        pickgamespawn(d); //findplayerspawn(d, d==player1 && respawnent  >=0 ? respawnent : -1, (!m_teammode ? 0 : (strcmp(player1->team,"red") ? 2 : 1)));
+        pickgamespawn(d); 
+        //findplayerspawn(d, d==player1 && respawnent  >=0 ? respawnent : -1, (!m_teammode ? 0 : (strcmp(player1->team,"red") ? 2 : 1)));
         spawnstate(d);
         if(d==player1)
         {
@@ -439,8 +440,8 @@ namespace game
 
             ai::damaged(d, actor);
 
-            if (d == h) playsound(S_PAIN6);
-            else playsound(S_PAIN1 + rnd(5), &d->o);
+            if (d == h) { playsound(S_PAIN_SARAH_6 + (6 * d->playermodel)); conoutf("playing sound %d, pm %d", S_PAIN_SARAH_6 + (6 * d->playermodel), d->playermodel); }
+            else playsound(S_PAIN_SARAH_1 + rnd(5) + (6 * d->playermodel), &d->o);
         }
         
         if (d->health <= 0) { if (local) killed(d, actor, gun); }
@@ -467,14 +468,14 @@ namespace game
 			d->secattacking = false;
             //d->pitch = 0;
             d->roll = 0;
-            playsound(S_DIE1+rnd(2));
+            playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel));
         }
         else
         {
             d->fmove = d->fstrafe = 0.0f;
             d->resetinterp();
             d->smoothmillis = 0;
-            playsound(S_DIE1+rnd(2), &d->o);
+            playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel), &d->o);
         }
     }
 

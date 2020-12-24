@@ -416,7 +416,7 @@ namespace game
                     {
                         damageblend(damage);
                         damagecompass(damage, at ? at->o : f->o);
-                        playsound(S_PAIN6);
+                        playsound(S_PAIN_SARAH_6 + (6 * f->playermodel));
                     }
                 }
             }

@@ -79,7 +79,8 @@ namespace game
 
     void changedplayermodel()
     {
-        if(player1->clientnum < 0) player1->playermodel = playermodel;
+        //if(player1->clientnum < 0) player1->playermodel = playermodel; // this might present an issue. -Y 
+        player1->playermodel = playermodel;
         if(player1->ragdoll) cleanragdoll(player1);
         loopv(ragdolls)
         {
