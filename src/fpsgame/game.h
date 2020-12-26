@@ -383,12 +383,12 @@ static const char* officialmaps[] =
 	"flux",
 	"fz_burn",
 	"g3_obliterate_alpha",
-	"garena1",
 	"highland",
 	"hr",
 	"illusion",
 	"indust1",
 	"maze",
+    "nefuture",
 	"neo_falls",
 	"neo_noir",
 	"precipice",
@@ -595,6 +595,8 @@ struct fpsent : dynent, fpsstate
     int playermodel;
     ai::aiinfo *ai;
     int ownernum, lastnode;
+
+    dynent *lastattacker;
 
     vec muzzle;
 

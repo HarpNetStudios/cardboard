@@ -387,7 +387,7 @@ namespace game
 	void dosecattack(bool on)
 	{
 		if(!connected || intermission) return;
-		if((player1->attacking = on) && attackspawn) respawn();
+		if((player1->secattacking = on) && attackspawn) respawn();
 	}
 
 	VARP(jumpspawn, 0, 1, 1);
@@ -440,7 +440,7 @@ namespace game
 
             ai::damaged(d, actor);
 
-            if (d == h) { playsound(S_PAIN_SARAH_6 + (6 * d->playermodel)); conoutf("playing sound %d, pm %d", S_PAIN_SARAH_6 + (6 * d->playermodel), d->playermodel); }
+            if (d == h) playsound(S_PAIN_SARAH_6 + (6 * d->playermodel));
             else playsound(S_PAIN_SARAH_1 + rnd(5) + (6 * d->playermodel), &d->o);
         }
         

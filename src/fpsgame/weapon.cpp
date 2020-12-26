@@ -392,6 +392,8 @@ namespace game
             lasthit = lastmillis;
         }
 
+        f->lastattacker = (dynent*)at;
+
         f->lastpain = lastmillis;
         if(at->type==ENT_PLAYER && !isteam(at->team, f->team)) at->totaldamage += damage;
 

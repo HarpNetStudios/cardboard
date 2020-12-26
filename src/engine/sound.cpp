@@ -927,11 +927,12 @@ COMMAND(resetsound, "");
 // Mumble positional audio
 // TODO: Update to version 2, add context and identity support.
 
+/*
 #ifdef _WIN32
 #include <windows.h>
 #else
 #include <sys/mman.h>
-#include <fcntl.h> /* For O_* constants */
+#include <fcntl.h> // For O_* constants 
 #endif // _WIN32
 
 struct LinkedMem {
@@ -1080,8 +1081,9 @@ void updatemumble() {
     memcpy(mumbleinfo->context, "ContextBlob\x00\x01\x02\x03\x04", 16); // "127.0.0.1:35000_red"
     mumbleinfo->context_len = 16;
 }
+*/
 
-/*
+
 #ifdef WIN32
 
 #include <wchar.h>
@@ -1188,5 +1190,5 @@ void updatemumble()
     mumbleinfo->top = mumblevec(vec(RAD*player->yaw, RAD*(player->pitch+90)));
 #endif
 }
-*/
+
 
