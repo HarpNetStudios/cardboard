@@ -623,7 +623,9 @@ extern int ext_discord_enabled;
 extern bool addzip(const char* name, const char* mount, const char* strip, bool internal);
 extern bool removezip(const char* name);
 
+#ifndef STANDALONE
 // idk bro
 extern float loadprogress;
 extern void renderbackground(const char* caption = NULL, Texture* mapshot = NULL, const char* mapname = NULL, const char* mapinfo = NULL, bool restore = false, bool force = false, bool splash = false);
 extern void renderprogress(float bar, const char* text, GLuint tex = 0, bool background = false);
+#endif
