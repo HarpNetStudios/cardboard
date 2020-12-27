@@ -469,6 +469,8 @@ char* web_post(char* targetUrl, char* postFields, bool debug) // Might work, idk
     free(chunk.memory);
 }
 
+// cringe fix for cringe bug -Y
+#ifndef STANDALONE
 size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) {
     size_t written = fwrite(ptr, size, nmemb, stream);
     return written;
@@ -489,8 +491,6 @@ int render_web_file(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_of
     return 0;
 }
 
-// cringe fix for cringe bug -Y
-#ifndef STANDALONE
 void web_download(char* targetUrl, char* filename, bool debug)
 {
 #ifndef _DEBUG
