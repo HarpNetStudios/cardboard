@@ -1368,9 +1368,11 @@ void testcurl_(char* targetUrl) {
 
 COMMANDN(testcurl, testcurl_, "s");
 
+#ifndef STANDALONE
 void testcurlprogress_() {
     web_download("http://ipv4.download.thinkbroadband.com/5MB.zip", "5MB.zip", true);
 }
+#endif
 
 COMMANDN(testcurlprogress, testcurlprogress_, "");
 

@@ -489,6 +489,8 @@ int render_web_file(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_of
     return 0;
 }
 
+// cringe fix for cringe bug -Y
+#ifndef STANDALONE
 void web_download(char* targetUrl, char* filename, bool debug)
 {
 #ifndef _DEBUG
@@ -551,3 +553,4 @@ void web_download(char* targetUrl, char* filename, bool debug)
 
     fclose(fp);
 }
+#endif
