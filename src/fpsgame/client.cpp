@@ -77,7 +77,7 @@ namespace game
 			{
 				if(!alive++)
 				{
-					settexture(strcmp(o->team, "red") ? "packages/hud/blip_red_alive.png" : "packages/hud/blip_blue_alive.png");
+					settexture(!strcmp(o->team, "red") ? "packages/hud/blip_red_alive.png" : "packages/hud/blip_blue_alive.png");
 					gle::defvertex(2);
 					gle::deftexcoord0();
 					gle::begin(GL_QUADS);
@@ -93,7 +93,7 @@ namespace game
 			{
 				if(!dead++)
 				{
-					settexture(strcmp(o->team, "red") ? "packages/hud/blip_red_dead.png" : "packages/hud/blip_blue_dead.png");
+					settexture(!strcmp(o->team, "red") ? "packages/hud/blip_red_dead.png" : "packages/hud/blip_blue_dead.png");
 					gle::defvertex(2);
 					gle::deftexcoord0();
 					gle::begin(GL_QUADS);

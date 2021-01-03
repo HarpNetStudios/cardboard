@@ -433,7 +433,7 @@ struct collectclientmode : clientmode
     void drawbaseblip(fpsent *d, float x, float y, float s, int i)
     {
         base &b = bases[i];
-        settexture(b.team==collectteambase(player1->team) ? "packages/hud/blip_blue.png" : "packages/hud/blip_red.png", 3);
+        settexture(b.team==collectteambase("red") ? "packages/hud/blip_red.png" : "packages/hud/blip_blue.png", 3);
         drawblip(d, x, y, s, b.o);
     }
 
@@ -482,7 +482,7 @@ struct collectclientmode : clientmode
             drawbaseblip(d, x, y, s, i);
         }
         int team = collectteambase(d->team);
-        settexture(team == collectteambase(player1->team) ? "packages/hud/blip_red_skull.png" : "packages/hud/blip_blue_skull.png", 3);
+        settexture(team == collectteambase("red") ? "packages/hud/blip_red_skull.png" : "packages/hud/blip_blue_skull.png", 3);
         loopv(players)
         {
             fpsent *o = players[i];
