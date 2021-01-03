@@ -33,3 +33,6 @@
 # Leave me alone
 launcher.json
 Newtonsoft.Json.dll
+
+# Update temp files
+update.cfg
