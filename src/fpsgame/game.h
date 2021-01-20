@@ -127,12 +127,11 @@ static struct gamemodeinfo
     { "Instagib Tactics", M_NOITEMS | M_TACTICS | M_INSTA, "You spawn with two random weapons and armour and die instantly from one shot. There are no items. Frag everyone to score points."},
     { "Team Instagib Tactics", M_NOITEMS | M_TACTICS | M_INSTA | M_TEAM, "You spawn with two random weapons and armour and die instantly from one shot. There are no items. Frag the enemy team to score points for your team."},
     { "Grenade Battle", M_NOITEMS | M_GRENADE, "You spawn with full grenade launcher ammo. There are no items. Frag everyone to score points."}, // 20
-    { "UNUSED", M_LOCAL, "UNUSED"}, // 21
-    { "Last Man Standing", M_LMS, "You spawn with ten lives. Frag everyone to score points. Be the last one alive to win."}, // 22
-	{ "Explosive CTF", M_INSTA | M_BOTTOMLESS | M_TEAM | M_CTF | M_NOITEMS | M_ECTF, "Rockets! Grenades! Instagib! CTF! Exciting!"}, // 23
-	{ "Test Mode", M_TEST, "It might be something stupid, or it might be cool. It also might crash your game."}, // 24
-	{ "Reverse One Flag CTF", M_CTF | M_TEAM | M_R1CTF, "Capture the center flag and return it to the enemy base to score points!"}, // 25
-    { "Race Mode", M_RACE | M_BOTTOMLESS | M_PARKOUR, "Race: Be the first who completes 3 laps. Kill people to repulse them." }, // 26
+    { "Last Man Standing", M_LMS, "You spawn with ten lives. Frag everyone to score points. Be the last one alive to win."}, // 21
+	{ "Explosive CTF", M_INSTA | M_BOTTOMLESS | M_TEAM | M_CTF | M_NOITEMS | M_ECTF, "Rockets! Grenades! Instagib! CTF! Exciting!"}, // 22
+	{ "Test Mode", M_TEST, "It might be something stupid, or it might be cool. It also might crash your game."}, // 23
+	{ "Reverse One Flag CTF", M_CTF | M_TEAM | M_R1CTF, "Capture the center flag and return it to the enemy base to score points!"}, // 24
+    { "Race Mode", M_RACE | M_BOTTOMLESS | M_PARKOUR, "Race: Be the first who completes 3 laps. Kill people to repulse them." }, // 25
 };
 
 #define STARTGAMEMODE (-1)
@@ -226,6 +225,12 @@ enum
 
     S_HIT,
 	S_KILL,
+
+    S_ALLCHAT,
+    S_TEAMCHAT,
+
+    S_SRV_CONNECT,
+    S_SRV_DISCONNECT,
 };
 
 // network messages codes, c2s, c2c, s2c
@@ -263,6 +268,7 @@ enum
     N_SPAWNLOC,
     N_RACESTART, N_RACEFINISH, N_RACECHECKPOINT, N_RACELAP, N_RACEINFO,
     N_HUDANNOUNCE,
+    N_GRAPPLE, N_GRAPPLEPOS, N_GRAPPLEHIT, N_GRAPPLED, N_GRAPPLESTOP, N_GRAPPLEFX,
     NUMMSG
 };
 
@@ -297,6 +303,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     N_SPAWNLOC, 0,
     N_RACESTART, 0, N_RACEFINISH, 0, N_RACECHECKPOINT, 2, N_RACELAP, 2, N_RACEINFO, 7,
     N_HUDANNOUNCE, 0,
+    N_GRAPPLE, 8, N_GRAPPLEPOS, 4, N_GRAPPLEHIT, 4, N_GRAPPLED, 2, N_GRAPPLESTOP, 2, N_GRAPPLEFX, 9,
     -1
 };
 
@@ -304,7 +311,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 #define CARDBOARD_SERVER_PORT 35000
 #define CARDBOARD_SERVINFO_PORT 35001
 #define CARDBOARD_MASTER_PORT 35002
-#define PROTOCOL_VERSION 1007           // bump when protocol changes
+#define PROTOCOL_VERSION 1008           // bump when protocol changes
 #define DEMO_VERSION 2                  // bump when demo format changes
 #define DEMO_MAGIC "CARDBOARD_DEMO"
 
@@ -396,6 +403,7 @@ static const char* officialmaps[] =
 	"retrograde",
 	"ruins",
 	"secondevermap",
+    "shellone",
 	"zigguraut",
 };
 
@@ -568,6 +576,8 @@ struct fpsstate
     }
 };
 
+#include "weaponstats_type.h"
+
 struct fpsent : dynent, fpsstate
 {
     int weight;                         // affects the effectiveness of hitpush
@@ -578,14 +588,18 @@ struct fpsent : dynent, fpsstate
 	int lastaction[NUMGUNS];
 	int lastgun;
 	int lastattackgun;
+    int lasthitpushgun;
 	int ammotype;
     bool attacking;
 	bool secattacking;
+    bool grappling;
     int attacksound, attackchan, idlesound, idlechan;
     int lasttaunt;
     int lastpickup, lastpickupindex, lastpickupmillis, lastbase, lastrepammo, flagpickup, tokens;
     vec lastcollect;
     int frags, flags, deaths, totaldamage, totalshots;
+    int suicides;
+    weaponstats stats;
     editinfo *edit;
     float deltayaw, deltapitch, deltaroll, newyaw, newpitch, newroll;
     int smoothmillis;
@@ -596,11 +610,13 @@ struct fpsent : dynent, fpsstate
     ai::aiinfo *ai;
     int ownernum, lastnode;
 
-    dynent *lastattacker;
+    fpsent *lastattacker;
 
     vec muzzle;
 
-	fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1), frags(0), flags(0), deaths(0), totaldamage(0), totalshots(0), edit(NULL), smoothmillis(-1), playermodel(-1), ai(NULL), ownernum(-1), muzzle(-1, -1, -1), tagfetch(false)
+    bool hasflag;
+
+	fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1), frags(0), flags(0), deaths(0), totaldamage(0), totalshots(0), suicides(0), edit(NULL), smoothmillis(-1), playermodel(-1), ai(NULL), ownernum(-1), muzzle(-1, -1, -1), tagfetch(false), grappling(false), hasflag(false)
 	{
         name[0] = team[0] = info[0] = tags[0] = 0;
         respawn();
@@ -618,6 +634,7 @@ struct fpsent : dynent, fpsstate
         vec push(dir);
         push.mul((actor==this && guns[gun].exprad ? EXP_SELFPUSH : 0.1f)*guns[gun].hitpush*guns[gun].damage/weight); // hitpush damage
         vel.add(push);
+        lasthitpushgun = gun;
     }
 
     void stopattacksound()
@@ -674,6 +691,31 @@ struct teamscore
         if(x.score > y.score) return true;
         if(x.score < y.score) return false;
         return strcmp(x.team, y.team) < 0;
+    }
+};
+
+struct extclient {
+    int clientnum, ping;
+    oldstring name, team;
+    int frags, flags, deaths, teamkills, accuracy, health, armour, gunselect, privilege, state;
+    uint ip;
+    extclient()
+    {
+        clientnum = -1;
+        ping = 0;
+        frags = 0;
+        flags = 0;
+        deaths = 0;
+        teamkills = 0;
+        accuracy = 0;
+        health = 0;
+        armour = 0;
+        gunselect = 0;
+        privilege = 0;
+        state = 0;
+        ip = 0;
+        copystring(name, "CardboardPlayer", MAXNAMELEN);
+        copystring(team, " ", MAXTEAMLEN);
     }
 };
 
@@ -778,7 +820,7 @@ namespace game
 	extern const char* gettags(fpsent* d, char *tag = NULL);
     extern fpsent *getclient(int cn);
     extern fpsent *newclient(int cn);
-	extern const char* colorname(fpsent* d, const char* name = NULL, const char* prefix = "", const char* suffix = "", const char* alt = NULL, bool tags = false);
+	extern const char* colorname(fpsent* d, const char* name = NULL, const char* prefix = "", const char* suffix = "", const char* alt = NULL, bool tags = false, bool scoreboard = false);
 	extern const char *teamcolorname(fpsent *d, const char *alt = "you", bool tags = false);
     //extern const char *teamcolor(const char *name, bool sameteam, const char *alt = NULL);
     extern const char *teamcolor(const char *name, const char *team, const char *alt = NULL);
@@ -787,7 +829,7 @@ namespace game
 	extern void teamsound(fpsent* d, int n, const vec* loc = NULL);
     extern fpsent *pointatplayer();
     extern fpsent *hudplayer();
-    extern fpsent *followingplayer();
+    extern fpsent *followingplayer(fpsent *fallback = NULL);
     extern void stopfollowing();
     extern void clientdisconnected(int cn, bool notify = true);
     extern void clearclients(bool notify = true);
@@ -808,6 +850,8 @@ namespace game
     extern bool connected, remote, demoplayback;
     extern oldstring servinfo;
     extern vector<uchar> messages;
+    extern void processservinfo();
+    extern void checkinfoqueue();
 
     extern int parseplayer(const char *arg);
     extern void ignore(int cn);
@@ -823,6 +867,14 @@ namespace game
     extern void c2sinfo(bool force = false);
     extern void sendposition(fpsent *d, bool reliable = false);
     extern void setpubtoken(const char* pubtoken);
+    extern void checkflag();
+
+    // extinfo
+    extern void updateextinfo();
+    extern extclient* getextclient(int clientnum);
+    extern void resetextinfo();
+    extern vector<extclient*> extclients;
+    extern bool _extinfo;
 
     // weapon
     extern int getweapon(const char *name);
@@ -844,6 +896,18 @@ namespace game
     extern void updateprojectiles(int curtime);
     extern void removeprojectiles(fpsent *owner);
     extern void renderprojectiles();
+    //grapple
+    extern void shootgrapplev(vec& from, vec& to, fpsent* d, bool local);
+    extern void shootgrapple(fpsent* d, vec& targ);
+    extern void movegrapples(int time);
+    extern void sendgrappleclient(dynent* d, ucharbuf& p);
+    extern void setgrappled(fpsent* d, fpsent* victim);
+    extern void setgrapplehit(fpsent* d, const vec& hit);
+    extern void setgrapplepos(fpsent* d, const vec& pos);
+    extern void removegrapples(physent* d, bool attached);
+    extern bool hasgrapple(fpsent* d);
+    extern void rendergrapples();
+
     extern void preloadbouncers();
     extern void removeweapons(fpsent *owner);
     extern void updateweapons(int curtime);
@@ -860,6 +924,7 @@ namespace game
     extern void setteaminfo(const char *team, int frags);
 	extern void resetteaminfo();
 	extern int statuscolor(fpsent *d, int color);
+    extern int showclientnum;
 
     // render
     struct playermodelinfo
@@ -881,6 +946,9 @@ namespace game
     extern void swayhudgun(int curtime);
     extern vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
 }
+
+#include "fragmessages.h"
+#include "weaponstats.h"
 
 namespace server
 {

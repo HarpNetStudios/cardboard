@@ -87,6 +87,14 @@ namespace server
 		void process(clientinfo *ci);
 	};
 
+	struct grappleevent : timedevent
+	{
+		int id;
+		float from[3], to[3];
+
+		void process(clientinfo* ci);
+	};
+
 	struct suicideevent : gameevent
 	{
 		void process(clientinfo *ci);
@@ -1586,7 +1594,7 @@ namespace server
 		// only allow edit messages in coop-edit mode
 		if(type >= N_EDITENT && type <= N_EDITVAR && !m_edit) return -1;
 		// server only messages
-		static const int servtypes[] = { N_SERVINFO, N_INITCLIENT, N_WELCOME, N_MAPCHANGE, N_SERVMSG, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX, N_DIED, N_SPAWNSTATE, N_FORCEDEATH, N_TEAMINFO, N_ITEMACC, N_ITEMSPAWN, N_TIMEUP, N_CDIS, N_CURRENTMASTER, N_PONG, N_RESUME, N_BASESCORE, N_BASEINFO, N_BASEREGEN, N_SENDDEMOLIST, N_SENDDEMO, N_DEMOPLAYBACK, N_SENDMAP, N_DROPFLAG, N_SCOREFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_CLIENT, N_AUTHCHAL, N_INITAI, N_EXPIRETOKENS, N_DROPTOKENS, N_STEALTOKENS, N_DEMOPACKET, N_RACEINFO, N_HUDANNOUNCE };
+		static const int servtypes[] = { N_SERVINFO, N_INITCLIENT, N_WELCOME, N_MAPCHANGE, N_SERVMSG, N_DAMAGE, N_HITPUSH, N_SHOTFX, N_EXPLODEFX, N_DIED, N_SPAWNSTATE, N_FORCEDEATH, N_TEAMINFO, N_ITEMACC, N_ITEMSPAWN, N_TIMEUP, N_CDIS, N_CURRENTMASTER, N_PONG, N_RESUME, N_BASESCORE, N_BASEINFO, N_BASEREGEN, N_SENDDEMOLIST, N_SENDDEMO, N_DEMOPLAYBACK, N_SENDMAP, N_DROPFLAG, N_SCOREFLAG, N_RETURNFLAG, N_RESETFLAG, N_INVISFLAG, N_CLIENT, N_AUTHCHAL, N_INITAI, N_EXPIRETOKENS, N_DROPTOKENS, N_STEALTOKENS, N_DEMOPACKET, N_RACEINFO, N_HUDANNOUNCE, N_GRAPPLEFX };
 		if(ci)
 		{
 			for (int i = 0; i < int(sizeof(servtypes) / sizeof(int)); ++i) if(type == servtypes[i]) return -1;
@@ -1757,7 +1765,7 @@ namespace server
 	{
 		if(clients.empty() || (!hasnonlocalclients() && !demorecord)) return false;
 		enet_uint32 curtime = enet_time_get()-lastsend;
-		if(curtime<10 && !force) return false; // don't update faster than 100fps, 33=30fps, 15=~66.67fps
+		if(curtime<10 && !force) return false; // don't update faster than 100fps, 33=30fps, 15=~66.67fps/map
 		bool flush = buildworldstate();
 		lastsend += curtime - (curtime%10);
 		return flush;
@@ -2041,6 +2049,8 @@ namespace server
 	}
 
 	VAR(matchtime, 1, 600, 1200);
+
+	VAR(allowgrapple, 0, 0, 1);
 
 	void changemap(const char *s, int mode)
 	{
@@ -2463,6 +2473,17 @@ namespace server
 		gamestate &gs = ci->state;
 		if(m_mp(gamemode) && !gs.isalive(gamemillis)) return;
 		pickup(ent, ci->clientnum);
+	}
+
+	void grappleevent::process(clientinfo *ci)
+	{
+		gamestate& gs = ci->state;
+		if (!allowgrapple || !gs.isalive(gamemillis))
+			return;
+		sendf(-1, 1, "ri8x", N_GRAPPLEFX, ci->clientnum,
+			int(from[0] * DMF), int(from[1] * DMF), int(from[2] * DMF),
+			int(to[0] * DMF), int(to[1] * DMF), int(to[2] * DMF),
+			ci->clientnum);
 	}
 
 	bool gameevent::flush(clientinfo *ci, int fmillis)
@@ -3057,7 +3078,7 @@ namespace server
 		if(ci && !ci->connected)
 		{
 			if(chan==0) return;
-			else if(chan!=1) { conoutf(CON_ERROR, "^f0Incorrect channel, report to Yellowberry."); disconnect_client(sender, DISC_MSGERR); return; }
+			else if(chan!=1) { conoutf(CON_ERROR, "\f0Incorrect channel, report to Yellowberry."); disconnect_client(sender, DISC_MSGERR); return; }
 			else while(p.length() < p.maxlen) switch(checktype(getint(p), ci))
 			{
 				case N_CONNECT:
@@ -3107,7 +3128,7 @@ namespace server
 					break;
 
 				default:
-					conoutf(CON_ERROR, "^f0Message parse error, report to Yellowberry.");
+					conoutf(CON_ERROR, "\f0Message parse error, report to Yellowberry.");
 					disconnect_client(sender, DISC_MSGERR);
 					return;
 			}
@@ -3364,6 +3385,59 @@ namespace server
 				}
 				if(cq) cq->addevent(exp);
 				else delete exp;
+				break;
+			}
+
+			case N_GRAPPLE:
+			{
+				disconnect_client(sender, DISC_KICK);
+				grappleevent *grp = new grappleevent;
+				if (!allowgrapple)
+				{
+					for(int k = 0; k < 7; ++k) getint(p);
+					break;
+				}
+				
+                grp->id = getint(p); 
+				grp->millis = cq ? cq->geteventmillis(gamemillis, grp->id) : 0;
+				for(int k = 0; k < 3; ++k) grp->from[k] = getint(p) / DMF;
+				for(int k = 0; k < 3; ++k) grp->to[k] = getint(p) / DMF;
+				if (cq) cq->addevent(grp);
+				break;
+			}
+
+			case N_GRAPPLEPOS:
+			{
+				disconnect_client(sender, DISC_KICK);
+				for(int k = 0; k < 3; ++k) getint(p);
+				if (allowgrapple)
+					QUEUE_MSG;
+				break;
+			}
+
+			case N_GRAPPLEHIT:
+			{
+				disconnect_client(sender, DISC_KICK);
+				for(int k = 0; k < 3; ++k) getint(p);
+				if (allowgrapple)
+					QUEUE_MSG;
+				break;
+			}
+
+			case N_GRAPPLED:
+			{
+				disconnect_client(sender, DISC_KICK);
+				getint(p);
+				if (allowgrapple)
+					QUEUE_MSG;
+				break;
+			}
+
+			case N_GRAPPLESTOP:
+			{
+				disconnect_client(sender, DISC_KICK);
+				getint(p);
+				QUEUE_MSG;
 				break;
 			}
 
@@ -3870,7 +3944,7 @@ namespace server
 			#undef PARSEMESSAGES
 
 			case -1:
-				conoutf(CON_ERROR, "^f0Bad packet ID, report to Yellowberry.");
+				conoutf(CON_ERROR, "\f0Bad packet ID, report to Yellowberry.");
 				disconnect_client(sender, DISC_MSGERR);
 				return;
 
@@ -3881,7 +3955,7 @@ namespace server
 			default: genericmsg:
 			{
 				int size = server::msgsizelookup(type);
-				if(size<=0) { conoutf(CON_ERROR, "^f0Default size 0, report to Yellowberry."); disconnect_client(sender, DISC_MSGERR); return; }
+				if(size<=0) { conoutf(CON_ERROR, "\f0Default size 0, report to Yellowberry."); disconnect_client(sender, DISC_MSGERR); return; }
 				for(int i = 0; i < int(size-1); ++i) getint(p);
 				if(ci) switch(msgfilter[type])
 				{

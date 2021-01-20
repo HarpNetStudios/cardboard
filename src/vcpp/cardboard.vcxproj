@@ -459,6 +459,7 @@
     <ClInclude Include="..\engine\mpr.h" />
     <ClInclude Include="..\engine\octa.h" />
     <ClInclude Include="..\engine\translate.h" />
+    <ClInclude Include="..\engine\wayland.h" />
     <ClInclude Include="..\engine\world.h" />
     <ClInclude Include="..\engine\animmodel.h" />
     <ClInclude Include="..\engine\bih.h" />
@@ -479,7 +480,12 @@
     <ClInclude Include="..\engine\textedit.h" />
     <ClInclude Include="..\engine\texture.h" />
     <ClInclude Include="..\engine\vertmodel.h" />
+    <ClInclude Include="..\fpsgame\colors.h" />
+    <ClInclude Include="..\fpsgame\extserver.h" />
+    <ClInclude Include="..\fpsgame\fragmessages.h" />
     <ClInclude Include="..\fpsgame\weapon.h" />
+    <ClInclude Include="..\fpsgame\weaponstats.h" />
+    <ClInclude Include="..\fpsgame\weaponstats_type.h" />
     <ClInclude Include="..\shared\b64\b64.h" />
     <ClInclude Include="..\shared\cJSON.h" />
     <ClInclude Include="..\shared\command.h" />
@@ -661,6 +667,7 @@
     </ClCompile>
     <ClCompile Include="..\engine\raw.cpp" />
     <ClCompile Include="..\engine\translate.cpp" />
+    <ClCompile Include="..\engine\wayland.cpp" />
     <ClCompile Include="..\engine\world.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">engine.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">engine.h</PrecompiledHeaderFile>
@@ -674,6 +681,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">engine.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)engine.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)engine.pch</PrecompiledHeaderOutputFile>
+      <FileType>CppCode</FileType>
     </ClCompile>
     <ClCompile Include="..\engine\worldio.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">engine.h</PrecompiledHeaderFile>
@@ -1054,6 +1062,8 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)engine.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="..\fpsgame\discord.cpp" />
+    <ClCompile Include="..\fpsgame\fragmessages.cpp" />
+    <ClCompile Include="..\fpsgame\weaponstats.cpp" />
     <ClCompile Include="..\shared\b64\buffer.c" />
     <ClCompile Include="..\shared\b64\decode.c" />
     <ClCompile Include="..\shared\b64\encode.c" />

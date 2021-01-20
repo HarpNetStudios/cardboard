@@ -1,4 +1,5 @@
 #include "game.h"
+#include "weaponstats.h"
 
 namespace game
 {
@@ -70,9 +71,11 @@ namespace game
 	{
 		if(arg[0] ? spectating(player1) : following >= 0)
 		{
+            int ofollowing = following;
 			following = arg[0] ? parseplayer(arg) : -1;
 			if(following == player1->clientnum) following = -1;
 			followdir = 0;
+            if(following!=ofollowing) clearfragmessages();
 			conoutf("following: %s", following >= 0 ? "on" : "off");
 		}
 	}
@@ -89,6 +92,7 @@ namespace game
 				cur = (cur + dir + clients.length()) % clients.length();
 				if(clients[cur] && canfollow(player1, clients[cur]))
 				{
+                    if(following != cur) clearfragmessages();
 					if(following < 0) conoutf("follow on");
 					following = cur;
 					followdir = dir;
@@ -146,22 +150,22 @@ namespace game
 		if(following < 0) return;
 		following = -1;
 		followdir = 0;
+        clearfragmessages();
 		conoutf("follow off");
 	}
 
-	fpsent* followingplayer()
-	{
-		if(player1->state != CS_SPECTATOR || following < 0) return NULL;
-		fpsent* target = getclient(following);
-		if(target && target->state != CS_SPECTATOR) return target;
-		return NULL;
-	}
+	fpsent *followingplayer(fpsent *fallback)
+    {
+        if(player1->state!=CS_SPECTATOR || following<0) return fallback;
+        fpsent *target = getclient(following);
+        if(target && target->state!=CS_SPECTATOR) return target;
+        return fallback;
+    }
 
 	fpsent* hudplayer()
 	{
-		if(thirdperson) return player1;
-		fpsent* target = followingplayer();
-		return target ? target : player1;
+		if(thirdperson && allowthirdperson()) return player1;
+        return followingplayer(player1);
 	}
 
 	void setupcamera()
@@ -289,8 +293,12 @@ namespace game
 				entities::checkitems(player1);
 				if(cmode) cmode->checkitems(player1);
 			}
+            updateextinfo();
 		}
+        checkflag();
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
+        checkinfoqueue();
+        processservinfo();
     }
 
     float proximityscore(float x, float lower, float upper)
@@ -378,16 +386,23 @@ namespace game
     // inputs
 	VARP(attackspawn, 0, 1, 1);
 
-    void doattack(bool on)
-    {
-        if(!connected || intermission) return;
-        if((player1->attacking = on) && attackspawn) respawn();
-    }
+	void doattack(bool on)
+	{
+		if(!connected || intermission) return;
+		if((player1->attacking = on) && attackspawn) respawn();
+	}
 
 	void dosecattack(bool on)
 	{
 		if(!connected || intermission) return;
 		if((player1->secattacking = on) && attackspawn) respawn();
+	}
+
+	void dograpple(bool on)
+	{
+		if (!on) removegrapples(player1, false);
+		if (!connected || intermission) return;
+		if (player1->grappling = on) respawn();
 	}
 
 	VARP(jumpspawn, 0, 1, 1);
@@ -417,6 +432,8 @@ namespace game
     {
         if(isteam(d->team,actor->team)) return;
 
+        recorddamage(actor, d, damage);
+
         if((d->state!=CS_ALIVE && d->state != CS_LAGGED && d->state != CS_SPAWNING) || intermission) return;
 
         if(local && !m_parkour) damage = d->dodamage(damage);
@@ -425,9 +442,8 @@ namespace game
         fpsent *h = hudplayer();
         if(h!=player1 && actor==h && d!=actor)
         {
-            if(hitsound && lasthit != lastmillis && !m_parkour) playsound(S_HIT);
-            else if(m_parkour && p_hitmark) playsound(S_HIT);
-            lasthit = lastmillis;
+            if((hitsound && lasthit != lastmillis && !m_parkour) || (m_parkour && p_hitmark)) playsound(S_HIT);
+            if(!m_parkour) lasthit = lastmillis;
         }
         if(!m_parkour) 
         {
@@ -440,19 +456,21 @@ namespace game
 
             ai::damaged(d, actor);
 
+            if (d->health <= 0) { if (local) killed(d, actor, gun); }
             if (d == h) playsound(S_PAIN_SARAH_6 + (6 * d->playermodel));
             else playsound(S_PAIN_SARAH_1 + rnd(5) + (6 * d->playermodel), &d->o);
         }
-        
-        if (d->health <= 0) { if (local) killed(d, actor, gun); }
     }
 
     VARP(deathscore, 0, 1, 1);
 
     void deathstate(fpsent *d, bool restore)
     {
+        /*
         if(m_lms) d->state = CS_SPECTATOR;
 		else d->state = CS_DEAD;
+        */
+        d->state = CS_DEAD;
         d->lastpain = lastmillis;
         if(!restore)
         {
@@ -477,6 +495,7 @@ namespace game
             d->smoothmillis = 0;
             playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel), &d->o);
         }
+        removegrapples(d, true);
     }
 
     VARP(teamcolorfrags, 0, 1, 1);
@@ -496,8 +515,7 @@ namespace game
 
         if(cmode) cmode->died(d, actor);
 
-		fpsent *h = followingplayer();
-		if(!h) h = player1;
+		fpsent *h = followingplayer(player1);
 		int contype = d==h || actor==h ? CON_FRAG_SELF : CON_FRAG_OTHER;
 		const char *hs = " \f3(headshot)";
 		const char *dname = "", *aname = "";
@@ -518,8 +536,11 @@ namespace game
 		{
 			if(actor->type==ENT_AI)
 				conoutf(contype, "\f2%s\f2 got killed by %s with %s%s!", dname, aname, getweaponname(gun), is_headshot?hs:"");
-			else if(d==actor)
-				conoutf(contype, "\f2%s\f2 suicided%s", dname, d==player1 ? "!" : "");
+			else if(d==actor){
+                d->suicides++;
+                conoutf(contype, "\f2%s\f2 suicided%s", dname, d == player1 ? "!" : "");
+            }
+				
 			else
 			{
 				if(d==player1) conoutf(contype, "\f2%s\f2 got fragged by %s with %s%s!", dname, aname, getweaponname(gun), is_headshot?hs:"");
@@ -530,12 +551,19 @@ namespace game
 		{
 			if(actor->type==ENT_AI)
 				conoutf(contype, "\f2%s\f2 > %s > %s%s", dname, getweaponname(gun), aname, is_headshot?hs:"");
-			else if(d==actor)
-				conoutf(contype, "\f2world > %s", dname);
+			else if(d==actor) {
+                d->suicides++;
+                conoutf(contype, "\f2world > %s", dname);
+            }
 			else
 				conoutf(contype, "\f2%s\f2 > %s > %s%s", aname, getweaponname(gun), dname, is_headshot?hs:"");
 		}
 		if(d!=actor && actor==player1 && killsound) playsound(S_KILL);
+        if(d==player1) execident("ondeath");
+
+        if(d==actor) addfragmessage(contype, NULL, dname, HICON_TOKEN-HICON_FIST);
+        else addfragmessage(contype, aname, dname, d->lasthitpushgun);
+
 		deathstate(d);
 		ai::killed(d, actor);
 		#ifdef DISCORD // this updates every time anyone gets a kill, shouldn't be an issue.
@@ -558,12 +586,11 @@ namespace game
             if(cmode) cmode->gameover();
             conoutf(CON_GAMEINFO, "\f2intermission:");
             conoutf(CON_GAMEINFO, "\f2game has ended!");
-            if(m_ctf) conoutf(CON_GAMEINFO, "\f2player frags: %d, flags: %d, deaths: %d, kdr: %.2f", player1->frags, player1->flags, player1->deaths, (float)player1->frags/player1->deaths);
-            else if(m_collect) conoutf(CON_GAMEINFO, "\f2player frags: %d, skulls: %d, deaths: %d, kdr: %.2f", player1->frags, player1->flags, player1->deaths, (float)player1->frags/player1->deaths);
-			else if(m_parkour); // do nothing
-            else conoutf(CON_GAMEINFO, "\f2player frags: %d, deaths: %d, kdr: %.2f", player1->frags, player1->deaths, (float)player1->frags/player1->deaths);
+            if(m_ctf) conoutf(CON_GAMEINFO, "\f2player frags: %d, flags: %d, deaths: %d, kdr: %.2f", player1->frags, player1->flags, player1->deaths, (float)player1->frags/max(player1->deaths,1));
+            else if(m_collect) conoutf(CON_GAMEINFO, "\f2player frags: %d, skulls: %d, deaths: %d, kdr: %.2f", player1->frags, player1->flags, player1->deaths, (float)player1->frags/max(player1->deaths,1));
+            else if(!m_parkour) conoutf(CON_GAMEINFO, "\f2player frags: %d, deaths: %d, kdr: %.2f", player1->frags, player1->deaths, (float)player1->frags/max(player1->deaths,1));
             int accuracy = (player1->totaldamage*100)/max(player1->totalshots, 1);
-            if(!m_parkour) conoutf(CON_GAMEINFO, "\f2player total damage dealt: %d, damage wasted: %d, accuracy(%%): %d", player1->totaldamage, player1->totalshots-player1->totaldamage, accuracy);
+            if(!m_parkour) conoutf(CON_GAMEINFO, "\f2player total damage dealt: %d, damage wasted: %d, accuracy: %d%%", player1->totaldamage, player1->totalshots-player1->totaldamage, accuracy);
 
             showscores(true);
             disablezoom();
@@ -572,12 +599,12 @@ namespace game
         }
     }
 
-    ICOMMAND(getfrags, "", (), intret(player1->frags));
-    ICOMMAND(getflags, "", (), intret(player1->flags));
-    ICOMMAND(getdeaths, "", (), intret(player1->deaths));
-    ICOMMAND(getaccuracy, "", (), intret((player1->totaldamage*100)/max(player1->totalshots, 1)));
-    ICOMMAND(gettotaldamage, "", (), intret(player1->totaldamage));
-    ICOMMAND(gettotalshots, "", (), intret(player1->totalshots));
+    ICOMMAND(getfrags, "", (), intret(hudplayer()->frags));
+    ICOMMAND(getflags, "", (), intret(hudplayer()->flags));
+    ICOMMAND(getdeaths, "", (), intret(hudplayer()->deaths));
+    ICOMMAND(gettotaldamage, "", (), intret(playerdamage(NULL, DMG_DEALT)));
+    ICOMMAND(gettotalshots, "", (), intret(playerdamage(NULL, DMG_POTENTIAL)));
+    ICOMMAND(getkdr, "", (), floatret((float)player1->frags/max(player1->deaths,1)));
 
     vector<fpsent *> clients;
 
@@ -620,10 +647,12 @@ namespace game
         fpsent *d = clients[cn];
         if(!d) return;
         if(notify && d->name[0]) conoutf("\f4leave:\f7 %s", colorname(d));
+        playsound(S_SRV_DISCONNECT);
         removeweapons(d);
         removetrackedparticles(d);
         removetrackeddynlights(d);
         if(cmode) cmode->removeplayer(d);
+        removegrapples(d, true);
         players.removeobj(d);
         DELETEP(clients[cn]);
         cleardynentcache();
@@ -738,9 +767,12 @@ namespace game
 			d->deaths = 0;
 			d->totaldamage = 0;
 			d->totalshots = 0;
+            d->suicides = 0;
             d->health = d->maxhealth = m_insta ? 1 : 1000;
 			d->lifesequence = -1;
 			d->respawned = d->suicided = -2;
+            d->hasflag = false;
+            d->stats.reset();
 		}
 	}
 
@@ -751,6 +783,7 @@ namespace game
 		clearragdolls();
 
 		resetteaminfo();
+        resetextinfo();
 		resetplayers();
 
 		setclientmode();
@@ -878,11 +911,11 @@ namespace game
         return false;
     }
 
-	const char* colorname(fpsent* d, const char* name, const char* prefix, const char* suffix, const char* alt, bool tags)
+	const char* colorname(fpsent* d, const char* name, const char* prefix, const char* suffix, const char* alt, bool tags, bool scoreboard)
 	{
         //if(!name) name = alt && d == player1 ? alt : d->name;
 		if(!name) name = d->name;
-        bool dup = !name[0] || duplicatename(d, name, alt) || d->aitype != AI_NONE;
+        bool dup = !name[0] || (showclientnum >= 2 && !scoreboard && (!alt || d != player1)) || duplicatename(d, name, alt) || d->aitype != AI_NONE;
 		cidx = (cidx + 1) % 3;
 		if(d->aitype == AI_NONE && showtags && tags) {
 			prefix = gettags(d);
@@ -1219,10 +1252,12 @@ namespace game
         text_bounds(hudannounce_text, fw, fh);
         draw_text(hudannounce_text, w*scale/h - fw/2 - left, scale - fh/2 - top); // , 255, 255, 255, 0);
         glPopMatrix();
-
     }
 
     VARP(demohud, 0, 1, 1);
+
+    VARP(showpointed, 0, 0, 1);
+    fpsent* lastpointed = NULL;
 
     void gameplayhud(int w, int h)
     {
@@ -1243,7 +1278,7 @@ namespace game
             if(f)
             {
 				int color = statuscolor(f, 0xFFFFFF);
-                draw_text(colorname(f), w*1800/h - fw - pw, 1650 - fh, (color>>16)&0xFF, (color>>8)&0xFF, color&0xFF);
+                draw_text(teamcolorname(f), w*1800/h - fw - pw, 1650 - fh, (color>>16)&0xFF, (color>>8)&0xFF, color&0xFF);
             }
         }
 
@@ -1262,7 +1297,29 @@ namespace game
 		{
 			if(gameclock) drawgameclock(w, h);
 			if(hudscore) drawhudscore(w, h);
+            if(hudfragmessages==1 || (hudfragmessages==2 && !m_insta)) drawfragmessages(w, h);
 		}
+
+        fpsent* p = pointatplayer();
+        if (p && player1->state != CS_DEAD && p->state != CS_EDITING) {
+            lastpointed = p;
+        } else if (!p) lastpointed = NULL;
+        if (lastpointed && (intermission || lastpointed != getclient(lastpointed->clientnum))) {
+            lastpointed = NULL;
+        }
+        if (lastpointed && player1->state != CS_SPECTATOR && showpointed) {
+            pushhudmatrix();
+            hudmatrix.scale(h / 1800.0f, h / 1800.0f, 1);
+            flushhudmatrix();
+
+            int rpw, rph, pw, ph;
+            oldstring pointedname;
+            formatstring(pointedname, "%s", colorname(lastpointed));
+            text_bounds(pointedname, rpw, rph);
+            text_bounds("  ", pw, ph);
+            draw_textf("%s", w * 1800 / h - rpw - pw, 1650 - rph - 16, pointedname);
+            pophudmatrix();
+        }
     }
 
     int clipconsole(int w, int h)
@@ -1295,14 +1352,13 @@ namespace game
 
         int crosshair = 0;
         if(lasthit && lastmillis - lasthit < hitcrosshair && !(m_parkour && !p_hitmark)) crosshair = 2;
-        else if(teamcrosshair)
+        else if(teamcrosshair && !m_parkour)
         {
             dynent *o = intersectclosest(d->o, worldpos, d);
             if(o && o->type==ENT_PLAYER && isteam(((fpsent *)o)->team, d->team))
             {
                 crosshair = 1;
-                if(!strcmp(d->team, "red")) color = vec(1, 0, 0);
-				else color = vec(0, 0, 1);
+                color = !strcmp(d->team, "red") ? vec(1, 0, 0) : vec(0, 0, 1);
             }
         }
 
@@ -1320,6 +1376,7 @@ namespace game
 
     void lighteffects(dynent *e, vec &color, vec &dir)
     {
+        return;
     }
 
     int maxsoundradius(int n)
@@ -1341,13 +1398,28 @@ namespace game
         }
     }
 
+    #define justified(elem,handleclick,dir) \
+        { \
+            g->pushlist(); \
+            if(dir) g->spring(); \
+            g->pushlist(); /* get vertical list dir back, so mergehits works */ \
+            int up = elem; \
+            if(handleclick && up&G3D_UP) return true; \
+            g->poplist(); \
+            g->poplist(); \
+        }
+
+    #include "colors.h"
+
     bool serverinfostartcolumn(g3d_gui *g, int i)
     {
-        static const char * const names[] = { "ping ", "players ", "mode ", "map ", "time ", "master ", "host ", "port ", "description " };
-        static const float struts[] =       { 7,       7,          12.5f,   14,      7,      8,         14,      7,       24.5f };
+        static const char * const names[] = { "ping", "players", "slots", "mode", "map", "time", "master", "host", "port", "description" };
+        static const float struts[] =       {      0,         0,       0,  12.5f,    14,      0,        0,     14,      0,         24.5f };
+        static const float alignments[] =   {      1,         1,       1,      0,     0,      0,        0,      0,      1,             0 }; // 0 = left, 1 = right
         if(size_t(i) >= sizeof(names)/sizeof(names[0])) return false;
+        if(i) g->space(2);
         g->pushlist();
-        g->text(names[i], 0xFFFF80, !i ? " " : NULL);
+        justified(g->text(names[i], COL_GRAY, NULL), false, alignments[i]);
         if(struts[i]) g->strut(struts[i]);
         g->mergehits(true);
         return true;
@@ -1372,6 +1444,9 @@ namespace game
 
     bool serverinfoentry(g3d_gui *g, int i, const char *name, int port, const char *sdesc, const char *map, int ping, const vector<int> &attr, int np)
     {
+        #define leftjustified(elem)   justified(elem,true,0)
+        #define rightjustified(elem)  justified(elem,true,1)
+
         const char* pingcolor;
         if (attr.length() >= 4) {
             if (ping < 70) {
@@ -1391,90 +1466,90 @@ namespace game
             pingcolor = "";
         }
 
+        
         if(ping < 0 || attr.empty() || attr[0]!=PROTOCOL_VERSION)
         {
             switch(i)
             {
                 case 0:
-                    if(g->button(" ", 0xFFFFDD, "serverunk")&G3D_UP) return true;
-                    break;
-
                 case 1:
                 case 2:
                 case 3:
                 case 4:
                 case 5:
-                    if(g->button(" ", 0xFFFFDD)&G3D_UP) return true;
-                    break;
-
                 case 6:
-                    if(g->buttonf("%s ", 0xFFFFDD, NULL, name)&G3D_UP) return true;
+                    leftjustified(g->button(" ", COL_WHITE));
                     break;
 
                 case 7:
-                    if(g->buttonf("%d ", 0xFFFFDD, NULL, port)&G3D_UP) return true;
+                    leftjustified(g->buttonf("%s", COL_WHITE, NULL, name));
                     break;
 
                 case 8:
                     if(ping < 0)
                     {
-                        if(g->button(sdesc, 0xFFFFDD)&G3D_UP) return true;
+                        leftjustified(g->button(sdesc, COL_WHITE));
                     }
-                    else if(g->buttonf("[%s version, %d] ", 0xFFFFDD, NULL, attr.empty() ? "unknown" : (attr[0] < PROTOCOL_VERSION ? "older" : "newer"), attr.empty() ? 0 : attr[0])&G3D_UP) return true;
+                    else leftjustified(g->buttonf("[%s version, %d]", COL_WHITE, NULL, attr.empty() ? "unknown" : (attr[0] < PROTOCOL_VERSION ? "older" : "newer"), attr.empty() ? 0 : attr[0]));
                     break;
             }
             return false;
         }
+        
 
         switch(i)
         {
             case 0:
             {
-                const char *icon = attr.inrange(3) && np >= attr[3] ? "serverfull" : (attr.inrange(4) ? mastermodeicon(attr[4], "serverunk") : "serverunk");
-                if(g->buttonf("%s%d ", 0xFFFFDD, icon, pingcolor, ping)&G3D_UP) return true;
+                rightjustified(g->buttonf("%s%d", COL_WHITE, NULL, pingcolor, ping));
                 break;
             }
 
             case 1:
-                if(attr.length()>=4)
-                {
-                    if(g->buttonf(np >= attr[3] ? "\f3%d/%d " : "%d/%d ", 0xFFFFDD, NULL, np, attr[3])&G3D_UP) return true;
-                }
-                else if(g->buttonf("%d ", 0xFFFFDD, NULL, np)&G3D_UP) return true;
+                rightjustified(g->buttonf(attr.length()>=4 && np >= attr[3] ? "\f3%d " : "%d", COL_WHITE, NULL, np));
                 break;
 
             case 2:
-                if(g->buttonf("%s ", 0xFFFFDD, NULL, attr.length()>=2 ? server::modename(attr[1], "") : "")&G3D_UP) return true;
+                if(attr.length()>=4)
+                {
+                    rightjustified(g->buttonf(np >= attr[3] ? "\f3%d " : "%d", COL_WHITE, NULL, attr[3]));
+                }
+                else rightjustified(g->button(" ", COL_WHITE));
                 break;
 
             case 3:
-                if(g->buttonf("%.25s ", 0xFFFFDD, NULL, map)&G3D_UP) return true;
+                leftjustified(g->buttonf("%s", COL_WHITE, NULL, attr.length()>=2 ? server::modename(attr[1], "") : ""));
                 break;
 
             case 4:
+                leftjustified(g->buttonf("%.25s", COL_WHITE, NULL, map));
+                break;
+
+            case 5:
                 if(attr.length()>=3 && attr[2] > 0)
                 {
                     int secs = clamp(attr[2], 0, 59*60+59),
                         mins = secs/60;
                     secs %= 60;
-                    if(g->buttonf("%d:%02d ", 0xFFFFDD, NULL, mins, secs)&G3D_UP) return true;
+                    leftjustified(g->buttonf("%d:%02d", COL_WHITE, NULL, mins, secs));
                 }
-                else if(g->buttonf(" ", 0xFFFFDD)&G3D_UP) return true;
-                break;
-            case 5:
-                if(g->buttonf("%s%s ", 0xFFFFDD, NULL, attr.length()>=5 ? mastermodecolor(attr[4], "") : "", attr.length()>=5 ? server::mastermodename(attr[4], "") : "")&G3D_UP) return true;
+                else leftjustified(g->button(" ", COL_WHITE));
                 break;
 
             case 6:
-                if(g->buttonf("%s ", 0xFFFFDD, NULL, name)&G3D_UP) return true;
+                leftjustified(g->buttonf("%s%s", COL_WHITE, NULL, attr.length()>=5 ? mastermodecolor(attr[4], "") : "", attr.length()>=5 ? server::mastermodename(attr[4], "") : ""));
                 break;
 
             case 7:
-                if(g->buttonf("%d ", 0xFFFFDD, NULL, port)&G3D_UP) return true;
+                leftjustified(g->buttonf("%s", COL_WHITE, NULL, name));
                 break;
 
             case 8:
-                if(g->buttonf("%.25s", 0xFFFFDD, NULL, sdesc)&G3D_UP) return true;
+                rightjustified(g->buttonf("%d", COL_WHITE, NULL, port));
+                break;
+
+            case 9:
+                leftjustified(g->buttonf("%.25s", COL_WHITE, NULL, sdesc));
                 break;
         }
         return false;

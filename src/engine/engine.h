@@ -612,6 +612,8 @@ extern bool loadblendmap(stream *f, int info);
 extern void saveblendmap(stream *f);
 extern uchar shouldsaveblendmap();
 
+#include "wayland.h"
+
 #endif
 
 #endif

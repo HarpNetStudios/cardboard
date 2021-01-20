@@ -117,7 +117,7 @@ enum
     PT_FLIP  = PT_HFLIP | PT_VFLIP | PT_ROT
 };
 
-const char *partnames[] = { "part", "tape", "trail", "text", "textup", "meter", "metervs", "fireball", "lightning", "flare" };
+const char *partnames[] = { "part", "tape", "trail", "text", "textup", "meter", "metervs", "fireball", "lightning", "flare", "chain" };
 
 struct particle
 {
@@ -880,6 +880,7 @@ static partrenderer *parts[] =
     &texts,                                                                                        // text
     &meters,                                                                                       // meter
     &metervs,                                                                                      // meter vs.
+    new trailrenderer("packages/particles/chain.png", PT_TRAIL|PT_FLIP|PT_LERP),                   // chain
     &flares                                                                                        // lens flares - must be done last
 };
 

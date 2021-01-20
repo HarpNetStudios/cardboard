@@ -75,6 +75,7 @@ namespace game
     extern bool allowmove(physent *d);
     extern void doattack(bool on);
 	extern void dosecattack(bool on);
+    extern void dograpple(bool on);
     extern dynent *iterdynents(int i);
     extern int numdynents();
     extern void rendergame(bool mainpass);

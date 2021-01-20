@@ -75,7 +75,7 @@ void fatal(const char *s, ...) // failure exit
     exit(EXIT_FAILURE);
 }
 
-int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1, starttime = time(0);
+int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1, starttime = time(0), curframetime = 0;
 
 dynent *player = NULL;
 
@@ -626,6 +626,7 @@ void restorevsync()
 {
     if(initing || !glcontext) return;
     extern int vsync, vsynctear;
+    if(wayland && vsync) { conoutf("wayland is tear-free, disabling vsync"); vsync = 0; }
     if(!SDL_GL_SetSwapInterval(vsync ? (vsynctear ? -1 : 1) : 0))
         curvsync = vsync;
 }
@@ -912,6 +913,10 @@ void setupscreen()
     SDL_SetWindowMaximumSize(screen, SCR_MAXW, SCR_MAXH);
 
     SDL_GetWindowSize(screen, &screenw, &screenh);
+
+    #ifdef SDL_VIDEO_DRIVER_WAYLAND
+    setupwayland();
+    #endif
 }
 
 void resetgl()
@@ -1147,7 +1152,7 @@ void checkinput()
                         focused = -1;
                         break;
 
-                    case SDL_WINDOWEVENT_MINIMIZED:
+                    case SDL_WINDOWEVENT_MINIMIZED: 
                         minimized = true;
                         break;
 
@@ -1230,27 +1235,35 @@ void swapbuffers(bool overlay)
 
 VAR(menufps, 0, 60, 1000);
 VARP(maxfps, 0, 200, 1000);
+VARFP(maxtps, 0, 0, 1000, { if(maxtps && maxtps<60) {conoutf("can't set maxtps < 60"); maxtps = 60;} });
 
-void limitfps(int &millis, int curmillis)
+void ratelimit(int& millis, int lastdrawmillis, bool& draw)
 {
-    int limit = (mainmenu || minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
-    if(!limit) return;
-    static int fpserror = 0;
-    int delay = 1000/limit - (millis-curmillis);
-    if(delay < 0) fpserror = 0;
-    else
+    int fpslimit = (mainmenu || minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
+    if(!fpslimit && !wayland) draw = true;
+    int tpslimit = maxtps ? max(maxtps, fpslimit) : 0;
+    if(!fpslimit && !tpslimit) return;
+    int delay = 1;
+    if(tpslimit) delay = 1000/tpslimit - (millis-totalmillis);
+    // should we draw?
+    int fpsdelay = INT_MAX;
+    if(fpslimit && !wayland)
     {
-        fpserror += 1000%limit;
-        if(fpserror >= limit)
+        fpsdelay = 1000/fpslimit - (millis-lastdrawmillis);
+        static int fpserror = 0;
+        if(fpserror >= fpslimit) fpsdelay++;
+        if(fpsdelay <= delay)
         {
-            ++delay;
-            fpserror -= limit;
+            draw = true;
+            if(fpserror >= fpslimit) fpserror -= fpslimit;
+            fpserror += 1000%fpslimit;
         }
-        if(delay > 0)
-        {
-            SDL_Delay(delay);
-            millis += delay;
-        }
+    }
+    delay = min(delay, fpsdelay);
+    if(delay > 0)
+    {
+        SDL_Delay(delay);
+        millis += delay;
     }
 }
 
@@ -1672,9 +1685,10 @@ int main(int argc, char **argv)
 
     for(;;)
     {
-        static int frames = 0;
+        static int frames = 0, lastdrawmillis = 0;
         int millis = getclockmillis();
-        limitfps(millis, totalmillis);
+        bool draw = false;
+        ratelimit(millis, lastdrawmillis, draw);
         elapsedtime = millis - totalmillis;
         static int timeerr = 0;
         int scaledtime = game::scaletime(elapsedtime) + timeerr;
@@ -1696,9 +1710,6 @@ int main(int argc, char **argv)
 
         serverslice(false, 0);
 
-        if(frames) updatefpshistory(elapsedtime);
-        frames++;
-
         // miscellaneous general game effects
         recomputecamera();
         updateparticles();
@@ -1706,17 +1717,32 @@ int main(int argc, char **argv)
 
         if(minimized) continue;
 
-        inbetweenframes = false;
-		if(mainmenu) {
-			gl_drawmainmenu(); 
-			#ifdef DISCORD
-				discord::updatePresence(discord::D_MENU);
-			#endif
-		}
-        else gl_drawframe();
-		//gl_drawframe();
-        swapbuffers();
-        renderedframe = inbetweenframes = true;
+        #ifdef SDL_VIDEO_DRIVER_WAYLAND
+        if(wayland) draw = SDL_AtomicCAS(&framerequested, 1, 0);
+        #endif
+        if(draw)
+        {
+            int frametime = millis - lastdrawmillis;
+            static int frametimeerr = 0;
+            int scaledframetime = game::scaletime(frametime) + frametimeerr;
+            curframetime = scaledframetime/100;
+            frametimeerr = scaledframetime%100;
+
+            if(frames) updatefpshistory(frametime);
+            frames++;
+
+            inbetweenframes = false;
+            if(mainmenu) {
+			    gl_drawmainmenu(); 
+			    #ifdef DISCORD
+				    discord::updatePresence(discord::D_MENU);
+			    #endif
+		    }
+            else gl_drawframe();
+            swapbuffers();
+            renderedframe = inbetweenframes = true;
+            lastdrawmillis = millis;
+        }
         #ifdef DISCORD
 		    discord::discordCallbacks();
         #endif

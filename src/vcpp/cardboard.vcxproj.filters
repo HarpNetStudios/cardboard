@@ -232,6 +232,15 @@
     <ClCompile Include="..\shared\b64\buffer.c">
       <Filter>shared\b64</Filter>
     </ClCompile>
+    <ClCompile Include="..\engine\wayland.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fpsgame\weaponstats.cpp">
+      <Filter>fpsgame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fpsgame\fragmessages.cpp">
+      <Filter>fpsgame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\command.h">
@@ -425,6 +434,24 @@
     </ClInclude>
     <ClInclude Include="..\shared\b64\b64.h">
       <Filter>shared\b64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fpsgame\extserver.h">
+      <Filter>fpsgame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\wayland.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fpsgame\colors.h">
+      <Filter>fpsgame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fpsgame\weaponstats.h">
+      <Filter>fpsgame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fpsgame\weaponstats_type.h">
+      <Filter>fpsgame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fpsgame\fragmessages.h">
+      <Filter>fpsgame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

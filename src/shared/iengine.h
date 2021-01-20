@@ -1,13 +1,14 @@
 // the interface the game uses to access the engine
 
-extern int curtime;                     // current frame time
-extern int lastmillis;                  // last time
-extern int elapsedtime;                 // elapsed frame time
-extern int totalmillis;                 // total elapsed time
-extern int starttime;                   // time from start
+extern int curtime;          // scaled duration since last step
+extern int lastmillis;       // totalmillis value at last step
+extern int elapsedtime;      // wall clock duration since last step
+extern int totalmillis;      // total elapsed wall clock duration since engine start
+extern int curframetime;     // scaled duration since last frame
+extern int starttime;        // time from start
 extern uint totalsecs;
 extern int gamespeed, paused;
-extern int globalgamestate;             // game state, set by and for discord
+extern int globalgamestate;  // game state, set by and for discord
 
 #define HNAPI "harpnetstudios.com/hnid/api/v1"
 
@@ -351,6 +352,7 @@ enum
     PART_HUD_ICON_GREY,
     PART_TEXT,
     PART_METER, PART_METER_VS,
+    PART_CHAIN,
     PART_LENS_FLARE
 };
 
@@ -494,6 +496,9 @@ extern void sendserverinforeply(ucharbuf &p);
 extern bool requestmaster(const char *req);
 extern bool requestmasterf(const char *fmt, ...) PRINTFARGS(1, 2);
 extern bool isdedicatedserver();
+extern int numservers();
+extern char* gethostname(int n);
+extern int getport(int n);
 
 // client
 extern void sendclientpacket(ENetPacket *packet, int chan);
@@ -505,6 +510,7 @@ extern bool multiplayer(bool msg = true);
 extern void neterr(const char *s, bool disc = true);
 extern void gets2c();
 extern void notifywelcome();
+extern bool resolverwait(const char* name, ENetAddress* address);
 
 // crypto
 extern void genprivkey(const char *seed, vector<char> &privstr, vector<char> &pubstr);

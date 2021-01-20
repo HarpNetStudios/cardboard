@@ -1,7 +1,10 @@
 #include "game.h"
+#include "weaponstats.h"
 
 namespace game
 {
+	VARP(chatsounds, 0, 1, 1); // toggle chat sounds
+
 	VARP(minradarscale, 0, 384, 10000);
 	VARP(maxradarscale, 1, 1024, 10000);
 	VARP(radarteammates, 0, 1, 1);
@@ -122,6 +125,12 @@ namespace game
 		else if(m_collect) cmode = &collectmode;
 		else if(m_race) cmode = &racemode;
 		else cmode = NULL;
+	}
+
+	void checkflag() {
+		if (m_ctf || m_protect || m_hold) {
+			ctfmode.checkflag();
+		}
 	}
 
 	bool senditemstoserver = false, sendcrc = false; // after a map change, since server doesn't have map data
@@ -358,6 +367,113 @@ namespace game
 		return d && d->aitype==aitype;
 	}
 	ICOMMAND(isai, "ii", (int *cn, int *type), intret(isai(*cn, *type) ? 1 : 0));
+
+	#include "extserver.h"
+	vector<extclient*> extclients;
+	extclient* getextclient(int clientnum) {
+		loopv(extclients) {
+			if (extclients[i] && extclients[i]->clientnum == clientnum) return extclients[i];
+		}
+		return NULL;
+	}
+	void resetextinfo() {
+		extclients.shrink(0);
+	}
+
+	ENetSocket extinfosock = ENET_SOCKET_NULL;
+	ENetSocket getextsock() {
+		if (extinfosock != ENET_SOCKET_NULL) return extinfosock;
+		extinfosock = enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);
+		enet_socket_set_option(extinfosock, ENET_SOCKOPT_NONBLOCK, 1);
+		enet_socket_set_option(extinfosock, ENET_SOCKOPT_BROADCAST, 1);
+		return extinfosock;
+	}
+	int lastextinforeq = 0;
+	void requestextinfo()
+	{
+		const ENetAddress* paddress = connectedpeer();
+		if (!paddress) return;
+		ENetAddress address = *paddress;
+		ENetSocket extsock = getextsock();
+		if (extsock == ENET_SOCKET_NULL) return;
+		address.port = server::serverinfoport(address.port);
+		ENetBuffer buf;
+		uchar send[MAXTRANS];
+		ucharbuf p(send, MAXTRANS);
+		putint(p, 0);
+		putint(p, EXT_PLAYERSTATS);
+		putint(p, -1);
+		buf.data = send;
+		buf.dataLength = p.length();
+		enet_socket_send(extsock, &address, &buf, 1);
+		lastextinforeq = totalmillis;
+	}
+	void processextinfo()
+	{
+		const ENetAddress* paddress = connectedpeer();
+		if (!paddress) return;
+		ENetAddress connectedaddress = *paddress;
+		ENetSocket extsock = getextsock();
+		if (extsock == ENET_SOCKET_NULL) return;
+		enet_uint32 events = ENET_SOCKET_WAIT_RECEIVE;
+		int s = 0;
+		ENetBuffer buf;
+		ENetAddress address;
+		uchar data[MAXTRANS];
+		buf.data = data;
+		buf.dataLength = sizeof(data);
+		while ((s = enet_socket_wait(extsock, &events, 0)) >= 0 && events)
+		{
+			int len = enet_socket_receive(extsock, &address, &buf, 1);
+			if (len <= 0 || connectedaddress.host != address.host ||
+				server::serverinfoport(connectedaddress.port) != address.port) continue;
+			ucharbuf p(data, len);
+			extclient* extpdata = NULL;
+			if (getint(p) == 0 && getint(p) == EXT_PLAYERSTATS) {
+				char strdata[MAXTRANS];
+				getint(p);
+				if (getint(p) == EXT_ACK && getint(p) == EXT_VERSION) {
+					int err = getint(p);
+					if (!err) {
+						if (getint(p) == EXT_PLAYERSTATS_RESP_STATS) {
+							if (!extpdata) extpdata = new extclient();
+							extpdata->clientnum = getint(p);
+							loopv(extclients) {
+								if (extclients[i]->clientnum == extpdata->clientnum) extclients.remove(i);
+							}
+							extpdata->ping = getint(p);
+							getstring(strdata, p);
+							strncpy(extpdata->name, strdata, MAXNAMELEN + 1);
+							getstring(strdata, p);
+							strncpy(extpdata->team, strdata, MAXTEAMLEN + 1);
+							extpdata->frags = getint(p);
+							extpdata->flags = getint(p);
+							extpdata->deaths = getint(p);
+							extpdata->teamkills = getint(p);
+							extpdata->accuracy = getint(p);
+							extpdata->health = getint(p);
+							extpdata->armour = getint(p);
+							extpdata->gunselect = getint(p);
+							extpdata->privilege = getint(p);
+							extpdata->state = getint(p);
+							p.get((uchar*)&extpdata->ip, 3);
+							extclients.add(extpdata);
+						}
+					}
+				}
+			}
+		}
+	}
+	VARP(extinfomillis, 500, 2000, 10000);
+	void updateextinfo()
+	{
+		const ENetAddress* paddress = connectedpeer();
+		if (!paddress) return;
+		processextinfo();
+		if ((totalmillis - lastextinforeq) > extinfomillis) {
+			requestextinfo();
+		}
+	}
 
 	int parseplayer(const char *arg)
 	{
@@ -1006,6 +1122,7 @@ namespace game
 		}
 		putint(q, int(d->fmove* DNF));
 		putint(q, int(d->fstrafe* DNF));
+		sendgrappleclient(d, q);
 	}
 
 	void sendposition(fpsent *d, bool reliable)
@@ -1252,6 +1369,7 @@ namespace game
 			if(d==player1) getint(p);
 			else d->state = getint(p);
 			d->frags = getint(p);
+			if(-(d->frags)>d->suicides) d->suicides = -(d->frags); // best effort suicides initialization when joining a running game
 			d->flags = getint(p);
 			d->deaths = getint(p);
 			if(d==player1) getint(p);
@@ -1358,6 +1476,21 @@ namespace game
 				if(d->state!=CS_DEAD && d->state!=CS_SPECTATOR)
 					particle_textcopy(d->abovehead(), text, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
 				conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(d, true), text);
+				if(chatsounds) playsound(S_ALLCHAT);
+				break;
+			}
+
+			case N_SAYTEAM:
+			{
+				int tcn = getint(p);
+				fpsent* t = getclient(tcn);
+				getstring(text, p);
+				filtertext(text, text, true, true);
+				if (!t || isignored(t->clientnum)) break;
+				if (t->state != CS_DEAD && t->state != CS_SPECTATOR)
+					particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
+				conoutf(CON_TEAMCHAT, "\fs\f8[team]\fr %s: \f8%s", chatcolorname(t, false), text);\
+				if(chatsounds) playsound(S_TEAMCHAT);
 				break;
 			}
 
@@ -1374,16 +1507,50 @@ namespace game
 				break;
 			}
 
-			case N_SAYTEAM:
+			case N_GRAPPLEPOS:
 			{
-				int tcn = getint(p);
-				fpsent *t = getclient(tcn);
-				getstring(text, p);
-				filtertext(text, text, true, true);
-				if(!t || isignored(t->clientnum)) break;
-				if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
-					particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
-				conoutf(CON_TEAMCHAT, "\fs\f8[team]\fr %s: \f8%s", chatcolorname(t, false), text);
+				vec pos;
+				for (int k=0; k<3; k++) pos[k] = getint(p) / DMF;
+				if (!d) break;
+				setgrapplepos(d, pos);
+				break;
+			}
+
+			case N_GRAPPLEHIT:
+			{
+				vec hit;
+				for (int k=0; k<3; k++) hit[k] = getint(p) / DMF;
+				if (!d) break;
+				setgrapplehit(d, hit);
+				break;
+			}
+
+			case N_GRAPPLED:
+			{
+				int ocn = getint(p);
+				fpsent* o = ocn == player1->clientnum ? player1 : newclient(ocn);
+				if (!d || !o) break;
+				setgrappled(d, o);
+				break;
+			}
+
+			case N_GRAPPLESTOP:
+			{
+				if (!d) break;
+				bool attached = getint(p) != 0;
+				removegrapples(d, attached);
+				break;
+			}
+
+			case N_GRAPPLEFX:
+			{
+				int ocn = getint(p);
+				fpsent* o = ocn == player1->clientnum ? player1 : newclient(ocn);
+				vec from, to;
+				for (int k=0; k<3; k++) from[k] = getint(p) / DMF;
+				for (int k=0; k<3; k++) to[k] = getint(p) / DMF;
+				if (!o) break;
+				shootgrapplev(from, to, o, false);
 				break;
 			}
 
@@ -1456,6 +1623,7 @@ namespace game
 				else                    // new client
 				{
 					conoutf("\f0join:\f7 %s", colorname(d, text));
+					playsound(S_SRV_CONNECT);
 					if(needclipboard >= 0) needclipboard++;
 				}
 				copystring(d->name, text, MAXNAMELEN+1);
@@ -1550,6 +1718,7 @@ namespace game
 				s->lastaction[s->gunselect] = lastmillis;
 				s->lastattackgun = s->gunselect;
 				shoteffects(s->gunselect, from, to, s, false, id, prevaction);
+				recordpotentialdamage(s);
 				break;
 			}
 

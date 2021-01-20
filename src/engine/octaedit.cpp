@@ -172,6 +172,7 @@ void toggleedit(bool force)
     else
     {
         game::resetgamestate();
+        game::removegrapples(player, true);
         player->editstate = player->state;
         player->state = CS_EDITING;
     }
@@ -2784,9 +2785,10 @@ COMMAND(editmat, "ss");
 
 extern int menudistance, menuautoclose;
 
-VARP(texguiwidth, 1, 15, 1000);
-VARP(texguiheight, 1, 6, 1000);
+VARP(texguiwidth, 1, 14, 1000);
+VARP(texguiheight, 1, 8, 1000);
 VARP(texguitime, 0, 15, 1000);
+VARP(texguiloadall, 0, 0, 1);
 
 static int lastthumbnail = 0;
 static int texhoveridx = 0;
@@ -2807,8 +2809,8 @@ struct texturegui : g3d_callback
         g.start(menustart, 0.04f, &menutab);
         for(int i = 0; i < int(numtabs); ++i)
         {
-            g.tab(!i ? "Textures" : NULL, 0xAAFFAA);
-            if(i+1 != origtab) continue; //don't load textures on non-visible tabs!
+            g.tab(!i ? getTranslation("gui.texgui.textures") : NULL, 0xAAFFAA);
+            if(i+1 != origtab && !texguiloadall) continue; //don't load textures on non-visible tabs!
             for(int h = 0; h < texguiheight; ++h)
             {
                 g.pushlist();

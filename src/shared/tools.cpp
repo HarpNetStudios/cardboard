@@ -343,7 +343,8 @@ char* web_get(char* targetUrl, bool debug)
         return "";
     }
     CURL* curl;
-    CURLcode res;
+    CURLM* multi;
+    CURLMcode res;
 
     struct memoryStruct chunk;
 
@@ -357,6 +358,12 @@ char* web_get(char* targetUrl, bool debug)
 
     // init the curl session */
     curl = curl_easy_init();
+
+    // init the multi session */
+    multi = curl_multi_init();
+
+    // add the easy handle into the multi */
+    curl_multi_add_handle(multi, curl);
 
     // specify URL to get */
     curl_easy_setopt(curl, CURLOPT_URL, targetUrl);
@@ -375,14 +382,21 @@ char* web_get(char* targetUrl, bool debug)
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, curltimeout);
 
     // get it! */
-    res = curl_easy_perform(curl);
+
+    //res = curl_easy_perform(curl);
+
+    int transfers_running;
+    do {
+        curl_multi_wait(multi, NULL, 0, 1000, NULL);
+        res = curl_multi_perform(multi, &transfers_running);
+    } while (transfers_running);
 
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &url);
 
     // check for errors */
-    if(res != CURLE_OK) {
-        if(debug) conoutf(CON_ERROR, "curl_easy_perform() failed: %s", curl_easy_strerror(res));
+    if(res != CURLM_OK) {
+        if(debug) conoutf(CON_ERROR, "curl_multi_perform() failed: %s", curl_multi_strerror(res));
         return "";
     }
     else {
@@ -395,8 +409,10 @@ char* web_get(char* targetUrl, bool debug)
         return chunk.memory;
     }
 
+    curl_multi_remove_handle(multi, curl);
     /* cleanup curl stuff */
     curl_easy_cleanup(curl);
+    curl_multi_cleanup(multi);
 
     free(chunk.memory);
 }

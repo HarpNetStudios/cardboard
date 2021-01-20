@@ -1,5 +1,6 @@
 // weapon.cpp: all shooting and effects code, projectile management
 #include "game.h"
+#include "weaponstats.h"
 
 namespace game
 {
@@ -228,7 +229,7 @@ namespace game
         if(type==BNC_GRENADE)
         {
             bnc.offset = hudgunorigin(GUN_GL, from, to, owner);
-            if(owner==hudplayer() && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
+            if(owner==followingplayer(player1) && !isthirdperson()) bnc.offset.sub(owner->o).rescale(16).add(owner->o);
         }
         else bnc.offset = from;
         bnc.offset.sub(bnc.o);
@@ -248,12 +249,8 @@ namespace game
         bouncer *b = (bouncer *)d;
         if(b->bouncetype != BNC_GIBS || b->bounces >= 2) return;
         b->bounces++;
-        unsigned int bloodin = bloodcolor ^ 0xFFFFFF,
-            bloodb = bloodin & 0xff,
-            bloodg = (bloodin >> 8) & 0xff,
-            bloodr = (bloodin >> 16) & 0xff;
-        // Thanks StackOverflow, yet again. -Y 04/2018
-        adddecal(DECAL_BLOOD, vec(b->o).sub(vec(surface).mul(b->radius)), surface, 2.96f/b->bounces, bvec(bloodr, bloodg, bloodb), rnd(4));
+        unsigned int bloodin = bloodcolor ^ 0xFFFFFF;
+        adddecal(DECAL_BLOOD, vec(b->o).sub(vec(surface).mul(b->radius)), surface, 2.96f/b->bounces, bvec((bloodin >> 16) & 0xff, (bloodin >> 8) & 0xff, bloodin & 0xff), rnd(4));
     }
 
     void updatebouncers(int time)
@@ -380,27 +377,26 @@ namespace game
         for(int i = 0; i < int(min(damage/gibdiv, 40)+1); ++i) spawnbouncer(from, vel, d, BNC_GIBS);
     }
 
-    void hit(int damage, dynent *d, fpsent *at, const vec &vel, int gun, float info1, int info2 = 1, int headshot = 0)
+    void hit(int damage, dynent *d, fpsent *actor, const vec &vel, int gun, float info1, int info2 = 1, int headshot = 0)
     {
 		fpsent* f = (fpsent*)d;
 
-        if(at==player1 && d!=at && !isteam(at->team, f->team))
+        if(actor==player1 && d!=actor && !isteam(actor->team, f->team))
         {
             extern int hitsound, p_hitmark;
-            if(hitsound && lasthit != lastmillis && !m_parkour) playsound(S_HIT);
-            else if(m_parkour && p_hitmark) playsound(S_HIT);
+            if((hitsound && lasthit != lastmillis && !m_parkour) || (m_parkour && p_hitmark)) playsound(S_HIT);
             lasthit = lastmillis;
         }
 
-        f->lastattacker = (dynent*)at;
+        f->lastattacker = actor;
 
         f->lastpain = lastmillis;
-        if(at->type==ENT_PLAYER && !isteam(at->team, f->team)) at->totaldamage += damage;
+        if(actor->type==ENT_PLAYER && !isteam(actor->team, f->team) && f!=actor) actor->totaldamage += damage;
 
-        if(f->type==ENT_AI || !m_mp(gamemode) || f==at) f->hitpush(damage, vel, at, gun);
+        if(f->type==ENT_AI || !m_mp(gamemode) || f==actor) f->hitpush(damage, vel, actor, gun);
 
-        if(!m_mp(gamemode)) damaged(damage, f, at, gun);
-        else
+        if(!m_mp(gamemode)) damaged(damage, f, actor, gun);
+        else if(!m_parkour)
         {
             hitmsg &h = hits.add();
             h.target = f->clientnum;
@@ -408,26 +404,15 @@ namespace game
             h.info1 = int(info1*DMF);
             h.info2 = info2;
 			h.headshot = headshot;
-            h.dir = f==at ? ivec(0, 0, 0) : ivec(vec(vel).mul(DNF));
-            if(at==player1)
-            {
-                if(!m_parkour)
-                {
-                    if(f!=player1) damageeffect(damage, f);
-                    if(f==player1 && f!=at)
-                    {
-                        damageblend(damage);
-                        damagecompass(damage, at ? at->o : f->o);
-                        playsound(S_PAIN_SARAH_6 + (6 * f->playermodel));
-                    }
-                }
-            }
+            h.dir = f==actor ? ivec(0, 0, 0) : ivec(vec(vel).mul(DNF));
+            
+            if(actor==player1 && f!=player1) damageeffect(damage, f);
         }
     }
 
-    void hitpush(int damage, dynent *d, fpsent *at, vec &from, vec &to, int gun, int rays, int headshot)
+    void hitpush(int damage, dynent *d, fpsent *actor, vec &from, vec &to, int gun, int rays, int headshot)
     {
-        hit(damage, d, at, vec(to).sub(from).safenormalize(), gun, from.dist(to), rays, headshot);
+        hit(damage, d, actor, vec(to).sub(from).safenormalize(), gun, from.dist(to), rays, headshot);
     }
 
     float projdist(dynent *o, vec &dir, const vec &v)
@@ -440,7 +425,7 @@ namespace game
         return dist;
     }
 
-    void radialeffect(dynent *o, const vec &v, int qdam, fpsent *at, int gun)
+    void radialeffect(dynent *o, const vec &v, int qdam, fpsent *actor, int gun)
     {
         if(o->state!=CS_ALIVE) return;
         vec dir;
@@ -448,8 +433,7 @@ namespace game
         if(dist<guns[gun].exprad)
         {
             int damage = (int)(qdam*(1-dist/EXP_DISTSCALE/guns[gun].exprad));
-            //if(o==at) damage /= EXP_SELFDAMDIV;
-            hit(damage, o, at, dir, gun, dist);
+            hit(damage, o, actor, dir, gun, dist);
         }
     }
 
@@ -548,14 +532,14 @@ namespace game
 		return result;
 	}
 
-    bool projdamage(dynent *o, projectile &p, vec &v, int qdam)
+    bool projdamage(dynent *o, projectile &p, vec &v, int damage)
     {
         if(o->state!=CS_ALIVE) return false;
         if(!intersect(o, p.o, v)) return false;
-        projsplash(p, v, o, qdam);
+        projsplash(p, v, o, damage);
         vec dir;
         projdist(o, dir, v);
-        hit(qdam, o, p.owner, dir, p.gun, 0);
+        hit(damage, o, p.owner, dir, p.gun, 0);
         return true;
     }
 
@@ -565,8 +549,6 @@ namespace game
         {
             projectile &p = projs[i];
             p.offsetmillis = max(p.offsetmillis-time, 0);
-            int qdam = guns[p.gun].damage;
-            if(p.owner->type==ENT_AI) qdam /= 4;
             vec dv;
             float dist = p.to.dist(p.o, dv);
             dv.mul(time/max(dist*1000/p.speed, float(time)));
@@ -582,7 +564,7 @@ namespace game
                 {
                     dynent *o = iterdynents(j);
                     if(p.owner==o || o->o.reject(bo, o->radius + br)) continue;
-                    if(projdamage(o, p, v, qdam)) { exploded = true; break; }
+                    if(projdamage(o, p, v, guns[p.gun].damage)) { exploded = true; break; }
                 }
             }
             if(!exploded)
@@ -593,7 +575,7 @@ namespace game
                     {
                         if(raycubepos(p.o, p.dir, p.to, 0, RAY_CLIPMAT|RAY_ALPHAPOLY)>=4) continue;
                     }
-                    projsplash(p, v, NULL, qdam);
+                    projsplash(p, v, NULL, guns[p.gun].damage);
                     exploded = true;
                 }
                 else
@@ -692,16 +674,11 @@ namespace game
 
             case GUN_RIFLE:
                 particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
-                if(!teamcolorrifle)
-                {
-                    particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, rifletrail, 0.6f, 20); //0x404040
-                }
-                else
-                {
-                    int rcolor = strcmp(d->team, "red") ? 0x0000FF : 0xFF0000;
-                    if(!m_teammode) rcolor = rifletrail;
-                    particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, rcolor, 0.6f, 20);
-                }
+                
+                int rcolor = !strcmp(d->team, "red") ? 0xFF0000 : 0x0000FF;
+                if(!m_teammode || !teamcolorrifle) rcolor = rifletrail;
+                particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, rcolor, 0.6f, 20);
+
                 if(muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, 150, PART_MUZZLE_FLASH3, 0xFFFFFF, 1.25f, d);
                 if(!local) adddecal(DECAL_BULLET, to, vec(from).sub(to).safenormalize(), 3.0f);
@@ -712,15 +689,16 @@ namespace game
         bool looped = false;
         if(d->attacksound >= 0 && d->attacksound != sound) d->stopattacksound();
         if (d->idlesound >= 0) d->stopidlesound();
+        fpsent* h = followingplayer(player1);
         switch (sound)
         {
             case S_CHAINSAW_ATTACK:
                 if (d->attacksound >= 0) looped = true;
                 d->attacksound = sound;
-                d->attackchan = playsound(sound, d == hudplayer() ? NULL : &d->o, NULL, 0, -1, 100, d->attackchan);
+                d->attackchan = playsound(sound, d==h ? NULL : &d->o, NULL, 0, -1, 100, d->attackchan);
                 break;
             default:
-                playsound(sound, d == hudplayer() ? NULL : &d->o);
+                playsound(sound, d==h ? NULL : &d->o);
                 break;
         }
     }
@@ -747,7 +725,7 @@ namespace game
         fpsent *pl = (fpsent *)owner;
         if(pl->muzzle.x < 0 || pl->lastattackgun != pl->gunselect) return;
         o = pl->muzzle;
-        hud = owner == followingplayer() ? vec(pl->o).add(vec(0, 0, 2)) : pl->muzzle;
+        hud = owner == followingplayer(player1) ? vec(pl->o).add(vec(0, 0, 2)) : pl->muzzle;
     }
 
     float intersectdist = 1e16f;
@@ -787,7 +765,6 @@ namespace game
     void raydamage(vec &from, vec &to, fpsent *d)
     {
         int qdam = guns[d->gunselect].damage;
-        //if(d->type==ENT_AI) qdam /= 4;
         dynent *o;
         float dist;
         if(guns[d->gunselect].rays > 1)
@@ -840,10 +817,7 @@ namespace game
             }
             return;
         }
-        if(d->gunselect)
-        {
-            if(!m_bottomless) d->ammo[d->gunselect]--; //subtract ammo
-        }
+        if(d->gunselect && !m_bottomless) d->ammo[d->gunselect]--; //subtract ammo
 
         vec from = d->o, to = targ, dir = vec(to).sub(from).safenormalize();
         float dist = to.dist(from);
@@ -874,19 +848,16 @@ namespace game
         }
 
 		d->gunwait[d->gunselect] = guns[d->gunselect].attackdelay;
-		if(d->gunselect == GUN_SMG && d->ai) d->gunwait[d->gunselect] += int(d->gunwait[d->gunselect]*(((101-d->skill)+rnd(111-d->skill))/100.f));
+		//if(d->ai) d->gunwait[d->gunselect] += int(d->gunwait[d->gunselect]*(((101-d->skill)+rnd(111-d->skill))/100.f));
         d->totalshots += guns[d->gunselect].damage*guns[d->gunselect].rays;
+        recordpotentialdamage(d);
 
-		if(!d->ammo[d->gunselect])
+		if(!d->ammo[d->gunselect] && d==player1)
 		{
-			if(d == player1)
-			{
-				msgsound(S_NOAMMO, d);
-				d->gunwait[d->gunselect] = 600;
-				d->lastattackgun = -1;
-				weaponswitch(d);
-			}
-			return;
+			msgsound(S_NOAMMO, d);
+			d->gunwait[d->gunselect] = 600;
+			d->lastattackgun = -1;
+			weaponswitch(d);
 		}
     }
 
@@ -1032,7 +1003,13 @@ namespace game
 
     void updateweapons(int curtime)
     {
-        if(player1->clientnum>=0 && player1->state==CS_ALIVE) shoot(player1, worldpos, false); // only shoot when connected to server
+        movegrapples(curtime);
+        if (player1->clientnum >= 0 && player1->state == CS_ALIVE) // only shoot when connected to server
+        {
+            shoot(player1, worldpos, false);
+            shootgrapple(player1, worldpos);
+        }
+
 		updateprojectiles(curtime);
         updatebouncers(curtime); // need to do this after the player shoots so grenades don't end up inside player's BB next frame
         fpsent *following = followingplayer();
@@ -1059,5 +1036,258 @@ namespace game
             obstacles.avoidnear(NULL, bnc.o.z + guns[GUN_GL].exprad + 1, bnc.o, radius + guns[GUN_GL].exprad);
         }
     }
+
+    struct grappleobj
+    {
+        vec dir, o, to, offset;
+        float speed;
+        fpsent* owner;
+        bool attached;
+        physent* attachedto;
+        bool local;
+        int offsetmillis;
+        int id;
+        entitylight light;
+    };
+    vector<grappleobj> grapples;
+
+    void reset() { grapples.setsize(0); player1->grappling = false; }
+
+    grappleobj& newgrapple(vec& from, vec& to, float speed, bool local, fpsent* owner)
+    {
+        grappleobj& g = grapples.add();
+        g.dir = vec(to).sub(from).normalize();
+        g.o = from;
+        g.to = to;
+        g.offset = hudgunorigin(0, from, to, owner);
+        g.offset.sub(from);
+        g.speed = speed;
+        g.local = local;
+        g.owner = owner;
+        g.attached = false;
+        g.attachedto = NULL;
+        g.offsetmillis = OFFSETMILLIS;
+        g.id = lastmillis;
+        return g;
+    }
+
+    bool hasgrapple(fpsent* d)
+    {
+        loopv(grapples)
+            if (grapples[i].owner == d) return true;
+        return false;
+    }
+
+    void removegrapples(physent* d, bool attached)
+    {
+        // can't use loopv here due to strange GCC optimizer bug
+        int len = grapples.length();
+        for (int i = 0; i < len; i++) if (grapples[i].owner == d || (attached && grapples[i].attachedto == d))
+        {
+            grapples.remove(i--);
+            len--;
+        }
+        if (d == player1)
+        {
+            addmsg(N_GRAPPLESTOP, "ri", (int)attached);
+            player1->grappling = false;
+        }
+    }
+
+    void setgrapplepos(fpsent* d, const vec& pos)
+    {
+        loopv(grapples) if (grapples[i].owner == d)
+        {
+            grapples[i].o = pos;
+            break;
+        }
+    }
+
+    void setgrapplehit(fpsent* d, const vec& hit)
+    {
+        loopv(grapples) if (grapples[i].owner == d)
+        {
+            grapples[i].o = hit;
+            grapples[i].to = hit;
+            grapples[i].attached = true;
+            break;
+        }
+    }
+
+    void setgrappled(fpsent* d, fpsent* victim)
+    {
+        loopv(grapples) if (grapples[i].owner == d)
+        {
+            grapples[i].attachedto = victim;
+            grapples[i].attached = true;
+            break;
+        }
+    }
+
+    void sendgrappleclient(dynent* d, ucharbuf& p)
+    {
+        loopv(grapples)
+        {
+            grappleobj& g = grapples[i];
+            if (grapples[i].owner == d && !g.attached)
+            {
+                putint(p, N_GRAPPLEPOS);
+                for (int k = 0; k < 3; k++) putint(p, int(g.o[k] * DMF));
+                return;
+            }
+        }
+    }
+
+    bool grappleent(dynent* o, grappleobj& g, vec& v)
+    {
+        if (o->state != CS_ALIVE) return false;
+        if (!intersect(o, g.o, v)) return false;
+        return true;
+    }
+
+    void movegrapples(int time)
+    {
+        loopv(grapples)
+        {
+            grappleobj& g = grapples[i];
+            fpsent* d = g.owner;
+            if (!g.attached)
+            {
+                g.offsetmillis = max(g.offsetmillis - time, 0);
+                vec v;
+                float dist = g.to.dist(g.o, v);
+                float dtime = dist * 1000 / g.speed;
+                if (time > dtime) dtime = time;
+                v.mul(time / dtime);
+                v.add(g.o);
+                for (int j=0; j<numdynents(); j++)
+                {
+                    dynent* o = iterdynents(j);
+                    if (!o || d == o || o->o.reject(v, 10.0f)) continue;
+                    if (grappleent(o, g, v))
+                    {
+                        g.attachedto = o;
+                        g.attached = true;
+                        break;
+                    }
+                }
+                if (!g.attached)
+                {
+                    if (dist < 4)
+                    {
+                        if (g.o != g.to) // if original target was moving, reevaluate endpoint
+                        {
+                            if (raycubepos(g.o, g.dir, g.to, 0, RAY_CLIPMAT | RAY_ALPHAPOLY) >= 4) continue;
+                        }
+                        g.attached = true;
+                    }
+                }
+                if (!g.attached) g.o = v;
+                else if (d == player1)
+                {
+                    physent* o = g.attachedto;
+                    if (o != NULL && o->type == ENT_PLAYER)
+                    {
+                        addmsg(N_GRAPPLED, "ri", ((fpsent*)o)->clientnum);
+                    }
+                    else
+                    {
+                        addmsg(N_GRAPPLEHIT, "ri3", int(g.o.x * DMF), int(g.o.y * DMF), int(g.o.z * DMF));
+                    }
+                }
+            }
+            else
+            {
+                vec to(g.attachedto ? g.attachedto->o : g.to);
+                vec dir(to);
+                dir.sub(d->o);
+                if (dir.squaredlen() > GRAPPLESEPERATION * GRAPPLESEPERATION)
+                {
+                    dir.normalize();
+                    if (g.attachedto)
+                    {
+                        physent* a = g.attachedto;
+                        dir.mul(GRAPPLEPULLSPEED * 0.5);
+                        a->vel.sub(dir);
+                    }
+                    else
+                    {
+                        dir.mul(GRAPPLEPULLSPEED);
+                        g.owner->vel.add(dir);
+                    }
+                }
+            }
+        }
+    }
+
+    void shootgrapplev(vec& from, vec& to, fpsent* d, bool local)
+    {
+        newgrapple(from, to, GRAPPLETHROWSPEED * 4, local, d);
+    }
+
+    void shootgrapple(fpsent* d, vec& targ)
+    {
+        if (d == player1 && !d->grappling) return;
+        if (hasgrapple(d)) return;
+
+        vec from = d->o;
+        vec to = targ;
+
+        vec unitv;
+        float dist = to.dist(from, unitv);
+        unitv.div(dist);
+        float barrier = raycube(d->o, unitv, dist, RAY_CLIPMAT | RAY_ALPHAPOLY);
+        if (barrier < dist)
+        {
+            to = unitv;
+            to.mul(barrier);
+            to.add(from);
+        }
+
+        shootgrapplev(from, to, d, true);
+
+        if (d == player1)
+        {
+            addmsg(N_GRAPPLE, "rii6", lastmillis - maptime,
+                (int)(from.x * DMF), (int)(from.y * DMF), (int)(from.z * DMF),
+                (int)(to.x * DMF), (int)(to.y * DMF), (int)(to.z * DMF));
+        }
+    }
+
+    void rendergrapples()
+    {
+        float yaw, pitch;
+        loopv(grapples)
+        {
+            grappleobj& g = grapples[i];
+            vec pos(g.o), to(g.to);
+            if (g.attachedto)
+            {
+                to = g.attachedto->o;
+                to.z += (g.attachedto->aboveeye - g.attachedto->eyeheight) / 2;
+            }
+            pos.add(vec(g.offset).mul(g.offsetmillis / float(OFFSETMILLIS)));
+            vec v(to);
+            if (g.attached || pos == g.to)
+            {
+                v.sub(g.owner->o);
+                v.normalize();
+                vectoyawpitch(v, yaw, pitch);
+                v = to;
+            }
+            else
+            {
+                v.sub(pos);
+                v.normalize();
+                vectoyawpitch(v, yaw, pitch);
+                yaw += 45;
+                v.mul(3);
+                v.add(pos);
+            }
+            rendermodel(&g.light, "grapple", ANIM_MAPMODEL | ANIM_LOOP, v, yaw, pitch, MDL_CULL_VFC | MDL_CULL_OCCLUDED | MDL_LIGHT);
+            particle_trail(PART_CHAIN, 1, hudgunorigin(0, g.owner->o, v, g.owner), v, 0xFF0000);
+        }
+    }
+
 };
 

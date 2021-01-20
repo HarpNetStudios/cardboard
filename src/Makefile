@@ -66,7 +66,7 @@ CLIENT_LIBS+= -framework SDL2_mixer -framework SDL2_ttf -framework CoreAudio
 CLIENT_LIBS+= -framework AudioToolbox -framework AudioUnit -framework OpenGL -framework Cocoa -lz -Lenet -lenet -lcurl
 else
 CLIENT_INCLUDES= $(INCLUDES) -I/usr/X11R6/include `sdl2-config --cflags`
-CLIENT_LIBS= -Lenet -lenet -L/usr/X11R6/lib -lX11 `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lz -lGL -lcurl
+CLIENT_LIBS= -Lenet -lenet -L/usr/X11R6/lib -lX11 `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lz -lGL -lcurl -lwayland-client
 endif
 endif
 ifeq ($(PLATFORM),LINUX)
@@ -127,6 +127,7 @@ CLIENT_OBJS= \
 	engine/texture.o \
 	engine/translate.o \
 	engine/water.o \
+	engine/wayland.o \
 	engine/world.o \
 	engine/worldio.o \
 	fpsgame/ai.o \
@@ -134,9 +135,11 @@ CLIENT_OBJS= \
 	fpsgame/discord.o \
 	fpsgame/entities.o \
 	fpsgame/fps.o \
+	fpsgame/fragmessages.o \
 	fpsgame/render.o \
 	fpsgame/scoreboard.o \
 	fpsgame/server.o \
+	fpsgame/weaponstats.o \
 	fpsgame/waypoint.o \
 	fpsgame/weapon.o
 
@@ -345,6 +348,7 @@ engine/main.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/main.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/main.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/main.o: engine/lightmap.h engine/bih.h engine/texture.h engine/model.h
+engine/main.o: engine/wayland.h
 engine/material.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/material.o: shared/ents.h shared/command.h shared/glexts.h
 engine/material.o: shared/glemu.h shared/iengine.h shared/igame.h
@@ -469,6 +473,7 @@ engine/water.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/water.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/water.o: engine/lightmap.h engine/bih.h engine/texture.h
 engine/water.o: engine/model.h
+engine/wayland.o: engine/engine.h engine/wayland.h
 engine/world.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/world.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/world.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
@@ -485,7 +490,8 @@ fpsgame/ai.o: shared/iengine.h shared/igame.h fpsgame/ai.h
 fpsgame/client.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/client.o: shared/ents.h shared/command.h shared/glexts.h
 fpsgame/client.o: shared/glemu.h shared/iengine.h shared/igame.h fpsgame/ai.h
-fpsgame/client.o: fpsgame/capture.h fpsgame/ctf.h fpsgame/collect.h
+fpsgame/client.o: fpsgame/capture.h fpsgame/ctf.h fpsgame/collect.h fpsgame/extserver.h
+fpsgame/client.o: fpsgame/weaponstats.h
 fpsgame/entities.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/entities.o: shared/ents.h shared/command.h shared/glexts.h
 fpsgame/entities.o: shared/glemu.h shared/iengine.h shared/igame.h
@@ -493,6 +499,8 @@ fpsgame/entities.o: fpsgame/ai.h
 fpsgame/fps.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/fps.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 fpsgame/fps.o: shared/iengine.h shared/igame.h fpsgame/ai.h
+fpsgame/fps.o: fpsgame/weaponstats.h
+fpsgame/fragmessages.o: fpsgame/game.h fpsgame/fragmessages.h
 fpsgame/render.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/render.o: shared/ents.h shared/command.h shared/glexts.h
 fpsgame/render.o: shared/glemu.h shared/iengine.h shared/igame.h fpsgame/ai.h
@@ -500,6 +508,7 @@ fpsgame/scoreboard.o: fpsgame/game.h shared/cube.h shared/tools.h
 fpsgame/scoreboard.o: shared/geom.h shared/ents.h shared/command.h
 fpsgame/scoreboard.o: shared/glexts.h shared/glemu.h shared/iengine.h
 fpsgame/scoreboard.o: shared/igame.h fpsgame/ai.h
+fpsgame/scoreboard.o: fpsgame/colors.h
 fpsgame/server.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/server.o: shared/ents.h shared/command.h shared/glexts.h
 fpsgame/server.o: shared/glemu.h shared/iengine.h shared/igame.h fpsgame/ai.h
@@ -512,6 +521,8 @@ fpsgame/waypoint.o: fpsgame/ai.h
 fpsgame/weapon.o: fpsgame/game.h shared/cube.h shared/tools.h shared/geom.h
 fpsgame/weapon.o: shared/ents.h shared/command.h shared/glexts.h
 fpsgame/weapon.o: shared/glemu.h shared/iengine.h shared/igame.h fpsgame/ai.h
+fpsgame/weapon.o: fpsgame/weaponstats.h
+fpsgame/weaponstats.o: fpsgame/game.h
 
 shared/cube.h.gch: shared/tools.h shared/geom.h shared/ents.h
 shared/cube.h.gch: shared/command.h shared/glexts.h shared/glemu.h
@@ -521,9 +532,12 @@ engine/engine.h.gch: shared/command.h shared/glexts.h shared/glemu.h
 engine/engine.h.gch: shared/iengine.h shared/igame.h engine/world.h
 engine/engine.h.gch: engine/octa.h engine/lightmap.h engine/bih.h
 engine/engine.h.gch: engine/texture.h engine/model.h engine/translate.h
+engine/engine.h.gch: engine/wayland.h
 fpsgame/game.h.gch: shared/cube.h shared/tools.h shared/geom.h shared/ents.h
 fpsgame/game.h.gch: shared/command.h shared/glexts.h shared/glemu.h
 fpsgame/game.h.gch: shared/iengine.h shared/igame.h fpsgame/ai.h engine/translate.h
+fpsgame/game.h.gch: fpsgame/weaponstats_type.h fpsgame/weaponstats.h
+fpsgame/game.h.gch: fpsgame/fragmessages.h
 
 shared/crypto-standalone.o: shared/cube.h shared/tools.h shared/geom.h
 shared/crypto-standalone.o: shared/ents.h shared/command.h shared/iengine.h

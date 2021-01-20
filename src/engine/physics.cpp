@@ -1603,8 +1603,8 @@ void dropenttofloor(entity *e)
 void phystest()
 {
     static const char * const states[] = {"float", "fall", "slide", "slope", "floor", "step up", "step down", "bounce"};
-    printf ("PHYS(pl): %s, air %d, floor: (%f, %f, %f), vel: (%f, %f, %f), g: (%f, %f, %f)\n", states[player->physstate], player->timeinair, player->floor.x, player->floor.y, player->floor.z, player->vel.x, player->vel.y, player->vel.z, player->falling.x, player->falling.y, player->falling.z);
-    printf ("PHYS(cam): %s, air %d, floor: (%f, %f, %f), vel: (%f, %f, %f), g: (%f, %f, %f)\n", states[camera1->physstate], camera1->timeinair, camera1->floor.x, camera1->floor.y, camera1->floor.z, camera1->vel.x, camera1->vel.y, camera1->vel.z, camera1->falling.x, camera1->falling.y, camera1->falling.z);
+    conoutf("PHYS(pl): %s, air %d, floor: (%f, %f, %f), vel: (%f, %f, %f), g: (%f, %f, %f)", states[player->physstate], player->timeinair, player->floor.x, player->floor.y, player->floor.z, player->vel.x, player->vel.y, player->vel.z, player->falling.x, player->falling.y, player->falling.z);
+    conoutf("PHYS(cam): %s, air %d, floor: (%f, %f, %f), vel: (%f, %f, %f), g: (%f, %f, %f)", states[camera1->physstate], camera1->timeinair, camera1->floor.x, camera1->floor.y, camera1->floor.z, camera1->vel.x, camera1->vel.y, camera1->vel.z, camera1->falling.x, camera1->falling.y, camera1->falling.z);
 }
 
 COMMAND(phystest, "");
@@ -1816,7 +1816,9 @@ void modifygravity(physent *pl, bool water, int curtime)
 {
     float secs = curtime/1000.0f;
     vec g(0, 0, 0);
-    if(pl->physstate == PHYS_FALL) g.z -= gravity*secs;
+    if(pl->physstate == PHYS_FALL) {
+        g.z -= gravity*secs;
+    }
     else if(pl->floor.z > 0 && pl->floor.z < FLOORZ)
     {
         g.z = -1;
@@ -1829,18 +1831,18 @@ void modifygravity(physent *pl, bool water, int curtime)
         if(!pl->spacepack || pl->spaceclip) pl->falling.add(g);
     }
 
-
     if(water || pl->physstate >= PHYS_SLOPE)
     {
 		float fric = water ? 2.0f : 6.0f;
 		float c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
 		pl->falling.mul(pow(1 - c/fric, curtime/20.0f));
-// old fps friction
-    //float friction = water ? 2.0f : 6.0f,
-    //    fpsfric = friction/curtime*20.0f,
-   //     c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
-   // pl->falling.mul(1 - c/fpsfric);
+        // old fps friction
+        //float friction = water ? 2.0f : 6.0f,
+        //    fpsfric = friction/curtime*20.0f,
+        //     c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
+        // pl->falling.mul(1 - c/fpsfric);
     }
+    pl->falling.z = max(pl->falling.z, -600.0f); // limit gravity to sane amounts.
 }
 
 // main physics routine, moves a player for a curtime step
@@ -1892,7 +1894,7 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 		d.mul(f);
 		for(int i = 0; i < int(moveres); ++i) if(!spacemove(pl, d) && ++collisions < 5) i--; // discrete steps collision detection & sliding
 	}
-	else                          // apply velocity with collision
+	else                         // apply velocity with collision
 	{
 		const float f = 1.0f / moveres;
 		const int timeinair = pl->timeinair;
@@ -1925,19 +1927,15 @@ bool moveplayer(physent* pl, int moveres, bool local, int curtime)
 		pl->inwater = water ? material & MATF_VOLUME : MAT_AIR;
 	}
 
-	if(pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_DEATH)) game::suicide(pl); //DEATH or being under the origin (z<0) kills you
-	if(pl->state == CS_ALIVE && (material & MAT_SPACECLIP)) //SPACECLIP prevents spacepack usage
-	{
-		//if(pl->spacepack) conoutf("\f3spaceclip");
-		pl->spaceclip = true;	
-	}
-	if(pl->state == CS_ALIVE && (material & MAT_JUMPRESET)) //JUMPRESET allows another double jump
-	{
-		if(pl->jumpstate == 2) pl->jumpstate = 1;
-	}
-	else if(pl->state == CS_ALIVE && !(material & MAT_SPACECLIP) && pl->spaceclip) {
-		pl->spaceclip = !pl->spaceclip;
-	}
+    // DEATH or being under the origin (z<0) kills you
+	if(pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_DEATH)) game::suicide(pl);
+
+    // SPACECLIP prevents spacepack usage
+	if(pl->state == CS_ALIVE && (material & MAT_SPACECLIP)) pl->spaceclip = true;
+    else if (pl->state == CS_ALIVE && !(material & MAT_SPACECLIP) && pl->spaceclip) pl->spaceclip = !pl->spaceclip;
+
+    // JUMPRESET allows another double jump
+	if(pl->state == CS_ALIVE && (material & MAT_JUMPRESET)) if(pl->jumpstate >= 2) pl->jumpstate = 1;
 
     return true;
 }
@@ -2015,45 +2013,41 @@ bool bounce(physent *d, float elasticity, float waterfric, float grav)
 
 void updatephysstate(physent *d)
 {
-    if(d->physstate == PHYS_FALL) return;
-    d->timeinair = 0;
-    vec old(d->o);
-    /* Attempt to reconstruct the floor state.
-     * May be inaccurate since movement collisions are not considered.
-     * If good floor is not found, just keep the old floor and hope it's correct enough.
-     */
-    switch(d->physstate)
-    {
+	if(d->physstate == PHYS_FALL) return;
+	d->timeinair = 0;
+	vec old(d->o);
+	/* Attempt to reconstruct the floor state.
+	 * May be inaccurate since movement collisions are not considered.
+	 * If good floor is not found, just keep the old floor and hope it's correct enough.
+	 */
+	switch(d->physstate)
+	{
 		case PHYS_FLOAT:
-		if(d->spacepack && !d->spaceclip)
-		{
-			if(collide(d, vec(0, 0, 0)) && collidewall.z == SLOPEZ)
+			if(d->spacepack && !d->spaceclip && collide(d, vec(0, 0, 0)) && collidewall.z == SLOPEZ) d->floor = collidewall;
+			break; // what the fuck
+
+		case PHYS_SLOPE:
+		case PHYS_FLOOR:
+		case PHYS_STEP_DOWN:
+			d->o.z -= 0.15f;
+			if(collide(d, vec(0, 0, -1), d->physstate == PHYS_SLOPE || d->physstate == PHYS_STEP_DOWN ? SLOPEZ : FLOORZ))
 				d->floor = collidewall;
-		}
-		break; // what the fuck
+			break;
 
-        case PHYS_SLOPE:
-        case PHYS_FLOOR:
-        case PHYS_STEP_DOWN:
-            d->o.z -= 0.15f;
-            if(collide(d, vec(0, 0, -1), d->physstate == PHYS_SLOPE || d->physstate == PHYS_STEP_DOWN ? SLOPEZ : FLOORZ))
-                d->floor = collidewall;
-            break;
+		case PHYS_STEP_UP:
+			d->o.z -= STAIRHEIGHT+0.15f;
+			if(collide(d, vec(0, 0, -1), SLOPEZ))
+				d->floor = collidewall;
+			break;
 
-        case PHYS_STEP_UP:
-            d->o.z -= STAIRHEIGHT+0.15f;
-            if(collide(d, vec(0, 0, -1), SLOPEZ))
-                d->floor = collidewall;
-            break;
-
-        case PHYS_SLIDE:
-            d->o.z -= 0.15f;
-            if(collide(d, vec(0, 0, -1)) && collidewall.z < SLOPEZ)
-                d->floor = collidewall;
-            break;
-    }
-    if(d->physstate > PHYS_FALL && d->floor.z <= 0) d->floor = vec(0, 0, 1);
-    d->o = old;
+		case PHYS_SLIDE:
+			d->o.z -= 0.15f;
+			if(collide(d, vec(0, 0, -1)) && collidewall.z < SLOPEZ)
+				d->floor = collidewall;
+			break;
+	}
+	if(d->physstate > PHYS_FALL && d->floor.z <= 0) d->floor = vec(0, 0, 1);
+	d->o = old;
 }
 
 const float PLATFORMMARGIN = 0.2f;
@@ -2223,15 +2217,15 @@ dir(left,     fstrafe,  1.0f, k_left,  k_right);
 dir(right,    fstrafe, -1.0f, k_right, k_left);
 
 ICOMMAND(jump,   "D", (int *down), {
-         if(!*down || game::canjump())
-         {
-             player->jumping = *down!=0;
-             if(*down != 0)
-                player->jumpstate = min(player->jumpstate++, 2);
-         }
-         });
+    if(!*down || game::canjump())
+    {
+        player->jumping = *down!=0;
+        if(*down!=0) player->jumpstate = min(player->jumpstate++, 2);
+    }
+});
 ICOMMAND(attack, "D", (int *down), { game::doattack(*down!=0); });
-ICOMMAND(secattack, "D", (int* down), { game::dosecattack(*down != 0); });
+ICOMMAND(secattack, "D", (int *down), { game::dosecattack(*down!=0); });
+ICOMMAND(usehook, "D", (int *down), { game::dograpple(*down!=0); });
 
 bool entinmap(dynent *d, bool avoidplayers)        // brute force but effective way to find a free spawn spot in the map
 {

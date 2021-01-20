@@ -1,0 +1,13 @@
+"Altitude" "Space1" "Space2" skybox by JWindecker.
+This is under the Creative-Commons-BY licence, feel free to edit/modify to your needs as long as I get credit for the orgional, and this readme is packed with it.
+
+Altitude: Skybox is meant to be pretty and bright; very bright with glare or bloom. It works good to hide things in the white fog without them showing up where there is different coloration. 
+
+Space 1:
+Space 2: Just plain old spacy skys 
+
+Contact:  jacobwindecker@hotmail.com
+
+Modifications: 
+
+//please post your contact info and any changes you make

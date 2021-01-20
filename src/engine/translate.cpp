@@ -30,6 +30,8 @@ struct Translation
 hashtable<const char *, Translation *> strings;
 const char *noTranslation = "No translation available.";
 
+VARP(dbgtranslation, 0, 0, 1);
+
 const char *getTranslation(const char *name)
 {
     Translation **c = strings.access(name);
@@ -42,7 +44,7 @@ const char *getTranslation(const char *name)
             logoutf("\"%s\" \"%s\"\n", name, name);
         }
 
-        return noTranslation;
+        return dbgtranslation ? name : noTranslation;
     }
     return (*c)->value;
 }

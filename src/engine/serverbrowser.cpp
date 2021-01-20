@@ -356,6 +356,27 @@ vector<serverinfo *> servers;
 ENetSocket pingsock = ENET_SOCKET_NULL;
 int lastinfo = 0;
 
+int numservers() {
+    return servers.length();
+}
+char* gethostname(int n) {
+    return servers[n]->name;
+}
+int getport(int n) {
+    return servers[n]->address.port;
+}
+char* getservdesc(char* hostname, int port) {
+    ENetAddress a;
+    if (enet_address_set_host(&a, hostname) < 0) return (char*)"";
+    loopv(servers) {
+        if (servers[i]->address.host == a.host && servers[i]->port == port) {
+            return servers[i]->sdesc;
+        }
+    }
+    return (char*)"";
+}
+ICOMMAND(getservdesc, "si", (char* hostname, int* port), result(getservdesc(hostname, *port)));
+
 static serverinfo *newserver(const char *name, int port, uint ip = ENET_HOST_ANY)
 {
     serverinfo *si = new serverinfo;
@@ -561,6 +582,8 @@ void refreshservers()
 
 serverinfo *selectedserver = NULL;
 
+VARP(previewservers, 0, 0, 1);
+
 const char *showservers(g3d_gui *cgui, uint *header, int pagemin, int pagemax)
 {
     refreshservers();
@@ -576,9 +599,9 @@ const char *showservers(g3d_gui *cgui, uint *header, int pagemin, int pagemax)
         if(header) execute(header);
         int end = servers.length();
         cgui->pushlist();
-        for(int i = 0; i < 10; ++i)
+        for(int i = 0; i < 11; ++i)
         {
-            if(!serverlistshowhost && (i==6||i==7)) continue;
+            if(!serverlistshowhost && (i==7||i==8)) continue;
             if(!game::serverinfostartcolumn(cgui, i)) break;
             for(int j = start; j < end; j++)
             {
@@ -597,8 +620,17 @@ const char *showservers(g3d_gui *cgui, uint *header, int pagemin, int pagemax)
     }
     if(selectedserver || !sc) return NULL;
     selectedserver = sc;
-    return "connectselected";
+    return previewservers ? "showserverpreview" : "connectselected";
 }
+
+void showserverpreview() {
+	if(!selectedserver) return;
+//	defformatstring(cmd)("requestall %s %d; serverpreview (getextservidx %s %d)", selectedserver->name, selectedserver->port, selectedserver->name, selectedserver->port);
+	defformatstring(cmd, "requestall %s %d; showservprev %s %d", selectedserver->name, selectedserver->port, selectedserver->name, selectedserver->port);
+	execute(cmd);
+	selectedserver = NULL;
+}
+COMMAND(showserverpreview, "");
 
 void connectselected()
 {

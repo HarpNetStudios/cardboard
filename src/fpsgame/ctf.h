@@ -546,6 +546,7 @@ struct ctfclientmode : clientmode
 
     void drawhud(fpsent *d, int w, int h)
     {
+        gle::colorf(1, 1, 1);
         if(d->state == CS_ALIVE)
         {
             loopv(flags) if(flags[i].owner == d)
@@ -892,6 +893,17 @@ struct ctfclientmode : clientmode
         if(m_protect && d->feetpos().dist(f.spawnloc) < FLAGRADIUS) d->flagpickup |= 1<<f.id;
         conoutf(CON_GAMEINFO, "%s returned %s", teamcolorname(d), teamcolorflag(f));
         teamsound(d, S_FLAGRETURN);
+    }
+
+    void checkflag() {
+        loopv(players) {
+            players[i]->hasflag = false;
+        }
+        loopv(flags) {
+            if (flags[i].owner) {
+                flags[i].owner->hasflag = true;
+            }
+        }
     }
 
     void spawnflag(flag &f)

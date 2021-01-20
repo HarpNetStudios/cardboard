@@ -2132,7 +2132,7 @@ void drawdamagecompass(int w, int h)
         gle::attrib(m.transform(vec2(0, 0)));
 
         // fade in log space so short blips don't disappear too quickly
-        scale -= float(curtime)/damagecompassfade;
+        scale -= float(curframetime)/damagecompassfade;
         damagedirs[i] = scale > 0 ? (pow(logscale, scale) - 1) / (logscale - 1) : 0;
     }
     if(dirs) gle::end();
@@ -2294,6 +2294,7 @@ VARP(wallclocksecs, 0, 0, 1);
 
 static time_t walltime = 0;
 
+VARP(showgravity, 0, 0, 1);
 VARP(showvel, 0, 1, 1);
 VARP(showfps, 0, 1, 1);
 VARP(showfpsrange, 0, 0, 1);
@@ -2425,6 +2426,13 @@ void gl_drawhud()
 				{
                     float speed = game::hudplayer()->vel.magnitude();
 					draw_textf("%3.1f cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, speed);
+					roffset += FONTH;
+				}
+
+                if(showgravity && !editmode)
+				{
+                    float grav = -game::hudplayer()->falling.z;
+					draw_textf("%3.1f Gs", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, abs(grav));
 					roffset += FONTH;
 				}
 

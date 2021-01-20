@@ -261,6 +261,7 @@ namespace game
         renderbouncers();
         renderprojectiles();
         if(cmode) cmode->rendergame();
+        rendergrapples();
 
         endmodelbatches();
     }
