@@ -3390,7 +3390,7 @@ namespace server
 
 			case N_GRAPPLE:
 			{
-				disconnect_client(sender, DISC_KICK);
+				//disconnect_client(sender, DISC_KICK);
 				grappleevent *grp = new grappleevent;
 				if (!allowgrapple)
 				{
@@ -3408,7 +3408,7 @@ namespace server
 
 			case N_GRAPPLEPOS:
 			{
-				disconnect_client(sender, DISC_KICK);
+				//disconnect_client(sender, DISC_KICK);
 				for(int k = 0; k < 3; ++k) getint(p);
 				if (allowgrapple)
 					QUEUE_MSG;
@@ -3417,7 +3417,7 @@ namespace server
 
 			case N_GRAPPLEHIT:
 			{
-				disconnect_client(sender, DISC_KICK);
+				//disconnect_client(sender, DISC_KICK);
 				for(int k = 0; k < 3; ++k) getint(p);
 				if (allowgrapple)
 					QUEUE_MSG;
@@ -3426,7 +3426,7 @@ namespace server
 
 			case N_GRAPPLED:
 			{
-				disconnect_client(sender, DISC_KICK);
+				//disconnect_client(sender, DISC_KICK);
 				getint(p);
 				if (allowgrapple)
 					QUEUE_MSG;
@@ -3435,7 +3435,7 @@ namespace server
 
 			case N_GRAPPLESTOP:
 			{
-				disconnect_client(sender, DISC_KICK);
+				//disconnect_client(sender, DISC_KICK);
 				getint(p);
 				QUEUE_MSG;
 				break;
