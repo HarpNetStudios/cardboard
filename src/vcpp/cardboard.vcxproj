@@ -459,7 +459,6 @@
     <ClInclude Include="..\engine\mpr.h" />
     <ClInclude Include="..\engine\octa.h" />
     <ClInclude Include="..\engine\translate.h" />
-    <ClInclude Include="..\engine\wayland.h" />
     <ClInclude Include="..\engine\world.h" />
     <ClInclude Include="..\engine\animmodel.h" />
     <ClInclude Include="..\engine\bih.h" />
@@ -483,6 +482,7 @@
     <ClInclude Include="..\fpsgame\colors.h" />
     <ClInclude Include="..\fpsgame\extserver.h" />
     <ClInclude Include="..\fpsgame\fragmessages.h" />
+    <ClInclude Include="..\fpsgame\race.h" />
     <ClInclude Include="..\fpsgame\weapon.h" />
     <ClInclude Include="..\fpsgame\weaponstats.h" />
     <ClInclude Include="..\fpsgame\weaponstats_type.h" />
@@ -526,7 +526,7 @@
     <ClInclude Include="..\fpsgame\game.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\engine\joy.cpp" />
+    <ClCompile Include="..\engine\gamepad.cpp" />
     <ClCompile Include="..\engine\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -667,7 +667,6 @@
     </ClCompile>
     <ClCompile Include="..\engine\raw.cpp" />
     <ClCompile Include="..\engine\translate.cpp" />
-    <ClCompile Include="..\engine\wayland.cpp" />
     <ClCompile Include="..\engine\world.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">engine.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">engine.h</PrecompiledHeaderFile>

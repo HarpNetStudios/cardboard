@@ -20,6 +20,10 @@ namespace game
     VARP(showflags, 0, 0, 1);
     VARP(showkdr, 0, 0, 1);
     VARP(showaccuracy, 0, 0, 2);
+    VARP(showracetime, 0, 1, 1);
+    VARP(showracecheckpoints, 0, 1, 1);
+    VARP(showracelaps, 0, 1, 1);
+    VARP(showracerank, 0, 1, 1);
     //VARP(showdamage, 0, 0, 2);
     //VARP(showdamagereceived, 0, 0, 1);
 
@@ -202,24 +206,24 @@ namespace game
         g.space(.75f);
 
         int numgroups = groupplayers();
-        for(int k = 0; k < int(numgroups); ++k)
+        for (int k = 0; k < int(numgroups); ++k)
         {
-            if((k%2)==0) g.pushlist(); // horizontal
+            if ((k % 2) == 0) g.pushlist(); // horizontal
 
-            scoregroup &sg = *groups[k];
+            scoregroup& sg = *groups[k];
             int teamcolor = sg.team && m_teammode ? (strcmp(sg.team, "red") ? COL_BLUE : COL_RED) : 0;
 
             g.pushlist(); // vertical
             g.pushlist(); // horizontal
 
-            #define loopscoregroup(o, b) \
+#define loopscoregroup(o, b) \
                 loopv(sg.players) \
                 { \
                     fpsent *o = sg.players[i]; \
                     b; \
                 }
 
-            #define rightjustified(b) \
+#define rightjustified(b) \
                 { \
                     g.pushlist(); \
                     g.spring(); \
@@ -227,12 +231,12 @@ namespace game
                     g.poplist(); \
                 }
 
-            #define fgcolor (o==player1 && highlightscore && (multiplayer(false) || demoplayback || players.length() > 1) ? COL_YELLOW : COL_WHITE)
+#define fgcolor (o==player1 && highlightscore && (multiplayer(false) || demoplayback || players.length() > 1) ? COL_YELLOW : COL_WHITE)
 
-            if(sg.team && m_teammode)
+            if (sg.team && m_teammode)
             {
                 g.pushlist(); // vertical
-                if(sg.score>=10000) g.textf("%s: WIN", teamcolor, NULL, sg.team);
+                if (sg.score >= 10000) g.textf("%s: WIN", teamcolor, NULL, sg.team);
                 else g.textf("%s: %d", teamcolor, NULL, sg.team, sg.score);
                 g.pushlist(); // horizontal
             }
@@ -242,108 +246,191 @@ namespace game
             loopscoregroup(o, g.text(colorname(o), statuscolor(o, fgcolor)););
             g.poplist();
 
-            if((m_collect || m_ctf || m_hold || m_protect) && showflags)
+            if ((m_collect || m_ctf || m_hold || m_protect) && showflags)
             {
                 g.space(2);
                 g.pushlist();
                 rightjustified(g.text("flags", COL_GRAY))
-                loopscoregroup(o, rightjustified(g.textf("%d", fgcolor, NULL, o->flags)));
+                    loopscoregroup(o, rightjustified(g.textf("%d", fgcolor, NULL, o->flags)));
                 g.poplist();
             }
 
-            if(!cmode || !cmode->hidefrags() || !hidefrags)
+            if (!cmode || !cmode->hidefrags() || !hidefrags)
             {
                 g.space(2);
                 g.pushlist();
                 rightjustified(g.text("frags", COL_GRAY))
-                loopscoregroup(o, rightjustified(g.textf("%d", fgcolor, NULL, o->frags)));
+                    loopscoregroup(o, rightjustified(g.textf("%d", fgcolor, NULL, o->frags)));
                 g.poplist();
             }
 
-            if(showdeaths && !m_parkour)
+            if (showdeaths && !m_parkour)
             {
                 g.space(2);
                 g.pushlist();
                 rightjustified(g.text("deaths", COL_GRAY))
-                loopscoregroup(o, rightjustified(g.textf("%d", fgcolor, NULL, o->deaths)));
+                    loopscoregroup(o, rightjustified(g.textf("%d", fgcolor, NULL, o->deaths)));
                 g.poplist();
             }
 
             // REWORK LATER -Y
             /*
             if(m_collect) {
-				g.pushlist();
-				g.text("", 0x000000);
-				loopscoregroup(o, {
-					if(o->tokens) {
-						g.textf("%d", 0xFFFFDD, NULL, o->tokens);
-					} else {
-						g.text("", 0x000000);
-					}
-				});
-				g.poplist();
+                g.pushlist();
+                g.text("", 0x000000);
+                loopscoregroup(o, {
+                    if(o->tokens) {
+                        g.textf("%d", 0xFFFFDD, NULL, o->tokens);
+                    } else {
+                        g.text("", 0x000000);
+                    }
+                });
+                g.poplist();
 
-				g.pushlist();
-				g.text("", 0x000000);
-				loopscoregroup(o, {
-					if(o->tokens) {
-						g.text("", 0x000000, !isteam("red", o->team) ? "../hud/blip_red_skull.png" : "../hud/blip_blue_skull.png");
-					} else {
-						g.text("", 0x000000);
-					}
-				});
-				g.poplist();
-			} else if(m_ctf || m_protect || m_hold) {
-				g.pushlist();
-				g.text("", 0x000000);
-				loopscoregroup(o, {
-					char *icon = NULL;
-					if(m_ctf && !m_protect && !m_hold) {
-						icon = !isteam("red", o->team) ? (char *)"../hud/blip_red_flag.png" : (char *)"../hud/blip_blue_flag.png";
-					} else if(m_protect) {
-						icon = !isteam("red", o->team) ? (char *)"..hud/blip_blue_flag.png" : (char *)"../hud/blip_red_flag.png";
-					} else { // m_hold
-						icon = (char *)"../hud/blip_neutral_flag.png";
-					}
+                g.pushlist();
+                g.text("", 0x000000);
+                loopscoregroup(o, {
+                    if(o->tokens) {
+                        g.text("", 0x000000, !isteam("red", o->team) ? "../hud/blip_red_skull.png" : "../hud/blip_blue_skull.png");
+                    } else {
+                        g.text("", 0x000000);
+                    }
+                });
+                g.poplist();
+            } else if(m_ctf || m_protect || m_hold) {
+                g.pushlist();
+                g.text("", 0x000000);
+                loopscoregroup(o, {
+                    char *icon = NULL;
+                    if(m_ctf && !m_protect && !m_hold) {
+                        icon = !isteam("red", o->team) ? (char *)"../hud/blip_red_flag.png" : (char *)"../hud/blip_blue_flag.png";
+                    } else if(m_protect) {
+                        icon = !isteam("red", o->team) ? (char *)"..hud/blip_blue_flag.png" : (char *)"../hud/blip_red_flag.png";
+                    } else { // m_hold
+                        icon = (char *)"../hud/blip_neutral_flag.png";
+                    }
 
-					if(icon && o->hasflag) {
-						g.text("", 0x000000, icon);
-					} else {
-						g.text("", 0x000000);
-					}
-				})
-				g.poplist();
-			}
+                    if(icon && o->hasflag) {
+                        g.text("", 0x000000, icon);
+                    } else {
+                        g.text("", 0x000000);
+                    }
+                })
+                g.poplist();
+            }
             */
 
-            if(showsuicides)
+            if (showsuicides)
             {
                 g.space(2);
                 g.pushlist();
                 rightjustified(g.text("suis", COL_GRAY))
-                loopscoregroup(o, rightjustified(g.textf("%d", fgcolor, NULL, o->suicides)));
+                    loopscoregroup(o, rightjustified(g.textf("%d", fgcolor, NULL, o->suicides)));
                 g.poplist();
             }
 
-            if(showkdr)
-             {
-                if(showpj || showping) g.space(1);
+            if (showkdr)
+            {
+                if (showpj || showping) g.space(1);
                 g.space(2);
                 g.pushlist();
                 g.strut(3);
                 rightjustified(g.text("kdr", COL_GRAY))
-                loopscoregroup(o, rightjustified(g.textf("%.1f", fgcolor, NULL, (float)o->frags/max(1, o->deaths))));
+                    loopscoregroup(o, rightjustified(g.textf("%.1f", fgcolor, NULL, (float)o->frags / max(1, o->deaths))));
                 g.poplist();
             }
 
-            if(showaccuracy)
+            if (showaccuracy)
             {
                 g.space(2);
                 g.pushlist();
                 g.strut(4);
                 rightjustified(g.text("acc", COL_GRAY))
-                loopscoregroup(o, rightjustified(g.textf("%.0f%%", fgcolor, NULL, playeraccuracy(o))));
+                    loopscoregroup(o, rightjustified(g.textf("%.0f%%", fgcolor, NULL, playeraccuracy(o))));
                 g.poplist();
+            }
+
+            if(m_race)
+            {
+                if (showracerank) 
+                {
+                    g.space(2);
+                    g.pushlist();
+                    g.strut(4);
+                    rightjustified(g.text("rank", COL_GRAY))
+                    loopscoregroup(o, {
+                        switch (o->racestate) {
+                        case 0:
+                            g.textf("%s", 0xFFFFDD, NULL, "");
+                            break;
+                        case 1:
+                        case 2:
+                            g.textf("%02d", 0xFFFFDD, NULL, o->racerank);
+                            break;
+                        }
+                    });
+                    g.poplist();
+                }
+
+                if (showracelaps) 
+                {
+                    g.space(2);
+                    g.pushlist();
+                    g.strut(8);
+                    rightjustified(g.text("laps", COL_GRAY))
+                    loopscoregroup(o, {
+                        switch (o->racestate) {
+                        case 0:
+                            g.textf("%s", 0xFFFFDD, NULL, "start");
+                            break;
+                        case 1:
+                            g.textf("%02d", 0xFFFFDD, NULL, o->racelaps);
+                            break;
+                        case 2:
+                            g.textf("%s", 0xFFFFDD, NULL, "finished");
+                            break;
+                        }
+                    });
+                    g.poplist();
+                }
+
+                if (showracecheckpoints)
+                {
+                    g.space(2);
+                    g.pushlist();
+                    g.strut(5);
+                    rightjustified(g.text("check", COL_GRAY))
+                    loopscoregroup(o, {
+                        if (o->racestate == 1) {
+                            g.textf("%02d", 0xFFFFDD, NULL, o->racecheckpoint);
+                        }
+                        else {
+                            g.textf("%s", 0xFFFFDD, NULL, "");
+                        }
+                    });
+                    g.poplist();
+                }
+                // why is this broken -Y
+                /*
+                if (showracetime)
+                {
+                    g.space(2);
+                    g.pushlist();
+                    g.strut(7);
+                    rightjustified(g.text("time", COL_GRAY))
+                    loopscoregroup(o, {
+                        if (o->racestate >= 1) {
+                            int secs = max(o->racetime, 0) / 1000, mins = secs / 60;
+                            secs %= 60;
+                            g.textf("%d:%02d", 0xFFFFDD, NULL, mins, secs);
+                        }
+                        else {
+                            g.textf("%s", 0xFFFFDD, NULL, "");
+                        }
+                    });
+                    g.poplist();
+                }
+                */
             }
 
             /*

@@ -5,11 +5,6 @@
 struct raceservmode : servmode
 #else
 
-VARP(showracetime, 0, 1, 1);
-VARP(showracecheckpoints, 0, 1, 1);
-VARP(showracelaps, 0, 1, 1);
-VARP(showracerank, 0, 1, 1);
-
 struct raceclientmode : clientmode
 #endif
 {
@@ -138,77 +133,6 @@ struct raceclientmode : clientmode
         if (d->racestate == 2 && d->racerank < 4) return ANIM_WIN|ANIM_LOOP;
         else if (d->racestate == 2 && d->racerank >= 4) return ANIM_LOSE|ANIM_LOOP;
         return ANIM_LOSE|ANIM_LOOP;
-    }
-
-    void renderscoreboard(g3d_gui &g, game::scoregroup &sg, int fgcolor, int bgcolor) {
-        if (showracerank) {
-            g.pushlist();
-            g.strut(4);
-            g.text("rank", fgcolor);
-            loopv(sg.players) {
-                fpsent *d = sg.players[i];
-                switch(d->racestate) {
-                    case 0:
-                        g.textf("%s", 0xFFFFDD, NULL, "");
-                        break;
-                    case 1:
-                    case 2:
-                        g.textf("%02d", 0xFFFFDD, NULL, d->racerank);
-                        break;
-                }
-            }
-            g.poplist();
-        }
-        if (showracelaps) {
-            g.pushlist();
-            g.strut(8);
-            g.text("laps", fgcolor);
-            loopv(sg.players) {
-                fpsent *d = sg.players[i];
-                switch(d->racestate) {
-                    case 0:
-                        g.textf("%s", 0xFFFFDD, NULL, "start");
-                        break;
-                    case 1:
-                        g.textf("%02d", 0xFFFFDD, NULL, d->racelaps);
-                        break;
-                    case 2:
-                        g.textf("%s", 0xFFFFDD, NULL, "finished");
-                        break;
-                }
-            }
-            g.poplist();
-        }
-        if (showracecheckpoints) {
-            g.pushlist();
-            g.strut(5);
-            g.text("check", fgcolor);
-            loopv(sg.players) {
-                fpsent *d = sg.players[i];
-                if (d->racestate == 1) {
-                    g.textf("%02d", 0xFFFFDD, NULL, d->racecheckpoint);
-                } else {
-                    g.textf("%s", 0xFFFFDD, NULL, "");
-                }
-            }
-            g.poplist();
-        }
-        if (showracetime) {
-            g.pushlist();
-            g.strut(7);
-            g.text("time", fgcolor);
-            loopv(sg.players) {
-                fpsent *d = sg.players[i];
-                if (d->racestate >= 1) {
-                    int secs = max(d->racetime, 0)/1000, mins = secs/60;
-                    secs %= 60;
-                    g.textf("%d:%02d", 0xFFFFDD, NULL, mins, secs);
-                } else {
-                    g.textf("%s", 0xFFFFDD, NULL, "");
-                }
-            }
-            g.poplist();
-        }
     }
 
     void killed(fpsent *d, fpsent *actor) {

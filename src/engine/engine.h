@@ -450,7 +450,7 @@ namespace rawinput
 	void flush();
 }
 
-namespace joystick
+namespace gamepad
 {
 	void handleevent(const SDL_Event& e);
 	void release();
@@ -611,8 +611,6 @@ extern void renderblendbrush();
 extern bool loadblendmap(stream *f, int info);
 extern void saveblendmap(stream *f);
 extern uchar shouldsaveblendmap();
-
-#include "wayland.h"
 
 #endif
 

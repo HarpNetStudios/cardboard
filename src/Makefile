@@ -66,7 +66,7 @@ CLIENT_LIBS+= -framework SDL2_mixer -framework SDL2_ttf -framework CoreAudio
 CLIENT_LIBS+= -framework AudioToolbox -framework AudioUnit -framework OpenGL -framework Cocoa -lz -Lenet -lenet -lcurl
 else
 CLIENT_INCLUDES= $(INCLUDES) -I/usr/X11R6/include `sdl2-config --cflags`
-CLIENT_LIBS= -Lenet -lenet -L/usr/X11R6/lib -lX11 `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lz -lGL -lcurl -lwayland-client
+CLIENT_LIBS= -Lenet -lenet -L/usr/X11R6/lib -lX11 `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lz -lGL -lcurl
 endif
 endif
 ifeq ($(PLATFORM),LINUX)
@@ -99,6 +99,7 @@ CLIENT_OBJS= \
 	engine/console.o \
 	engine/decal.o \
 	engine/dynlight.o \
+	engine/gamepad.o \
 	engine/glare.o \
 	engine/grass.o \
 	engine/lightmap.o \
@@ -112,7 +113,6 @@ CLIENT_OBJS= \
 	engine/physics.o \
 	engine/pvs.o \
 	engine/raw.o \
-	engine/joy.o \
 	engine/rendergl.o \
 	engine/rendermodel.o \
 	engine/renderparticles.o \
@@ -127,7 +127,6 @@ CLIENT_OBJS= \
 	engine/texture.o \
 	engine/translate.o \
 	engine/water.o \
-	engine/wayland.o \
 	engine/world.o \
 	engine/worldio.o \
 	fpsgame/ai.o \
@@ -348,7 +347,6 @@ engine/main.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/main.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/main.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/main.o: engine/lightmap.h engine/bih.h engine/texture.h engine/model.h
-engine/main.o: engine/wayland.h
 engine/material.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/material.o: shared/ents.h shared/command.h shared/glexts.h
 engine/material.o: shared/glemu.h shared/iengine.h shared/igame.h
@@ -390,8 +388,8 @@ engine/pvs.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/pvs.o: engine/lightmap.h engine/bih.h engine/texture.h engine/model.h
 engine/rendergl.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 
+engine/gamepad.o: engine/engine.h shared/tools.h shared/geom.h
 engine/raw.o: engine/engine.h shared/tools.h shared/geom.h
-engine/joy.o: engine/engine.h shared/tools.h shared/geom.h
 
 engine/rendergl.o: shared/ents.h shared/command.h shared/glexts.h
 engine/rendergl.o: shared/glemu.h shared/iengine.h shared/igame.h
@@ -473,7 +471,6 @@ engine/water.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/water.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
 engine/water.o: engine/lightmap.h engine/bih.h engine/texture.h
 engine/water.o: engine/model.h
-engine/wayland.o: engine/engine.h engine/wayland.h
 engine/world.o: engine/engine.h shared/cube.h shared/tools.h shared/geom.h
 engine/world.o: shared/ents.h shared/command.h shared/glexts.h shared/glemu.h
 engine/world.o: shared/iengine.h shared/igame.h engine/world.h engine/octa.h
@@ -532,7 +529,6 @@ engine/engine.h.gch: shared/command.h shared/glexts.h shared/glemu.h
 engine/engine.h.gch: shared/iengine.h shared/igame.h engine/world.h
 engine/engine.h.gch: engine/octa.h engine/lightmap.h engine/bih.h
 engine/engine.h.gch: engine/texture.h engine/model.h engine/translate.h
-engine/engine.h.gch: engine/wayland.h
 fpsgame/game.h.gch: shared/cube.h shared/tools.h shared/geom.h shared/ents.h
 fpsgame/game.h.gch: shared/command.h shared/glexts.h shared/glemu.h
 fpsgame/game.h.gch: shared/iengine.h shared/igame.h fpsgame/ai.h engine/translate.h

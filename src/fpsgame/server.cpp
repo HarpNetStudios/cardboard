@@ -1765,7 +1765,7 @@ namespace server
 	{
 		if(clients.empty() || (!hasnonlocalclients() && !demorecord)) return false;
 		enet_uint32 curtime = enet_time_get()-lastsend;
-		if(curtime<10 && !force) return false; // don't update faster than 100fps, 33=30fps, 15=~66.67fps/map
+		if(curtime<10 && !force) return false; // don't update faster than 100fps, 33=30fps, 15=~66.67fps
 		bool flush = buildworldstate();
 		lastsend += curtime - (curtime%10);
 		return flush;

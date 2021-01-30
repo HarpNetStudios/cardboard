@@ -51,6 +51,7 @@
     #include <SDL.h>
     #include <SDL_opengl.h>
   #endif
+  #include <SDL_gamecontroller.h>
 #endif
 
 #ifdef DISCORD
