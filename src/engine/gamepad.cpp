@@ -69,14 +69,14 @@ namespace gamepad {
 		return scaled;
 	}
 
-	VAR(joydebug, 0, 0, 1);
+	VAR(dbgjoy, 0, 0, 1);
 	VARP(joytriggermode, 0, 0, 1);
 	VARP(joytriggermax, 0, axismax / 2, axismax);
 
 	void handletrigger(const SDL_ControllerAxisEvent &e)
 	{
 		bool active = (joytriggermode && e.value > joytriggermax) || (!joytriggermode && e.value > 0);
-		if (joydebug) conoutf("trigger: %d", e.value);
+		if (dbgjoy) conoutf("trigger %s: %d", SDL_GameControllerGetStringForAxis((SDL_GameControllerAxis)e.axis), e.value);
 		switch (e.axis)
 		{
 			case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
@@ -94,19 +94,19 @@ namespace gamepad {
 		{
 			case SDL_CONTROLLER_AXIS_LEFTX:
 				player->fstrafe = axis(e.value);
-				if (joydebug) conoutf("fstrafe: %f", player->fstrafe);
+				if (dbgjoy) conoutf("fstrafe: %f", player->fstrafe);
 				break;
 			case SDL_CONTROLLER_AXIS_LEFTY:
 				player->fmove = axis(e.value);
-				if (joydebug) conoutf("fmove: %f", player->fmove);
+				if (dbgjoy) conoutf("fmove: %f", player->fmove);
 				break;
 			case SDL_CONTROLLER_AXIS_RIGHTX:
 				player->camx = -axis(e.value);
-				if (joydebug) conoutf("axis ZX: %f", player->camx);
+				if (dbgjoy) conoutf("axis ZX: %f", player->camx);
 				break;
 			case SDL_CONTROLLER_AXIS_RIGHTY:
 				player->camy = -axis(e.value);
-				if (joydebug) conoutf("axis ZY: %f", player->camy);
+				if (dbgjoy) conoutf("axis ZY: %f", player->camy);
 				break;
 			case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
 			case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
@@ -119,7 +119,7 @@ namespace gamepad {
 	{
 		if (sdlJoyButton > 19)
 		{
-			if (joydebug) conoutf(CON_ERROR, "\foUnsupported gamepad button %d", sdlJoyButton);
+			if (dbgjoy) conoutf(CON_ERROR, "\foUnsupported gamepad button %d", sdlJoyButton);
 			return 0;
 		}
 		return buttonsym - sdlJoyButton;
@@ -131,7 +131,7 @@ namespace gamepad {
 		int symbol = buttonsymbol(e.button);
 		if (symbol)
 		{
-			if (joydebug) conoutf(CON_DEBUG, "button %d: %s %s", symbol, SDL_GameControllerGetStringForButton((SDL_GameControllerButton)e.button), pressed ? "PRESSED" : "RELEASE");
+			if (dbgjoy) conoutf(CON_DEBUG, "button %d: %s %s", symbol, SDL_GameControllerGetStringForButton((SDL_GameControllerButton)e.button), pressed ? "PRESSED" : "RELEASE");
 			processkey(symbol, pressed);
 		}
 	}
@@ -140,11 +140,11 @@ namespace gamepad {
 		switch (e.type)
 		{
 			case SDL_CONTROLLERDEVICEADDED:
-				if (joydebug) conoutf(CON_DEBUG, "DEVICEADDED cdevice.which = %d", e.cdevice.which);
+				if (dbgjoy) conoutf(CON_DEBUG, "DEVICEADDED cdevice.which = %d", e.cdevice.which);
 				init();
 				break;
 			case SDL_CONTROLLERDEVICEREMOVED:
-				if (joydebug) conoutf(CON_DEBUG, "DEVICEREMOVED cdevice.which = %d", e.cdevice.which);
+				if (dbgjoy) conoutf(CON_DEBUG, "DEVICEREMOVED cdevice.which = %d", e.cdevice.which);
 				release();
 				break;
 
