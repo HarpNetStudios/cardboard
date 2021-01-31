@@ -238,6 +238,9 @@
     <ClCompile Include="..\engine\gamepad.cpp">
       <Filter>engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\fpsgame\steam.cpp">
+      <Filter>fpsgame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\command.h">
@@ -448,6 +451,9 @@
       <Filter>fpsgame</Filter>
     </ClInclude>
     <ClInclude Include="..\fpsgame\race.h">
+      <Filter>fpsgame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fpsgame\steam.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
   </ItemGroup>

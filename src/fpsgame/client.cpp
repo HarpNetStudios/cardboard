@@ -1566,6 +1566,9 @@ namespace game
 				getstring(text, p);
 				filtertext(text, text, false);
 				fixmapname(text);
+				#ifdef STEAM
+					steam::setPlayerAchievement(player1->playermodel);
+				#endif
 				//conoutf(CON_DEBUG, "N_MAPCHANGE called.");
 				changemapserv(text, getint(p));
 				mapchanged = true;

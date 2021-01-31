@@ -13,6 +13,9 @@ extern void cleargamma();
 
 void cleanup()
 {
+    #ifdef STEAM
+        steam::cleanup();
+    #endif
 	rawinput::release();
 	gamepad::release();
     cleanupserver();
@@ -1487,6 +1490,12 @@ void setgametoken(const char* token) {
     VARN(ext_discord, ext_discord_enabled, 1, 0, 0);
 #endif
 
+#ifdef STEAM
+    VARN(ext_steam, ext_steam_enabled, 1, 1, 0);
+#else
+    VARN(ext_steam, ext_steam_enabled, 1, 0, 0);
+#endif
+
 int main(int argc, char **argv)
 {
     #ifdef WIN32
@@ -1613,6 +1622,12 @@ int main(int argc, char **argv)
 	execfile("data/sounds.cfg"); // load sounds early
 	initsound();
 
+    #ifdef STEAM
+        logoutf("init: steam");
+        steam::initSteam();
+        steam::steamCallbacks();
+    #endif
+
     inbetweenframes = true;
 	renderbackground(NULL, NULL, NULL, NULL, false, false, true);
     //renderbackground("initializing...");
@@ -1686,6 +1701,10 @@ int main(int argc, char **argv)
     inputgrab(grabinput = true);
     ignoremousemotion();
 
+    #ifdef STEAM
+        steam::setAchievement("ACH_FIRST_LAUNCH");
+    #endif
+
     for(;;)
     {
         static int frames = 0, lastdrawmillis = 0;
@@ -1747,6 +1766,9 @@ int main(int argc, char **argv)
             renderedframe = inbetweenframes = true;
             lastdrawmillis = millis;
         }
+        #ifdef STEAM
+            steam::steamCallbacks();
+        #endif
         #ifdef DISCORD
 		    discord::discordCallbacks();
         #endif

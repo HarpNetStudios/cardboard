@@ -129,6 +129,10 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
     connattempts = 0;
 
     game::connectattempt(servername ? servername : "", serverpassword ? serverpassword : "", address);
+
+    #ifdef STEAM
+        steam::setAchievement("ACH_PLAY_ONLINE");
+    #endif
 }
 
 void reconnect(const char *serverpassword)

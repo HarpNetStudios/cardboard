@@ -59,6 +59,10 @@
 #include <discord/discord.h>
 #endif
 
+#ifdef STEAM
+#include <steam/steam_api.h>
+#endif
+
 #include <b64/b64.h>
 #include <enet/enet.h>
 #include <curl/curl.h>

@@ -161,6 +161,8 @@ namespace game
 		return color;
 	}
 
+    HVARP(sbhighlight, 0, 0xE0AEB7, 0xFFFFFF);
+
     void renderscoreboard(g3d_gui &g, bool firstpass)
     {
         g.space(.25f);
@@ -231,7 +233,7 @@ namespace game
                     g.poplist(); \
                 }
 
-#define fgcolor (o==player1 && highlightscore && (multiplayer(false) || demoplayback || players.length() > 1) ? COL_YELLOW : COL_WHITE)
+#define fgcolor (o==player1 && highlightscore && (multiplayer(false) || demoplayback || players.length() > 1) ? sbhighlight : COL_WHITE)
 
             if (sg.team && m_teammode)
             {
@@ -493,24 +495,7 @@ namespace game
 					{
 						fpsent *p = getclient(o->ownernum);
 						if(!p) p = o;
-						if(!showpj && p->state==CS_LAGGED) rightjustified(g.text("LAG", fgcolor))
-                        else rightjustified(g.textf("%d", fgcolor, NULL, p->ping))
-					});
-					g.poplist();
-				}
 
-
-                if(showpj)
-                {
-                    g.space(2);
-                    g.pushlist();
-                    g.strut(2);
-                    rightjustified(g.text("pj", COL_GRAY))
-                    loopscoregroup(o,
-                    {
-                        fpsent* p = getclient(o->ownernum);
-                        if(!p) p = o;
-                        
                         const char* pingcolor;
                         if (p->ping < 70) {
                             pingcolor = "\f0";
@@ -525,9 +510,25 @@ namespace game
                             pingcolor = "\f3";
                         }
 
-                        //if(p==player1) rightjustified(g.text("0", fgcolor))
-                        if(p->state==CS_LAGGED) rightjustified(g.text("LAG", fgcolor))
-                        else rightjustified(g.textf("%s%d", fgcolor, NULL, pingcolor, abs(33-p->plag)))
+						if(!showpj && p->state==CS_LAGGED) rightjustified(g.text("LAG", fgcolor))
+                        else rightjustified(g.textf("%s%d", fgcolor, NULL, pingcolor, p->ping))
+					});
+					g.poplist();
+				}
+
+
+                if(showpj)
+                {
+                    g.space(2);
+                    g.pushlist();
+                    //g.strut(2);
+                    rightjustified(g.text("pj", COL_GRAY))
+                    loopscoregroup(o,
+                    {
+                        fpsent* p = getclient(o->ownernum);
+                        if(!p) p = o;
+                        if(p==player1) rightjustified(g.text("0", fgcolor))
+                        else rightjustified(g.textf("%d", fgcolor, NULL, abs(33-p->plag)))
                     });
                     g.poplist();
                 }

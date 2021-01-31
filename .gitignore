@@ -36,3 +36,7 @@ Newtonsoft.Json.dll
 
 # Update temp files
 update.cfg
+
+# No no Steamworks API files
+/src/shared/steam
+/bin*/steam_appid.txt

@@ -623,7 +623,21 @@ namespace discord
 }
 #endif
 
+#ifdef STEAM
+// steam
+namespace steam
+{
+    extern int initSteam();
+    extern void cleanup();
+
+    extern void steamCallbacks();
+    extern void setAchievement(const char* achievement);
+    extern void setPlayerAchievement(int player);
+}
+#endif
+
 extern int ext_discord_enabled;
+extern int ext_steam_enabled;
 
 // zip 
 extern bool addzip(const char* name, const char* mount, const char* strip, bool internal);
