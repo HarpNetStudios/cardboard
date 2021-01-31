@@ -16,7 +16,7 @@ void ApplicationManager::ValidateOrExit(std::function<void(Result)> callback)
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -28,7 +28,7 @@ void ApplicationManager::ValidateOrExit(std::function<void(Result)> callback)
 
 void ApplicationManager::GetCurrentLocale(char locale[128])
 {
-    if(!locale) {
+    if (!locale) {
         return;
     }
 
@@ -37,7 +37,7 @@ void ApplicationManager::GetCurrentLocale(char locale[128])
 
 void ApplicationManager::GetCurrentBranch(char branch[4096])
 {
-    if(!branch) {
+    if (!branch) {
         return;
     }
 
@@ -50,7 +50,7 @@ void ApplicationManager::GetOAuth2Token(std::function<void(Result, OAuth2Token c
       [](void* callbackData, EDiscordResult result, DiscordOAuth2Token* oauth2Token) -> void {
         std::unique_ptr<std::function<void(Result, OAuth2Token const&)>> cb(
           reinterpret_cast<std::function<void(Result, OAuth2Token const&)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result), *reinterpret_cast<OAuth2Token const*>(oauth2Token));
@@ -65,7 +65,7 @@ void ApplicationManager::GetTicket(std::function<void(Result, char const*)> call
     static auto wrapper = [](void* callbackData, EDiscordResult result, char const* data) -> void {
         std::unique_ptr<std::function<void(Result, char const*)>> cb(
           reinterpret_cast<std::function<void(Result, char const*)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result), static_cast<const char*>(data));

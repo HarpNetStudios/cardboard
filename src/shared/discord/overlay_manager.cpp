@@ -16,7 +16,7 @@ public:
     static void OnToggle(void* callbackData, bool locked)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -31,7 +31,7 @@ IDiscordOverlayEvents OverlayManager::events_{
 
 void OverlayManager::IsEnabled(bool* enabled)
 {
-    if(!enabled) {
+    if (!enabled) {
         return;
     }
 
@@ -40,7 +40,7 @@ void OverlayManager::IsEnabled(bool* enabled)
 
 void OverlayManager::IsLocked(bool* locked)
 {
-    if(!locked) {
+    if (!locked) {
         return;
     }
 
@@ -52,7 +52,7 @@ void OverlayManager::SetLocked(bool locked, std::function<void(Result)> callback
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -68,7 +68,7 @@ void OverlayManager::OpenActivityInvite(ActivityActionType type,
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -84,7 +84,7 @@ void OverlayManager::OpenGuildInvite(char const* code, std::function<void(Result
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -99,7 +99,7 @@ void OverlayManager::OpenVoiceSettings(std::function<void(Result)> callback)
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));

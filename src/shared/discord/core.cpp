@@ -11,7 +11,7 @@ namespace discord {
 
 Result Core::Create(ClientId clientId, std::uint64_t flags, Core** instance)
 {
-    if(!instance) {
+    if (!instance) {
         return Result::InternalError;
     }
 
@@ -32,7 +32,7 @@ Result Core::Create(ClientId clientId, std::uint64_t flags, Core** instance)
     params.voice_events = &VoiceManager::events_;
     params.achievement_events = &AchievementManager::events_;
     auto result = DiscordCreate(DISCORD_VERSION, &params, &((*instance)->internal_));
-    if(result != DiscordResult_Ok || !(*instance)->internal_) {
+    if (result != DiscordResult_Ok || !(*instance)->internal_) {
         delete (*instance);
         (*instance) = nullptr;
     }
@@ -42,7 +42,7 @@ Result Core::Create(ClientId clientId, std::uint64_t flags, Core** instance)
 
 Core::~Core()
 {
-    if(internal_) {
+    if (internal_) {
         internal_->destroy(internal_);
         internal_ = nullptr;
     }
@@ -61,7 +61,7 @@ void Core::SetLogHook(LogLevel minLevel, std::function<void(LogLevel, char const
     static auto wrapper =
       [](void* callbackData, EDiscordLogLevel level, char const* message) -> void {
         auto cb(reinterpret_cast<decltype(setLogHook_)*>(callbackData));
-        if(!cb) {
+        if (!cb) {
             return;
         }
         (*cb)(static_cast<LogLevel>(level), static_cast<const char*>(message));
@@ -73,7 +73,7 @@ void Core::SetLogHook(LogLevel minLevel, std::function<void(LogLevel, char const
 
 discord::ApplicationManager& Core::ApplicationManager()
 {
-    if(!applicationManager_.internal_) {
+    if (!applicationManager_.internal_) {
         applicationManager_.internal_ = internal_->get_application_manager(internal_);
     }
 
@@ -82,7 +82,7 @@ discord::ApplicationManager& Core::ApplicationManager()
 
 discord::UserManager& Core::UserManager()
 {
-    if(!userManager_.internal_) {
+    if (!userManager_.internal_) {
         userManager_.internal_ = internal_->get_user_manager(internal_);
     }
 
@@ -91,7 +91,7 @@ discord::UserManager& Core::UserManager()
 
 discord::ImageManager& Core::ImageManager()
 {
-    if(!imageManager_.internal_) {
+    if (!imageManager_.internal_) {
         imageManager_.internal_ = internal_->get_image_manager(internal_);
     }
 
@@ -100,7 +100,7 @@ discord::ImageManager& Core::ImageManager()
 
 discord::ActivityManager& Core::ActivityManager()
 {
-    if(!activityManager_.internal_) {
+    if (!activityManager_.internal_) {
         activityManager_.internal_ = internal_->get_activity_manager(internal_);
     }
 
@@ -109,7 +109,7 @@ discord::ActivityManager& Core::ActivityManager()
 
 discord::RelationshipManager& Core::RelationshipManager()
 {
-    if(!relationshipManager_.internal_) {
+    if (!relationshipManager_.internal_) {
         relationshipManager_.internal_ = internal_->get_relationship_manager(internal_);
     }
 
@@ -118,7 +118,7 @@ discord::RelationshipManager& Core::RelationshipManager()
 
 discord::LobbyManager& Core::LobbyManager()
 {
-    if(!lobbyManager_.internal_) {
+    if (!lobbyManager_.internal_) {
         lobbyManager_.internal_ = internal_->get_lobby_manager(internal_);
     }
 
@@ -127,7 +127,7 @@ discord::LobbyManager& Core::LobbyManager()
 
 discord::NetworkManager& Core::NetworkManager()
 {
-    if(!networkManager_.internal_) {
+    if (!networkManager_.internal_) {
         networkManager_.internal_ = internal_->get_network_manager(internal_);
     }
 
@@ -136,7 +136,7 @@ discord::NetworkManager& Core::NetworkManager()
 
 discord::OverlayManager& Core::OverlayManager()
 {
-    if(!overlayManager_.internal_) {
+    if (!overlayManager_.internal_) {
         overlayManager_.internal_ = internal_->get_overlay_manager(internal_);
     }
 
@@ -145,7 +145,7 @@ discord::OverlayManager& Core::OverlayManager()
 
 discord::StorageManager& Core::StorageManager()
 {
-    if(!storageManager_.internal_) {
+    if (!storageManager_.internal_) {
         storageManager_.internal_ = internal_->get_storage_manager(internal_);
     }
 
@@ -154,7 +154,7 @@ discord::StorageManager& Core::StorageManager()
 
 discord::StoreManager& Core::StoreManager()
 {
-    if(!storeManager_.internal_) {
+    if (!storeManager_.internal_) {
         storeManager_.internal_ = internal_->get_store_manager(internal_);
     }
 
@@ -163,7 +163,7 @@ discord::StoreManager& Core::StoreManager()
 
 discord::VoiceManager& Core::VoiceManager()
 {
-    if(!voiceManager_.internal_) {
+    if (!voiceManager_.internal_) {
         voiceManager_.internal_ = internal_->get_voice_manager(internal_);
     }
 
@@ -172,7 +172,7 @@ discord::VoiceManager& Core::VoiceManager()
 
 discord::AchievementManager& Core::AchievementManager()
 {
-    if(!achievementManager_.internal_) {
+    if (!achievementManager_.internal_) {
         achievementManager_.internal_ = internal_->get_achievement_manager(internal_);
     }
 

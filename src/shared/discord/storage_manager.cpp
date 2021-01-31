@@ -16,7 +16,7 @@ Result StorageManager::Read(char const* name,
                             std::uint32_t dataLength,
                             std::uint32_t* read)
 {
-    if(!read) {
+    if (!read) {
         return Result::InternalError;
     }
 
@@ -36,7 +36,7 @@ void StorageManager::ReadAsync(char const* name,
         std::unique_ptr<std::function<void(Result, std::uint8_t*, std::uint32_t)>> cb(
           reinterpret_cast<std::function<void(Result, std::uint8_t*, std::uint32_t)>*>(
             callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result), data, dataLength);
@@ -57,7 +57,7 @@ void StorageManager::ReadAsyncPartial(
         std::unique_ptr<std::function<void(Result, std::uint8_t*, std::uint32_t)>> cb(
           reinterpret_cast<std::function<void(Result, std::uint8_t*, std::uint32_t)>*>(
             callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result), data, dataLength);
@@ -83,7 +83,7 @@ void StorageManager::WriteAsync(char const* name,
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -106,7 +106,7 @@ Result StorageManager::Delete(char const* name)
 
 Result StorageManager::Exists(char const* name, bool* exists)
 {
-    if(!exists) {
+    if (!exists) {
         return Result::InternalError;
     }
 
@@ -117,7 +117,7 @@ Result StorageManager::Exists(char const* name, bool* exists)
 
 void StorageManager::Count(std::int32_t* count)
 {
-    if(!count) {
+    if (!count) {
         return;
     }
 
@@ -126,7 +126,7 @@ void StorageManager::Count(std::int32_t* count)
 
 Result StorageManager::Stat(char const* name, FileStat* stat)
 {
-    if(!stat) {
+    if (!stat) {
         return Result::InternalError;
     }
 
@@ -137,7 +137,7 @@ Result StorageManager::Stat(char const* name, FileStat* stat)
 
 Result StorageManager::StatAt(std::int32_t index, FileStat* stat)
 {
-    if(!stat) {
+    if (!stat) {
         return Result::InternalError;
     }
 
@@ -147,7 +147,7 @@ Result StorageManager::StatAt(std::int32_t index, FileStat* stat)
 
 Result StorageManager::GetPath(char path[4096])
 {
-    if(!path) {
+    if (!path) {
         return Result::InternalError;
     }
 

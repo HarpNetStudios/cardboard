@@ -16,7 +16,7 @@ public:
     static void OnLobbyUpdate(void* callbackData, int64_t lobbyId)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -27,7 +27,7 @@ public:
     static void OnLobbyDelete(void* callbackData, int64_t lobbyId, uint32_t reason)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -38,7 +38,7 @@ public:
     static void OnMemberConnect(void* callbackData, int64_t lobbyId, int64_t userId)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -49,7 +49,7 @@ public:
     static void OnMemberUpdate(void* callbackData, int64_t lobbyId, int64_t userId)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -60,7 +60,7 @@ public:
     static void OnMemberDisconnect(void* callbackData, int64_t lobbyId, int64_t userId)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -75,7 +75,7 @@ public:
                                uint32_t dataLength)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -86,7 +86,7 @@ public:
     static void OnSpeaking(void* callbackData, int64_t lobbyId, int64_t userId, bool speaking)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -102,7 +102,7 @@ public:
                                  uint32_t dataLength)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -124,7 +124,7 @@ IDiscordLobbyEvents LobbyManager::events_{
 
 Result LobbyManager::GetLobbyCreateTransaction(LobbyTransaction* transaction)
 {
-    if(!transaction) {
+    if (!transaction) {
         return Result::InternalError;
     }
 
@@ -134,7 +134,7 @@ Result LobbyManager::GetLobbyCreateTransaction(LobbyTransaction* transaction)
 
 Result LobbyManager::GetLobbyUpdateTransaction(LobbyId lobbyId, LobbyTransaction* transaction)
 {
-    if(!transaction) {
+    if (!transaction) {
         return Result::InternalError;
     }
 
@@ -147,7 +147,7 @@ Result LobbyManager::GetMemberUpdateTransaction(LobbyId lobbyId,
                                                 UserId userId,
                                                 LobbyMemberTransaction* transaction)
 {
-    if(!transaction) {
+    if (!transaction) {
         return Result::InternalError;
     }
 
@@ -163,7 +163,7 @@ void LobbyManager::CreateLobby(LobbyTransaction const& transaction,
       [](void* callbackData, EDiscordResult result, DiscordLobby* lobby) -> void {
         std::unique_ptr<std::function<void(Result, Lobby const&)>> cb(
           reinterpret_cast<std::function<void(Result, Lobby const&)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result), *reinterpret_cast<Lobby const*>(lobby));
@@ -181,7 +181,7 @@ void LobbyManager::UpdateLobby(LobbyId lobbyId,
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -200,7 +200,7 @@ void LobbyManager::DeleteLobby(LobbyId lobbyId, std::function<void(Result)> call
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -218,7 +218,7 @@ void LobbyManager::ConnectLobby(LobbyId lobbyId,
       [](void* callbackData, EDiscordResult result, DiscordLobby* lobby) -> void {
         std::unique_ptr<std::function<void(Result, Lobby const&)>> cb(
           reinterpret_cast<std::function<void(Result, Lobby const&)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result), *reinterpret_cast<Lobby const*>(lobby));
@@ -236,7 +236,7 @@ void LobbyManager::ConnectLobbyWithActivitySecret(
       [](void* callbackData, EDiscordResult result, DiscordLobby* lobby) -> void {
         std::unique_ptr<std::function<void(Result, Lobby const&)>> cb(
           reinterpret_cast<std::function<void(Result, Lobby const&)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result), *reinterpret_cast<Lobby const*>(lobby));
@@ -252,7 +252,7 @@ void LobbyManager::DisconnectLobby(LobbyId lobbyId, std::function<void(Result)> 
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -264,7 +264,7 @@ void LobbyManager::DisconnectLobby(LobbyId lobbyId, std::function<void(Result)> 
 
 Result LobbyManager::GetLobby(LobbyId lobbyId, Lobby* lobby)
 {
-    if(!lobby) {
+    if (!lobby) {
         return Result::InternalError;
     }
 
@@ -274,7 +274,7 @@ Result LobbyManager::GetLobby(LobbyId lobbyId, Lobby* lobby)
 
 Result LobbyManager::GetLobbyActivitySecret(LobbyId lobbyId, char secret[128])
 {
-    if(!secret) {
+    if (!secret) {
         return Result::InternalError;
     }
 
@@ -285,7 +285,7 @@ Result LobbyManager::GetLobbyActivitySecret(LobbyId lobbyId, char secret[128])
 
 Result LobbyManager::GetLobbyMetadataValue(LobbyId lobbyId, MetadataKey key, char value[4096])
 {
-    if(!value) {
+    if (!value) {
         return Result::InternalError;
     }
 
@@ -296,7 +296,7 @@ Result LobbyManager::GetLobbyMetadataValue(LobbyId lobbyId, MetadataKey key, cha
 
 Result LobbyManager::GetLobbyMetadataKey(LobbyId lobbyId, std::int32_t index, char key[256])
 {
-    if(!key) {
+    if (!key) {
         return Result::InternalError;
     }
 
@@ -307,7 +307,7 @@ Result LobbyManager::GetLobbyMetadataKey(LobbyId lobbyId, std::int32_t index, ch
 
 Result LobbyManager::LobbyMetadataCount(LobbyId lobbyId, std::int32_t* count)
 {
-    if(!count) {
+    if (!count) {
         return Result::InternalError;
     }
 
@@ -318,7 +318,7 @@ Result LobbyManager::LobbyMetadataCount(LobbyId lobbyId, std::int32_t* count)
 
 Result LobbyManager::MemberCount(LobbyId lobbyId, std::int32_t* count)
 {
-    if(!count) {
+    if (!count) {
         return Result::InternalError;
     }
 
@@ -328,7 +328,7 @@ Result LobbyManager::MemberCount(LobbyId lobbyId, std::int32_t* count)
 
 Result LobbyManager::GetMemberUserId(LobbyId lobbyId, std::int32_t index, UserId* userId)
 {
-    if(!userId) {
+    if (!userId) {
         return Result::InternalError;
     }
 
@@ -339,7 +339,7 @@ Result LobbyManager::GetMemberUserId(LobbyId lobbyId, std::int32_t index, UserId
 
 Result LobbyManager::GetMemberUser(LobbyId lobbyId, UserId userId, User* user)
 {
-    if(!user) {
+    if (!user) {
         return Result::InternalError;
     }
 
@@ -353,7 +353,7 @@ Result LobbyManager::GetMemberMetadataValue(LobbyId lobbyId,
                                             MetadataKey key,
                                             char value[4096])
 {
-    if(!value) {
+    if (!value) {
         return Result::InternalError;
     }
 
@@ -371,7 +371,7 @@ Result LobbyManager::GetMemberMetadataKey(LobbyId lobbyId,
                                           std::int32_t index,
                                           char key[256])
 {
-    if(!key) {
+    if (!key) {
         return Result::InternalError;
     }
 
@@ -382,7 +382,7 @@ Result LobbyManager::GetMemberMetadataKey(LobbyId lobbyId,
 
 Result LobbyManager::MemberMetadataCount(LobbyId lobbyId, UserId userId, std::int32_t* count)
 {
-    if(!count) {
+    if (!count) {
         return Result::InternalError;
     }
 
@@ -399,7 +399,7 @@ void LobbyManager::UpdateMember(LobbyId lobbyId,
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -422,7 +422,7 @@ void LobbyManager::SendLobbyMessage(LobbyId lobbyId,
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -435,7 +435,7 @@ void LobbyManager::SendLobbyMessage(LobbyId lobbyId,
 
 Result LobbyManager::GetSearchQuery(LobbySearchQuery* query)
 {
-    if(!query) {
+    if (!query) {
         return Result::InternalError;
     }
 
@@ -448,7 +448,7 @@ void LobbyManager::Search(LobbySearchQuery const& query, std::function<void(Resu
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -461,7 +461,7 @@ void LobbyManager::Search(LobbySearchQuery const& query, std::function<void(Resu
 
 void LobbyManager::LobbyCount(std::int32_t* count)
 {
-    if(!count) {
+    if (!count) {
         return;
     }
 
@@ -470,7 +470,7 @@ void LobbyManager::LobbyCount(std::int32_t* count)
 
 Result LobbyManager::GetLobbyId(std::int32_t index, LobbyId* lobbyId)
 {
-    if(!lobbyId) {
+    if (!lobbyId) {
         return Result::InternalError;
     }
 
@@ -483,7 +483,7 @@ void LobbyManager::ConnectVoice(LobbyId lobbyId, std::function<void(Result)> cal
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -498,7 +498,7 @@ void LobbyManager::DisconnectVoice(LobbyId lobbyId, std::function<void(Result)> 
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));

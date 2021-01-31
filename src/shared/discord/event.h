@@ -29,7 +29,7 @@ public:
     void Disconnect(Token token)
     {
         for (auto& slot : slots_) {
-            if(slot.token == token) {
+            if (slot.token == token) {
                 slot = slots_.back();
                 slots_.pop_back();
                 break;

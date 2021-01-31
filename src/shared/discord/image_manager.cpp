@@ -19,7 +19,7 @@ void ImageManager::Fetch(ImageHandle handle,
       [](void* callbackData, EDiscordResult result, DiscordImageHandle handleResult) -> void {
         std::unique_ptr<std::function<void(Result, ImageHandle)>> cb(
           reinterpret_cast<std::function<void(Result, ImageHandle)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result), *reinterpret_cast<ImageHandle const*>(&handleResult));
@@ -35,7 +35,7 @@ void ImageManager::Fetch(ImageHandle handle,
 
 Result ImageManager::GetDimensions(ImageHandle handle, ImageDimensions* dimensions)
 {
-    if(!dimensions) {
+    if (!dimensions) {
         return Result::InternalError;
     }
 

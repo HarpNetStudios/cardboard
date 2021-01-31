@@ -16,7 +16,7 @@ public:
     static void OnActivityJoin(void* callbackData, char const* secret)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -27,7 +27,7 @@ public:
     static void OnActivitySpectate(void* callbackData, char const* secret)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -38,7 +38,7 @@ public:
     static void OnActivityJoinRequest(void* callbackData, DiscordUser* user)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -52,7 +52,7 @@ public:
                                  DiscordActivity* activity)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -87,7 +87,7 @@ void ActivityManager::UpdateActivity(Activity const& activity, std::function<voi
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -105,7 +105,7 @@ void ActivityManager::ClearActivity(std::function<void(Result)> callback)
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -122,7 +122,7 @@ void ActivityManager::SendRequestReply(UserId userId,
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -144,7 +144,7 @@ void ActivityManager::SendInvite(UserId userId,
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -164,7 +164,7 @@ void ActivityManager::AcceptInvite(UserId userId, std::function<void(Result)> ca
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));

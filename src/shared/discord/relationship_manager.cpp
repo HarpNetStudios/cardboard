@@ -16,7 +16,7 @@ public:
     static void OnRefresh(void* callbackData)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -27,7 +27,7 @@ public:
     static void OnRelationshipUpdate(void* callbackData, DiscordRelationship* relationship)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -45,7 +45,7 @@ void RelationshipManager::Filter(std::function<bool(Relationship const&)> filter
 {
     static auto wrapper = [](void* callbackData, DiscordRelationship* relationship) -> bool {
         auto cb(reinterpret_cast<std::function<bool(Relationship const&)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return {};
         }
         return (*cb)(*reinterpret_cast<Relationship const*>(relationship));
@@ -57,7 +57,7 @@ void RelationshipManager::Filter(std::function<bool(Relationship const&)> filter
 
 Result RelationshipManager::Count(std::int32_t* count)
 {
-    if(!count) {
+    if (!count) {
         return Result::InternalError;
     }
 
@@ -67,7 +67,7 @@ Result RelationshipManager::Count(std::int32_t* count)
 
 Result RelationshipManager::Get(UserId userId, Relationship* relationship)
 {
-    if(!relationship) {
+    if (!relationship) {
         return Result::InternalError;
     }
 
@@ -78,7 +78,7 @@ Result RelationshipManager::Get(UserId userId, Relationship* relationship)
 
 Result RelationshipManager::GetAt(std::uint32_t index, Relationship* relationship)
 {
-    if(!relationship) {
+    if (!relationship) {
         return Result::InternalError;
     }
 

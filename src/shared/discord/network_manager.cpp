@@ -20,7 +20,7 @@ public:
                           uint32_t dataLength)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -31,7 +31,7 @@ public:
     static void OnRouteUpdate(void* callbackData, char const* routeData)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -47,7 +47,7 @@ IDiscordNetworkEvents NetworkManager::events_{
 
 void NetworkManager::GetPeerId(NetworkPeerId* peerId)
 {
-    if(!peerId) {
+    if (!peerId) {
         return;
     }
 

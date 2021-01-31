@@ -16,7 +16,7 @@ public:
     static void OnCurrentUserUpdate(void* callbackData)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -31,7 +31,7 @@ IDiscordUserEvents UserManager::events_{
 
 Result UserManager::GetCurrentUser(User* currentUser)
 {
-    if(!currentUser) {
+    if (!currentUser) {
         return Result::InternalError;
     }
 
@@ -45,7 +45,7 @@ void UserManager::GetUser(UserId userId, std::function<void(Result, User const&)
     static auto wrapper = [](void* callbackData, EDiscordResult result, DiscordUser* user) -> void {
         std::unique_ptr<std::function<void(Result, User const&)>> cb(
           reinterpret_cast<std::function<void(Result, User const&)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result), *reinterpret_cast<User const*>(user));
@@ -57,7 +57,7 @@ void UserManager::GetUser(UserId userId, std::function<void(Result, User const&)
 
 Result UserManager::GetCurrentUserPremiumType(PremiumType* premiumType)
 {
-    if(!premiumType) {
+    if (!premiumType) {
         return Result::InternalError;
     }
 
@@ -68,7 +68,7 @@ Result UserManager::GetCurrentUserPremiumType(PremiumType* premiumType)
 
 Result UserManager::CurrentUserHasFlag(UserFlag flag, bool* hasFlag)
 {
-    if(!hasFlag) {
+    if (!hasFlag) {
         return Result::InternalError;
     }
 

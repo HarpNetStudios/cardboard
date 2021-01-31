@@ -16,7 +16,7 @@ public:
     static void OnUserAchievementUpdate(void* callbackData, DiscordUserAchievement* userAchievement)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -36,7 +36,7 @@ void AchievementManager::SetUserAchievement(Snowflake achievementId,
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -52,7 +52,7 @@ void AchievementManager::FetchUserAchievements(std::function<void(Result)> callb
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -64,7 +64,7 @@ void AchievementManager::FetchUserAchievements(std::function<void(Result)> callb
 
 void AchievementManager::CountUserAchievements(std::int32_t* count)
 {
-    if(!count) {
+    if (!count) {
         return;
     }
 
@@ -74,7 +74,7 @@ void AchievementManager::CountUserAchievements(std::int32_t* count)
 Result AchievementManager::GetUserAchievement(Snowflake userAchievementId,
                                               UserAchievement* userAchievement)
 {
-    if(!userAchievement) {
+    if (!userAchievement) {
         return Result::InternalError;
     }
 
@@ -86,7 +86,7 @@ Result AchievementManager::GetUserAchievement(Snowflake userAchievementId,
 Result AchievementManager::GetUserAchievementAt(std::int32_t index,
                                                 UserAchievement* userAchievement)
 {
-    if(!userAchievement) {
+    if (!userAchievement) {
         return Result::InternalError;
     }
 

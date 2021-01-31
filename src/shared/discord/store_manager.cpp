@@ -16,7 +16,7 @@ public:
     static void OnEntitlementCreate(void* callbackData, DiscordEntitlement* entitlement)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -27,7 +27,7 @@ public:
     static void OnEntitlementDelete(void* callbackData, DiscordEntitlement* entitlement)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -46,7 +46,7 @@ void StoreManager::FetchSkus(std::function<void(Result)> callback)
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -58,7 +58,7 @@ void StoreManager::FetchSkus(std::function<void(Result)> callback)
 
 void StoreManager::CountSkus(std::int32_t* count)
 {
-    if(!count) {
+    if (!count) {
         return;
     }
 
@@ -67,7 +67,7 @@ void StoreManager::CountSkus(std::int32_t* count)
 
 Result StoreManager::GetSku(Snowflake skuId, Sku* sku)
 {
-    if(!sku) {
+    if (!sku) {
         return Result::InternalError;
     }
 
@@ -77,7 +77,7 @@ Result StoreManager::GetSku(Snowflake skuId, Sku* sku)
 
 Result StoreManager::GetSkuAt(std::int32_t index, Sku* sku)
 {
-    if(!sku) {
+    if (!sku) {
         return Result::InternalError;
     }
 
@@ -90,7 +90,7 @@ void StoreManager::FetchEntitlements(std::function<void(Result)> callback)
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -102,7 +102,7 @@ void StoreManager::FetchEntitlements(std::function<void(Result)> callback)
 
 void StoreManager::CountEntitlements(std::int32_t* count)
 {
-    if(!count) {
+    if (!count) {
         return;
     }
 
@@ -111,7 +111,7 @@ void StoreManager::CountEntitlements(std::int32_t* count)
 
 Result StoreManager::GetEntitlement(Snowflake entitlementId, Entitlement* entitlement)
 {
-    if(!entitlement) {
+    if (!entitlement) {
         return Result::InternalError;
     }
 
@@ -122,7 +122,7 @@ Result StoreManager::GetEntitlement(Snowflake entitlementId, Entitlement* entitl
 
 Result StoreManager::GetEntitlementAt(std::int32_t index, Entitlement* entitlement)
 {
-    if(!entitlement) {
+    if (!entitlement) {
         return Result::InternalError;
     }
 
@@ -133,7 +133,7 @@ Result StoreManager::GetEntitlementAt(std::int32_t index, Entitlement* entitleme
 
 Result StoreManager::HasSkuEntitlement(Snowflake skuId, bool* hasEntitlement)
 {
-    if(!hasEntitlement) {
+    if (!hasEntitlement) {
         return Result::InternalError;
     }
 
@@ -147,7 +147,7 @@ void StoreManager::StartPurchase(Snowflake skuId, std::function<void(Result)> ca
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));

@@ -16,7 +16,7 @@ public:
     static void OnSettingsUpdate(void* callbackData)
     {
         auto* core = reinterpret_cast<Core*>(callbackData);
-        if(!core) {
+        if (!core) {
             return;
         }
 
@@ -31,7 +31,7 @@ IDiscordVoiceEvents VoiceManager::events_{
 
 Result VoiceManager::GetInputMode(InputMode* inputMode)
 {
-    if(!inputMode) {
+    if (!inputMode) {
         return Result::InternalError;
     }
 
@@ -45,7 +45,7 @@ void VoiceManager::SetInputMode(InputMode inputMode, std::function<void(Result)>
     static auto wrapper = [](void* callbackData, EDiscordResult result) -> void {
         std::unique_ptr<std::function<void(Result)>> cb(
           reinterpret_cast<std::function<void(Result)>*>(callbackData));
-        if(!cb || !(*cb)) {
+        if (!cb || !(*cb)) {
             return;
         }
         (*cb)(static_cast<Result>(result));
@@ -58,7 +58,7 @@ void VoiceManager::SetInputMode(InputMode inputMode, std::function<void(Result)>
 
 Result VoiceManager::IsSelfMute(bool* mute)
 {
-    if(!mute) {
+    if (!mute) {
         return Result::InternalError;
     }
 
@@ -74,7 +74,7 @@ Result VoiceManager::SetSelfMute(bool mute)
 
 Result VoiceManager::IsSelfDeaf(bool* deaf)
 {
-    if(!deaf) {
+    if (!deaf) {
         return Result::InternalError;
     }
 
@@ -90,7 +90,7 @@ Result VoiceManager::SetSelfDeaf(bool deaf)
 
 Result VoiceManager::IsLocalMute(Snowflake userId, bool* mute)
 {
-    if(!mute) {
+    if (!mute) {
         return Result::InternalError;
     }
 
@@ -106,7 +106,7 @@ Result VoiceManager::SetLocalMute(Snowflake userId, bool mute)
 
 Result VoiceManager::GetLocalVolume(Snowflake userId, std::uint8_t* volume)
 {
-    if(!volume) {
+    if (!volume) {
         return Result::InternalError;
     }
 
