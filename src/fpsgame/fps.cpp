@@ -774,7 +774,7 @@ namespace game
 			d->totaldamage = 0;
 			d->totalshots = 0;
             d->suicides = 0;
-            d->health = 1000;
+            d->health =  m_insta ? 1 : 1000;
 			d->lifesequence = -1;
 			d->respawned = d->suicided = -2;
             d->hasflag = false;
