@@ -162,7 +162,7 @@ namespace server
 		void reset()
 		{
 			if(state!=CS_SPECTATOR) state = editstate = CS_DEAD;
-			health = m_insta ? 1 : 1000;
+			health = 1000;
 			rockets.reset();
 			grenades.reset();
 
