@@ -14,11 +14,11 @@ namespace game {
     VARP(hudfragmessagestackdir, -1, 0, 1); // -1 = upwards, 1 = downwards
     HVARP(hudfragmessagefilter, 0, 0x3800, 0x7FFFFFF); // default: all kills
 
-    void addfragmessage(int contype, const char *aname, const char *vname, int gun)
+    void addfragmessage(int contype, const char *aname, const char *vname, int gun, bool headshot)
     {
         if(!(contype&hudfragmessagefilter)) return;
         if(fragmessages.length()>=maxhudfragmessages) fragmessages.remove(0, fragmessages.length()-maxhudfragmessages+1);
-        fragmessages.add(fragmessage(aname, vname, gun));
+        fragmessages.add(fragmessage(aname, vname, gun, headshot));
     }
 
     void clearfragmessages()
@@ -66,6 +66,13 @@ namespace game {
             drawpos = vec2(drawposcenter).sub(HICON_SIZE / 2);
             gle::color(bvec(0xFF, 0xFF, 0xFF), alpha);
             drawicon(HICON_FIST + m.weapon, drawpos.x, drawpos.y);
+
+            if(m.headshot)
+            {
+                drawpos = vec2(drawposcenter).sub(HICON_SIZE / 2);
+                gle::color(bvec(0xFF, 0x00, 0x00), 127);
+                drawicon(HICON_TOKEN, drawpos.x, drawpos.y);
+            }
 
             text_bounds(m.victimname, tw, th);
             drawpos = vec2(2*HICON_SIZE, -th).div(2).add(drawposcenter);

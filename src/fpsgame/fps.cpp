@@ -501,6 +501,7 @@ namespace game
     VARP(teamcolorfrags, 0, 1, 1);
 
     VARP(verbosekill, 0, 0, 1);
+    VARP(logkill, 0, 0, 1);
 
     void killed(fpsent *d, fpsent *actor, int gun, int headshot)
     {
@@ -524,45 +525,48 @@ namespace game
 
 		if(m_teammode && teamcolorfrags)
 		{
-			dname = teamcolorname(d, "you");
-			aname = teamcolorname(actor, "you");
+			dname = teamcolorname(d, "you", true);
+			aname = teamcolorname(actor, "you", true);
 		}
 		else
 		{
-			dname = colorname(d, NULL, "", "", "you");
-			aname = colorname(actor, NULL, "", "", "you");
+			dname = colorname(d, NULL, "", "", "you", true);
+			aname = colorname(actor, NULL, "", "", "you", true);
 		}
-		if(verbosekill)
-		{
-			if(actor->type==ENT_AI)
-				conoutf(contype, "\f2%s\f2 got killed by %s with %s%s!", dname, aname, getweaponname(gun), is_headshot?hs:"");
-			else if(d==actor){
-                d->suicides++;
-                conoutf(contype, "\f2%s\f2 suicided%s", dname, d == player1 ? "!" : "");
+        if(logkill)
+        {
+            if (verbosekill)
+            {
+                if (actor->type == ENT_AI)
+                    conoutf(contype, "\f2%s\f2 got killed by %s with %s%s!", dname, aname, getweaponname(gun), is_headshot ? hs : "");
+                else if (d == actor) {
+                    d->suicides++;
+                    conoutf(contype, "\f2%s\f2 suicided%s", dname, d == player1 ? "!" : "");
+                }
+
+                else
+                {
+                    if (d == player1) conoutf(contype, "\f2%s\f2 got fragged by %s with %s%s!", dname, aname, getweaponname(gun), is_headshot ? hs : "");
+                    else conoutf(contype, "\f2%s\f2 fragged %s with %s%s!", aname, dname, getweaponname(gun), is_headshot ? hs : "");
+                }
             }
-				
-			else
-			{
-				if(d==player1) conoutf(contype, "\f2%s\f2 got fragged by %s with %s%s!", dname, aname, getweaponname(gun), is_headshot?hs:"");
-				else conoutf(contype, "\f2%s\f2 fragged %s with %s%s!", aname, dname, getweaponname(gun), is_headshot?hs:"");
-			}
-		}
-		else
-		{
-			if(actor->type==ENT_AI)
-				conoutf(contype, "\f2%s\f2 > %s > %s%s", dname, getweaponname(gun), aname, is_headshot?hs:"");
-			else if(d==actor) {
-                d->suicides++;
-                conoutf(contype, "\f2world > %s", dname);
+            else
+            {
+                if (actor->type == ENT_AI)
+                    conoutf(contype, "\f2%s\f2 > %s > %s%s", dname, getweaponname(gun), aname, is_headshot ? hs : "");
+                else if (d == actor) {
+                    d->suicides++;
+                    conoutf(contype, "\f2world > %s", dname);
+                }
+                else
+                    conoutf(contype, "\f2%s\f2 > %s > %s%s", aname, getweaponname(gun), dname, is_headshot ? hs : "");
             }
-			else
-				conoutf(contype, "\f2%s\f2 > %s > %s%s", aname, getweaponname(gun), dname, is_headshot?hs:"");
-		}
+        }
 		if(d!=actor && actor==player1 && killsound) playsound(S_KILL);
         if(d==player1) execident("ondeath");
 
-        if(d==actor) addfragmessage(contype, NULL, dname, HICON_TOKEN-HICON_FIST);
-        else addfragmessage(contype, aname, dname, d->lasthitpushgun);
+        if(d==actor) addfragmessage(contype, NULL, dname, HICON_TOKEN-HICON_FIST, false);
+        else addfragmessage(contype, aname, dname, d->lasthitpushgun, is_headshot);
 
 		deathstate(d);
 		ai::killed(d, actor);
