@@ -179,6 +179,10 @@ namespace steam {
 	void setPlayerAchievement(int player) {
 		setAchievement(g_Achievements[player+2].m_pchAchievementID);
 	}
+
+	int getSteamID() {
+		return SteamUser()->GetSteamID().ConvertToUint64();
+	}
 }
 
 #endif

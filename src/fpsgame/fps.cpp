@@ -757,6 +757,8 @@ namespace game
 
     VARP(showmodeinfo, 0, 1, 1);
 
+    ICOMMAND(chkh, "", (), conoutf("h: %d, mh: %d", player1->health, player1->maxhealth));
+
 	void resetplayers()
 	{
 		// reset perma-state

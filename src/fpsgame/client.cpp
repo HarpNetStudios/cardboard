@@ -644,6 +644,8 @@ namespace game
 			conoutf(CON_ERROR, "mode %s (%d) not supported in multiplayer", server::modename(gamemode), gamemode);
 			for (int i = 0; i < int(NUMGAMEMODES); ++i) if(m_mp(STARTGAMEMODE + i)) { mode = STARTGAMEMODE + i; break; }
 		}
+		
+		// TODO: map download code here
 
 		gamemode = mode;
 		nextmode = mode;
@@ -1060,7 +1062,7 @@ namespace game
 	void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(player1, true), text); addmsg(N_TEXT, "rcs", player1, text); }
 	COMMANDN(say, toserver, "C");
 
-	void sayteam(char *text) { conoutf(CON_TEAMCHAT, "\fs\f9[team]\fr %s: \f9%s", chatcolorname(player1, false), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
+	void sayteam(char *text) { conoutf(CON_TEAMCHAT, "\fs\fp[team]\fr %s: \fp%s", chatcolorname(player1, false), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
 	COMMAND(sayteam, "C");
 
 	ICOMMAND(servcmd, "C", (char *cmd), addmsg(N_SERVCMD, "rs", cmd));
@@ -1489,7 +1491,7 @@ namespace game
 				if (!t || isignored(t->clientnum)) break;
 				if (t->state != CS_DEAD && t->state != CS_SPECTATOR)
 					particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
-				conoutf(CON_TEAMCHAT, "\fs\f8[team]\fr %s: \f8%s", chatcolorname(t, false), text);\
+				conoutf(CON_TEAMCHAT, "\fs\fp[team]\fr %s: \fp%s", chatcolorname(t, false), text);\
 				if(chatsounds) playsound(S_TEAMCHAT);
 				break;
 			}
@@ -1785,8 +1787,7 @@ namespace game
 					if(p.overread() || !text[0]) break;
 					int frags = getint(p);
 					if(p.overread()) break;
-					conoutf("teaminfo packet CLIENT");
-					if(m_teammode) setteaminfo(text, frags); // tdm bug here?
+					if(m_teammode) setteaminfo(text, frags);
 				}
 				break;
 

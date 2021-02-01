@@ -632,9 +632,10 @@ struct fpsent : dynent, fpsstate
     void hitpush(int damage, const vec &dir, fpsent *actor, int gun)
     {
         vec push(dir);
-        push.mul((actor==this && guns[gun].exprad ? EXP_SELFPUSH : 0.1f)*guns[gun].hitpush*guns[gun].damage/weight); // hitpush damage
+        push.mul((actor==this && guns[gun].exprad ? EXP_SELFPUSH : 0.06f)*guns[gun].hitpush*guns[gun].damage/weight); // hitpush damage
         vel.add(push);
         lasthitpushgun = gun;
+        // TODO: store player that pushed for future use.
     }
 
     void stopattacksound()
@@ -896,7 +897,15 @@ namespace game
     extern void updateprojectiles(int curtime);
     extern void removeprojectiles(fpsent *owner);
     extern void renderprojectiles();
-    //grapple
+    extern void preloadbouncers();
+    extern void removeweapons(fpsent* owner);
+    extern void updateweapons(int curtime);
+    extern bool isheadshot(dynent* d, vec from, vec to);
+    extern void gunselect(int gun, fpsent* d);
+    extern void weaponswitch(fpsent* d);
+    extern void avoidweapons(ai::avoidset& obstacles, float radius);
+
+    // grapple
     extern void shootgrapplev(vec& from, vec& to, fpsent* d, bool local);
     extern void shootgrapple(fpsent* d, vec& targ);
     extern void movegrapples(int time);
@@ -907,15 +916,7 @@ namespace game
     extern void removegrapples(physent* d, bool attached);
     extern bool hasgrapple(fpsent* d);
     extern void rendergrapples();
-
-    extern void preloadbouncers();
-    extern void removeweapons(fpsent *owner);
-    extern void updateweapons(int curtime);
-	extern bool isheadshot(dynent* d, vec from, vec to);
-    extern void gunselect(int gun, fpsent *d);
-    extern void weaponswitch(fpsent *d);
-    extern void avoidweapons(ai::avoidset &obstacles, float radius);
-
+    
     // scoreboard
     extern void showscores(bool on);
     extern void getbestplayers(vector<fpsent *> &best);

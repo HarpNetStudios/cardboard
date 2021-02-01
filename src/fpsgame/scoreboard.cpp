@@ -162,6 +162,7 @@ namespace game
 	}
 
     HVARP(sbhighlight, 0, 0xE0AEB7, 0xFFFFFF);
+    VARP(pingcolor, 0, 1, 1);
 
     void renderscoreboard(g3d_gui &g, bool firstpass)
     {
@@ -174,7 +175,7 @@ namespace game
 
             if(enet_address_get_host_ip(address, hostname, sizeof(hostname)) >= 0)
             {
-                if(servinfo[0]) g.titlef("%.s", COL_WHITE, NULL, servinfo);
+                if(servinfo[0]) g.titlef("%s", COL_WHITE, NULL, servinfo);
                 else g.titlef("%s:%d", COL_WHITE, NULL, hostname, address->port);
             }
         }
@@ -235,17 +236,34 @@ namespace game
 
 #define fgcolor (o==player1 && highlightscore && (multiplayer(false) || demoplayback || players.length() > 1) ? sbhighlight : COL_WHITE)
 
+            g.pushlist();
+            g.text("", 0, " ");
+            loopscoregroup(o,
+            {
+                if (o == player1 && highlightscore && (multiplayer(false) || demoplayback || players.length() > 1))
+                {
+                    g.pushlist();
+                    g.background(0x808080, numgroups > 1 ? 3 : 5);
+                }
+                const playermodelinfo& mdl = getplayermodelinfo(o);
+                const char* icon = sg.team && m_teammode ? (strcmp(sg.team, "red") ? mdl.blueicon : mdl.redicon) : mdl.ffaicon;
+                g.text("", 0, icon);
+                if (o == player1 && highlightscore && (multiplayer(false) || demoplayback || players.length() > 1)) g.poplist();
+            });
+            g.poplist();
+
             if (sg.team && m_teammode)
             {
                 g.pushlist(); // vertical
                 if (sg.score >= 10000) g.textf("%s: WIN", teamcolor, NULL, sg.team);
                 else g.textf("%s: %d", teamcolor, NULL, sg.team, sg.score);
                 g.pushlist(); // horizontal
+                g.pushlist();
             }
 
             g.pushlist();
             g.text("name", COL_GRAY);
-            loopscoregroup(o, g.text(colorname(o), statuscolor(o, fgcolor)););
+            loopscoregroup(o, g.text(colorname(o, NULL, "", "", NULL, true), statuscolor(o, fgcolor)););
             g.poplist();
 
             if ((m_collect || m_ctf || m_hold || m_protect) && showflags)
@@ -257,7 +275,7 @@ namespace game
                 g.poplist();
             }
 
-            if (!cmode || !cmode->hidefrags() || !hidefrags)
+            if (!cmode || !cmode->hidefrags() || !hidefrags || m_parkour)
             {
                 g.space(2);
                 g.pushlist();
@@ -266,7 +284,7 @@ namespace game
                 g.poplist();
             }
 
-            if (showdeaths && !m_parkour)
+            if ((showdeaths && !m_parkour) || m_parkour)
             {
                 g.space(2);
                 g.pushlist();
@@ -495,23 +513,29 @@ namespace game
 					{
 						fpsent *p = getclient(o->ownernum);
 						if(!p) p = o;
-
-                        const char* pingcolor;
-                        if (p->ping < 70) {
-                            pingcolor = "\f0";
-                        }
-                        else if (p->ping < 135) {
-                            pingcolor = "\f2";
-                        }
-                        else if (p->ping < 200) {
-                            pingcolor = "\f6";
+                        
+                        const char* pcolor;
+                        if(pingcolor) {
+                            
+                            if (p->ping < 70) {
+                                pcolor = "\f0";
+                            }
+                            else if (p->ping < 135) {
+                                pcolor = "\f2";
+                            }
+                            else if (p->ping < 200) {
+                                pcolor = "\f6";
+                            }
+                            else {
+                                pcolor = "\f3";
+                            }
                         }
                         else {
-                            pingcolor = "\f3";
+                            pcolor = "";
                         }
 
 						if(!showpj && p->state==CS_LAGGED) rightjustified(g.text("LAG", fgcolor))
-                        else rightjustified(g.textf("%s%d", fgcolor, NULL, pingcolor, p->ping))
+                        else rightjustified(g.textf("%s%d", fgcolor, NULL, pcolor, p->ping))
 					});
 					g.poplist();
 				}

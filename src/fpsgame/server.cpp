@@ -222,8 +222,7 @@ namespace server
 
 		void restore(gamestate &gs)
 		{
-			/*if(gs.health==gs.maxhealth)*/
-			gs.health = maxhealth;
+			gs.health = health;
 			gs.maxhealth = maxhealth;
 			gs.frags = frags;
 			gs.flags = flags;
@@ -2457,7 +2456,7 @@ namespace server
 					totalrays += h.rays;
 					if(totalrays>maxrays) continue;
 					int damage = h.rays*guns[gun].damage;
-					//if(h.headshot) damage += guns[gun].bonus;
+					if(h.headshot) damage *= 1.25f;
 					if(!m_parkour && target!=ci)
 					{
 						if(!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.dir, h.headshot);

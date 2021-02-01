@@ -3130,7 +3130,7 @@ ICOMMAND(loopfiles, "rsse", (ident *id, char *dir, char *ext, uint *body),
     if(files.length()) poparg(*id);
 });
 
-//assume directories don't have extensions - AKA a hack
+// assume directories don't have extensions - AKA a hack
 ICOMMAND(loopdir, "rse", (ident *id, char *dir, uint *body),
 {
     if(id->type != ID_ALIAS) return;

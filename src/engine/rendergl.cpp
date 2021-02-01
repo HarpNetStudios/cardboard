@@ -898,7 +898,9 @@ void joymove(float dx, float dy)
 			curaccel = zoomaccel;
 		}
 	}
-	if(curaccel && curtime && (dx || dy)) cursens += curaccel * sqrtf(dx * dx + dy * dy) / curtime;
+    float balls = curaccel * sqrtf(dx * dx + dy * dy) / curtime;
+    //conoutf("awesome: %f", balls);
+	if(curaccel && curtime && (dx || dy)) cursens += balls;
 	if((camera1->pitch >= 90.0f || camera1->pitch <= -90.0f) && (player->spacepack && !player->spaceclip)) {
 		camera1->yaw -= dx * cursens * mouseyaw;
 	}
@@ -908,6 +910,7 @@ void joymove(float dx, float dy)
 
 	camera1->pitch -= dy * cursens * mousepitch;
 	fixcamerarange();
+
 	if(camera1 != player && !detachedcamera)
 	{
 		player->yaw = camera1->yaw;

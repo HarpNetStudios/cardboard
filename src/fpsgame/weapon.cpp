@@ -393,7 +393,7 @@ namespace game
         f->lastpain = lastmillis;
         if(actor->type==ENT_PLAYER && !isteam(actor->team, f->team) && f!=actor) actor->totaldamage += damage;
 
-        if(f->type==ENT_AI || !m_mp(gamemode) || f==actor) f->hitpush(damage, vel, actor, gun);
+        if(f->type==ENT_AI || (f->type==ENT_PLAYER && !m_parkour) || !m_mp(gamemode)) f->hitpush(damage, vel, actor, gun);
 
         if(!m_mp(gamemode)) damaged(damage, f, actor, gun);
         else if(!m_parkour)
@@ -554,7 +554,6 @@ namespace game
             dv.mul(time/max(dist*1000/p.speed, float(time)));
             vec v = vec(p.o).add(dv);
             bool exploded = false;
-			int headshot = 0;
             hits.setsize(0);
             if(p.local)
             {
@@ -817,11 +816,11 @@ namespace game
             }
             return;
         }
-        if(d->gunselect && !m_bottomless) d->ammo[d->gunselect]--; //subtract ammo
+        if(d->gunselect && !m_bottomless) d->ammo[d->gunselect]--; // subtract ammo
 
         vec from = d->o, to = targ, dir = vec(to).sub(from).safenormalize();
         float dist = to.dist(from);
-		vec kickback = vec(dir).mul(guns[d->gunselect].kickamount * ((d->spacepack && d->physstate == PHYS_FLOAT) ? -6.0f : -2.5f)); //spacepack dependant kickback
+		vec kickback = vec(dir).mul(guns[d->gunselect].kickamount * ((d->spacepack && d->physstate == PHYS_FLOAT) ? -6.0f : -2.5f)); // spacepack dependant kickback
         d->vel.add(kickback);
         float shorten = 0;
         if(guns[d->gunselect].range && dist > guns[d->gunselect].range)

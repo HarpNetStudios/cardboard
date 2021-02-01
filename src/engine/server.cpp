@@ -855,8 +855,7 @@ static LRESULT CALLBACK handlemessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			SetForegroundWindow(hWnd);
 			switch(lParam)
 			{
-				//case WM_MOUSEMOVE:
-				//	break;
+				//case WM_MOUSEMOVE: break;
 				case WM_LBUTTONUP:
 				case WM_RBUTTONUP:
 				{

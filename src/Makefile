@@ -77,7 +77,7 @@ CLIENT_LIBS+= -lrt
 endif
 endif
 
-CLIENT_LIBS+= -lpthread lib/libdiscord-rpc.a
+CLIENT_LIBS+= -lpthread
 CLIENT_OBJS= \
 	shared/crypto.o \
 	shared/geom.o \
