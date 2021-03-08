@@ -2812,7 +2812,7 @@ namespace server
 	bool checkpubtoken(clientinfo* ci, const char* pubtoken)
 	{
 		oldstring apiurl;
-		formatstring(apiurl, "%s/game/check/pubtoken?id=1&token=%s", HNAPI, pubtoken);
+		formatstring(apiurl, "%s/game/check/pubtoken?id=1&token=%s", __hnapi, pubtoken);
 		char* thing = web_get(apiurl, false);
 		if(!thing[0]) {
 			return false;

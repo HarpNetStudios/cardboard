@@ -5,6 +5,9 @@
 
 oldstring gametoken = "OFFLINE";
 
+SVARF(__hnapi, HNAPI, if(strcmp(__hnapi, HNAPI)) conoutf("\f3You are using the UNOFFICIAL API server \fo\"%s\"\f3. Proceed at your own risk.", __hnapi));
+ICOMMAND(resethnapi, "", (), __hnapi = HNAPI);
+
 #ifdef SDL_VIDEO_DRIVER_X11
 #include "SDL_syswm.h"
 #endif
@@ -1429,7 +1432,7 @@ void getuserinfo_(bool debug, bool first) {
 		return;
 	}
 	oldstring apiurl;
-	formatstring(apiurl, "%s/game/get/userinfo?id=1", HNAPI);
+	formatstring(apiurl, "%s/game/get/userinfo?id=1", __hnapi);
 	char* thing = web_auth(apiurl, gametoken, debug);
 	if(!thing[0]) {
 		conoutf(CON_ERROR, "\f3[HNID] No data recieved from server, switching to offline mode");
@@ -1666,7 +1669,8 @@ int main(int argc, char **argv)
     initing = NOT_INITING;
 
 	logoutf("init: auth");
-	renderprogress(0, "connecting to auth server...");
+    if(strcmp(__hnapi, HNAPI)) renderprogress(0, "connecting to UNOFFICIAL auth server...");
+    else renderprogress(0, "connecting to auth server...");
 	getuserinfo_(false, true);
 
     logoutf("init: render");

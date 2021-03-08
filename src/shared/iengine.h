@@ -263,6 +263,7 @@ extern int spacepackallowed;
 extern void fatal(const char *s, ...) PRINTFARGS(1, 2);
 extern void getuserinfo_(bool debug, bool first = false);
 extern void resetgl();
+extern char* __hnapi;
 
 // rendertext
 extern bool setfont(const char *name);

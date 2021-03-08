@@ -689,7 +689,7 @@ namespace game
 		copystring(d->tags, "");
 		if(dbgtags) conoutf(CON_INFO, "\fs\f1getting tags for %s...\fr", d->name);
 		oldstring apiurl;
-		formatstring(apiurl, "%s/game/get/tags?id=1&name=%s", HNAPI, d->name);
+		formatstring(apiurl, "%s/game/get/tags?id=1&name=%s", __hnapi, d->name);
 		char* thing = web_get(apiurl, false);
 		//conoutf(CON_DEBUG, thing);
 		cJSON* json = cJSON_Parse(thing); // fix on linux, makefile doesn't work.

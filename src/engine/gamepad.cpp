@@ -191,7 +191,7 @@ namespace gamepad {
 				handleaxis(e.caxis);
 				break;
 		}
-		handlefocus(focused);
+		//handlefocus(focused);
 	}
 
 	void setenabled(const int enabled)
