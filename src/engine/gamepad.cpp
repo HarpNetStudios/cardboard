@@ -10,7 +10,7 @@ namespace gamepad {
 	SDL_GameController* controller;
 	int numGamepads;
 
-	enum Controllers { PLAYER1, PLAYER2, PLAYER3, PLAYER4 };
+	enum Controllers { PLAYER1, PLAYER2, PLAYER3, PLAYER4 }; // for future use.
 
 	const float axismax = 32767.5f;
 	const int buttonsym = -100;
@@ -151,6 +151,12 @@ namespace gamepad {
 		return buttonsym - sdlJoyButton;
 	}
 
+	void handlefocus(int focused) {
+		if(focused<1) {
+			player->camx = player->camy = 0.0f;
+		}
+	}
+
 	void handlebutton(const SDL_ControllerButtonEvent& e)
 	{
 		bool pressed = e.state == SDL_PRESSED;
@@ -162,7 +168,7 @@ namespace gamepad {
 		}
 	}
 
-	void handleevent(const SDL_Event& e) {
+	void handleevent(const SDL_Event& e, int focused) {
 		switch (e.type)
 		{
 			case SDL_CONTROLLERDEVICEADDED:
@@ -174,17 +180,18 @@ namespace gamepad {
 				release();
 				break;
 
-			// If a controller button is pressed
+				// If a controller button is pressed
 			case SDL_CONTROLLERBUTTONUP:
 			case SDL_CONTROLLERBUTTONDOWN:
 				handlebutton(e.cbutton);
 				break;
 
-			// And something similar for axis motion
+				// And something similar for axis motion
 			case SDL_CONTROLLERAXISMOTION:
 				handleaxis(e.caxis);
 				break;
 		}
+		handlefocus(focused);
 	}
 
 	void setenabled(const int enabled)

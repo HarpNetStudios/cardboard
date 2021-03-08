@@ -1174,6 +1174,7 @@ void checkinput()
                         break;
                     }
                 }
+                gamepad::handlefocus(focused);
                 break;
 
             case SDL_MOUSEMOTION:
@@ -1219,7 +1220,8 @@ void checkinput()
 			case SDL_CONTROLLERBUTTONUP:
 			case SDL_CONTROLLERBUTTONDOWN:
 			case SDL_CONTROLLERAXISMOTION:
-				gamepad::handleevent(event);
+				gamepad::handleevent(event, focused);
+                break;
         }
     }
     if(focused) { if(grabinput != (focused>0)) inputgrab(grabinput = focused>0, shouldgrab); focused = 0; }

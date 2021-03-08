@@ -1277,6 +1277,7 @@
     <None Include="..\..\data\game_fps.cfg" />
     <None Include="..\..\data\glsl.cfg" />
     <None Include="..\..\data\heightmap.cfg" />
+    <None Include="..\..\data\gamepad.cfg" />
     <None Include="..\..\data\keymap.cfg" />
     <None Include="..\..\data\maps.cfg" />
     <None Include="..\..\data\menus.cfg" />

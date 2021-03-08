@@ -452,7 +452,8 @@ namespace rawinput
 
 namespace gamepad
 {
-	void handleevent(const SDL_Event& e);
+	void handleevent(const SDL_Event& e, int focused);
+    void handlefocus(int focused);
 	void release();
 }
 
