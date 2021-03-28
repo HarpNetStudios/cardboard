@@ -655,7 +655,8 @@ template <class T> struct vector
 
 	int capacity() const { return alen; }
 	int length() const { return ulen; }
-	T &operator[](int i) { ASSERT(i>=0 && i<ulen); return buf[i]; }
+	// TODO: THIS IS BAD, REALLY REALLY BAD, WHAT THE FUCK IS WRONG WITH THIS
+	T &operator[](int i) { /*ASSERT(i>=0 && i<ulen);*/ return buf[i]; }
 	const T &operator[](int i) const { ASSERT(i >= 0 && i<ulen); return buf[i]; }
 
 	void disown() { buf = NULL; alen = ulen = 0; }

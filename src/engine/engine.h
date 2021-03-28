@@ -38,25 +38,30 @@ struct font
 {
     struct charinfo
     {
-        short x, y, w, h, offsetx, offsety, advance, tex;
+        short x, y, w, h, offsetx, offsety, advance;
+        unsigned int tex;
     };
 
     char *name;
-    vector<Texture *> texs;
+    vector<unsigned int> texs; // TODO: glue to textures
     vector<charinfo> chars;
-    int charoffset, defaultw, defaulth, scale;
+    int charoffset, defaultw, defaulth, scale, lineheight;
 
     font() : name(NULL) {}
     ~font() { DELETEA(name); }
 };
 
-#define FONTH (curfont->scale)
-#define FONTW (FONTH/2)
+extern bool init_fonts();
+
 #define MINRESW 640
 #define MINRESH 480
 
-extern font *curfont;
-extern const matrix4x3 *textmatrix;
+// Get things to shut up while we destroy their world
+#define FONTH (curfont->scale)
+#define FONTW FONTH/2
+
+extern font* curfont;
+extern const matrix4x3* textmatrix;
 
 extern void reloadfonts();
 

@@ -5,6 +5,8 @@
 
 oldstring gametoken = "OFFLINE";
 
+ICOMMAND(help, "", (), { conoutf(CON_INFO, "you have been helped."); });
+
 SVARF(__hnapi, HNAPI, if(strcmp(__hnapi, HNAPI)) conoutf("\f3You are using the UNOFFICIAL API server \fo\"%s\"\f3. Proceed at your own risk.", __hnapi));
 ICOMMAND(resethnapi, "", (), __hnapi = HNAPI);
 
@@ -1616,6 +1618,9 @@ int main(int argc, char **argv)
     gl_init();
     notexture = textureload("packages/textures/notexture.png");
     if(!notexture) fatal("could not find core textures (are you using the launcher?)");
+
+    logoutf("init: freetype");
+    if(!init_fonts()) fatal("cannot init freetype");
 
     logoutf("init: console");
 	if(!execfile("data/stdlib.cfg", false)) fatal("cannot find data files (are you using the launcher?)"); // this is the first config file we load.
