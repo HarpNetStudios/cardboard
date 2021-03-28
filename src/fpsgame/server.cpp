@@ -1,5 +1,10 @@
 #include "game.h"
 
+#ifdef STANDALONE
+SVARF(__hnapi, HNAPI, if (strcmp(__hnapi, HNAPI)) conoutf("\f3You are using the UNOFFICIAL API server \fo\"%s\"\f3. Proceed at your own risk.", __hnapi));
+ICOMMAND(resethnapi, "", (), __hnapi = HNAPI);
+#endif
+
 namespace game
 {
 	void parseoptions(vector<const char *> &args)

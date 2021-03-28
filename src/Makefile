@@ -252,6 +252,8 @@ endif
 endif
 
 enet/libenet.a:
+	autoreconf -vfi
+	./configure
 	$(MAKE) -C enet CC='$(CC)' AR='$(AR)'
 libenet: enet/libenet.a
 

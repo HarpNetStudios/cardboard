@@ -1677,6 +1677,8 @@ int main(int argc, char **argv)
     if(strcmp(__hnapi, HNAPI)) renderprogress(0, "connecting to UNOFFICIAL auth server...");
     else renderprogress(0, "connecting to auth server...");
 	getuserinfo_(false, true);
+    if (strcmp(__hnapi, HNAPI)) renderprogress(1, "connected to UNOFFICIAL auth server");
+    else renderprogress(1, "connected to auth server");
 
     logoutf("init: render");
     restoregamma();
