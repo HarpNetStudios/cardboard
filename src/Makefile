@@ -65,7 +65,7 @@ CLIENT_LIBS= -F../cardboard.app/Contents/Frameworks/ -framework SDL2 -framework 
 CLIENT_LIBS+= -framework SDL2_mixer -framework SDL2_ttf -framework CoreAudio
 CLIENT_LIBS+= -framework AudioToolbox -framework AudioUnit -framework OpenGL -framework Cocoa -lz -Lenet -lenet -lcurl
 else
-CLIENT_INCLUDES= $(INCLUDES) -I/usr/X11R6/include `sdl2-config --cflags`
+CLIENT_INCLUDES= $(INCLUDES) -Iinclude `sdl2-config --cflags`
 CLIENT_LIBS= -Lenet -lenet -L/usr/X11R6/lib -lX11 `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lfreetype -lz -lGL -lcurl
 endif
 endif
