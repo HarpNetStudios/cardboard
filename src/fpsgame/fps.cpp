@@ -600,6 +600,9 @@ namespace game
             disablezoom();
 
             execident("intermission");
+            #ifdef STEAM
+                steam::setPlayerAchievement(player1->playermodel);
+            #endif
         }
     }
 

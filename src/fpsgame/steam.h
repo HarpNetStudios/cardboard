@@ -24,7 +24,8 @@ enum EAchievements
     ACH_CHAR_SAVANNAH,
     ACH_CHAR_EMILY,
     ACH_SECRET_1,
-    ACH_PLAY_BOTS
+    ACH_PLAY_BOTS,
+    ACH_100_FRAGS
 };
 
 #endif 

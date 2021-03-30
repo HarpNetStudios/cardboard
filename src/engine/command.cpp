@@ -2366,7 +2366,7 @@ bool execfile(const char *cfgfile, bool msg)
 {
     oldstring s;
     copystring(s, cfgfile);
-    char *buf = loadfile(path(s), NULL);
+    char *buf = loadfile(path(s), NULL, true);
     if(!buf)
     {
         if(msg) conoutf(CON_ERROR, "could not read \"%s\"", cfgfile);

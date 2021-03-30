@@ -7,6 +7,9 @@ static hashnameset<font> fonts;
 // TODO: better font setup
 font *curfont = NULL;
 
+#define FONTTAB (4 * FONTW)
+#define TEXTTAB(x) ((int((x) / FONTTAB) + 1.0f) * FONTTAB)
+
 FT_Library ft;
 // Inits the font library
 bool init_fonts()
@@ -49,10 +52,10 @@ void newfont(char *name, char *fp, int *defaultw, int *defaulth)
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
 
-    unsigned char c;
+    unsigned int c;
     for (c = 0; c < 128; c++) // hehe c++
     {
-        // conoutf(CON_DEBUG, "%c", c);
+        //conoutf(CON_DEBUG, "glyph %d, ]%c[", c, c);
         unsigned long uc = FT_Get_Char_Index(face, c);
         if (FT_Load_Glyph(face, uc, FT_LOAD_RENDER))
         {
@@ -152,8 +155,7 @@ void font_metrics(char c, float& width, float& height, float& offsetx, float& of
     height = cinfo.h;
 
     offsetx = cinfo.offsetx;
-    offsety = (curfont->lineheight * 0.6) - cinfo.offsety;
-    //offsety = (curfont->lineheight * 0.5) - cinfo.offsety;
+    offsety = (curfont->lineheight * 0.5) - cinfo.offsety; // this is still wrong, but I don't know how. -Y
 
     // For some reason the value here isn't in pixels.
     // WHY? Anyway, we need to bitshift it.
@@ -180,7 +182,7 @@ const matrix4x3 *textmatrix = NULL;
 // Draws the given character, if the font has it.
 static float draw_char(char c, float x, float y, float scale = 1.0)
 {
-    if (!curfont->chars.inrange(c-curfont->charoffset)) return 0.0;
+    if (!curfont->chars.inrange(c-curfont->charoffset) || c < 0x20) return 0.0;
     font::charinfo cinfo = curfont->chars[c-curfont->charoffset];
 
     float w, h, ox, oy, adv;
@@ -260,12 +262,106 @@ static void text_color(char c, char* stack, int size, int& sp, bvec color, int a
 // The character visible in text(?)
 int text_visible(const char *str, float hitx, float hity, int maxwidth)
 {
-    return 0;
+	float y = 0, x = 0, scale = curfont->scale / float(curfont->defaulth);
+	int i;
+	for (i = 0; str[i]; i++)
+	{
+		int c = uchar(str[i]);
+		if (c == '\t')
+		{
+			x = TEXTTAB(x);
+			if (y + FONTH > hity && x >= hitx)
+				return i;
+		}
+		else if (c == ' ')
+		{
+			x += scale * curfont->defaultw;
+			if (y + FONTH > hity && x >= hitx)
+				return i;
+		}
+		else if (c == '\n')
+		{
+			if (y + FONTH > hity)
+				return i;
+			x = 0;
+			y += FONTH;
+		}
+		else if (c == '\f')
+		{
+			if (str[i + 1])
+			{
+				i++;
+			}
+		}
+		else if (curfont->chars.inrange(c - curfont->charoffset))
+		{
+			float cw = scale * curfont->chars[c - curfont->charoffset].advance;
+			if (cw <= 0)
+				continue;
+			if (maxwidth != -1)
+			{
+				int j = i;
+				float w = cw;
+				for (; str[i + 1]; i++)
+				{
+					int c = uchar(str[i + 1]);
+					if (c == '\f')
+					{
+						if (str[i + 2])
+							i++;
+						continue;
+					}
+					if (i - j > 16)
+						break;
+					if (!curfont->chars.inrange(c - curfont->charoffset))
+						break;
+					float cw = scale * curfont->chars[c - curfont->charoffset].advance;
+					if (cw <= 0 || w + cw > maxwidth)
+						break;
+					w += cw;
+				}
+				if (x + w > maxwidth && j != 0)
+				{
+					if (y + FONTH > hity)
+						return j - 1;
+					x = 0;
+					y += FONTH;
+				}
+				for (; j <= i; j++)
+				{
+					int c = uchar(str[j]);
+					if (c == '\f')
+					{
+						if (str[j + 1])
+						{
+							j++;
+						}
+					}
+					else
+					{
+						float cw = scale * curfont->chars[c - curfont->charoffset].advance;
+						x += cw;
+						if (y + FONTH > hity && x >= hitx)
+							return j;
+					}
+				}
+			}
+			else
+			{
+				x += cw;
+				if (y + FONTH > hity && x >= hitx)
+					return i;
+			}
+		}
+	}
+	return i;
 }
 
+// TODO:
 //inverse of text_visible
 void text_posf(const char *str, int cursor, float &cx, float &cy, int maxwidth) 
 {
+	cx = cy = 0;
 }
 
 // Sets the width, height variables to the amount of space that the string would occupy, if rendered.
@@ -279,6 +375,8 @@ void text_boundsf(const char *str, float &width, float &height, int maxwidth)
     for (i = 0; str[i]; i++)
     {
         char c = uchar(str[i]);
+
+        if(c < 0x20) continue; // ignore unprintables
 
         float w, h, ox, oy, adv;
         font_metrics(c, w, h, ox, oy, adv);
@@ -297,12 +395,13 @@ void text_boundsf(const char *str, float &width, float &height, int maxwidth)
 
             continue;
         }
-        else if (c == '\t') // This doesn't do anything yet.
+        else if (c == '\f') // Colour code doesn't take up any space.
         {
             continue;
         }
-        else if (c == '\f') // Colour code doesn't take up any space.
+        else if (c == '\t') // tab
         {
+            width += FONTTAB;
             continue;
         }
 
@@ -340,12 +439,15 @@ void draw_text(const char *str, int left, int top, int r, int g, int b, int a, i
     float x = left;
     float y = top;
 
-    float dontgoover;
+    float cx = x; // cursor x
+    float cy = y; // cursor y
+
+    float maxx;
 
     if (maxwidth != -1)
-        dontgoover = x + maxwidth;
+        maxx = x + maxwidth;
     else
-        dontgoover = screenw;
+        maxx = screenw;
 
     char colorstack[10];
     colorstack[0] = 'c'; //indicate user color
@@ -355,16 +457,18 @@ void draw_text(const char *str, int left, int top, int r, int g, int b, int a, i
     {
 
         char c = uchar(str[i]);
+
+        if (i == cursor) // this is the cursor pos!
+        {
+            cx = x;
+            cy = y;
+        }
         
         // Test for special characters, like newlines
-        if (c == '\r' || c == '\n' || x > dontgoover)
+        if (c == '\r' || c == '\n' || x > maxx)
         {
             x = left;
             y += curfont->lineheight;
-            continue;
-        }
-        else if (c == '\t') // Tab
-        {
             continue;
         }
         else if (c == '\f') // Colouring
@@ -376,8 +480,24 @@ void draw_text(const char *str, int left, int top, int r, int g, int b, int a, i
             }
             continue;
         }
+        else if (c == '\t') // tab
+        {
+            x += FONTTAB;
+            continue;
+        }
 
         x += (int)draw_char(c, x, y, 1.0);
+    }
+
+    if (cursor >= 0 && (totalmillis / 250) & 1)
+    {
+        gle::color(color, a);
+        if (maxwidth != -1 && cx >= maxwidth)
+        {
+            cx = 0;
+            cy += FONTH;
+        }
+        draw_char('_', cx, cy, 1.0);
     }
 }
 

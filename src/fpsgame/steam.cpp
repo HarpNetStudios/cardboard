@@ -138,6 +138,7 @@ namespace steam {
 			_ACH_ID(ACH_CHAR_BEA, "Bea"),
 			_ACH_ID(ACH_CHAR_SAVANNAH, "Savannah"),
 			_ACH_ID(ACH_CHAR_EMILY, "Emily"),
+			_ACH_ID(ACH_PLAY_BOTS, "Who needs friends?"),
 	};
 
 	// Global access to Achievements object
@@ -183,6 +184,12 @@ namespace steam {
 	int getSteamID() {
 		return SteamUser()->GetSteamID().ConvertToUint64();
 	}
+
+	// this is fucking stupid, but i'm sleep deprived and this seemed like the easiest way -Y
+	ICOMMAND(_steam_botmatch, "", (), { setAchievement("ACH_PLAY_BOTS"); });
 }
 
+#endif
+#ifndef STEAM
+ICOMMAND(_steam_botmatch, "", (), {});
 #endif

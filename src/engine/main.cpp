@@ -7,8 +7,10 @@ oldstring gametoken = "OFFLINE";
 
 ICOMMAND(help, "", (), { conoutf(CON_INFO, "you have been helped."); });
 
+#ifndef STANDALONE
 SVARF(__hnapi, HNAPI, if(strcmp(__hnapi, HNAPI)) conoutf("\f3You are using the UNOFFICIAL API server \fo\"%s\"\f3. Proceed at your own risk.", __hnapi));
 ICOMMAND(resethnapi, "", (), __hnapi = HNAPI);
+#endif
 
 #ifdef SDL_VIDEO_DRIVER_X11
 #include "SDL_syswm.h"
