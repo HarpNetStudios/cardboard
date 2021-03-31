@@ -33,13 +33,13 @@ sudo pacman -S sdl2 sdl2_mixer sdl2_image sdl2_ttf curl
 git clone https://github.com/HarpNetStudios/cardboard.git
 cd cardboard
 git checkout $(git describe --tags)
+git submodule init
+git submodule update
 ```
 
 - Start the build process
 ```
-cd src/enet
-chmod +x check_cflags.sh
-cd ..
+cd src/
 make
 make install
 ```
