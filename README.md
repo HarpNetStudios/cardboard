@@ -30,7 +30,7 @@ sudo pacman -S sdl2 sdl2_mixer sdl2_image sdl2_ttf curl enet
 
 - Get source code from latest tagged GitHub release
 ```
-git clone https://github.com/HarpNetStudios/cardboard.git
+git clone --recursive https://github.com/HarpNetStudios/cardboard.git
 cd cardboard
 git checkout $(git describe --tags)
 ```
