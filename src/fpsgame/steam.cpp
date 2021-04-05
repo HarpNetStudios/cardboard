@@ -1,8 +1,8 @@
-#ifdef STEAM
-
 #include "game.h"
 #include "engine.h"
 #include "cube.h"
+
+#ifdef STEAM
 
 #include "steam/steam_api.h"
 #include "steam.h"
@@ -178,7 +178,7 @@ namespace steam {
 	}
 
 	void setPlayerAchievement(int player) {
-		setAchievement(g_Achievements[player+2].m_pchAchievementID);
+		if(player >= 0 && player <= 5) setAchievement(g_Achievements[player+2].m_pchAchievementID);
 	}
 
 	int getSteamID() {
@@ -191,5 +191,5 @@ namespace steam {
 
 #endif
 #ifndef STEAM
-ICOMMAND(_steam_botmatch, "", (), {});
+ICOMMAND(_steam_botmatch, "", (), { return; });
 #endif

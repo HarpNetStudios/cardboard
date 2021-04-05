@@ -232,12 +232,21 @@ void setupserver(int port, const char *ip = NULL)
     conoutf("*** Starting master server on %s %d at %s ***", ip ? ip : "localhost", port, ct);
 }
 
+SVAR(mastermotd, "");
+
 void genserverlist()
 {
     if(!updateserverlist) return;
     while(gameserverlists.length() && gameserverlists.last()->refs<=0)
         delete gameserverlists.pop();
     messagebuf *l = new messagebuf(gameserverlists);
+    if(mastermotd[0])
+    {
+        const char *cmd = "echo ";
+        l->buf.put(cmd, strlen(cmd));
+        l->buf.put(mastermotd, strlen(mastermotd));
+        l->buf.add('\n');
+    }
     loopv(gameservers)
     {
         gameserver &s = *gameservers[i];

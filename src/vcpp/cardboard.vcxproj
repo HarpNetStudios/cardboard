@@ -297,7 +297,7 @@
       <Optimization>Disabled</Optimization>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\enet\include;..\include;..\engine;..\fpsgame;..\shared;..\shared\discord;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;DISCORD;STEAM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;DISCORD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
