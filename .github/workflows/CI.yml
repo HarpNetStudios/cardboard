@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           lfs: true
+          submodules: true
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
       - name: Build for Windows
@@ -24,13 +25,14 @@ jobs:
       - uses: actions/checkout@v2
         with:
           lfs: true
+          submodules: true
       - name: Install C and C++ header files
         run: |
           sudo apt-get update
-          sudo apt-get install -y libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-ttf-dev libcurl4-openssl-dev
-      - name: Fix enet permissions
-        working-directory: ./src/enet
-        run: chmod +x ./check_cflags.sh
+          sudo apt-get install -y libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-ttf-dev libcurl4-openssl-dev libenet-dev
+      - name: Run CMake
+        working-directory: .
+        run: cmake CMakeLists.txt
       - name: Build for Ubuntu
-        working-directory: ./src
+        working-directory: .
         run: make
