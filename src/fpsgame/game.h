@@ -386,15 +386,12 @@ static const char* officialmaps[] =
 	"color",
 	"cosmic",
 	"duabo",
-	"enorbite",
 	"flux",
 	"fz_burn",
-	"g3_obliterate_alpha",
 	"hr",
 	"illusion",
 	"indust1",
 	"maze",
-    "nefuture",
 	"neo_falls",
 	"neo_noir",
 	"precipice",
@@ -402,7 +399,6 @@ static const char* officialmaps[] =
 	"retrograde",
 	"ruins",
 	"secondevermap",
-    "shellone",
 	"zigguraut",
 };
 
