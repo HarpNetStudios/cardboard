@@ -1,4 +1,4 @@
-name: Continous deployment for Project Crimson
+name: Continous deployment for Carmine Impact
 on:
   push:
     tags:

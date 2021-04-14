@@ -1355,7 +1355,7 @@ namespace ai
 
     VAR(showwaypoints, 0, 0, 1);
     VAR(showwaypointsradius, 0, 200, 10000);
-	VARP(waypointcolor, 0, 0, 2);
+	VARP(waypointcolor, 0, 0, 5);
 
     const char *stnames[AI_S_MAX] = {
         "wait", "defend", "pursue", "interest"
@@ -1460,6 +1460,12 @@ namespace ai
 							 color = 0x00FF00; break;
 						 case 2:
 							 color = 0xFF0000; break;
+						 case 3:
+							 color = 0xFFFF00; break;
+						 case 4:
+							 color = 0x00FFFF; break;
+						 case 5:
+							 color = 0xFF00FF; break;
 						 default: // should never happen, if your waypoints are white, you seriously broke something. -Y
 							 color = 0xFFFFFF; break;
 					 }

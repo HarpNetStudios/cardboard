@@ -390,7 +390,6 @@ static const char* officialmaps[] =
 	"flux",
 	"fz_burn",
 	"g3_obliterate_alpha",
-	"highland",
 	"hr",
 	"illusion",
 	"indust1",

@@ -13,15 +13,15 @@ namespace steam {
 	{
 	private:
 		int64 m_iAppID; // Our current AppID
-		Achievement_t* m_pAchievements; // Achievements data
+		Achievement_t *m_pAchievements; // Achievements data
 		int m_iNumAchievements; // The number of Achievements
 		bool m_bInitialized; // Have we called Request stats and received the callback?
 
 	public:
-		CSteamAchievements(Achievement_t* Achievements, int NumAchievements);
+		CSteamAchievements(Achievement_t *Achievements, int NumAchievements);
 
 		bool RequestStats();
-		bool SetAchievement(const char* ID);
+		bool SetAchievement(const char *ID);
 
 		STEAM_CALLBACK(CSteamAchievements, OnUserStatsReceived, UserStatsReceived_t,
 			m_CallbackUserStatsReceived);
@@ -31,7 +31,7 @@ namespace steam {
 			m_CallbackAchievementStored);
 	};
 
-	CSteamAchievements::CSteamAchievements(Achievement_t* Achievements, int NumAchievements) :
+	CSteamAchievements::CSteamAchievements(Achievement_t *Achievements, int NumAchievements) :
 		m_iAppID(0),
 		m_bInitialized(false),
 		m_CallbackUserStatsReceived(this, &CSteamAchievements::OnUserStatsReceived),
@@ -60,7 +60,7 @@ namespace steam {
 		return SteamUserStats()->RequestCurrentStats();
 	}
 
-	bool CSteamAchievements::SetAchievement(const char* ID)
+	bool CSteamAchievements::SetAchievement(const char *ID)
 	{
 		// Have we received a call back from Steam yet?
 		if (m_bInitialized)

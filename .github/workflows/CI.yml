@@ -1,4 +1,4 @@
-name: Continous integration for Project Crimson
+name: Continous integration for Carmine Impact
 
 on:
   push:
