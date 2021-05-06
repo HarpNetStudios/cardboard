@@ -39,6 +39,7 @@ struct font
     struct charinfo
     {
         short x, y, w, h, offsetx, offsety, advance;
+        float texx, texy, texw, texh; // UV Coordinates
         unsigned int tex;
     };
 
