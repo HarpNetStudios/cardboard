@@ -1211,6 +1211,9 @@ void checkinput()
                     case SDL_BUTTON_RIGHT: processkey(-3, event.button.state==SDL_PRESSED); break;
                     case SDL_BUTTON_X1: processkey(-6, event.button.state==SDL_PRESSED); break;
                     case SDL_BUTTON_X2: processkey(-7, event.button.state==SDL_PRESSED); break;
+                    case SDL_BUTTON_X2 + 1: processkey(-10, event.button.state==SDL_PRESSED); break;
+                    case SDL_BUTTON_X2 + 2: processkey(-11, event.button.state==SDL_PRESSED); break;
+                    case SDL_BUTTON_X2 + 3: processkey(-12, event.button.state==SDL_PRESSED); break;
                 }
                 //lasttype = event.type;
                 //lastbut = event.button.button;
@@ -1219,6 +1222,8 @@ void checkinput()
             case SDL_MOUSEWHEEL:
                 if(event.wheel.y > 0) { processkey(-4, true); processkey(-4, false); }
                 else if(event.wheel.y < 0) { processkey(-5, true); processkey(-5, false); }
+                else if(event.wheel.x > 0) { processkey(-8, true); processkey(-8, false); }
+                else if(event.wheel.x < 0) { processkey(-9, true); processkey(-9, false); }
                 break;
 
 			case SDL_CONTROLLERDEVICEADDED:

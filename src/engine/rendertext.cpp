@@ -74,8 +74,8 @@ void newfont(char *name, char *fp, int *defaultw, int *defaulth)
 
     // figure out the biggest char
 	// TODO: there must be a better way
-    int biggestw = 0;
-    int biggesth = 0;
+    unsigned int biggestw = 0;
+    unsigned int biggesth = 0;
     int biggesttop = 0;
 
 	unsigned char c;

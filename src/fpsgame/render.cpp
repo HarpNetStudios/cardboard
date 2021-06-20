@@ -446,10 +446,14 @@ namespace game
 
     void preloadsounds() // why aren't all sounds preloaded??? -Y 10/10/2020
     {
+        /*
         for(int i = S_JUMP; i <= S_SPLASH2; i++) preloadsound(i);
         for(int i = S_JUMPPAD; i <= S_ARIFLE; i++) preloadsound(i);
         for(int i = S_V_BOOST; i <= S_V_QUAD10; i++) preloadsound(i);
         for(int i = S_BURN; i <= S_HIT; i++) preloadsound(i);
+        */
+
+        for(int i = S_JUMP; i <= S_SRV_DISCONNECT; i++) preloadsound(i);
     }
 
     void preload()

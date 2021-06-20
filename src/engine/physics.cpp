@@ -777,12 +777,11 @@ bool mmcollide(physent *d, const vec &dir, octaentities &oc)               // co
 template<class E>
 static bool fuzzycollidesolid(physent *d, const vec &dir, float cutoff, const cube &c, const ivec &co, int size) // collide with solid cube geometry
 {
-    int crad = size/2;
+    float crad = size * 0.5f;
     if(fabs(d->o.x - co.x - crad) > d->radius + crad || fabs(d->o.y - co.y - crad) > d->radius + crad ||
        d->o.z + d->aboveeye < co.z || d->o.z - d->eyeheight > co.z + size)
         return false;
 
-    E entvol(d);
     collidewall = vec(0, 0, 0);
     float bestdist = -1e10f;
     int visible = isentirelysolid(c) ? c.visible : 0xFF;
@@ -895,7 +894,7 @@ static bool fuzzycollideplanes(physent *d, const vec &dir, float cutoff, const c
 template<class E>
 static bool cubecollidesolid(physent *d, const vec &dir, float cutoff, const cube &c, const ivec &co, int size) // collide with solid cube geometry
 {
-    int crad = size/2;
+    float crad = size * 0.5f;
     if(fabs(d->o.x - co.x - crad) > d->radius + crad || fabs(d->o.y - co.y - crad) > d->radius + crad ||
        d->o.z + d->aboveeye < co.z || d->o.z - d->eyeheight > co.z + size)
         return false;

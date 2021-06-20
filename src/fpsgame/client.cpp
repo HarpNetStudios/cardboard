@@ -2134,11 +2134,9 @@ namespace game
 				getstring(text, p);
 				authkey *a = findauthkey(text);
 				uint id = (uint)getint(p);
-				getstring(text, p);
-				if(a && a->lastauth && lastmillis - a->lastauth < 60*1000)
+				vector<char> buf;
+				if(a && a->lastauth && lastmillis - a->lastauth < 60*1000 && answerchallenge(a->key, text, buf))
 				{
-					vector<char> buf;
-					answerchallenge(a->key, text, buf);
 					//conoutf(CON_DEBUG, "answering %u, challenge %s with %s", id, text, buf.getbuf());
 					packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
 					putint(p, N_AUTHANS);
