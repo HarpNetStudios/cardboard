@@ -272,7 +272,7 @@ struct gui : g3d_gui
         }
         else
         {
-            bool hit = isselected(w, h); // I SHIT - Coal 11/20/20
+            bool hit = isselected(w, h); // I SHIT - Nicole 11/20/20
             if(ishorizontal()) curx += w;
             else cury += h;
             return (hit && visible()) ? mousebuttons|G3D_ROLLOVER : 0;
@@ -1299,7 +1299,7 @@ bool g3d_movecursor(int dx, int dy)
 }
 
 VARNP(guifollow, useguifollow, 0, 1, 1);
-VARFNP(gui2d, usegui2d, 0, 1, 1, { extern int scoreboard2d; scoreboard2d = usegui2d; extern int texgui2d; texgui2d = usegui2d;}); //!!FIXME (scoreboard.cpp 4) - Coal 11/20/20
+VARFNP(gui2d, usegui2d, 0, 1, 1, { extern int scoreboard2d; scoreboard2d = usegui2d; extern int texgui2d; texgui2d = usegui2d;}); //!!FIXME (scoreboard.cpp 4) - Nicole 11/20/20
 
 
 void g3d_addgui(g3d_callback *cb, vec &origin, int flags)

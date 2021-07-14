@@ -286,7 +286,7 @@ namespace server
 
 		enum
 		{
-			PUSHMILLIS = 100000 // does this fix the double jump bug? | yes it does, you were almost there -c
+			PUSHMILLIS = 100000 // does this fix the double jump bug? | yes it does, you were almost there -nicole
 		};
 
 		int calcpushrange()

@@ -2,7 +2,7 @@
 #include "game.h"
 #include "colors.h"
 
-VARP(scoreboard2d, 0, 1, 1); //!!FIXME (3dgui.cpp 1302) - Coal 11/20/20
+VARP(scoreboard2d, 0, 1, 1); //!!FIXME (3dgui.cpp 1302) - Nicole 11/20/20
 
 namespace game
 {

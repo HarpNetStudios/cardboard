@@ -1,6 +1,6 @@
 // client.cpp, mostly network related client game code
 
-// "a maybe is good enough for me" -Coal 02/12/2020
+// "a maybe is good enough for me" -Nicole 02/12/2020
 
 #include "engine.h"
 
