@@ -10,16 +10,16 @@
 #define EXT_PLAYERSTATS                 1
 #define EXT_TEAMSCORE                   2
 struct tscore {
-	oldstring team;
+	cbstring team;
 	int score;
 	tscore() : score(0) {}
 };
 struct extserver {
 	uint ip;
 	int port;
-	oldstring name;
+	cbstring name;
 	int clients, maxclients, gamemode;
-	oldstring map;
+	cbstring map;
 	int gametime, mastermode, gamespeed;
 	bool gamepaused;
 	int protocol, uptime;
@@ -324,7 +324,7 @@ void processservinfo()
 						es->extclients.add(ec);
 					}
 					ec->ping = getint(p);
-					oldstring strdata;
+					cbstring strdata;
 					getstring(strdata, p);
 					strncpy(ec->name, strdata, MAXNAMELEN + 1);
 					getstring(strdata, p);
@@ -332,10 +332,8 @@ void processservinfo()
 					ec->frags = getint(p);
 					ec->flags = getint(p);
 					ec->deaths = getint(p);
-					ec->teamkills = getint(p);
 					ec->accuracy = getint(p);
 					ec->health = getint(p);
-					ec->armour = getint(p);
 					ec->gunselect = getint(p);
 					ec->privilege = getint(p);
 					ec->state = getint(p);
@@ -356,7 +354,7 @@ void processservinfo()
 					getint(p); // gamemode
 					while (p.remaining()) {
 						tscore* score = new tscore;
-						oldstring t;
+						cbstring t;
 						getstring(t, p);
 						filtertext(score->team, t, false);
 						score->score = getint(p);
@@ -390,7 +388,7 @@ void processservinfo()
 				es->gamepaused = getint(p);
 				es->gamespeed = getint(p);
 			}
-			oldstring map, name;
+			cbstring map, name;
 			getstring(map, p);
 			getstring(name, p);
 			filtertext(es->map, map, false);
@@ -539,7 +537,7 @@ bool sortteams(tscore* a, tscore* b) {
 void extservclients(int i)
 {
 	vector<char> buf;
-	oldstring cn;
+	cbstring cn;
 	int numclients = 0;
 	if (!extservers.inrange(i) || !extservers[i]) return;
 	extserver* es = extservers[i];
@@ -557,7 +555,7 @@ ICOMMAND(extservclients, "i", (int* i), extservclients(*i));
 void extservteams(int i)
 {
 	vector<char> buf;
-	oldstring cn;
+	cbstring cn;
 	int numclients = 0;
 	if (!extservers.inrange(i) || !extservers[i]) return;
 	extserver* es = extservers[i];

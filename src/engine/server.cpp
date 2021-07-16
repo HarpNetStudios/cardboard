@@ -45,11 +45,25 @@ void logoutf(const char *fmt, ...)
 	va_end(args);
 }
 
+time_t walltime = 0;
+VARP(logtime, 0, 1, 1);
 
 static void writelog(FILE *file, const char *buf)
 {
 	static uchar ubuf[512];
 	size_t len = strlen(buf), carry = 0;
+	if(isdedicatedserver() && logtime)
+	{
+		if(!walltime) { walltime = time(NULL); walltime -= totalmillis/1000; if(!walltime) walltime++; }
+		time_t walloffset = walltime + totalmillis/1000;
+		struct tm *localvals = localtime(&walloffset);
+		static cbstring ts;
+		if(localvals)
+		{
+			int tslen = strftime(ts, sizeof(ts), "[%Y-%m-%d %H:%M:%S] ", localvals);
+			if(tslen) fwrite(ts, 1, tslen, file);
+		}
+	}
 	while(carry < len)
 	{
 		size_t numu = encodeutf8(ubuf, sizeof(ubuf)-1, &((const uchar *)buf)[carry], len - carry, &carry);
@@ -64,12 +78,12 @@ static void writelogv(FILE *file, const char *fmt, va_list args)
 	vformatstring(buf, fmt, args, sizeof(buf));
 	writelog(file, buf);
 }
-
+ 
 #ifdef STANDALONE
-void fatal(const char *fmt, ...)
-{
+void fatal(const char *fmt, ...) 
+{ 
 	void cleanupserver();
-	cleanupserver();
+	cleanupserver(); 
 	defvformatstring(msg,fmt,fmt);
 	if(logfile) logoutf("%s", msg);
 #ifdef WIN32
@@ -78,7 +92,7 @@ void fatal(const char *fmt, ...)
 	fprintf(stderr, "server error: %s\n", msg);
 #endif
 	closelogfile();
-	exit(EXIT_FAILURE);
+	exit(EXIT_FAILURE); 
 }
 
 void conoutfv(int type, const char *fmt, va_list args)
@@ -96,14 +110,14 @@ struct client                   // server side version of "dynent" type
 	int type;
 	int num;
 	ENetPeer *peer;
-	oldstring hostname;
+	cbstring hostname;
 	void *info;
 };
 
 vector<client *> clients;
 
 ENetHost *serverhost = NULL;
-int laststatus = 0;
+int laststatus = 0; 
 ENetSocket pongsock = ENET_SOCKET_NULL, lansock = ENET_SOCKET_NULL;
 
 int localclients = 0, nonlocalclients = 0;
@@ -217,20 +231,20 @@ ENetPacket *sendf(int cn, int chan, const char *format, ...)
 		{
 			int n = va_arg(args, int);
 			int *v = va_arg(args, int *);
-			for(int i = 0; i < int(n); ++i) putint(p, v[i]);
+			loopi(n) putint(p, v[i]);
 			break;
 		}
 
-		case 'i':
+		case 'i': 
 		{
 			int n = isdigit(*format) ? *format++-'0' : 1;
-			for(int i = 0; i < int(n); ++i) putint(p, va_arg(args, int));
+			loopi(n) putint(p, va_arg(args, int));
 			break;
 		}
 		case 'f':
 		{
 			int n = isdigit(*format) ? *format++-'0' : 1;
-			for(int i = 0; i < int(n); ++i) putfloat(p, (float)va_arg(args, double));
+			loopi(n) putfloat(p, (float)va_arg(args, double));
 			break;
 		}
 		case 's': sendstring(va_arg(args, const char *), p); break;
@@ -268,7 +282,7 @@ ENetPacket *sendfile(int cn, int chan, stream *file, const char *format, ...)
 		case 'i':
 		{
 			int n = isdigit(*format) ? *format++-'0' : 1;
-			for(int i = 0; i < int(n); ++i) putint(p, va_arg(args, int));
+			loopi(n) putint(p, va_arg(args, int));
 			break;
 		}
 		case 's': sendstring(va_arg(args, const char *), p); break;
@@ -313,7 +327,7 @@ void disconnect_client(int n, int reason)
 	server::clientdisconnect(n);
 	delclient(clients[n]);
 	const char *msg = disconnectreason(reason);
-	oldstring s;
+	cbstring s;
 	if(msg) formatstring(s, "client (%s) disconnected because: %s", clients[n]->hostname, msg);
 	else formatstring(s, "client (%s) disconnected", clients[n]->hostname);
 	logoutf("%s", s);
@@ -360,7 +374,7 @@ VARN(updatemaster, allowupdatemaster, 0, 1, 1);
 
 void disconnectmaster()
 {
-	if(mastersock != ENET_SOCKET_NULL)
+	if(mastersock != ENET_SOCKET_NULL) 
 	{
 		server::masterdisconnected();
 		enet_socket_destroy(mastersock);
@@ -454,7 +468,7 @@ void processmasterinput()
 		masterinpos = end - masterin.getbuf();
 		input = end;
 		end = (char *)memchr(input, '\n', masterin.length() - masterinpos);
-	}
+	} 
 
 	if(masterinpos >= masterin.length())
 	{
@@ -539,7 +553,7 @@ void checkserversockets()        // reply all server info requests
 
 	ENetBuffer buf;
 	uchar pong[MAXTRANS];
-	for(int i = 0; i < 2; ++i)
+	loopi(2)
 	{
 		ENetSocket sock = i ? lansock : pongsock;
 		if(sock == ENET_SOCKET_NULL || !ENET_SOCKETSET_CHECK(readset, sock)) continue;
@@ -557,8 +571,8 @@ void checkserversockets()        // reply all server info requests
 	{
 		if(!masterconnected)
 		{
-			if(ENET_SOCKETSET_CHECK(readset, mastersock) || ENET_SOCKETSET_CHECK(writeset, mastersock))
-			{
+			if(ENET_SOCKETSET_CHECK(readset, mastersock) || ENET_SOCKETSET_CHECK(writeset, mastersock)) 
+			{ 
 				int error = 0;
 				if(enet_socket_get_option(mastersock, ENET_SOCKOPT_ERROR, &error) < 0 || error)
 				{
@@ -567,9 +581,9 @@ void checkserversockets()        // reply all server info requests
 				}
 				else
 				{
-					masterconnecting = 0;
-					masterconnected = totalmillis ? totalmillis : 1;
-					server::masterconnected();
+					masterconnecting = 0; 
+					masterconnected = totalmillis ? totalmillis : 1; 
+					server::masterconnected(); 
 				}
 			}
 		}
@@ -597,7 +611,7 @@ uint totalsecs = 0;
 void updatetime()
 {
 	static int lastsec = 0;
-	if(totalmillis - lastsec >= 1000)
+	if(totalmillis - lastsec >= 1000) 
 	{
 		int cursecs = (totalmillis - lastsec) / 1000;
 		totalsecs += cursecs;
@@ -607,16 +621,16 @@ void updatetime()
 
 void serverslice(bool dedicated, uint timeout)   // main server update, called from main loop in sp, or from below in dedicated server
 {
-	if(!serverhost)
+	if(!serverhost) 
 	{
 		server::serverupdate();
 		server::sendpackets();
 		return;
 	}
-
+	   
 	// below is network only
 
-	if(dedicated)
+	if(dedicated) 
 	{
 		int millis = (int)enet_time_get();
 		elapsedtime = millis - totalmillis;
@@ -636,10 +650,10 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
 
 	if(!lastupdatemaster || totalmillis-lastupdatemaster>60*60*1000)       // send alive signal to masterserver every hour of uptime
 		updatemasterserver();
-
+	
 	if(totalmillis-laststatus>60*1000)   // display bandwidth stats, useful for server ops
 	{
-		laststatus = totalmillis;
+		laststatus = totalmillis;     
 		if(nonlocalclients || serverhost->totalSentData || serverhost->totalReceivedData) logoutf("status: %d remote clients, %.1f send, %.1f rec (K/sec)", nonlocalclients, serverhost->totalSentData/60.0f/1024, serverhost->totalReceivedData/60.0f/1024);
 		serverhost->totalSentData = serverhost->totalReceivedData = 0;
 	}
@@ -660,9 +674,9 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
 				client &c = addclient(ST_TCPIP);
 				c.peer = event.peer;
 				c.peer->data = &c;
-				oldstring hn;
+				cbstring hn;
 				copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
-				logoutf("client connected (%s)", c.hostname);
+				logoutf("connected: %s (cn %d)", c.hostname, c.num);
 				int reason = server::clientconnect(c.num, c.peer->address.host);
 				if(reason) disconnect_client(c.num, reason);
 				break;
@@ -674,11 +688,11 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
 				if(event.packet->referenceCount==0) enet_packet_destroy(event.packet);
 				break;
 			}
-			case ENET_EVENT_TYPE_DISCONNECT:
+			case ENET_EVENT_TYPE_DISCONNECT: 
 			{
 				client *c = (client *)event.peer->data;
 				if(!c) break;
-				logoutf("disconnected client (%s)", c->hostname);
+				logoutf("disconnected: %s (cn %d)", c->hostname, c->num);
 				server::clientdisconnect(c->num);
 				delclient(c);
 				break;
@@ -699,7 +713,7 @@ void flushserver(bool force)
 void localdisconnect(bool cleanup)
 {
 	bool disconnected = false;
-	loopv(clients) if(clients[i]->type==ST_LOCAL)
+	loopv(clients) if(clients[i]->type==ST_LOCAL) 
 	{
 		server::localdisconnect(i);
 		delclient(clients[i]);
@@ -728,7 +742,7 @@ void localconnect()
 
 #define IDI_ICON1 1
 
-static oldstring apptip = "";
+static cbstring apptip = "";
 static HINSTANCE appinstance = NULL;
 static ATOM wndclass = 0;
 static HWND appwindow = NULL, conwindow = NULL;
@@ -817,7 +831,7 @@ static void writeline(logline &line)
 		size_t numu = encodeutf8(ubuf, sizeof(ubuf), &((uchar *)line.buf)[carry], len - carry, &carry);
 		DWORD written = 0;
 		WriteConsole(outhandle, ubuf, numu, &written, NULL);
-	}
+	}     
 }
 
 static void setupconsole()
@@ -876,7 +890,7 @@ static LRESULT CALLBACK handlemessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 					break;
 				case MENU_SHOWCONSOLE:
 					ShowWindow(conwindow, SW_SHOWNORMAL);
-					ModifyMenu(appmenu, 0, MF_BYPOSITION|MF_STRING, MENU_HIDECONSOLE, "Hide Console");
+					ModifyMenu(appmenu, 0, MF_BYPOSITION|MF_STRING, MENU_HIDECONSOLE, "Hide Console"); 
 					break;
 				case MENU_HIDECONSOLE:
 					ShowWindow(conwindow, SW_HIDE);
@@ -922,7 +936,7 @@ static void setupwindow(const char *title)
 	wc.cbClsExtra = 0;
 	wndclass = RegisterClass(&wc);
 	if(!wndclass) fatal("failed registering window class");
-
+	
 	appwindow = CreateWindow(MAKEINTATOM(wndclass), title, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, HWND_MESSAGE, NULL, appinstance, NULL);
 	if(!appwindow) fatal("failed creating window");
 
@@ -950,7 +964,7 @@ static char *parsecommandline(const char *src, vector<char *> &args)
 	args.add(NULL);
 	return buf;
 }
-
+				
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
 {
@@ -1035,7 +1049,7 @@ bool servererror(bool dedicated, const char *desc)
 		fatal("%s", desc);
 	return false;
 }
-
+  
 bool setuplistenserver(bool dedicated)
 {
 	ENetAddress address = { ENET_HOST_ANY, enet_uint16(serverport <= 0 ? server::serverport() : serverport) };
@@ -1070,13 +1084,13 @@ bool setuplistenserver(bool dedicated)
 
 void initserver(bool listen, bool dedicated)
 {
-	if(dedicated)
+	if(dedicated) 
 	{
 #ifdef WIN32
 		setupwindow("Cardboard Engine server");
 #endif
 	}
-
+	
 	execfile("server-init.cfg", false);
 
 	if(listen) setuplistenserver(dedicated);
@@ -1100,12 +1114,12 @@ void startlistenserver(int *usemaster)
 	if(serverhost) { conoutf(CON_ERROR, "listen server is already running"); return; }
 
 	allowupdatemaster = *usemaster>0 ? 1 : 0;
-
+ 
 	if(!setuplistenserver(false)) return;
-
+	
 	updatemasterserver();
-
-	conoutf("listen server started for %d clients%s", maxclients, allowupdatemaster ? " and listed with master server" : "");
+   
+	conoutf("listen server started for %d clients%s", maxclients, allowupdatemaster ? " and listed with master server" : ""); 
 }
 COMMAND(startlistenserver, "i");
 
@@ -1129,7 +1143,7 @@ bool serveroption(char *opt)
 		case 'u': setvar("serveruprate", atoi(opt+2)); return true;
 		case 'c': setvar("maxclients", atoi(opt+2)); return true;
 		case 'i': setsvar("serverip", opt+2); return true;
-		case 'j': setvar("serverport", atoi(opt+2)); return true;
+		case 'j': setvar("serverport", atoi(opt+2)); return true; 
 		case 'm': setsvar("mastername", opt+2); setvar("updatemaster", mastername[0] ? 1 : 0); return true;
 #ifdef STANDALONE
 		case 'q': logoutf("Using home directory: %s", opt); sethomedir(opt+2); return true;
@@ -1145,7 +1159,7 @@ vector<const char *> gameargs;
 
 #ifdef STANDALONE
 int main(int argc, char **argv)
-{
+{   
 	setlogfile(NULL);
 	if(enet_initialize()<0) fatal("Unable to initialise network module");
 	atexit(enet_deinitialize);

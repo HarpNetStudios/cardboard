@@ -202,4 +202,3 @@ namespace gamepad {
 
 	VARFP(gamepad, 0, 0, 1, setenabled(gamepad));
 }
-

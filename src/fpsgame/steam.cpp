@@ -9,19 +9,39 @@
 
 namespace steam {
 
+	struct CSteamScreenshots
+	{
+	public:
+		CSteamScreenshots();
+
+		STEAM_CALLBACK(CSteamScreenshots, OnScreenshotRequested, ScreenshotRequested_t,
+			m_CallbackScreenshotRequested);
+	};
+
+	CSteamScreenshots::CSteamScreenshots() :
+		m_CallbackScreenshotRequested(this, &CSteamScreenshots::OnScreenshotRequested)
+	{
+		SteamScreenshots()->HookScreenshots(true);
+	}
+	
+	void CSteamScreenshots::OnScreenshotRequested(ScreenshotRequested_t* pCallback)
+	{
+		screenshot(NULL); // this is dumb, but apparently it works, so who cares -Y
+	}
+
 	struct CSteamAchievements
 	{
 	private:
 		int64 m_iAppID; // Our current AppID
-		Achievement_t *m_pAchievements; // Achievements data
+		Achievement_t* m_pAchievements; // Achievements data
 		int m_iNumAchievements; // The number of Achievements
 		bool m_bInitialized; // Have we called Request stats and received the callback?
 
 	public:
-		CSteamAchievements(Achievement_t *Achievements, int NumAchievements);
+		CSteamAchievements(Achievement_t* Achievements, int NumAchievements);
 
 		bool RequestStats();
-		bool SetAchievement(const char *ID);
+		bool SetAchievement(const char* ID);
 
 		STEAM_CALLBACK(CSteamAchievements, OnUserStatsReceived, UserStatsReceived_t,
 			m_CallbackUserStatsReceived);
@@ -31,7 +51,7 @@ namespace steam {
 			m_CallbackAchievementStored);
 	};
 
-	CSteamAchievements::CSteamAchievements(Achievement_t *Achievements, int NumAchievements) :
+	CSteamAchievements::CSteamAchievements(Achievement_t* Achievements, int NumAchievements) :
 		m_iAppID(0),
 		m_bInitialized(false),
 		m_CallbackUserStatsReceived(this, &CSteamAchievements::OnUserStatsReceived),
@@ -60,7 +80,7 @@ namespace steam {
 		return SteamUserStats()->RequestCurrentStats();
 	}
 
-	bool CSteamAchievements::SetAchievement(const char *ID)
+	bool CSteamAchievements::SetAchievement(const char* ID)
 	{
 		// Have we received a call back from Steam yet?
 		if (m_bInitialized)
@@ -183,6 +203,11 @@ namespace steam {
 
 	int getSteamID() {
 		return SteamUser()->GetSteamID().ConvertToUint64();
+	}
+
+	void addScreenshot(const char* path, int width, int height)
+	{
+		SteamScreenshots()->AddScreenshotToLibrary(path, NULL, width, height);
 	}
 
 	// this is fucking stupid, but i'm sleep deprived and this seemed like the easiest way -Y

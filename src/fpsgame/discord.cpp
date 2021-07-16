@@ -49,7 +49,7 @@ namespace discord
 	void updatePresence(int gamestate, const char* modename, physent* d, bool force)
 	{
 		if((globalgamestate != gamestate || force) && discord::connected()) {
-			oldstring partykey;
+			cbstring partykey;
 			discord::Activity activity{};
 
 			switch (gamestate)

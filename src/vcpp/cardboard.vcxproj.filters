@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="..\shared\cJSON.c">
+      <Filter>shared</Filter>
+    </ClCompile>
     <ClCompile Include="..\shared\crypto.cpp">
       <Filter>shared</Filter>
     </ClCompile>
@@ -8,6 +11,9 @@
       <Filter>shared</Filter>
     </ClCompile>
     <ClCompile Include="..\shared\glemu.cpp">
+      <Filter>shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\microtar.c">
       <Filter>shared</Filter>
     </ClCompile>
     <ClCompile Include="..\shared\pch.cpp">
@@ -22,155 +28,14 @@
     <ClCompile Include="..\shared\zip.cpp">
       <Filter>shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\3dgui.cpp">
-      <Filter>engine</Filter>
+    <ClCompile Include="..\shared\b64\decode.c">
+      <Filter>shared\b64</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\bih.cpp">
-      <Filter>engine</Filter>
+    <ClCompile Include="..\shared\b64\encode.c">
+      <Filter>shared\b64</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\blend.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\blob.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\client.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\command.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\console.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\decal.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\dynlight.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\glare.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\grass.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\lightmap.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\main.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\material.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\menus.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\normal.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\octa.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\octaedit.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\octarender.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\pch.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\physics.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\pvs.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\rendergl.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\rendermodel.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\renderparticles.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\rendersky.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\rendertext.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\renderva.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\serverbrowser.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\server.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\shader.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\shadowmap.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\sound.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\texture.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\water.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\world.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\worldio.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\ai.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\client.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\entities.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\fps.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\pch.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\render.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\scoreboard.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\server.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\waypoint.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\weapon.cpp">
-      <Filter>fpsgame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\translate.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\raw.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\microtar.c">
-      <Filter>shared</Filter>
+    <ClCompile Include="..\shared\b64\buffer.c">
+      <Filter>shared\b64</Filter>
     </ClCompile>
     <ClCompile Include="..\shared\discord\achievement_manager.cpp">
       <Filter>shared\discord</Filter>
@@ -214,31 +79,166 @@
     <ClCompile Include="..\shared\discord\voice_manager.cpp">
       <Filter>shared\discord</Filter>
     </ClCompile>
+    <ClCompile Include="..\engine\3dgui.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\bih.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\blend.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\blob.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\client.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\command.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\console.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\decal.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\dynlight.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\gamepad.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\glare.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\grass.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\lightmap.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\main.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\material.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\menus.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\normal.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\octa.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\octaedit.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\octarender.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\pch.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\physics.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\pvs.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\raw.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\rendergl.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\rendermodel.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\renderparticles.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\rendersky.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\rendertext.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\renderva.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\serverbrowser.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\server.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\shader.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\shadowmap.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\sound.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\texture.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\translate.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\water.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\world.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\worldio.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fpsgame\ai.cpp">
+      <Filter>fpsgame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fpsgame\client.cpp">
+      <Filter>fpsgame</Filter>
+    </ClCompile>
     <ClCompile Include="..\fpsgame\discord.cpp">
       <Filter>fpsgame</Filter>
     </ClCompile>
-    <ClCompile Include="..\shared\cJSON.c">
-      <Filter>shared</Filter>
+    <ClCompile Include="..\fpsgame\entities.cpp">
+      <Filter>fpsgame</Filter>
     </ClCompile>
-    <ClCompile Include="..\shared\b64\decode.c">
-      <Filter>shared\b64</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\b64\encode.c">
-      <Filter>shared\b64</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\b64\buffer.c">
-      <Filter>shared\b64</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fpsgame\weaponstats.cpp">
+    <ClCompile Include="..\fpsgame\fps.cpp">
       <Filter>fpsgame</Filter>
     </ClCompile>
     <ClCompile Include="..\fpsgame\fragmessages.cpp">
       <Filter>fpsgame</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\gamepad.cpp">
-      <Filter>engine</Filter>
+    <ClCompile Include="..\fpsgame\pch.cpp">
+      <Filter>fpsgame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fpsgame\render.cpp">
+      <Filter>fpsgame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fpsgame\scoreboard.cpp">
+      <Filter>fpsgame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fpsgame\server.cpp">
+      <Filter>fpsgame</Filter>
     </ClCompile>
     <ClCompile Include="..\fpsgame\steam.cpp">
+      <Filter>fpsgame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fpsgame\waypoint.cpp">
+      <Filter>fpsgame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fpsgame\weapon.cpp">
+      <Filter>fpsgame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fpsgame\weaponstats.cpp">
       <Filter>fpsgame</Filter>
     </ClCompile>
   </ItemGroup>
@@ -247,6 +247,9 @@
       <Filter>shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\cube.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord_game_sdk.h">
       <Filter>shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\ents.h">
@@ -269,6 +272,63 @@
     </ClInclude>
     <ClInclude Include="..\shared\tools.h">
       <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\b64\b64.h">
+      <Filter>shared\b64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\achievement_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\activity_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\application_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\core.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\discord.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\discord_game_sdk.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\event.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\ffi.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\image_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\lobby_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\network_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\overlay_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\relationship_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\storage_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\store_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\types.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\user_manager.h">
+      <Filter>shared\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\discord\voice_manager.h">
+      <Filter>shared\discord</Filter>
     </ClInclude>
     <ClInclude Include="..\engine\animmodel.h">
       <Filter>engine</Filter>
@@ -354,91 +414,31 @@
     <ClInclude Include="..\fpsgame\collect.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
+    <ClInclude Include="..\fpsgame\colors.h">
+      <Filter>fpsgame</Filter>
+    </ClInclude>
     <ClInclude Include="..\fpsgame\ctf.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
     <ClInclude Include="..\fpsgame\extinfo.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
+    <ClInclude Include="..\fpsgame\extserver.h">
+      <Filter>fpsgame</Filter>
+    </ClInclude>
     <ClInclude Include="..\fpsgame\game.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
-    <ClInclude Include="..\fpsgame\weapon.h">
+    <ClInclude Include="..\fpsgame\race.h">
+      <Filter>fpsgame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fpsgame\steam.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
     <ClInclude Include="..\engine\translate.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\microtar.h">
-      <Filter>shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord_game_sdk.h">
-      <Filter>shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\achievement_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\activity_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\application_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\core.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\discord.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\discord_game_sdk.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\event.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\ffi.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\image_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\lobby_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\network_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\overlay_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\relationship_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\storage_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\store_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\types.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\user_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\discord\voice_manager.h">
-      <Filter>shared\discord</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\cJSON.h">
-      <Filter>shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\b64\b64.h">
-      <Filter>shared\b64</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fpsgame\extserver.h">
-      <Filter>fpsgame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fpsgame\colors.h">
+    <ClInclude Include="..\fpsgame\weapon.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
     <ClInclude Include="..\fpsgame\weaponstats.h">
@@ -447,13 +447,13 @@
     <ClInclude Include="..\fpsgame\weaponstats_type.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared\cJSON.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\microtar.h">
+      <Filter>shared</Filter>
+    </ClInclude>
     <ClInclude Include="..\fpsgame\fragmessages.h">
-      <Filter>fpsgame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fpsgame\race.h">
-      <Filter>fpsgame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fpsgame\steam.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
   </ItemGroup>
@@ -568,7 +568,6 @@
     <None Include="..\..\docs\models.html">
       <Filter>docs</Filter>
     </None>
-    <None Include="..\Makefile" />
     <None Include="..\..\launcher.json">
       <Filter>config</Filter>
     </None>
@@ -589,6 +588,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\ADDING_REMOVING_FILES.txt" />
+    <Text Include="..\..\CMakeLists.txt" />
   </ItemGroup>
 </Project>

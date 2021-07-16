@@ -22,6 +22,7 @@
 #include <string>
 #include <thread>
 #include <mutex>
+#include <regex>
 
 #ifdef WIN32
   #define WIN32_LEAN_AND_MEAN
@@ -31,25 +32,25 @@
   #define _WIN32_WINNT 0x0501
   #include "windows.h"
   #ifndef _WINDOWS
-    #define _WINDOWS
+	#define _WINDOWS
   #endif
   #ifndef __GNUC__
-    #include <eh.h>
-    #include <dbghelp.h>
-    #include <intrin.h>
+	#include <eh.h>
+	#include <dbghelp.h>
+	#include <intrin.h>
   #endif
   #define ZLIB_DLL
 #endif
 
 #ifndef STANDALONE
   #ifdef __APPLE__
-    #include "SDL.h"
-    #define GL_GLEXT_LEGACY
-    #define __glext_h_
-    #include <OpenGL/gl.h>
+	#include "SDL.h"
+	#define GL_GLEXT_LEGACY
+	#define __glext_h_
+	#include <OpenGL/gl.h>
   #else
-    #include <SDL.h>
-    #include <SDL_opengl.h>
+	#include <SDL.h>
+	#include <SDL_opengl.h>
   #endif
   #include <SDL_gamecontroller.h>
 #endif

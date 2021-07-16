@@ -8,37 +8,38 @@ extern int curframetime;     // scaled duration since last frame
 extern int starttime;        // time from start
 extern uint totalsecs;
 extern int gamespeed, paused;
+extern time_t walltime;      // wall time at engine startup (add totalmillis/1000 for current wall time)
 extern int globalgamestate;  // game state, set by and for discord
 
 #define HNAPI "harpnetstudios.com/hnid/api/v1"
 
 enum
 {
-    MATF_INDEX_SHIFT  = 0,
-    MATF_VOLUME_SHIFT = 2,
-    MATF_CLIP_SHIFT   = 5,
-    MATF_FLAG_SHIFT   = 8,
+	MATF_INDEX_SHIFT  = 0,
+	MATF_VOLUME_SHIFT = 2,
+	MATF_CLIP_SHIFT   = 5,
+	MATF_FLAG_SHIFT   = 8,
 
-    MATF_INDEX  = 3 << MATF_INDEX_SHIFT,
-    MATF_VOLUME = 7 << MATF_VOLUME_SHIFT,
-    MATF_CLIP   = 7 << MATF_CLIP_SHIFT,
-    MATF_FLAGS  = 0xFF << MATF_FLAG_SHIFT
+	MATF_INDEX  = 3 << MATF_INDEX_SHIFT,
+	MATF_VOLUME = 7 << MATF_VOLUME_SHIFT,
+	MATF_CLIP   = 7 << MATF_CLIP_SHIFT,
+	MATF_FLAGS  = 0xFF << MATF_FLAG_SHIFT
 };
 
 enum // cube empty-space materials
 {
-    MAT_AIR       = 0,                      // the default, fill the empty space with air
-    MAT_WATER     = 1 << MATF_VOLUME_SHIFT, // fill with water, showing waves at the surface
-    MAT_LAVA      = 2 << MATF_VOLUME_SHIFT, // fill with lava
-    MAT_GLASS     = 3 << MATF_VOLUME_SHIFT, // behaves like clip but is blended blueish
+	MAT_AIR       = 0,                      // the default, fill the empty space with air
+	MAT_WATER     = 1 << MATF_VOLUME_SHIFT, // fill with water, showing waves at the surface
+	MAT_LAVA      = 2 << MATF_VOLUME_SHIFT, // fill with lava
+	MAT_GLASS     = 3 << MATF_VOLUME_SHIFT, // behaves like clip but is blended blueish
 
-    MAT_NOCLIP    = 1 << MATF_CLIP_SHIFT,  // collisions always treat cube as empty
-    MAT_CLIP      = 2 << MATF_CLIP_SHIFT,  // collisions always treat cube as solid
-    MAT_GAMECLIP  = 3 << MATF_CLIP_SHIFT,  // game specific clip material
+	MAT_NOCLIP    = 1 << MATF_CLIP_SHIFT,  // collisions always treat cube as empty
+	MAT_CLIP      = 2 << MATF_CLIP_SHIFT,  // collisions always treat cube as solid
+	MAT_GAMECLIP  = 3 << MATF_CLIP_SHIFT,  // game specific clip material
 	MAT_SPACECLIP = 4 << MATF_CLIP_SHIFT,  // disables spacepack
 
-    MAT_DEATH     = 1 << MATF_FLAG_SHIFT,  // force player suicide
-    MAT_ALPHA     = 4 << MATF_FLAG_SHIFT,  // alpha blended
+	MAT_DEATH     = 1 << MATF_FLAG_SHIFT,  // force player suicide
+	MAT_ALPHA     = 4 << MATF_FLAG_SHIFT,  // alpha blended
 	MAT_JUMPRESET = 8 << MATF_FLAG_SHIFT,  // resets double jump
 };
 
@@ -71,27 +72,27 @@ enum { EDIT_FACE = 0, EDIT_TEX, EDIT_MAT, EDIT_FLIP, EDIT_COPY, EDIT_PASTE, EDIT
 
 struct selinfo
 {
-    int corner;
-    int cx, cxs, cy, cys;
-    ivec o, s;
-    int grid, orient;
-    selinfo() : corner(0), cx(0), cxs(0), cy(0), cys(0), o(0, 0, 0), s(0, 0, 0), grid(8), orient(0) {}
-    int size() const    { return s.x*s.y*s.z; }
-    int us(int d) const { return s[d]*grid; }
-    bool operator==(const selinfo &sel) const { return o==sel.o && s==sel.s && grid==sel.grid && orient==sel.orient; }
-    bool validate()
-    {
-        extern int worldsize;
-        if(grid <= 0 || grid >= worldsize) return false;
-        if(o.x >= worldsize || o.y >= worldsize || o.z >= worldsize) return false;
-        if(o.x < 0) { s.x -= (grid - 1 - o.x)/grid; o.x = 0; } 
-        if(o.y < 0) { s.y -= (grid - 1 - o.y)/grid; o.y = 0; } 
-        if(o.z < 0) { s.z -= (grid - 1 - o.z)/grid; o.z = 0; } 
-        s.x = clamp(s.x, 0, (worldsize - o.x)/grid);
-        s.y = clamp(s.y, 0, (worldsize - o.y)/grid);
-        s.z = clamp(s.z, 0, (worldsize - o.z)/grid);
-        return s.x > 0 && s.y > 0 && s.z > 0;
-    }
+	int corner;
+	int cx, cxs, cy, cys;
+	ivec o, s;
+	int grid, orient;
+	selinfo() : corner(0), cx(0), cxs(0), cy(0), cys(0), o(0, 0, 0), s(0, 0, 0), grid(8), orient(0) {}
+	int size() const    { return s.x*s.y*s.z; }
+	int us(int d) const { return s[d]*grid; }
+	bool operator==(const selinfo &sel) const { return o==sel.o && s==sel.s && grid==sel.grid && orient==sel.orient; }
+	bool validate()
+	{
+		extern int worldsize;
+		if(grid <= 0 || grid >= worldsize) return false;
+		if(o.x >= worldsize || o.y >= worldsize || o.z >= worldsize) return false;
+		if(o.x < 0) { s.x -= (grid - 1 - o.x)/grid; o.x = 0; } 
+		if(o.y < 0) { s.y -= (grid - 1 - o.y)/grid; o.y = 0; } 
+		if(o.z < 0) { s.z -= (grid - 1 - o.z)/grid; o.z = 0; } 
+		s.x = clamp(s.x, 0, (worldsize - o.x)/grid);
+		s.y = clamp(s.y, 0, (worldsize - o.y)/grid);
+		s.z = clamp(s.z, 0, (worldsize - o.z)/grid);
+		return s.x > 0 && s.y > 0 && s.z > 0;
+	}
 };
 
 struct editinfo;
@@ -198,21 +199,21 @@ static inline void loopiter(ident *id, identstack &stack, const char *s) { tagva
 
 enum
 {
-    CON_INFO  = 1<<0,
-    CON_WARN  = 1<<1,
-    CON_ERROR = 1<<2,
-    CON_DEBUG = 1<<3,
-    CON_INIT  = 1<<4,
-    CON_ECHO  = 1<<5,
+	CON_INFO  = 1<<0,
+	CON_WARN  = 1<<1,
+	CON_ERROR = 1<<2,
+	CON_DEBUG = 1<<3,
+	CON_INIT  = 1<<4,
+	CON_ECHO  = 1<<5,
 
-    CON_FLAGS = 0xFFFF,
-    CON_TAG_SHIFT = 16,
-    CON_TAG_MASK = (0x7FFF << CON_TAG_SHIFT)
+	CON_FLAGS = 0xFFFF,
+	CON_TAG_SHIFT = 16,
+	CON_TAG_MASK = (0x7FFF << CON_TAG_SHIFT)
 };
 
 extern void conoutf(const char *s, ...) PRINTFARGS(1, 2);
 extern void conoutf(int type, const char *s, ...) PRINTFARGS(2, 3);
-extern void conoutf(int type, int tag, const char* s, ...) PRINTFARGS(3, 4);
+extern void conoutf(int type, int tag, const char *s, ...) PRINTFARGS(3, 4);
 extern void conoutfv(int type, const char *fmt, va_list args);
 
 extern FILE *getlogfile();
@@ -226,7 +227,6 @@ extern vec menuinfrontofplayer();
 extern void newgui(char *name, char *contents, char *header = NULL, char *init = NULL);
 extern void showgui(const char *name);
 extern int cleargui(int n = 0);
-extern int scoreboard2d;
 
 // octa
 extern int lookupmaterial(const vec &o);
@@ -234,13 +234,13 @@ extern int lookupmaterial(const vec &o);
 static inline bool insideworld(const vec &o)
 {
 	extern int worldsize;
-    return o.x>=0 && o.x<worldsize && o.y>=0 && o.y<worldsize && o.z>=0 && o.z<worldsize;
+	return o.x>=0 && o.x<worldsize && o.y>=0 && o.y<worldsize && o.z>=0 && o.z<worldsize;
 }
 
 static inline bool insideworld(const ivec &o)
 {
 	extern int worldsize;
-    return uint(o.x)<uint(worldsize) && uint(o.y)<uint(worldsize) && uint(o.z)<uint(worldsize);
+	return uint(o.x)<uint(worldsize) && uint(o.y)<uint(worldsize) && uint(o.z)<uint(worldsize);
 }
 
 // world
@@ -279,31 +279,31 @@ extern void text_posf(const char *str, int cursor, float &cx, float &cy, int max
 
 static inline int text_width(const char *str)
 {
-    return int(ceil(text_widthf(str)));
+	return int(ceil(text_widthf(str)));
 }
 
 static inline void text_bounds(const char *str, int &width, int &height, int maxwidth = -1)
 {
-    float widthf, heightf;
-    text_boundsf(str, widthf, heightf, maxwidth);
-    width = int(ceil(widthf));
-    height = int(ceil(heightf));
+	float widthf, heightf;
+	text_boundsf(str, widthf, heightf, maxwidth);
+	width = int(ceil(widthf));
+	height = int(ceil(heightf));
 }
 
 static inline void text_pos(const char *str, int cursor, int &cx, int &cy, int maxwidth)
 {
-    float cxf, cyf;
-    text_posf(str, cursor, cxf, cyf, maxwidth);
-    cx = int(cxf);
-    cy = int(cyf);
+	float cxf, cyf;
+	text_posf(str, cursor, cxf, cyf, maxwidth);
+	cx = int(cxf);
+	cy = int(cyf);
 }
 
 // renderva
 enum
 {
-    DL_SHRINK = 1<<0,
-    DL_EXPAND = 1<<1,
-    DL_FLASH  = 1<<2
+	DL_SHRINK = 1<<0,
+	DL_EXPAND = 1<<1,
+	DL_FLASH  = 1<<2
 };
 
 extern void adddynlight(const vec &o, float radius, const vec &color, int fade = 0, int peak = 0, int flags = 0, float initradius = 0, const vec &initcolor = vec(0, 0, 0), physent *owner = NULL);
@@ -321,7 +321,6 @@ extern vec calcmodelpreviewpos(const vec &radius, float &yaw);
 
 extern void damageblend(int n);
 extern void damagecompass(int n, const vec &loc);
-extern int damageblendmillis;
 extern void cleardamagescreen();
 
 extern vec minimapcenter, minimapradius, minimapscale;
@@ -338,23 +337,24 @@ extern void pushhudtranslate(float tx, float ty, float sx = 0, float sy = 0);
 // renderparticles
 enum
 {
-    PART_BLOOD = 0,
-    PART_WATER,
-    PART_SMOKE,
-    PART_STEAM,
-    PART_FLAME,
-    PART_FIREBALL1, PART_FIREBALL2, PART_FIREBALL3,
-    PART_STREAK, PART_LIGHTNING,
-    PART_EXPLOSION, PART_EXPLOSION_BLUE,
-    PART_SPARK, PART_EDIT,
-    PART_SNOW,
-    PART_MUZZLE_FLASH1, PART_MUZZLE_FLASH2, PART_MUZZLE_FLASH3,
-    PART_HUD_ICON,
-    PART_HUD_ICON_GREY,
-    PART_TEXT,
-    PART_METER, PART_METER_VS,
-    PART_CHAIN,
-    PART_LENS_FLARE
+	PART_BLOOD = 0,
+	PART_WATER,
+	PART_SMOKE,
+	PART_STEAM,
+	PART_FLAME,
+	PART_FIREBALL1, PART_FIREBALL2, PART_FIREBALL3,
+	PART_STREAK, PART_LIGHTNING,
+	PART_EXPLOSION, PART_EXPLOSION_BLUE,
+	PART_SPARK, PART_EDIT,
+	PART_SNOW,
+	PART_MUZZLE_FLASH1, PART_MUZZLE_FLASH2, PART_MUZZLE_FLASH3,
+	PART_HUD_ICON,
+	PART_HUD_ICON_GREY,
+	PART_TEXT,
+	PART_TEXT_ICON,
+	PART_METER, PART_METER_VS,
+	PART_CHAIN,
+	PART_LENS_FLARE
 };
 
 extern bool canaddparticles();
@@ -362,8 +362,9 @@ extern void regular_particle_splash(int type, int num, int fade, const vec &p, i
 extern void regular_particle_flame(int type, const vec &p, float radius, float height, int color, int density = 3, float scale = 2.0f, float speed = 200.0f, float fade = 600.0f, int gravity = -15);
 extern void particle_splash(int type, int num, int fade, const vec &p, int color = 0xFFFFFF, float size = 1.0f, int radius = 150, int gravity = 2);
 extern void particle_trail(int type, int fade, const vec &from, const vec &to, int color = 0xFFFFFF, float size = 1.0f, int gravity = 20);
-extern void particle_text(const vec &s, const char *t, int type, int fade = 2000, int color = 0xFFFFFF, float size = 2.0f, int gravity = 0, int maxdist = 0);
-extern void particle_textcopy(const vec &s, const char *t, int type, int fade = 2000, int color = 0xFFFFFF, float size = 2.0f, int gravity = 0, int maxdist = 0);
+extern void particle_text(const vec &s, const char *t, int type, int fade = 2000, int color = 0xFFFFFF, float size = 2.0f, int gravity = 0, int offset = 0);
+extern void particle_textcopy(const vec &s, const char *t, int type, int fade = 2000, int color = 0xFFFFFF, float size = 2.0f, int gravity = 0);
+extern void particle_texticon(const vec &s, int ix, int iy, float offset, int type, int fade = 2000, int color = 0xFFFFFF, float size = 2.0f, int gravity = 0);
 extern void particle_icon(const vec &s, int ix, int iy, int type, int fade = 2000, int color = 0xFFFFFF, float size = 2.0f, int gravity = 0);
 extern void particle_meter(const vec &s, float val, int type, int fade = 1, int color = 0xFFFFFF, int color2 = 0xFFFFF, float size = 2.0f);
 extern void particle_flare(const vec &p, const vec &dest, int fade, int type, int color = 0xFFFFFF, float size = 0.28f, physent *owner = NULL);
@@ -373,9 +374,9 @@ extern void removetrackedparticles(physent *owner = NULL);
 // decal
 enum
 {
-    DECAL_SCORCH = 0,
-    DECAL_BLOOD,
-    DECAL_BULLET
+	DECAL_SCORCH = 0,
+	DECAL_BLOOD,
+	DECAL_BULLET
 };
 
 extern void adddecal(int type, const vec &center, const vec &surface, float radius, const bvec &color = bvec(0xFF, 0xFF, 0xFF), int info = 0);
@@ -419,9 +420,9 @@ extern void findplayerspawn(dynent *d, int forceent = -1, int tag = 0);
 // sound
 enum
 {
-	SND_MAP = 1 << 0,
-	SND_NO_ALT = 1 << 1,
-	SND_USE_ALT = 1 << 2
+	SND_MAP     = 1<<0,
+	SND_NO_ALT  = 1<<1,
+	SND_USE_ALT = 1<<2
 };
 
 extern int playsound(int n, const vec *loc = NULL, extentity *ent = NULL, int flags = 0, int loops = 0, int fade = 0, int chanid = -1, int radius = 0, int expire = -1);
@@ -442,14 +443,14 @@ enum { MDL_CULL_VFC = 1<<0, MDL_CULL_DIST = 1<<1, MDL_CULL_OCCLUDED = 1<<2, MDL_
 struct model;
 struct modelattach
 {
-    const char *tag, *name;
-    int anim, basetime;
-    vec *pos;
-    model *m;
+	const char *tag, *name;
+	int anim, basetime;
+	vec *pos;
+	model *m;
 
-    modelattach() : tag(NULL), name(NULL), anim(-1), basetime(0), pos(NULL), m(NULL) {}
-    modelattach(const char *tag, const char *name, int anim = -1, int basetime = 0) : tag(tag), name(name), anim(anim), basetime(basetime), pos(NULL), m(NULL) {}
-    modelattach(const char *tag, vec *pos) : tag(tag), name(NULL), anim(-1), basetime(0), pos(pos), m(NULL) {}
+	modelattach() : tag(NULL), name(NULL), anim(-1), basetime(0), pos(NULL), m(NULL) {}
+	modelattach(const char *tag, const char *name, int anim = -1, int basetime = 0) : tag(tag), name(name), anim(anim), basetime(basetime), pos(NULL), m(NULL) {}
+	modelattach(const char *tag, vec *pos) : tag(tag), name(NULL), anim(-1), basetime(0), pos(pos), m(NULL) {}
 };
 
 extern void startmodelbatches();
@@ -515,7 +516,7 @@ extern bool resolverwait(const char* name, ENetAddress* address);
 
 // crypto
 extern void genprivkey(const char *seed, vector<char> &privstr, vector<char> &pubstr);
-extern bool calcpubkey(const char* privstr, vector<char>& pubstr);
+extern bool calcpubkey(const char *privstr, vector<char> &pubstr);
 extern bool hashstring(const char *str, char *result, int maxlen);
 extern bool answerchallenge(const char *privstr, const char *challenge, vector<char> &answerstr);
 extern void *parsepubkey(const char *pubstr);
@@ -534,70 +535,70 @@ enum { EDITORFOCUSED = 1, EDITORUSED, EDITORFOREVER };
 
 struct g3d_gui
 {
-    virtual ~g3d_gui() {}
+	virtual ~g3d_gui() {}
 
-    virtual void start(int starttime, float basescale, int *tab = NULL, bool allowinput = true) = 0;
-    virtual void end() = 0;
+	virtual void start(int starttime, float basescale, int *tab = NULL, bool allowinput = true) = 0;
+	virtual void end() = 0;
 
-    virtual int text(const char *text, int color, const char *icon = NULL) = 0;
-    int textf(const char *fmt, int color, const char *icon = NULL, ...) PRINTFARGS(2, 5)
-    {
-        defvformatstring(str, icon, fmt);
-        return text(str, color, icon);
-    }
-    virtual int button(const char *text, int color, const char *icon = NULL) = 0;
-    int buttonf(const char *fmt, int color, const char *icon = NULL, ...) PRINTFARGS(2, 5)
-    {
-        defvformatstring(str, icon, fmt);
-        return button(str, color, icon);
-    }
-    virtual int title(const char *text, int color, const char *icon = NULL) = 0;
-    int titlef(const char *fmt, int color, const char *icon = NULL, ...) PRINTFARGS(2, 5)
-    {
-        defvformatstring(str, icon, fmt);
-        return title(str, color, icon);
-    }
-    virtual void background(int color, int parentw = 0, int parenth = 0) = 0;
+	virtual int text(const char *text, int color, const char *icon = NULL) = 0;
+	int textf(const char *fmt, int color, const char *icon = NULL, ...) PRINTFARGS(2, 5)
+	{
+		defvformatstring(str, icon, fmt);
+		return text(str, color, icon);
+	}
+	virtual int button(const char *text, int color, const char *icon = NULL) = 0;
+	int buttonf(const char *fmt, int color, const char *icon = NULL, ...) PRINTFARGS(2, 5)
+	{
+		defvformatstring(str, icon, fmt);
+		return button(str, color, icon);
+	}
+	virtual int title(const char *text, int color, const char *icon = NULL) = 0;
+	int titlef(const char *fmt, int color, const char *icon = NULL, ...) PRINTFARGS(2, 5)
+	{
+		defvformatstring(str, icon, fmt);
+		return title(str, color, icon);
+	}
+	virtual void background(int color, int parentw = 0, int parenth = 0) = 0;
 
-    virtual void pushlist() {}
-    virtual void poplist() {}
+	virtual void pushlist() {}
+	virtual void poplist() {}
 
-    virtual bool allowautotab(bool on) = 0;
-    virtual bool shouldtab() { return false; }
+	virtual bool allowautotab(bool on) = 0;
+	virtual bool shouldtab() { return false; }
 	virtual void tab(const char *name = NULL, int color = 0) = 0;
-    virtual int image(Texture *t, float scale, bool overlaid = false) = 0;
-    virtual int texture(VSlot &vslot, float scale, bool overlaid = true) = 0;
-    virtual int playerpreview(int model, int team, int weap, float scale, bool overlaid = false) { return 0; }
-    virtual int modelpreview(const char *name, int anim, float scale, bool overlaid = false) { return 0; }
-    virtual int prefabpreview(const char *prefab, const vec &color, float scale, bool overlaid = false) { return 0; }
-    virtual void slider(int &val, int vmin, int vmax, int color, const char *label = NULL) = 0;
-    virtual void separator() = 0;
+	virtual int image(Texture *t, float scale, const char *overlaid = NULL) = 0;
+	virtual int texture(VSlot &vslot, float scale, bool overlaid = true) = 0;
+	virtual int playerpreview(int model, int team, int weap, float scale, const char *overlaid = NULL) { return 0; }
+	virtual int modelpreview(const char *name, int anim, float scale, const char *overlaid = NULL, bool throttle = false) { return 0; }
+	virtual int prefabpreview(const char *prefab, const vec &color, float scale, const char *overlaid = NULL, bool throttle = false) { return 0; }
+	virtual void slider(int &val, int vmin, int vmax, int color, const char *label = NULL) = 0;
+	virtual void separator() = 0;
 	virtual void progress(float percent) = 0;
 	virtual void strut(float size) = 0;
-    virtual void space(float size) = 0;
-    virtual void spring(int weight = 1) = 0;
-    virtual void column(int col) = 0;
-    virtual char *keyfield(const char *name, int color, int length, int height = 0, const char *initval = NULL, int initmode = EDITORFOCUSED) = 0;
-    virtual char *field(const char *name, int color, int length, int height = 0, const char *initval = NULL, int initmode = EDITORFOCUSED) = 0;
-    virtual void textbox(const char *text, int width, int height, int color = 0xFFFFFF) = 0;
-    virtual bool mergehits(bool on) = 0;
+	virtual void space(float size) = 0;
+	virtual void spring(int weight = 1) = 0;
+	virtual void column(int col) = 0;
+	virtual char *keyfield(const char *name, int color, int length, int height = 0, const char *initval = NULL, int initmode = EDITORFOCUSED) = 0;
+	virtual char *field(const char *name, int color, int length, int height = 0, const char *initval = NULL, int initmode = EDITORFOCUSED) = 0;
+	virtual void textbox(const char *text, int width, int height, int color = 0xFFFFFF) = 0;
+	virtual bool mergehits(bool on) = 0;
 };
 
 struct g3d_callback
 {
-    virtual ~g3d_callback() {}
+	virtual ~g3d_callback() {}
 
-    int starttime() { return totalmillis; }
+	int starttime() { return totalmillis; }
 
-    virtual void gui(g3d_gui &g, bool firstpass) = 0;
+	virtual void gui(g3d_gui &g, bool firstpass) = 0;
 };
 
 enum
 {
-    GUI_2D       = 1<<0,
-    GUI_FOLLOW   = 1<<1,
-    GUI_FORCE_2D = 1<<2,
-    GUI_BOTTOM   = 1<<3
+	GUI_2D       = 1<<0,
+	GUI_FOLLOW   = 1<<1,
+	GUI_FORCE_2D = 1<<2,
+	GUI_BOTTOM   = 1<<3
 };
 
 extern void g3d_addgui(g3d_callback *cb, vec &origin, int flags = 0);
@@ -628,12 +629,14 @@ namespace discord
 // steam
 namespace steam
 {
-    extern int initSteam();
-    extern void cleanup();
+	extern int initSteam();
+	extern void cleanup();
 
-    extern void steamCallbacks();
-    extern void setAchievement(const char* achievement);
-    extern void setPlayerAchievement(int player);
+	extern void steamCallbacks();
+	extern void setAchievement(const char* achievement);
+	extern void setPlayerAchievement(int player);
+
+	extern void addScreenshot(const char* gaming, int width, int height);
 }
 #endif
 

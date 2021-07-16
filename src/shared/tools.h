@@ -1,7 +1,5 @@
 // generic useful stuff for any C++ program
 
-#include <new>
-
 #ifndef _TOOLS_H
 #define _TOOLS_H
 
@@ -9,7 +7,6 @@
 #undef NULL
 #endif
 #define NULL 0
-
 
 typedef signed char schar;
 typedef unsigned char uchar;
@@ -71,17 +68,6 @@ static inline T clamp(T a, U b, U c)
 {
 	return max(T(b), min(a, T(c)));
 }
-template<class T, class U>
-static inline T lerp(T v0, U v1, U t) {
-	return (1 - t) * v0 + t * v1;
-}
-template<class T, class U>
-static inline T map(T x, U in_min, U in_max, U out_min, U out_max)
-{
-	float a = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-	return a;
-}
-
 
 #ifdef __GNUC__
 #define bitscan(mask) (__builtin_ffs(mask)-1)
@@ -111,7 +97,11 @@ static inline int bitscan(uint mask)
 #define rndscale(x) (float((randomMT()&0x7FFFFFFF)*double(x)/double(0x7FFFFFFF)))
 #define detrnd(s, x) ((int)(((((uint)(s))*1103515245+12345)>>16)%(x)))
 
-// TODO: get rid of this dogshit -Y 10/12/2020
+#define loop(v,m) for(int v = 0; v < int(m); ++v)
+#define loopi(m) loop(i,m)
+#define loopj(m) loop(j,m)
+#define loopk(m) loop(k,m)
+#define loopl(m) loop(l,m)
 #define looprev(v,m) for(int v = int(m); --v >= 0;)
 #define loopirev(m) looprev(i,m)
 #define loopjrev(m) looprev(j,m)
@@ -162,7 +152,7 @@ static inline int bitscan(uint mask)
 // easy safe strings
 
 #define MAXSTRLEN 260
-typedef char oldstring[MAXSTRLEN];
+typedef char cbstring[MAXSTRLEN];
 
 inline void vformatstring(char *d, const char *fmt, va_list v, int len) { _vsnprintf(d, len, fmt, v); d[len-1] = 0; }
 template<size_t N> inline void vformatstring(char (&d)[N], const char *fmt, va_list v) { vformatstring(d, fmt, v, N); }
@@ -217,8 +207,8 @@ template<size_t N> inline void concformatstring(char (&d)[N], const char *fmt, .
 	va_end(v);
 }
 
-#define defformatstring(d,...) oldstring d; formatstring(d, __VA_ARGS__)
-#define defvformatstring(d,last,fmt) oldstring d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
+#define defformatstring(d,...) cbstring d; formatstring(d, __VA_ARGS__)
+#define defvformatstring(d,last,fmt) cbstring d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
 
 template<size_t N> inline bool matchstring(const char *s, size_t len, const char (&d)[N])
 {
@@ -234,9 +224,9 @@ inline char *newstring(const char *s)           { size_t l = strlen(s); char *d 
 #define loopvk(v)   for(int k = 0; k<(v).length(); k++)
 #define loopvrev(v) for(int i = (v).length()-1; i>=0; i--)
 
-template<class T> inline void memclear(T * p, size_t n) { memset((void*)p, 0, n * sizeof(T)); }
-template<class T> inline void memclear(T & p) { memset((void*)&p, 0, sizeof(T)); }
-template<class T, size_t N> inline void memclear(T(&p)[N]) { memset((void*)p, 0, N * sizeof(T)); }
+template<class T> inline void memclear(T *p, size_t n) { memset((void *)p, 0, n * sizeof(T)); }
+template<class T> inline void memclear(T &p) { memset((void *)&p, 0, sizeof(T)); }
+template<class T, size_t N> inline void memclear(T (&p)[N]) { memset((void *)p, 0, N * sizeof(T)); }
 
 template <class T>
 struct databuf
@@ -548,7 +538,7 @@ static inline uint memhash(const void *ptr, int len)
 {
 	const uchar *data = (const uchar *)ptr;
 	uint h = 5381;
-	for (int i = 0; i < int(len); ++i) h = ((h<<5)+h)^data[i];
+	loopi(len) h = ((h<<5)+h)^data[i];
 	return h;
 }
 
@@ -655,8 +645,7 @@ template <class T> struct vector
 
 	int capacity() const { return alen; }
 	int length() const { return ulen; }
-	// TODO: THIS IS BAD, REALLY REALLY BAD, WHAT THE FUCK IS WRONG WITH THIS
-	T &operator[](int i) { /*ASSERT(i>=0 && i<ulen);*/ return buf[i]; }
+	T &operator[](int i) { ASSERT(i>=0 && i<ulen); return buf[i]; }
 	const T &operator[](int i) const { ASSERT(i >= 0 && i<ulen); return buf[i]; }
 
 	void disown() { buf = NULL; alen = ulen = 0; }
@@ -664,8 +653,8 @@ template <class T> struct vector
 	void shrink(int i) { ASSERT(i<=ulen); if(isclass<T>::no) ulen = i; else while(ulen>i) drop(); }
 	void setsize(int i) { ASSERT(i<=ulen); ulen = i; }
 
-	void deletecontents(int n = 0) { while (ulen > n) delete pop(); }
-	void deletearrays(int n = 0) { while (ulen > n) delete[] pop(); }
+	void deletecontents() { while(!empty()) delete   pop(); }
+	void deletearrays() { while(!empty()) delete[] pop(); }
 
 	T *getbuf() { return buf; }
 	const T *getbuf() const { return buf; }
@@ -679,16 +668,6 @@ template <class T> struct vector
 
 	void sort() { sort(sortless()); }
 	void sortname() { sort(sortnameless()); }
-
-	void shuffle(){
-		extern uint randomMT();
-		for(int i = 0; i < ulen; i++){
-			int indx = rnd(ulen);
-			T temp = buf[i];
-			buf[i] = buf[indx];
-			buf[indx] = temp;
-		}
-	}
 
 	void growbuf(int sz)
 	{
@@ -762,7 +741,7 @@ template <class T> struct vector
 	template<class U>
 	int find(const U &o)
 	{
-		for(int i = 0; i < int(ulen); ++i) if(buf[i]==o) return i;
+		loopi(ulen) if(buf[i]==o) return i;
 		return -1;
 	}
 
@@ -773,7 +752,7 @@ template <class T> struct vector
 
 	void removeobj(const T &o)
 	{
-		for(int i = 0; i < int(ulen); ++i) if(buf[i] == o)
+		loopi(ulen) if(buf[i] == o)
 		{
 			int dst = i;
 			for(int j = i+1; j < ulen; j++) if(!(buf[j] == o)) buf[dst++] = buf[j];
@@ -785,7 +764,7 @@ template <class T> struct vector
 	void replacewithlast(const T &o)
 	{
 		if(!ulen) return;
-		for(int i = 0; i < int(ulen-1); ++i) if(buf[i]==o)
+		loopi(ulen-1) if(buf[i]==o)
 		{
 			buf[i] = buf[ulen-1];
 			break;
@@ -804,15 +783,15 @@ template <class T> struct vector
 	T *insert(int i, const T *e, int n)
 	{
 		if(alen-ulen < n) growbuf(ulen+n);
-		for(int j = 0; j < int(n); ++j) add(T());
+		loopj(n) add(T());
 		for(int p = ulen-1; p>=i+n; p--) buf[p] = buf[p-n];
-		for(int j = 0; j < int(n); ++j) buf[i+j] = e[j];
+		loopj(n) buf[i+j] = e[j];
 		return &buf[i];
 	}
 
 	void reverse()
 	{
-		for(int i = 0; i < int(ulen/2); ++i) swap(buf[i], buf[ulen-1-i]);
+		loopi(ulen/2) swap(buf[i], buf[ulen-1-i]);
 	}
 
 	static int heapparent(int i) { return (i - 1) >> 1; }
@@ -871,31 +850,9 @@ template <class T> struct vector
 	template<class K> 
 	int htfind(const K &key)
 	{
-		for(int i = 0; i < int(ulen); ++i) if(htcmp(key, buf[i])) return i;
+		loopi(ulen) if(htcmp(key, buf[i])) return i;
 		return -1;
 	}
-
-	#define UNIQUE(overwrite, cleanup) \
-		for(int i = 1; i < ulen; i++) if(htcmp(buf[i-1], buf[i])) \
-		{ \
-			int n = i; \
-			while(++i < ulen) if(!htcmp(buf[n-1], buf[i])) { overwrite; n++; } \
-			cleanup; \
-			break; \
-		}
-	void unique() // contents must be initially sorted
-	{
-		UNIQUE(buf[n] = buf[i], setsize(n));
-	}
-	void uniquedeletecontents()
-	{
-		UNIQUE(swap(buf[n], buf[i]), deletecontents(n));
-	}
-	void uniquedeletearrays()
-	{
-		UNIQUE(swap(buf[n], buf[i]), deletearrays(n));
-	}
-	#undef UNIQUE
 };
 
 template<class H, class E, class K, class T> struct hashbase
@@ -941,7 +898,7 @@ template<class H, class E, class K, class T> struct hashbase
 			chainchunk *chunk = new chainchunk;
 			chunk->next = chunks;
 			chunks = chunk;
-			for(int i = 0; i < int(CHUNKSIZE-1); ++i) chunk->chains[i].next = &chunk->chains[i+1];
+			loopi(CHUNKSIZE-1) chunk->chains[i].next = &chunk->chains[i+1];
 			chunk->chains[CHUNKSIZE-1].next = unused;
 			unused = chunk->chains;
 		}
@@ -1095,8 +1052,8 @@ template<class K, class T> struct hashtable : hashbase<hashtable<K, T>, hashtabl
 	template<class U> static inline void setkey(elemtype &elem, const U &key) { elem.key = key; }
 };
 
-#define enumeratekt(ht,k,e,t,f,b) for(int i = 0; i < int((ht).size); ++i) for(void *ec = (ht).chains[i]; ec;) { k &e = (ht).enumkey(ec); t &f = (ht).enumdata(ec); ec = (ht).enumnext(ec); b; }
-#define enumerate(ht,t,e,b)       for(int i = 0; i < int((ht).size); ++i) for(void *ec = (ht).chains[i]; ec;) { t &e = (ht).enumdata(ec); ec = (ht).enumnext(ec); b; }
+#define enumeratekt(ht,k,e,t,f,b) loopi((ht).size) for(void *ec = (ht).chains[i]; ec;) { k &e = (ht).enumkey(ec); t &f = (ht).enumdata(ec); ec = (ht).enumnext(ec); b; }
+#define enumerate(ht,t,e,b)       loopi((ht).size) for(void *ec = (ht).chains[i]; ec;) { t &e = (ht).enumdata(ec); ec = (ht).enumnext(ec); b; }
 
 struct unionfind
 {
@@ -1222,7 +1179,7 @@ template <class T, int SIZE> struct queue
 		if(tail < 0) tail += SIZE;
 		len--;
 		return val;
-	 }
+	}
 
 	T &operator[](int offset) { return removing(offset); }
 	const T &operator[](int offset) const { return removing(offset); }
@@ -1388,7 +1345,7 @@ static inline uchar cubeupper(uchar c)
 extern size_t decodeutf8(uchar *dst, size_t dstlen, const uchar *src, size_t srclen, size_t *carry = NULL);
 extern size_t encodeutf8(uchar *dstbuf, size_t dstlen, const uchar *srcbuf, size_t srclen, size_t *carry = NULL);
 
-extern oldstring homedir;
+extern cbstring homedir;
 
 extern char *makerelpath(const char *dir, const char *file, const char *prefix = NULL, const char *cmd = NULL);
 extern char *path(char *s);
@@ -1406,7 +1363,7 @@ extern stream *openzipfile(const char *filename, const char *mode);
 extern stream *openfile(const char *filename, const char *mode);
 extern stream *opentempfile(const char *filename, const char *mode);
 extern stream *opengzfile(const char *filename, const char *mode, stream *file = NULL, int level = Z_BEST_COMPRESSION);
-extern stream* opentargzfile(const char* filename, const char* tarfn, const char* mode, stream* file = NULL, int level = Z_BEST_COMPRESSION);
+extern stream *opentargzfile(const char *filename, const char *tarfn, const char *mode, stream *file = NULL, int level = Z_BEST_COMPRESSION);
 extern stream *openutf8file(const char *filename, const char *mode, stream *file = NULL);
 extern char *loadfile(const char *fn, size_t *size, bool utf8 = true);
 extern bool listdir(const char *dir, bool rel, const char *ext, vector<char *> &files);
@@ -1446,13 +1403,13 @@ struct ipmask
 
 extern char* pmodeltoname(int model);
 
-extern oldstring gametoken;
+extern cbstring gametoken;
 
 // cURL stuff
 
 extern char* web_get(char* targetUrl, bool debug = false);
 extern char* web_post(char* targetUrl, char* postFields, bool debug = false);
-extern char* web_auth(char* targetUrl, oldstring gametoken, bool debug = false);
+extern char* web_auth(char* targetUrl, cbstring gametoken, bool debug = false);
 extern void  web_download(char* targetUrl, char* filename, bool debug = false);
 extern int offline;
 
