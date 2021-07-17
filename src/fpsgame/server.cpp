@@ -2456,6 +2456,10 @@ namespace server
 		while(bannedips.length() && bannedips[0].expire-totalmillis <= 0) bannedips.remove(0);
 		loopv(connects) if(totalmillis-connects[i]->connectmillis>15000) disconnect_client(connects[i]->clientnum, DISC_TIMEOUT);
 
+		// I currently do not understand what this code does, but it's breaking fast movement, 
+		// so it has been commented out for the time being. -Y
+
+		/*
 		if(nextexceeded && gamemillis > nextexceeded && (!m_timed || gamemillis < gamelimit))
 		{
 			nextexceeded = 0;
@@ -2463,13 +2467,11 @@ namespace server
 			{
 				clientinfo &c = *clients[i];
 				if(c.state.aitype != AI_NONE) continue;
-				if(c.checkexceeded()) {
-					conoutf(CON_ERROR, "Check exceeded. Contact Yellowberry.");
-					disconnect_client(c.clientnum, DISC_MSGERR);
-				}
+				if(c.checkexceeded()) disconnect_client(c.clientnum, DISC_MSGERR);
 				else c.scheduleexceeded();
 			}
 		}
+		*/
 
 		if(shouldstep && !gamepaused)
 		{
