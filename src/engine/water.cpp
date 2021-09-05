@@ -266,17 +266,17 @@ struct Reflection
 VARP(reflectdist, 0, 2000, 10000);
 
 #define WATERVARS(name) \
-	bvec name##color(0x14, 0x46, 0x50), name##fallcolor(0, 0, 0); \
-	HVARFR(name##colour, 0, 0x144650, 0xFFFFFF, \
+	bvec name##colorvec(0x14, 0x46, 0x50), name##fallcolorvec(0, 0, 0); \
+	HVARFR(name##color, 0, 0x144650, 0xFFFFFF, \
 	{ \
-		if(!name##colour) name##colour = 0x144650; \
-		name##color = bvec((name##colour>>16)&0xFF, (name##colour>>8)&0xFF, name##colour&0xFF); \
+		if(!name##color) name##color = 0x144650; \
+		name##colorvec = bvec((name##color>>16)&0xFF, (name##color>>8)&0xFF, name##color&0xFF); \
 	}); \
 	VARR(name##fog, 0, 150, 10000); \
 	VARR(name##spec, 0, 150, 1000); \
-	HVARFR(name##fallcolour, 0, 0, 0xFFFFFF, \
+	HVARFR(name##fallcolor, 0, 0, 0xFFFFFF, \
 	{ \
-		name##fallcolor = bvec((name##fallcolour>>16)&0xFF, (name##fallcolour>>8)&0xFF, name##fallcolour&0xFF); \
+		name##fallcolorvec = bvec((name##fallcolor>>16)&0xFF, (name##fallcolor>>8)&0xFF, name##fallcolor&0xFF); \
 	});
 
 WATERVARS(water)
@@ -284,19 +284,19 @@ WATERVARS(water2)
 WATERVARS(water3)
 WATERVARS(water4)
 
-GETMATIDXVAR(water, colour, int)
-GETMATIDXVAR(water, color, const bvec &)
-GETMATIDXVAR(water, fallcolour, int)
-GETMATIDXVAR(water, fallcolor, const bvec &)
+GETMATIDXVAR(water, color, int)
+GETMATIDXVAR(water, colorvec, const bvec &)
+GETMATIDXVAR(water, fallcolor, int)
+GETMATIDXVAR(water, fallcolorvec, const bvec &)
 GETMATIDXVAR(water, fog, int)
 GETMATIDXVAR(water, spec, int)
 
 #define LAVAVARS(name) \
-	bvec name##color(0xFF, 0x8A, 0x00); \
-	HVARFR(name##colour, 0, 0xFF8A00, 0xFFFFFF, \
+	bvec name##colorvec(0xFF, 0x8A, 0x00); \
+	HVARFR(name##color, 0, 0xFF8A00, 0xFFFFFF, \
 	{ \
-		if(!name##colour) name##colour = 0xFF8A00; \
-		name##color = bvec((name##colour>>16)&0xFF, (name##colour>>8)&0xFF, name##colour&0xFF); \
+		if(!name##color) name##color = 0xFF8A00; \
+		name##colorvec = bvec((name##color>>16)&0xFF, (name##color>>8)&0xFF, name##color&0xFF); \
 	}); \
 	VARR(name##fog, 0, 50, 10000);
 
@@ -305,8 +305,8 @@ LAVAVARS(lava2)
 LAVAVARS(lava3)
 LAVAVARS(lava4)
 
-GETMATIDXVAR(lava, colour, int)
-GETMATIDXVAR(lava, color, const bvec &)
+GETMATIDXVAR(lava, color, int)
+GETMATIDXVAR(lava, colorvec, const bvec &)
 GETMATIDXVAR(lava, fog, int)
 
 void setprojtexmatrix(Reflection &ref)
@@ -470,7 +470,7 @@ void renderwater()
 		whoffset = fmod(float(lastmillis/600.0f/(2*M_PI)), 1.0f);
 		whphase = vertwphase(whoffset);
 
-		gle::color(getwatercolor(ref.material));
+		gle::color(getwatercolorvec(ref.material));
 		int wfog = getwaterfog(ref.material), wspec = getwaterspec(ref.material);
 
 		const entity *lastlight = (const entity *)-1;
@@ -825,7 +825,7 @@ VAR(maskreflect, 0, 2, 16);
 
 void maskreflection(Reflection &ref, float offset, bool reflect, bool clear = false)
 {
-	const bvec &wcol = getwatercolor(ref.material);
+	const bvec &wcol = getwatercolorvec(ref.material);
 	vec color = wcol.tocolor();
 	if(!maskreflect)
 	{
@@ -979,7 +979,7 @@ void drawreflections()
 			sw = sh = size;
 		}
 
-		const bvec &wcol = getwatercolor(ref.material);
+		const bvec &wcol = getwatercolorvec(ref.material);
 		int wfog = getwaterfog(ref.material);
 
 		if(waterreflect && ref.tex && camera1->o.z >= ref.height+offset)

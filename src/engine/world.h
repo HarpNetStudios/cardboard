@@ -32,13 +32,13 @@ struct compatheader             // map file format header
     int lightmaps;
     int lightprecision, lighterror, lightlod;
     uchar ambient;
-    uchar watercolour[3];
+    uchar watercolor[3];
     uchar blendmap;
     uchar lerpangle, lerpsubdiv, lerpsubdivsize;
     uchar bumperror;
     uchar skylight[3];
-    uchar lavacolour[3];
-    uchar waterfallcolour[3];
+    uchar lavacolor[3];
+    uchar waterfallcolor[3];
     uchar reserved[10];
     char maptitle[128];
 };

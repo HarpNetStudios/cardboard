@@ -70,11 +70,11 @@ static void animategrass()
 }
 
 VARR(grassscale, 1, 2, 64);
-bvec grasscolor(255, 255, 255);
-HVARFR(grasscolour, 0, 0xFFFFFF, 0xFFFFFF,
+bvec grasscolorvec(255, 255, 255);
+HVARFR(grasscolor, 0, 0xFFFFFF, 0xFFFFFF,
 {
-	if(!grasscolour) grasscolour = 0xFFFFFF;
-	grasscolor = bvec((grasscolour>>16)&0xFF, (grasscolour>>8)&0xFF, grasscolour&0xFF);
+	if(!grasscolor) grasscolor = 0xFFFFFF;
+	grasscolorvec = bvec((grasscolor>>16)&0xFF, (grasscolor>>8)&0xFF, grasscolor&0xFF);
 });
 FVARR(grassalpha, 0, 1, 1);
 
@@ -188,7 +188,7 @@ static void gengrassquads(grassgroup *&group, const grasswedge &w, const grasstr
 			  height = grassheight * fade;
 		svec2 lm1(short(g.tcu.dot(p1)), short(g.tcv.dot(p1))),
 			  lm2(short(g.tcu.dot(p2)), short(g.tcv.dot(p2)));
-		bvec4 color(grasscolor, uchar(fade*grassalpha*255));
+		bvec4 color(grasscolorvec, uchar(fade*grassalpha*255));
 
 		#define GRASSVERT(n, tcv, modify) { \
 			grassvert &gv = grassverts.add(); \

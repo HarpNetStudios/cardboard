@@ -614,7 +614,7 @@ bool bboccluded(const ivec &bo, const ivec &br)
 }
 
 VAR(outline, 0, 0, 1);
-HVARP(outlinecolour, 0, 0, 0xFFFFFF);
+HVARP(outlinecolor, 0, 0, 0xFFFFFF);
 VAR(dtoutline, 0, 1, 1);
 
 void renderoutline()
@@ -624,7 +624,7 @@ void renderoutline()
 	gle::enablevertex();
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	gle::color(vec::hexcolor(outlinecolour));
+	gle::color(vec::hexcolor(outlinecolor));
 
 	enablepolygonoffset(GL_POLYGON_OFFSET_LINE);
 

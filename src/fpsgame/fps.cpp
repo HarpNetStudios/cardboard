@@ -4,7 +4,7 @@ namespace game
 {
 	char* gametitle = "Carmine Impact"; // game name: are you dumb
 	char* gamestage = "Alpha"; // stage: alpha, beta, release, whatever
-	char* gameversion = "2.8.1"; // version: major.minor(.patch)
+	char* gameversion = "2.8.2"; // version: major.minor(.patch)
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
@@ -1062,9 +1062,9 @@ void dosecattack(bool on)
 
 	VARP(gameclock, 0, 1, 1);
 	FVARP(gameclockscale, 1e-3f, 0.5f, 1e3f);
-	HVARP(gameclockcolour, 0, 0xFFFFFF, 0xFFFFFF);
-	HVARP(gameclocklowcolour, 0, 0xFFC040, 0xFFFFFF);
-	HVARP(gameclockcritcolour, 0, 0xFF0000, 0xFFFFFF);
+	HVARP(gameclockcolor, 0, 0xFFFFFF, 0xFFFFFF);
+	HVARP(gameclocklowcolor, 0, 0xFFC040, 0xFFFFFF);
+	HVARP(gameclockcritcolor, 0, 0xFF0000, 0xFFFFFF);
 	VARP(gameclockalpha, 0, 255, 255);
 	VARP(gameclockalign, -1, 0, 1);
 	FVARP(gameclockx, 0, 0.50f, 1);
@@ -1088,7 +1088,7 @@ void dosecattack(bool on)
 		hudmatrix.scale(gameclockscale, gameclockscale, 1);
 		flushhudmatrix();
 
-		int color = mins < 1 ? secs < 10 ? gameclockcritcolour : gameclocklowcolour : gameclockcolour;
+		int color = mins < 1 ? secs < 10 ? gameclockcritcolor : gameclocklowcolor : gameclockcolor;
 		if(m_timed) draw_text(buf, int(offset.x), int(offset.y), (color>>16)&0xFF, (color>>8)&0xFF, color&0xFF, gameclockalpha);
 
 		pophudmatrix();

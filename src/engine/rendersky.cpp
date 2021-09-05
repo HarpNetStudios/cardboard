@@ -53,11 +53,11 @@ Texture *loadskyoverlay(const char *basename)
 }
 
 SVARFR(skybox, "", { if(skybox[0]) loadsky(skybox, sky); }); 
-HVARR(skyboxcolour, 0, 0xFFFFFF, 0xFFFFFF);
+HVARR(skyboxcolor, 0, 0xFFFFFF, 0xFFFFFF);
 FVARR(spinsky, -720, 0, 720);
 VARR(yawsky, 0, 0, 360);
 SVARFR(cloudbox, "", { if(cloudbox[0]) loadsky(cloudbox, clouds); });
-HVARR(cloudboxcolour, 0, 0xFFFFFF, 0xFFFFFF);
+HVARR(cloudboxcolor, 0, 0xFFFFFF, 0xFFFFFF);
 FVARR(cloudboxalpha, 0, 1, 1);
 FVARR(spinclouds, -720, 0, 720);
 VARR(yawclouds, 0, 0, 360);
@@ -74,7 +74,7 @@ FVARR(cloudheight, -1, 0.2f, 1);
 FVARR(cloudfade, 0, 0.2f, 1);
 FVARR(cloudalpha, 0, 1, 1);
 VARR(cloudsubdiv, 4, 16, 64);
-HVARR(cloudcolour, 0, 0xFFFFFF, 0xFFFFFF);
+HVARR(cloudcolor, 0, 0xFFFFFF, 0xFFFFFF);
 
 void drawenvboxface(float s0, float t0, int x0, int y0, int z0,
 					float s1, float t1, int x1, int y1, int z1,
@@ -142,7 +142,7 @@ void drawenvoverlay(int w, Texture *overlay = NULL, float tx = 0, float ty = 0)
 {
 	float z = w*cloudheight, tsz = 0.5f*(1-cloudfade)/cloudscale, psz = w*(1-cloudfade);
 	glBindTexture(GL_TEXTURE_2D, overlay ? overlay->id : notexture->id);
-	vec color = vec::hexcolor(cloudcolour);
+	vec color = vec::hexcolor(cloudcolor);
 	gle::color(color, cloudalpha);
 	gle::defvertex();
 	gle::deftexcoord0();
@@ -179,10 +179,10 @@ FVARR(fogdomemin, 0, 0, 1);
 FVARR(fogdomemax, 0, 0, 1);
 VARR(fogdomecap, 0, 1, 1);
 FVARR(fogdomeclip, 0, 1, 1);
-bvec fogdomecolor(0, 0, 0);
-HVARFR(fogdomecolour, 0, 0, 0xFFFFFF,
+bvec fogdomecolorvec(0, 0, 0);
+HVARFR(fogdomecolor, 0, 0, 0xFFFFFF,
 {
-	fogdomecolor = bvec((fogdomecolour>>16)&0xFF, (fogdomecolour>>8)&0xFF, fogdomecolour&0xFF);
+	fogdomecolorvec = bvec((fogdomecolor>>16)&0xFF, (fogdomecolor>>8)&0xFF, fogdomecolor&0xFF);
 });
 VARR(fogdomeclouds, 0, 1, 1);
 
@@ -314,7 +314,7 @@ namespace fogdome
 	void draw()
 	{
 		float capsize = fogdomecap && fogdomeheight < 1 ? (1 + fogdomeheight) / (1 - fogdomeheight) : -1;
-		bvec color = fogdomecolour ? fogdomecolor : fogcolor;
+		bvec color = fogdomecolor ? fogdomecolorvec : fogcolorvec;
 		if(!numverts || lastcolor != color || lastminalpha != fogdomemin || lastmaxalpha != fogdomemax || lastcapsize != capsize || lastclipz != fogdomeclip)
 		{
 			init(color, min(fogdomemin, fogdomemax), fogdomemax, capsize, fogdomeclip);
@@ -653,7 +653,7 @@ void drawskybox(int farplane, bool limited, bool force)
 		if(glaring) SETSHADER(skyboxglare);
 		else SETSHADER(skybox);
 
-		gle::color(vec::hexcolor(skyboxcolour));
+		gle::color(vec::hexcolor(skyboxcolor));
 
 		matrix4 skymatrix = cammatrix, skyprojmatrix;
 		skymatrix.settranslation(0, 0, 0);
@@ -695,7 +695,7 @@ void drawskybox(int farplane, bool limited, bool force)
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			gle::color(vec::hexcolor(cloudboxcolour), cloudboxalpha);
+			gle::color(vec::hexcolor(cloudboxcolor), cloudboxalpha);
 
 			matrix4 skymatrix = cammatrix, skyprojmatrix;
 			skymatrix.settranslation(0, 0, 0);

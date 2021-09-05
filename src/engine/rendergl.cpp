@@ -1194,10 +1194,10 @@ void hudquad(float x, float y, float w, float h, float tx, float ty, float tw, f
 }
 
 VARR(fog, 16, 4000, 1000024);
-bvec fogcolor(0x80, 0x99, 0xB3);
-HVARFR(fogcolour, 0, 0x8099B3, 0xFFFFFF,
+bvec fogcolorvec(0x80, 0x99, 0xB3);
+HVARFR(fogcolor, 0, 0x8099B3, 0xFFFFFF,
 {
-	fogcolor = bvec((fogcolour>>16)&0xFF, (fogcolour>>8)&0xFF, fogcolour&0xFF);
+	fogcolorvec = bvec((fogcolor>>16)&0xFF, (fogcolor>>8)&0xFF, fogcolor&0xFF);
 });
 
 static float findsurface(int fogmat, const vec &v, int &abovemat)
@@ -1227,7 +1227,7 @@ static void blendfog(int fogmat, float blend, float logblend, float &start, floa
 	{
 		case MAT_WATER:
 		{
-			const bvec &wcol = getwatercolor(fogmat);
+			const bvec &wcol = getwatercolorvec(fogmat);
 			int wfog = getwaterfog(fogmat);
 			fogc.madd(wcol.tocolor(), blend);
 			end += logblend*min(fog, max(wfog*4, 32));
@@ -1236,7 +1236,7 @@ static void blendfog(int fogmat, float blend, float logblend, float &start, floa
 
 		case MAT_LAVA:
 		{
-			const bvec &lcol = getlavacolor(fogmat);
+			const bvec &lcol = getlavacolorvec(fogmat);
 			int lfog = getlavafog(fogmat);
 			fogc.madd(lcol.tocolor(), blend);
 			end += logblend*min(fog, max(lfog*4, 32));
@@ -1244,7 +1244,7 @@ static void blendfog(int fogmat, float blend, float logblend, float &start, floa
 		}
 
 		default:
-			fogc.madd(fogcolor.tocolor(), blend);
+			fogc.madd(fogcolorvec.tocolor(), blend);
 			start += logblend*(fog+64)/8;
 			end += logblend*fog;
 			break;
@@ -1256,7 +1256,7 @@ float oldfogstart = 0, oldfogend = 1000000, curfogstart = 0, curfogend = 1000000
 
 void setfogcolor(const vec &v)
 {
-	GLOBALPARAM(fogcolor, v);
+	GLOBALPARAM(fogcolorvec, v);
 }
 
 void zerofogcolor()
@@ -1349,7 +1349,7 @@ static void blendfogoverlay(int fogmat, float blend, vec &overlay)
 	{
 		case MAT_WATER:
 		{
-			const bvec &wcol = getwatercolor(fogmat);
+			const bvec &wcol = getwatercolorvec(fogmat);
 			maxc = max(wcol.r, max(wcol.g, wcol.b));
 			overlay.madd(vec(wcol.r, wcol.g, wcol.b).div(min(32.0f + maxc*7.0f/8.0f, 255.0f)).max(0.4f), blend);
 			break;
@@ -1357,7 +1357,7 @@ static void blendfogoverlay(int fogmat, float blend, vec &overlay)
 
 		case MAT_LAVA:
 		{
-			const bvec &lcol = getlavacolor(fogmat);
+			const bvec &lcol = getlavacolorvec(fogmat);
 			maxc = max(lcol.r, max(lcol.g, lcol.b));
 			overlay.madd(vec(lcol.r, lcol.g, lcol.b).div(min(32.0f + maxc*7.0f/8.0f, 255.0f)).max(0.4f), blend);
 			break;
@@ -1725,10 +1725,10 @@ void clearminimap()
 }
 
 VARR(minimapheight, 0, 0, 2<<16);
-bvec minimapcolor(0, 0, 0);
-HVARFR(minimapcolour, 0, 0, 0xFFFFFF,
+bvec minimapcolorvec(0, 0, 0);
+HVARFR(minimapcolor, 0, 0, 0xFFFFFF,
 {
-	minimapcolor = bvec((minimapcolour>>16)&0xFF, (minimapcolour>>8)&0xFF, minimapcolour&0xFF);
+	minimapcolorvec = bvec((minimapcolor>>16)&0xFF, (minimapcolor>>8)&0xFF, minimapcolor&0xFF);
 });
 VARR(minimapclip, 0, 0, 1);
 VARFP(minimapsize, 7, 8, 10, { if(minimaptex) drawminimap(); });
@@ -1804,7 +1804,7 @@ void drawminimap()
 	projmatrix.a.mul(-1);
 	setcamprojmatrix();
 
-	setnofog(minimapcolor.tocolor());
+	setnofog(minimapcolorvec.tocolor());
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
@@ -1851,7 +1851,7 @@ void drawminimap()
 	setuptexparameters(minimaptex, NULL, 3, 1, GL_RGB5, GL_TEXTURE_2D);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	GLfloat border[4] = { minimapcolor.x/255.0f, minimapcolor.y/255.0f, minimapcolor.z/255.0f, 1.0f };
+	GLfloat border[4] = { minimapcolorvec.x/255.0f, minimapcolorvec.y/255.0f, minimapcolorvec.z/255.0f, 1.0f };
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -137,7 +137,7 @@ extern int drawtex;
 extern bool renderedgame;
 extern const matrix4 viewmatrix;
 extern matrix4 cammatrix, projmatrix, camprojmatrix, invcammatrix, invcamprojmatrix;
-extern bvec fogcolor;
+extern bvec fogcolorvec;
 extern vec curfogcolor;
 extern int fog;
 extern float curfogstart, curfogend;
@@ -344,12 +344,12 @@ extern int reflectdist, vertwater, waterrefract, waterreflect, waterfade, causti
 		} \
 	}
 
-extern const bvec &getwatercolor(int mat);
-extern const bvec &getwaterfallcolor(int mat);
+extern const bvec &getwatercolorvec(int mat);
+extern const bvec &getwaterfallcolorvec(int mat);
 extern int getwaterfog(int mat);
-extern const bvec &getlavacolor(int mat);
+extern const bvec &getlavacolorvec(int mat);
 extern int getlavafog(int mat);
-extern const bvec &getglasscolor(int mat);
+extern const bvec &getglasscolorvec(int mat);
 
 extern void cleanreflections();
 extern void queryreflections();

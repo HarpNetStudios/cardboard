@@ -304,7 +304,7 @@
 <a href="#grassscale"><tt>grassscale</tt></a>
 </li>
 <li>
-<a href="#grasscolour"><tt>grasscolour</tt></a>
+<a href="#grasscolor"><tt>grasscolor</tt></a>
 </li>
 <li>
 <a href="#grassalpha"><tt>grassalpha</tt></a>
@@ -351,7 +351,7 @@
 <a href="#fog"><tt>fog</tt></a>
 </li>
 <li>
-<a href="#fogcolour"><tt>fogcolour</tt></a>
+<a href="#fogcolor"><tt>fogcolor</tt></a>
 </li>
 <li>
 <a href="#waterspec"><tt>waterspec</tt></a>
@@ -360,16 +360,16 @@
 <a href="#waterfog"><tt>waterfog</tt></a>
 </li>
 <li>
-<a href="#watercolour"><tt>watercolour</tt></a>
+<a href="#watercolor"><tt>watercolor</tt></a>
 </li>
 <li>
-<a href="#waterfallcolour"><tt>waterfallcolour</tt></a>
+<a href="#waterfallcolor"><tt>waterfallcolor</tt></a>
 </li>
 <li>
 <a href="#lavafog"><tt>lavafog</tt></a>
 </li>
 <li>
-<a href="#lavacolour"><tt>lavacolour</tt></a>
+<a href="#lavacolor"><tt>lavacolor</tt></a>
 </li>
 <li>
 <a href="#shader"><tt>shader</tt></a>
@@ -462,7 +462,7 @@
 <a href="#cloudfade"><tt>cloudfade</tt></a>
 </li>
 <li>
-<a href="#cloudcolour"><tt>cloudcolour</tt></a>
+<a href="#cloudcolor"><tt>cloudcolor</tt></a>
 </li>
 <li>
 <a href="#cloudalpha"><tt>cloudalpha</tt></a>
@@ -483,7 +483,7 @@
 <a href="#fogdomeclip"><tt>fogdomeclip</tt></a>
 </li>
 <li>
-<a href="#fogdomecolour"><tt>fogdomecolour</tt></a>
+<a href="#fogdomecolor"><tt>fogdomecolor</tt></a>
 </li>
 <li>
 <a href="#skytexture"><tt>skytexture</tt></a>
@@ -1477,9 +1477,9 @@ Automatically generates grass for the current texture slot on any upward facing 
 Sets the scaling of all grass textures to N where N=1..64 (default: 2).
 </p>
 
-<pre id="grasscolour">grasscolour R G B</pre>
+<pre id="grasscolor">grasscolor R G B</pre>
 <p>
-The colour of the grass, specified as R G B values from 0..255 (default: 255 255 255).
+The color of the grass, specified as R G B values from 0..255 (default: 255 255 255).
 </p>
 
 <pre id="grassalpha">grassalpha A</pre>
@@ -1559,9 +1559,9 @@ setting the fog to a low value can also be a very effective way to increase fps 
 values on big maps or maps which give you low fps.
 </p>
 
-<pre id="fogcolour">fogcolour R G B</pre>
+<pre id="fogcolor">fogcolor R G B</pre>
 <p>
-The colour of the fog, specified as R G B values from 0..255 (default: 128 153 179).
+The color of the fog, specified as R G B values from 0..255 (default: 128 153 179).
 </p>
 
 <pre id="waterspec">waterspec N</pre>
@@ -1574,14 +1574,14 @@ This sets the percentage of light water shows as specularity (default: 150).
 Sets the distance beneath the surface of water at which it fogs, from 1..10000 (default: 150).
 </p>
 
-<pre id="watercolour">watercolour R G B</pre>
+<pre id="watercolor">watercolor R G B</pre>
 <p>
-Sets the the colour of fog inside the water to the specified R G B value from 0..255 (default: 20 70 80). Used to give water some colour. Setting to the values 0 0 0 will cause it to reset to the default watercolour.
+Sets the the color of fog inside the water to the specified R G B value from 0..255 (default: 20 70 80). Used to give water some color. Setting to the values 0 0 0 will cause it to reset to the default watercolor.
 </p>
 
-<pre id="waterfallcolour">waterfallcolour R G B</pre>
+<pre id="waterfallcolor">waterfallcolor R G B</pre>
 <p>
-Sets the the colour used for waterfall turbulence to the specified R G B value from 0..255 (default: 0 0 0). If the default of 0 0 0 is specified, waterfalls will use the colour supplied via "watercolour" instead.
+Sets the the color used for waterfall turbulence to the specified R G B value from 0..255 (default: 0 0 0). If the default of 0 0 0 is specified, waterfalls will use the color supplied via "watercolor" instead.
 </p>
 
 <pre id="lavafog">lavafog N</pre>
@@ -1589,9 +1589,9 @@ Sets the the colour used for waterfall turbulence to the specified R G B value f
 Sets the distance beneath the surface of lava at which it fogs, from 1..10000 (default: 50).
 </p>
 
-<pre id="lavacolour">lavacolour R G B</pre>
+<pre id="lavacolor">lavacolor R G B</pre>
 <p>
-Sets the the colour of fog inside the lava to the specified R G B value from 0..255 (default: 255 64 0). Used to give lava some colour. Setting to the values 0 0 0 will cause it to reset to the default watercolour.
+Sets the the color of fog inside the lava to the specified R G B value from 0..255 (default: 255 64 0). Used to give lava some color. Setting to the values 0 0 0 will cause it to reset to the default watercolor.
 </p>
 
 <pre id="shader">shader TYPE NAME VS PS</pre>
@@ -1860,8 +1860,8 @@ skin.jpg, or the same from the parent folder to allow skin sharing). set additio
 
 <pre id="shadowmapambient">shadowmapambient N</pre>
 <p>
-Specifies a colour to use for the ambient light value of shadows created by shadowmapping, where N
-is a hexadecimal colour value of the form "0xRRGGBB". Note that any value of 255 or less are treated
+Specifies a color to use for the ambient light value of shadows created by shadowmapping, where N
+is a hexadecimal color value of the form "0xRRGGBB". Note that any value of 255 or less are treated
 as gray-scale. If N is 0 or unset, this value is determined by the "ambient" variable and the "skylight"
 command. (Default: 0)
 </p>
@@ -1967,9 +1967,9 @@ This is a floating-point value between 0 and 1, where 0 corresponds to the edge 
 to the center. (Default: 0.2)
 </p>
 
-<pre id="cloudcolour">cloudcolour N</pre>
+<pre id="cloudcolor">cloudcolor N</pre>
 <p>
-Specifies a colour multiplier for the cloud layer, where N is a hexadecimal colour value in the form of "0xRRGGBB".
+Specifies a color multiplier for the cloud layer, where N is a hexadecimal color value in the form of "0xRRGGBB".
 (Default: 0xFFFFFF, white)
 </p>
 
@@ -2008,9 +2008,9 @@ Specifies whether the bottom of the fog dome should be capped, where B is 0 or 1
 Specifies whether the top of the fog dome should be clipped off at a relative size Z, where Z is a floating-point value between 0 and 1 (Default: 1, not clipped).
 </p>
 
-<pre id="fogdomecolour">fogdomecolour R G B</pre>
+<pre id="fogdomecolor">fogdomecolor R G B</pre>
 <p>
-The colour of the fog dome, specified as R G B values from 0..255 (default: 0 0 0). If the colour is 0, then the value of fogcolour is used instead of fogdomecolour.
+The color of the fog dome, specified as R G B values from 0..255 (default: 0 0 0). If the color is 0, then the value of fogcolor is used instead of fogdomecolor.
 </p>
 
 <pre id="skytexture">skytexture B</pre>

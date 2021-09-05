@@ -569,11 +569,11 @@ void rendermatgrid(vector<materialsurface *> &vismats)
 }
 
 #define GLASSVARS(name) \
-	bvec name##color(0x20, 0x80, 0xC0); \
-	HVARFR(name##colour, 0, 0x2080C0, 0xFFFFFF, \
+	bvec name##colorvec(0x20, 0x80, 0xC0); \
+	HVARFR(name##color, 0, 0x2080C0, 0xFFFFFF, \
 	{ \
-		if(!name##colour) name##colour = 0x2080C0; \
-		name##color = bvec((name##colour>>16)&0xFF, (name##colour>>8)&0xFF, name##colour&0xFF); \
+		if(!name##color) name##color = 0x2080C0; \
+		name##colorvec = bvec((name##color>>16)&0xFF, (name##color>>8)&0xFF, name##color&0xFF); \
 	});
 
 GLASSVARS(glass)
@@ -581,8 +581,8 @@ GLASSVARS(glass2)
 GLASSVARS(glass3)
 GLASSVARS(glass4)
 
-GETMATIDXVAR(glass, colour, int)
-GETMATIDXVAR(glass, color, const bvec &)
+GETMATIDXVAR(glass, color, int)
+GETMATIDXVAR(glass, colorvec, const bvec &)
 
 VARP(glassenv, 0, 1, 1);
 
@@ -694,8 +694,8 @@ void rendermaterials()
 						changematerial(lastmat, lastorient);
 						glBindTexture(GL_TEXTURE_2D, mslot->sts[1].t->id);
 
-						bvec wfcol = getwaterfallcolor(m.material);
-						if(wfcol.iszero()) wfcol = getwatercolor(m.material);
+						bvec wfcol = getwaterfallcolorvec(m.material);
+						if(wfcol.iszero()) wfcol = getwatercolorvec(m.material);
 						gle::color(wfcol, 192);
 
 						int wfog = getwaterfog(m.material);
@@ -802,7 +802,7 @@ void rendermaterials()
 							else t = 0.5f + 0.5f*t;
 							gle::colorf(t, t, t);
 						} else {
-							bvec lfcol = getlavacolor(m.material); // colorful lava -Y
+							bvec lfcol = getlavacolorvec(m.material); // colorful lava -Y
 							gle::color(lfcol, 192);
 						}
 						if(glaring) SETSHADER(lavaglare); else SETSHADER(lava);
@@ -834,7 +834,7 @@ void rendermaterials()
 					{
 						if(!blended) { glEnable(GL_BLEND); blended = true; }
 						if(depth) { glDepthMask(GL_FALSE); depth = false; }
-						const bvec &gcol = getglasscolor(m.material);         
+						const bvec &gcol = getglasscolorvec(m.material);         
 						if(m.envmap!=EMID_NONE && glassenv)
 						{
 							glBlendFunc(GL_ONE, GL_SRC_ALPHA);

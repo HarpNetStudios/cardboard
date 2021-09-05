@@ -691,8 +691,8 @@ namespace game
 	VARP(hudscorealign, -1, 0, 1);
 	FVARP(hudscorex, 0, 0.50f, 1);
 	FVARP(hudscorey, 0, 0.03f, 1);
-	HVARP(hudscoreplayercolour, 0, 0xFFFFFF, 0xFFFFFF);
-	HVARP(hudscoreenemycolour, 0, 0xFF4040, 0xFFFFFF);
+	HVARP(hudscoreplayercolor, 0, 0xFFFFFF, 0xFFFFFF);
+	HVARP(hudscoreenemycolor, 0, 0xFF4040, 0xFFFFFF);
 	VARP(hudscorealpha, 0, 255, 255);
 	VARP(hudscoresep, 0, 20, 1000);
 	VARP(hudscoreself, 0, 0, 1);
@@ -758,8 +758,8 @@ namespace game
 		hudmatrix.scale(hudscorescale, hudscorescale, 1);
 		flushhudmatrix();
 		
-		int color = hudscoreplayercolour;
-		int color2 = hudscoreenemycolour;
+		int color = hudscoreplayercolor;
+		int color2 = hudscoreenemycolor;
 		if(m_teammode) 
 		{
 			color = COL_BLUE;

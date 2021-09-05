@@ -30,9 +30,11 @@
 # Directories that aren't public
 /res/_Private
 
-# Leave me alone
+# No launcher specific files, different repo for that.
 launcher.json
 Newtonsoft.Json.dll
+Facepunch.Steamworks.Win64.dll
+steam_api64.dll
 
 # Update temp files
 update.cfg
@@ -40,3 +42,6 @@ update.cfg
 # No no Steamworks API files
 /src/shared/steam
 /bin*/steam_appid.txt
+
+# Ignore bundled font creation utility
+/packages/fonts/cube2font

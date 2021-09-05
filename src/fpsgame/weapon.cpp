@@ -434,11 +434,11 @@ namespace game
 	{
 		particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f);
 		playsound(gun!=GUN_GL ? S_RLHIT : S_FEXPLODE, &v);
-		int color = gun!=GUN_GL ? 0xFF8080 : (m_teammode ? (!strcmp(owner->team, "red") ? 0xFF4040 : 0x4040FF ) : 0x80FFFF);
+		int color = gun!=GUN_GL ? 0xFF8080 : (m_teammode ? (!strcmp(owner->team, "red") ? 0xFF4040 : 0x4040FF ) : 0xDD40FF);
 		if((gun==GUN_RL || gun==GUN_GL) && explodebright < 1) color = vec::hexcolor(color).mul(explodebright).tohexcolor();
 		particle_fireball(v, guns[gun].exprad, gun!=GUN_GL ? PART_EXPLOSION : (m_teammode ? (!strcmp(owner->team, "red") ? PART_EXPLOSION_GRENADE_RED : PART_EXPLOSION_GRENADE_BLUE ) : PART_EXPLOSION_GRENADE), gun!=GUN_GL ? -1 : int((guns[gun].exprad-4.0f)*15), color, 4.0f);
 		if(gun==GUN_RL) adddynlight(v, 1.15f*guns[gun].exprad, vec(2, 1.5f, 1), 700, 100, 0, guns[gun].exprad/2, vec(1, 0.75f, 0.5f));
-		else if(gun==GUN_GL) adddynlight(v, 1.15f*guns[gun].exprad, (m_teammode ? (!strcmp(owner->team, "red") ? vec(1, 0.25f, 0.25f) : vec(0.25f, 0.25f, 1)) : vec(0.25f, 1, 1)), 600, 100, 0, 8);
+		else if(gun==GUN_GL) adddynlight(v, 1.15f*guns[gun].exprad, (m_teammode ? (!strcmp(owner->team, "red") ? vec(1, 0.25f, 0.25f) : vec(0.25f, 0.25f, 1)) : vec(0.8f, 0.25f, 1)), 600, 100, 0, 8);
 		else adddynlight(v, 1.15f*guns[gun].exprad, vec(2, 1.5f, 1), 700, 100);
 		int numdebris = rnd(maxdebris-5)+5;
 		vec debrisvel = vec(owner->o).sub(v).safenormalize(), debrisorigin(v);
@@ -863,7 +863,7 @@ namespace game
 			bouncer &bnc = *bouncers[i];
 			if(bnc.bouncetype!=BNC_GRENADE) continue;
 			vec pos = bnc.offsetpos();
-			vec grenclr = (m_teammode ? (!strcmp(bnc.owner->team, "red") ? vec(1, 0.25f, 0.25f) : vec(0.25f, 0.25f, 1)) : vec(0.25f, 1, 1));
+			vec grenclr = (m_teammode ? (!strcmp(bnc.owner->team, "red") ? vec(1, 0.25f, 0.25f) : vec(0.25f, 0.25f, 1)) : vec(0.8f, 0.25f, 1));
 			// we're going to pretend this isn't gross. -Y
 			adddynlight(pos, (float)((bnc.lifetime/(float)100)+1), grenclr);
 		}

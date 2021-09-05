@@ -1172,9 +1172,9 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 		setvar("lightlod", chdr.lightlod);
 		if(chdr.ambient) setvar("ambient", chdr.ambient);
 		setvar("skylight", (int(chdr.skylight[0])<<16) | (int(chdr.skylight[1])<<8) | int(chdr.skylight[2]));
-		setvar("watercolour", (int(chdr.watercolour[0])<<16) | (int(chdr.watercolour[1])<<8) | int(chdr.watercolour[2]), true);
-		setvar("waterfallcolour", (int(chdr.waterfallcolour[0])<<16) | (int(chdr.waterfallcolour[1])<<8) | int(chdr.waterfallcolour[2]));
-		setvar("lavacolour", (int(chdr.lavacolour[0])<<16) | (int(chdr.lavacolour[1])<<8) | int(chdr.lavacolour[2]));
+		setvar("watercolor", (int(chdr.watercolor[0])<<16) | (int(chdr.watercolor[1])<<8) | int(chdr.watercolor[2]), true);
+		setvar("waterfallcolor", (int(chdr.waterfallcolor[0])<<16) | (int(chdr.waterfallcolor[1])<<8) | int(chdr.waterfallcolor[2]));
+		setvar("lavacolor", (int(chdr.lavacolor[0])<<16) | (int(chdr.lavacolor[1])<<8) | int(chdr.lavacolor[2]));
 		setvar("fullbright", 0, true);
 		if(chdr.lerpsubdivsize || chdr.lerpangle) setvar("lerpangle", chdr.lerpangle);
 		if(chdr.lerpsubdivsize)
