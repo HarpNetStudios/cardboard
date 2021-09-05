@@ -541,7 +541,7 @@ struct texticonrenderer : listrenderer
 			gle::attrib(p->color, blend);
 	}
 };
-static texticonrenderer texticons("packages/hud/items.png", PT_TEXTICON|PT_LERP);
+static texticonrenderer texticons("packages/hud/items0.png", PT_TEXTICON|PT_LERP);
 
 template<int T>
 static inline void modifyblend(const vec &o, int &blend)
@@ -912,15 +912,17 @@ static partrenderer *parts[] =
 	new taperenderer("packages/particles/flare.png", PT_TAPE|PT_GLARE),                            // streak
 	&lightnings,                                                                                   // lightning
 	&fireballs,                                                                                    // explosion fireball
-	&bluefireballs,                                                                                // bluish explosion fireball
+	&grenfireballs,                                                                                // grenade explosion fireball
+	&grenfireballsred,                                                                             // grenade explosion fireball (red)
+	&grenfireballsblue,                                                                            // grenade explosion fireball (blue)
 	new quadrenderer("packages/particles/spark.png", PT_PART|PT_FLIP|PT_GLARE),                    // sparks
 	new quadrenderer("packages/particles/base.png",  PT_PART|PT_FLIP|PT_GLARE),                    // edit mode entities
 	new quadrenderer("<grey>packages/particles/snow.png", PT_PART|PT_FLIP|PT_RND4, -1),            // colliding snow
 	new quadrenderer("packages/particles/muzzleflash1.png", PT_PART|PT_FEW|PT_FLIP|PT_GLARE|PT_TRACK), // muzzle flash
 	new quadrenderer("packages/particles/muzzleflash2.png", PT_PART|PT_FEW|PT_FLIP|PT_GLARE|PT_TRACK), // muzzle flash
 	new quadrenderer("packages/particles/muzzleflash3.png", PT_PART|PT_FEW|PT_FLIP|PT_GLARE|PT_TRACK), // muzzle flash
-	new quadrenderer("packages/hud/items.png", PT_PART|PT_FEW|PT_ICON),                            // hud icon
-	new quadrenderer("<colorify:1/1/1>packages/hud/items.png", PT_PART|PT_FEW|PT_ICON),            // grey hud icon
+	new quadrenderer("packages/hud/items0.png", PT_PART|PT_FEW|PT_ICON),                           // hud icon
+	new quadrenderer("<colorify:1/1/1>packages/hud/items0.png", PT_PART|PT_FEW|PT_ICON),           // grey hud icon
 	&texts,                                                                                        // text
 	&texticons,                                                                                    // text icons
 	&meters,                                                                                       // meter
@@ -934,7 +936,9 @@ void finddepthfxranges()
 	depthfxmin = vec(1e16f, 1e16f, 1e16f);
 	depthfxmax = vec(0, 0, 0);
 	numdepthfxranges = fireballs.finddepthfxranges(depthfxowners, depthfxranges, 0, MAXDFXRANGES, depthfxmin, depthfxmax);
-	numdepthfxranges = bluefireballs.finddepthfxranges(depthfxowners, depthfxranges, numdepthfxranges, MAXDFXRANGES, depthfxmin, depthfxmax);
+	numdepthfxranges = grenfireballs.finddepthfxranges(depthfxowners, depthfxranges, numdepthfxranges, MAXDFXRANGES, depthfxmin, depthfxmax);
+	numdepthfxranges = grenfireballsred.finddepthfxranges(depthfxowners, depthfxranges, numdepthfxranges, MAXDFXRANGES, depthfxmin, depthfxmax);
+	numdepthfxranges = grenfireballsblue.finddepthfxranges(depthfxowners, depthfxranges, numdepthfxranges, MAXDFXRANGES, depthfxmin, depthfxmax);
 	loopk(3)
 	{
 		depthfxmin[k] -= depthfxmargin;

@@ -245,4 +245,5 @@ struct fireballrenderer : listrenderer
 		}
 	}
 };
-static fireballrenderer fireballs("packages/particles/explosion.png"), bluefireballs("packages/particles/plasma.png");
+static fireballrenderer fireballs("packages/particles/explosion.png"), grenfireballs("packages/particles/plasma.png"),
+						grenfireballsred("packages/particles/plasma-red.png"), grenfireballsblue("packages/particles/plasma-blue.png");

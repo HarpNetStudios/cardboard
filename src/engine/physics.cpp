@@ -1400,67 +1400,6 @@ bool move(physent *d, vec &dir)
 	return !collided;
 }
 
-bool spacemove(physent *d, vec &dir)
-{
-	vec old(d->o);
-	bool collided = false, slidecollide = false;
-	vec obstacle;
-	d->o.add(dir);
-	if(collide(d, dir) || ((d->type==ENT_AI || d->type==ENT_CAMERA) && collide(d, vec(0, 0, 0), 0, false)))
-	{
-		obstacle = collidewall;
-		/* check to see if there is an obstacle that would prevent this one from being used as a floor (or ceiling bump) */
-		if(d->type==ENT_PLAYER && ((collidewall.z>=SLOPEZ && dir.z<0) || (collidewall.z<=-SLOPEZ && dir.z>0)) && (dir.x || dir.y) && collide(d, vec(dir.x, dir.y, 0)))
-		{
-			if(collidewall.dot(dir) >= 0) slidecollide = true;
-			obstacle = collidewall;
-		}
-		d->o = old;
-		d->o.z -= STAIRHEIGHT;
-		d->zmargin = -STAIRHEIGHT;
-		if(d->physstate == PHYS_SLOPE || d->physstate == PHYS_FLOOR || (collide(d, vec(0, 0, -1), SLOPEZ) && (d->physstate==PHYS_STEP_UP || d->physstate==PHYS_STEP_DOWN || collidewall.z>=FLOORZ)))
-		{
-			d->o = old;
-			d->zmargin = 0;
-			if(trystepup(d, dir, obstacle, STAIRHEIGHT, d->physstate == PHYS_SLOPE || d->physstate == PHYS_FLOOR ? d->floor : vec(collidewall))) return true;
-		}
-		else
-		{
-			d->o = old;
-			d->zmargin = 0;
-		}
-		/* can't step over the obstacle, so just slide against it */
-		collided = true;
-	}
-	else if(d->physstate == PHYS_STEP_UP)
-	{
-		if(collide(d, vec(0, 0, -1), SLOPEZ))
-		{
-			d->o = old;
-			if(trystepup(d, dir, vec(0, 0, 1), STAIRHEIGHT, vec(collidewall))) return true;
-			//d->o.add(dir);
-		}
-	}
-	else if(d->physstate == PHYS_STEP_DOWN && dir.dot(d->floor) <= 1e-6f)
-	{
-		vec moved(d->o);
-		d->o = old;
-		if(trystepdown(d, dir)) return true;
-		d->o = moved;
-	}
-	vec floor(0, 0, 0);
-	bool slide = collided,
-		 found = findfloor(d, collided, obstacle, slide, floor);
-	if(slide || (!collided && floor.z > 0 && floor.z < WALLZ))
-	{
-		slideagainst(d, dir, slide ? obstacle : floor, found, slidecollide);
-		d->blocked = true;
-	}
-	if(found) landing(d, dir, floor, collided);
-	else falling(d, dir, floor);
-	return !collided;
-}
-
 bool bounce(physent *d, float secs, float elasticity, float waterfric, float grav)
 {
 	// make sure bouncers don't start inside geometry
@@ -1714,22 +1653,6 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 			pl->vel.z = max(pl->vel.z, JUMPVEL);
 		}
 	}
-	
-	else if(pl->spacepack && !pl->spaceclip)
-	{
-		if(pl->jumping && allowmove)
-		{
-			pl->jumping = false;
-			if(pl->physstate != PHYS_FLOAT)
-			{
-				if(pl->physstate == PHYS_FLOOR) {
-					pl->vel.z = max(pl->vel.z, JUMPVEL);
-					game::physicstrigger(pl, local, 1, 0);
-				}
-			}
-		}
-	}
-
 	else if(pl->physstate >= PHYS_SLOPE || water)
 	{
 		if(water && !pl->inwater) pl->vel.div(2);
@@ -1761,22 +1684,20 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 		pl->jumping = false;
 	}
 
-	if(!(floating || (pl->spacepack && !pl->spaceclip)) && pl->physstate == PHYS_FALL) {
-		pl->timeinair = min(pl->timeinair + curtime, 1000);
-	}
-	
+	if(!floating && pl->physstate == PHYS_FALL) pl->timeinair = min(pl->timeinair + curtime, 1000);
+
 	vec m(0.0f, 0.0f, 0.0f);
 	if(pl->tryingtomove() && allowmove)
 	{
 		vecfrommovement
 		(pl->yaw
-			, (pl->spacepack && !pl->spaceclip) || floating || water || pl->type == ENT_CAMERA ? pl->pitch : 0
+			, floating || water || pl->type == ENT_CAMERA ? pl->pitch : 0
 			, pl->fmove
 			, pl->fstrafe
 			, m
 		);
 
-		if((!floating || !pl->spacepack) && pl->physstate >= PHYS_SLOPE)
+		if(!floating && pl->physstate >= PHYS_SLOPE)
 		{
 			/* move up or down slopes in air
 			 * but only move up slopes in water
@@ -1821,10 +1742,7 @@ void modifygravity(physent *pl, bool water, int curtime)
 		g.normalize();
 		g.mul(gravity*secs);
 	}
-	if(!water || !game::allowmove(pl) || !pl->tryingtomove())
-	{
-		if(!pl->spacepack || pl->spaceclip) pl->falling.add(g);
-	}
+	if(!water || !game::allowmove(pl) || !pl->tryingtomove()) pl->falling.add(g);
 
 	if(water || pl->physstate >= PHYS_SLOPE)
 	{
@@ -1843,13 +1761,11 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 {
 	int material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (3*pl->aboveeye - pl->eyeheight)/4));
 	bool water = isliquid(material&MATF_VOLUME);
-	bool inspclip = isspaceclip(material&MATF_VOLUME);
 	bool floating = pl->type==ENT_PLAYER && (pl->state==CS_EDITING || pl->state==CS_SPECTATOR);
-	bool ispack = pl->type==ENT_PLAYER && pl->spacepack && !pl->spaceclip;
 	float secs = curtime/1000.f;
 
 	// apply gravity
-	if(!floating && !ispack) modifygravity(pl, water, curtime);
+	if(!floating) modifygravity(pl, water, curtime);
 	// apply any player generated changes in velocity
 	modifyvelocity(pl, local, water, floating, curtime);
 
@@ -1869,20 +1785,6 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 			pl->falling = vec(0, 0, 0);
 		}
 		pl->o.add(d);
-	}
-	else if(ispack && !inspclip) // using spacepack
-	{
-		const float f = 1.0f / moveres;
-		int collisions = 0;
-
-		if(pl->physstate != PHYS_FLOAT)
-		{
-			pl->physstate = PHYS_FLOAT;
-			pl->timeinair = 0;
-			pl->falling = vec(0, 0, 0);
-		}
-		d.mul(f);
-		for(int i = 0; i < int(moveres); ++i) if(!spacemove(pl, d) && ++collisions < 5) i--; // discrete steps collision detection & sliding
 	}
 	else                        // apply velocity with collision
 	{
@@ -1919,10 +1821,6 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 	
 	// DEATH or being under the origin (z<0) kills you
 	if(pl->state==CS_ALIVE && (pl->o.z < 0 || material&MAT_DEATH)) game::suicide(pl);
-
-	// SPACECLIP prevents spacepack usage
-	if(pl->state==CS_ALIVE && (material&MAT_SPACECLIP)) pl->spaceclip = true;
-	else if (pl->state==CS_ALIVE && !(material&MAT_SPACECLIP) && pl->spaceclip) pl->spaceclip = !pl->spaceclip;
 
 	// JUMPRESET allows another double jump
 	if(pl->state==CS_ALIVE && (material&MAT_JUMPRESET)) if(pl->jumpstate >= 2) pl->jumpstate = 1;
@@ -2012,11 +1910,6 @@ void updatephysstate(physent *d)
 	 */
 	switch(d->physstate)
 	{
-		case PHYS_FLOAT:
-			if(d->spacepack && !d->spaceclip && collide(d, vec(0, 0, 0)) && collidewall.z == SLOPEZ)
-				d->floor = collidewall;
-			break; // what the fuck
-
 		case PHYS_SLOPE:
 		case PHYS_FLOOR:
 		case PHYS_STEP_DOWN:

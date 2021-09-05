@@ -232,7 +232,8 @@ namespace server
 	struct clientinfo
 	{
 		int clientnum, ownernum, connectmillis, sessionid, overflow;
-		cbstring name, team, tags, mapvote;
+		cbstring name, team, mapvote;
+		playerinfo pinfo;
 		int playermodel;
 		int modevote;
 		int privilege;
@@ -301,9 +302,11 @@ namespace server
 			if(exceeded && checkpushed(exceeded, calcpushrange())) exceeded = 0;
 		}
 		
+
+		// TODO: This check causes stupid disconnects when moving in the "wrong way" whatever that means, fix this later. -Y
 		bool checkexceeded()
 		{
-			return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange(); // TODO: check if there are physics manipulation entities
+			return state.state==CS_ALIVE && exceeded && gamemillis > exceeded + calcpushrange();
 		}
 
 		void mapchange()

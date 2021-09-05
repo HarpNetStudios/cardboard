@@ -80,7 +80,6 @@ struct physent                                  // base entity type, can be affe
 	bool jumping;
 	int jumpstate;								// state of the jump, 1 for single, 2 for double
 	bool candouble;								// used to see if the player can double jump
-	bool spacepack, spaceclip;					// used to see if the player can activate spacepack
 	float fmove, fstrafe;                       // used by the joystick for constant movement
 	float camx, camy;                           // used by the joystick for constant camera updates
 
@@ -93,7 +92,6 @@ struct physent                                  // base entity type, can be affe
 
 	physent() : o(0, 0, 0), deltapos(0, 0, 0), newpos(0, 0, 0), yaw(0), pitch(0), roll(0), maxspeed(100), 
 			   radius(4.1f), eyeheight(14), aboveeye(1), xradius(4.1f), yradius(4.1f), zmargin(0),
-			   spacepack(false), spaceclip(false),
 			   state(CS_ALIVE), editstate(CS_ALIVE), type(ENT_PLAYER),
 			   collidetype(COLLIDE_ELLIPSE),
 			   blocked(false)
@@ -111,8 +109,6 @@ struct physent                                  // base entity type, can be affe
 		timeinair = 0;
 		jumping = false;
 		candouble = false;
-		spacepack = false;
-		spaceclip = false;
 		jumpstate = 0;
 		fstrafe = fmove = 0.0f;
 		camx = camy = 0.0f;

@@ -339,10 +339,6 @@ enum
 
 	HICON_TOKEN,
 
-	HICON_SPACEPACK,
-	HICON_SPACEPACK_OFF,
-	HICON_SPACEPACK_CLIP,
-
 	HICON_FIST_OFF,
 
 	HICON_X       = 20,
@@ -556,6 +552,23 @@ struct fpsstate
 
 #include "weaponstats_type.h"
 
+
+
+struct playerinfo
+{
+	enum statuscode
+	{
+		EMPTY = 0,
+		OK,
+		FAIL
+	};
+
+	cbstring tags = "";
+	int wskins[NUMGUNS];
+
+	int status = EMPTY;
+};
+
 struct fpsent : dynent, fpsstate
 {
 	int weight;                         // affects the effectiveness of hitpush
@@ -581,9 +594,9 @@ struct fpsent : dynent, fpsstate
 	editinfo *edit;
 	float deltayaw, deltapitch, deltaroll, newyaw, newpitch, newroll;
 	int smoothmillis;
-	bool tagfetch; // check if tag has been got. -Y
+	playerinfo *pinfo;
 
-	cbstring name, team, info, tags, pubtoken;
+	cbstring name, team, info, pubtoken;
 	int playermodel;
 	ai::aiinfo *ai;
 	int ownernum, lastnode;
@@ -594,9 +607,10 @@ struct fpsent : dynent, fpsstate
 	
 	bool hasflag;
 
-	fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1), frags(0), flags(0), deaths(0), totaldamage(0), totalshots(0), suicides(0), edit(NULL), smoothmillis(-1), playermodel(-1), ai(NULL), ownernum(-1), muzzle(-1, -1, -1), tagfetch(false), grappling(false), hasflag(false)
+	fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1), frags(0), flags(0), deaths(0), totaldamage(0), totalshots(0), suicides(0), edit(NULL), smoothmillis(-1), playermodel(-1), ai(NULL), ownernum(-1), muzzle(-1, -1, -1), grappling(false), hasflag(false)
 	{
-		name[0] = team[0] = info[0] = tags[0] = 0;
+		name[0] = team[0] = info[0] = 0;
+		pinfo = new playerinfo;
 		respawn();
 	}
 	~fpsent()
@@ -785,7 +799,7 @@ namespace game
 	extern int smoothmove, smoothdist;
 
 	extern bool clientoption(const char *arg);
-	extern const char* gettags(fpsent* d, char *tag = NULL);
+	extern bool getplayerinfo(fpsent* d);
 	extern fpsent *getclient(int cn);
 	extern fpsent *newclient(int cn);
 	extern const char* colorname(fpsent* d, const char* name = NULL, const char* prefix = "", const char* suffix = "", const char* alt = NULL, bool tags = false, bool scoreboard = false);

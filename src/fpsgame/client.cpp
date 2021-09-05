@@ -151,7 +151,7 @@ namespace game
 
 	ICOMMAND(getname, "", (), result(player1->name));
 
-	ICOMMAND(gettags, "", (), result(player1->tags));
+	ICOMMAND(gettags, "", (), result(player1->pinfo->tags));
 
 	void switchteam(const char *team)
 	{

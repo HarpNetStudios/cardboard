@@ -434,11 +434,11 @@ namespace game
 	{
 		particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f);
 		playsound(gun!=GUN_GL ? S_RLHIT : S_FEXPLODE, &v);
-		int color = gun!=GUN_GL ? 0xFF8080 : 0x80FFFF;
+		int color = gun!=GUN_GL ? 0xFF8080 : (m_teammode ? (!strcmp(owner->team, "red") ? 0xFF4040 : 0x4040FF ) : 0x80FFFF);
 		if((gun==GUN_RL || gun==GUN_GL) && explodebright < 1) color = vec::hexcolor(color).mul(explodebright).tohexcolor();
-		particle_fireball(v, guns[gun].exprad, gun!=GUN_GL ? PART_EXPLOSION : PART_EXPLOSION_BLUE, gun!=GUN_GL ? -1 : int((guns[gun].exprad-4.0f)*15), color, 4.0f);
+		particle_fireball(v, guns[gun].exprad, gun!=GUN_GL ? PART_EXPLOSION : (m_teammode ? (!strcmp(owner->team, "red") ? PART_EXPLOSION_GRENADE_RED : PART_EXPLOSION_GRENADE_BLUE ) : PART_EXPLOSION_GRENADE), gun!=GUN_GL ? -1 : int((guns[gun].exprad-4.0f)*15), color, 4.0f);
 		if(gun==GUN_RL) adddynlight(v, 1.15f*guns[gun].exprad, vec(2, 1.5f, 1), 700, 100, 0, guns[gun].exprad/2, vec(1, 0.75f, 0.5f));
-		else if(gun==GUN_GL) adddynlight(v, 1.15f*guns[gun].exprad, vec(0.5f, 1.5f, 2), 600, 100, 0, 8, vec(0.25f, 1, 1));
+		else if(gun==GUN_GL) adddynlight(v, 1.15f*guns[gun].exprad, (m_teammode ? (!strcmp(owner->team, "red") ? vec(1, 0.25f, 0.25f) : vec(0.25f, 0.25f, 1)) : vec(0.25f, 1, 1)), 600, 100, 0, 8);
 		else adddynlight(v, 1.15f*guns[gun].exprad, vec(2, 1.5f, 1), 700, 100);
 		int numdebris = rnd(maxdebris-5)+5;
 		vec debrisvel = vec(owner->o).sub(v).safenormalize(), debrisorigin(v);
@@ -807,7 +807,7 @@ namespace game
 
 		vec from = d->o, to = targ, dir = vec(to).sub(from).safenormalize();
 		float dist = to.dist(from);
-		vec kickback = vec(dir).mul(guns[d->gunselect].kickamount * ((d->spacepack && d->physstate == PHYS_FLOAT) ? -6.0f : -2.5f)); // spacepack dependant kickback
+		vec kickback = vec(dir).mul(guns[d->gunselect].kickamount*-2.5f);
 		d->vel.add(kickback);
 		float shorten = 0;
 		if(guns[d->gunselect].range && dist > guns[d->gunselect].range)
@@ -863,11 +863,13 @@ namespace game
 			bouncer &bnc = *bouncers[i];
 			if(bnc.bouncetype!=BNC_GRENADE) continue;
 			vec pos = bnc.offsetpos();
-			adddynlight(pos, bnc.lifetime/100, vec(0.25f, 1, 1));
+			vec grenclr = (m_teammode ? (!strcmp(bnc.owner->team, "red") ? vec(1, 0.25f, 0.25f) : vec(0.25f, 0.25f, 1)) : vec(0.25f, 1, 1));
+			// we're going to pretend this isn't gross. -Y
+			adddynlight(pos, (float)((bnc.lifetime/(float)100)+1), grenclr);
 		}
 	}
 
-	static const char * const projnames[2] = { "projectiles/grenade", "projectiles/rocket" };
+	static const char * const projnames[4] = { "projectiles/grenade", "projectiles/grenade/red", "projectiles/grenade/blue", "projectiles/rocket" };
 	static const char * const gibnames[3] = { "gibs/gib01", "gibs/gib02", "gibs/gib03" };
 	static const char * const debrisnames[4] = { "debris/debris01", "debris/debris02", "debris/debris03", "debris/debris04" };
 
@@ -894,8 +896,13 @@ namespace game
 				bnc.lastyaw = yaw;
 			}
 			pitch = -bnc.roll;
-			if(bnc.bouncetype==BNC_GRENADE)
-				rendermodel(&bnc.light, "projectiles/grenade", ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW);
+			if (bnc.bouncetype==BNC_GRENADE)
+			{
+				//conoutf(CON_DEBUG, "%s (team %s), rendering grenade", bnc.owner->name, bnc.owner->team);
+				cbstring grenmdl = "projectiles/grenade";
+				if(m_teammode) formatstring(grenmdl, "projectiles/grenade/%s", bnc.owner->team);
+				rendermodel(&bnc.light, grenmdl, ANIM_MAPMODEL|ANIM_LOOP, pos, yaw, pitch, MDL_CULL_VFC|MDL_CULL_OCCLUDED|MDL_LIGHT|MDL_LIGHT_FAST|MDL_DYNSHADOW);
+			}
 			else
 			{
 				const char *mdl = NULL;

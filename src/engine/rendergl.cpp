@@ -810,19 +810,11 @@ bool isthirdperson() { return player!=camera1 || detachedcamera || reflecting; }
 
 void fixcamerarange()
 {
-	const float MAXPITCH = 89.9f;
-	if((player->spacepack && !player->spaceclip) && player->physstate != PHYS_FLOOR) {
-		if(camera1->pitch >= 180.0f) camera1->pitch = -179.9f;
-		if(camera1->pitch <= -180.0f) camera1->pitch = 179.9f;
-		while (camera1->yaw < 0.0f) camera1->yaw += 360.0f;
-		while (camera1->yaw >= 360.0f) camera1->yaw -= 360.0f;
-	}
-	else {
-		if(camera1->pitch > MAXPITCH) camera1->pitch = MAXPITCH;
-		if(camera1->pitch < -MAXPITCH) camera1->pitch = -MAXPITCH;
-		while (camera1->yaw < 0.0f) camera1->yaw += 360.0f;
-		while (camera1->yaw >= 360.0f) camera1->yaw -= 360.0f;
-	}
+	const float MAXPITCH = 90.0f;
+	if(camera1->pitch>MAXPITCH) camera1->pitch = MAXPITCH;
+	if(camera1->pitch<-MAXPITCH) camera1->pitch = -MAXPITCH;
+	while(camera1->yaw<0.0f) camera1->yaw += 360.0f;
+	while(camera1->yaw>=360.0f) camera1->yaw -= 360.0f;
 }
 
 void mousemove(int dx, int dy)
@@ -843,13 +835,7 @@ void mousemove(int dx, int dy)
 		}
 	}
 	if(curaccel && curtime && (dx || dy)) cursens += curaccel * sqrtf(dx*dx + dy*dy)/curtime;
-	if((camera1->pitch >= 90.0f || camera1->pitch <= -90.0f) && (player->spacepack && !player->spaceclip)) {
-		camera1->yaw -= dx * cursens * mouseyaw;
-	}
-	else {
-		camera1->yaw += dx * cursens * mouseyaw;
-	}
-
+	camera1->yaw += dx * cursens * mouseyaw;
 	camera1->pitch -= dy * cursens * mousepitch;
 	fixcamerarange();
 	if(camera1!=player && !detachedcamera)
@@ -884,13 +870,7 @@ void joymove(float dx, float dy)
 	float balls = curaccel * sqrtf(dx * dx + dy * dy) / curtime;
 	//conoutf("awesome: %f", balls);
 	if(curaccel && curtime && (dx || dy)) cursens += balls;
-	if((camera1->pitch >= 90.0f || camera1->pitch <= -90.0f) && (player->spacepack && !player->spaceclip)) {
-		camera1->yaw -= dx * cursens * mouseyaw;
-	}
-	else {
-		camera1->yaw += dx * cursens * mouseyaw;
-	}
-
+	camera1->yaw += dx * cursens * mouseyaw;
 	camera1->pitch -= dy * cursens * mousepitch;
 	fixcamerarange();
 

@@ -150,7 +150,6 @@ const struct material
 	{"gameclip", MAT_GAMECLIP},
 	{"death", MAT_DEATH},
 	{"alpha", MAT_ALPHA},
-	{"spaceclip", MAT_SPACECLIP},
 	{"jumpreset", MAT_JUMPRESET}
 };
 
@@ -557,7 +556,6 @@ void rendermatgrid(vector<materialsurface *> &vismats)
 				case MAT_GAMECLIP:   color = bvec4( 85, 85,  0, 255); break; // yellow
 				case MAT_DEATH:      color = bvec4( 40, 40, 40, 255); break; // black
 				case MAT_ALPHA:      color = bvec4( 85,  0, 85, 255); break; // pink
-				case MAT_SPACECLIP:  color = bvec4( 60, 60, 60, 255); break; // gray
 				case MAT_JUMPRESET:  color = bvec4(255,  0,  0, 255); break; // very red
 				default: continue;
 			}
@@ -668,7 +666,6 @@ void rendermaterials()
 					case MAT_GAMECLIP:   color = bvec4(  0,   0, 255, 255); break; // yellow
 					case MAT_DEATH:      color = bvec4(192, 192, 192, 255); break; // black
 					case MAT_ALPHA:      color = bvec4(  0, 255,   0, 255); break; // pink
-					case MAT_SPACECLIP:  color = bvec4(230, 230, 230, 255); break; // gray
 					case MAT_JUMPRESET:  color = bvec4(  0, 127, 127, 255); break; // very red
 					default: continue;
 				}

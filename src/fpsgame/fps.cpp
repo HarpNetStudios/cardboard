@@ -36,17 +36,6 @@ namespace game
 	}
 	COMMAND(taunt, "");
 
-	void togglespacepack()
-	{
-		if(!isconnected()) return;
-		if(!spacepackallowed) return;
-		//else if(!m_edit) return;
-		if(player1->state != CS_ALIVE && player1->state != CS_DEAD && player1->spacepack != true) return;
-		if(player1->state == CS_ALIVE) // only allow spacepack toggle when alive
-			player1->spacepack = !player1->spacepack;
-	}
-	COMMAND(togglespacepack, "");
-
 	ICOMMAND(getfollow, "", (),
 	{
 		fpsent *f = followingplayer();
@@ -665,32 +654,31 @@ void dosecattack(bool on)
 
 	static cbstring cname[3];
 	static int cidx = 0;
-	cbstring fulltag = "";
 
 	VARP(showtags, 0, 1, 1);
-	VAR(dbgtags, 0, 0, 1);
-	
-	const char* gettags(fpsent* d, char* tag)
+	VAR(dbgplayerinfo, 0, 0, 1);
+
+	bool getplayerinfo(fpsent* d)
 	{
-		if(offline) { d->tagfetch = true; return ""; }
-		if(d->tagfetch) return *d->tags ? d->tags : tag;
-		if(!d->name[0] || !strcmp(d->name, "CardboardPlayer")) return "";
-		copystring(d->tags, "");
-		if(dbgtags) conoutf(CON_INFO, "\fs\f1getting tags for %s...\fr", d->name);
+		if(offline) return false; // can't retrieve info in offline mode
+		if(!d->name[0] || !strcmp(d->name, "CardboardPlayer")) return false; // no name or default name
+		if(dbgplayerinfo) conoutf(CON_INFO, "\fs\f1getting player info for %s...\fr,", d->name);
+		if(d->pinfo->status == playerinfo::OK) return true; // already have player info
+		copystring(d->pinfo->tags, "");
+		loopi(NUMGUNS) d->pinfo->wskins[i] = 0;
 		cbstring apiurl;
-		formatstring(apiurl, "%s/game/get/tags?id=1&name=%s", __hnapi, d->name);
-		char* thing = web_get(apiurl, false);
-		//conoutf(CON_DEBUG, thing);
-		cJSON* json = cJSON_Parse(thing); // fix on linux, makefile doesn't work.
+		formatstring(apiurl, "%s/game/get/playerinfo?id=1&name=%s", __hnapi, d->name);
+		char* resp = web_get(apiurl, false);
+		cJSON* json = cJSON_Parse(resp);
 
 		// error handling
-		const cJSON* status = cJSON_GetObjectItemCaseSensitive(json, "status");
-		const cJSON* message = cJSON_GetObjectItemCaseSensitive(json, "message");
-		if(cJSON_IsNumber(status) && cJSON_IsString(message)) {
-			if(status->valueint > 0) {
-				if(dbgtags) conoutf(CON_INFO, "\fs\f3getting tags for %s failed! (non-zero)\fr", d->name);
-				d->tagfetch = true;
-				return "";
+		const cJSON* jstatus = cJSON_GetObjectItemCaseSensitive(json, "status");
+		const cJSON* jmessage = cJSON_GetObjectItemCaseSensitive(json, "message");
+		if(cJSON_IsNumber(jstatus) && cJSON_IsString(jmessage)) {
+			if(jstatus->valueint > 0) {
+				if(dbgplayerinfo) conoutf(CON_INFO, "\fs\f3getting player info for %s failed! (non-zero) [%s]\fr", d->name, jmessage);
+				d->pinfo->status = playerinfo::FAIL;
+				return false;
 			}
 			else {
 				// actual parse
@@ -711,10 +699,10 @@ void dosecattack(bool on)
 						color = cJSON_GetObjectItemCaseSensitive(tagitm, "color");
 						if(strcmp(tag->valuestring, "")) 
 						{
-							if(dbgtags) conoutf(CON_DEBUG, "tag is \"%s\"", tag->valuestring);
+							if(dbgplayerinfo) conoutf(CON_DEBUG, "tag is \"%s\"", tag->valuestring);
 							if(cJSON_IsString(color) && (color->valuestring != NULL) && (strcmp(color->valuestring, "")))
 							{
-								if(dbgtags) conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
+								if(dbgplayerinfo) conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
 								concformatstring(conc, "\fs\f%s[%s]\fr", color->valuestring, tag->valuestring);
 							}
 							else {
@@ -723,29 +711,29 @@ void dosecattack(bool on)
 						}
 						else if(cJSON_IsString(color) && (color->valuestring != NULL))
 						{
-							if(dbgtags) conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
+							if(dbgplayerinfo) conoutf(CON_DEBUG, "color is \"%s\"", color->valuestring);
 							concformatstring(conc, "\f%s", color->valuestring);
 						}
 					}
 				}
-				formatstring(fulltag, "%s", conc);
-				copystring(d->tags, fulltag);
-				d->tagfetch = true;
+				defformatstring(fulltag, "%s", conc);
+				copystring(d->pinfo->tags, fulltag);
+				d->pinfo->status = playerinfo::OK;
 				free(json);
-				return fulltag;
+				return true;
 			}
 		}
 		else {
 			//conoutf(CON_ERROR, "malformed JSON recieved from server");
 			free(json);
 			conoutf(CON_INFO, "\fs\f3getting tags for %s failed! (malformed JSON)\fr", d->name);
-			d->tagfetch = true;
-			return "";
+			d->pinfo->status = playerinfo::FAIL;
+			return false;
 		}
 		free(json);
 		conoutf(CON_INFO, "\fs\f3getting tags for %s failed! (no tag)\fr", d->name);
-		d->tagfetch = true;
-		return "";
+		d->pinfo->status = playerinfo::FAIL;
+		return false;
 	}
 	
 	VARP(showmodeinfo, 0, 1, 1);
@@ -783,7 +771,7 @@ void dosecattack(bool on)
 			cmode->setup();
 		}
 
-		gettags(player1);
+		getplayerinfo(player1);
 
 		const char* info = m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
 		if(showmodeinfo && info) conoutf(CON_GAMEINFO, "\f2%s: \f0%s", server::modename(gamemode), info); // gamemode info, triggered twice on first map load?????? -Y
@@ -876,7 +864,8 @@ void dosecattack(bool on)
 		bool dup = !name[0] || (showclientnum >= 2 && !scoreboard && (!alt || d != player1)) || duplicatename(d, name, alt) || d->aitype != AI_NONE;
 		cidx = (cidx + 1) % 3;
 		if(d->aitype == AI_NONE && showtags && tags) {
-			prefix = gettags(d);
+			getplayerinfo(d);
+			prefix = d->pinfo->tags;
 			if(prefix == NULL) prefix = "";
 		}
 		if(dup || prefix[0] || suffix[0])
@@ -1017,17 +1006,6 @@ void dosecattack(bool on)
 
 	VARP(delayammo, 0, 1, 1);
 
-	void drawspacepack(fpsent *d)
-	{
-		int icon;
-
-		if(d->spacepack) icon = HICON_SPACEPACK;
-		else icon = HICON_SPACEPACK_OFF;
-		if(d->spacepack && d->spaceclip) icon = HICON_SPACEPACK_CLIP;
-		gle::color(bvec::hexcolor(0xFFFFFF), 255);
-		drawicon(icon, HICON_X + (healthbar ? 2 : 3) * HICON_STEP, HICON_Y);
-	}
-
 	void drawammohud(fpsent *d) // this is messy, clean up later -Y 04/03/2020
 	{
 		gle::color(bvec::hexcolor(0xFFFFFF), 255);
@@ -1042,7 +1020,7 @@ void dosecattack(bool on)
 
 				
 
-				drawicon(((i==GUN_FIST&&d->jumpstate==2) ? HICON_FIST_OFF : HICON_FIST+i+ammohudhidemelee), HICON_X + ((healthbar ? 3+ammohudoffset : 4+ammohudoffset) * HICON_STEP) + (spa*HICON_SIZE/ammohudscale), HICON_Y, 120/ammohudscale);
+				drawicon(((i==GUN_FIST&&d->jumpstate==2&&!ammohudhidemelee) ? HICON_FIST_OFF : HICON_FIST+i+ammohudhidemelee), HICON_X + ((healthbar ? 3+ammohudoffset : 4+ammohudoffset) * HICON_STEP) + (spa*HICON_SIZE/ammohudscale), HICON_Y, 120/ammohudscale);
 			}
 		}
 	}
@@ -1077,8 +1055,6 @@ void dosecattack(bool on)
 				drawicon((d->jumpstate == 2 ? HICON_FIST_OFF : HICON_FIST), HICON_X + (healthbar ? 1 : 2) * HICON_STEP, HICON_Y);
 			}
 			else drawicon(HICON_FIST + d->gunselect, HICON_X + (healthbar ? 1 : 2) * HICON_STEP, HICON_Y);
-			
-			if(spacepackallowed) drawspacepack(d);
 
 			if(ammohud) drawammohud(d);
 		}
