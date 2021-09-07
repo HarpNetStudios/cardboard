@@ -1,3 +1,5 @@
+// Steamworks SDK
+
 #include "game.h"
 #include "engine.h"
 #include "cube.h"
@@ -6,6 +8,10 @@
 
 #include "steam/steam_api.h"
 #include "steam.h"
+
+namespace gamepad {
+	extern int dbgjoy;
+}
 
 namespace steam {
 
@@ -164,6 +170,11 @@ namespace steam {
 	// Global access to Achievements object
 	CSteamAchievements* g_SteamAchievements = NULL;
 
+	InputHandle_t *inputHandles = new InputHandle_t[STEAM_INPUT_MAX_COUNT];
+
+	InputActionSetHandle_t playSetHandle;
+	InputActionSetHandle_t menuSetHandle;
+
 	int initSteam()
 	{
 		if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) // Replace with your App ID
@@ -177,12 +188,23 @@ namespace steam {
 			return 1;
 		}
 
+		SteamInput()->Init();
+
+		playSetHandle = SteamInput()->GetActionSetHandle("InGameControls");
+		menuSetHandle = SteamInput()->GetActionSetHandle("MenuControls");
+
+		input_getConnectedControllers();
+
+		// temporary
+		SteamInput()->ActivateActionSet(inputHandles[0], playSetHandle);
+
 		g_SteamAchievements = new CSteamAchievements(g_Achievements, 8);
 
 		return 0;
 	}
 
 	void cleanup() {
+		SteamInput()->Shutdown();
 		// Shutdown Steam
 		SteamAPI_Shutdown();
 		// Delete the SteamAchievements object
@@ -209,6 +231,126 @@ namespace steam {
 	{
 		SteamScreenshots()->AddScreenshotToLibrary(path, NULL, width, height);
 	}
+
+	int input_getConnectedControllers() {
+		return SteamInput()->GetConnectedControllers(inputHandles);
+	}
+
+	void input_updateActions(int gamestate) {
+		InputActionSetHandle_t handle = playSetHandle;
+
+		switch (gamestate)
+		{
+			case ST_MENU:
+				handle = menuSetHandle;
+			case ST_PLAYING:
+				handle = playSetHandle;
+		}
+
+		SteamInput()->ActivateActionSet(inputHandles[0], handle);
+	}
+
+	void input_registerBinds() {
+		execute("bind SI_ATTACK [attack]");
+		execute("bind SI_JUMP [jump]");
+		execute("bind SI_LAST_WEAP [weapon]");
+		execute("bind SI_WEAP_C_UP [cycleweapon 0 1 2 3 4 5 6]");
+		execute("bind SI_WEAP_C_DN [cycleweapon 6 5 4 3 2 1 0]");
+		execute("bind SI_WEAP_FI [setweapon FI]");
+		execute("bind SI_WEAP_MG [setweapon MG]");
+		execute("bind SI_WEAP_SG [setweapon SG]");
+		execute("bind SI_WEAP_RI [setweapon RI]");
+		execute("bind SI_WEAP_CG [setweapon CG]");
+		execute("bind SI_WEAP_RL [setweapon RL]");
+		execute("bind SI_WEAP_GL [setweapon GL]");
+		execute("bind SI_TAUNT [taunt]");
+		execute("bind SI_ZOOM_TOGGLE [togglezoom]");
+		execute("bind SI_ZOOM_HOLD [holdzoom]");
+		execute("bind SI_SCOREBOARD [showscores]");
+		execute("bind SI_GRAPPLE [usehook]");
+		execute("bind SI_DROP_FLAG [dropflag]");
+
+		/*
+		execute("bind SI_MENU_SELECT []");
+		execute("bind SI_MENU_CANCEL []");
+		execute("bind SI_MENU_UP []");
+		execute("bind SI_MENU_DOWN []");
+		execute("bind SI_MENU_LEFT []");
+		execute("bind SI_MENU_RIGHT []");
+		execute("bind SI_MENU_TAB_NEXT []");
+		execute("bind SI_MENU_TAB_PREV []");
+		*/
+	}
+
+	bool input_getDigitalAction(const char* action) {
+		InputDigitalActionData_t data = SteamInput()->GetDigitalActionData(inputHandles[0], SteamInput()->GetDigitalActionHandle(action));
+		//if(gamepad::dbgjoy) conoutf("getting called, active %d, state %d", data.bActive, data.bState);
+		return (data.bActive && data.bState);
+	}
+
+	vec2 input_getAnalogAction(const char* action) {
+		InputAnalogActionData_t data = SteamInput()->GetAnalogActionData(inputHandles[0], SteamInput()->GetAnalogActionHandle(action));
+		if(gamepad::dbgjoy) conoutf("getting called, x %d, y %d", data.x, data.y);
+		return vec2(data.x, data.y);
+	}
+
+	// TODO: implement eventually, I don't have a DS4/5 to test with. -Y
+	void input_setColor(int controller, bvec color) {
+		if(controller+1 > sizeof(inputHandles) || controller < 0) return;
+		SteamInput()->SetLEDColor(inputHandles[controller], color.r, color.g, color.b, k_ESteamControllerLEDFlag_SetColor);
+	}
+
+	const int numPlayActions = 18;
+	const int numMenuActions = 8;
+
+	char *playActions[numPlayActions] = { "attack", "jump", "last_weap", "weap_cycle_up", "weap_cycle_dn", "weap_melee", "smg", "shotgun", "sniper", "chaingun", "rocket", "grenade", "taunt", "toggle_zoom", "hold_zoom", "scoreboard", "grapple", "drop_flag" };
+	bool playActionsActive[numPlayActions] = {};
+	char *menuActions[numMenuActions] = { "menu_select", "menu_cancel", "menu_up", "menu_down", "menu_left", "menu_right", "menu_tab_next", "menu_tab_prev" };
+	bool menuActionsActive[numMenuActions] = {};
+
+	void input_checkController() {
+		for (int i = 0; i < numPlayActions; i++)
+		{
+			bool status = steam::input_getDigitalAction(playActions[i]);
+			if (status && !playActionsActive[i]) {
+				processkey(-2001-i, true);
+				playActionsActive[i] = status;
+			}
+			else if (!status && playActionsActive[i]) {
+				processkey(-2001-i, false);
+				playActionsActive[i] = status;
+			}
+		}
+
+		vec2 moveStick = input_getAnalogAction("move");
+		player->fmove = moveStick.y;
+		player->fstrafe = -moveStick.x;
+
+		// there are subtle differences between these, let the user decide -Y
+		vec2 cameraStick = input_getAnalogAction("camera_gamepad");
+		player->camx = cameraStick.x;
+		player->camy = -cameraStick.y;
+
+		vec2 cameraMouse = input_getAnalogAction("camera_mouse");
+		mousemove(cameraMouse.x, cameraMouse.y);
+
+		for (int i = 0; i < numMenuActions; i++)
+		{
+			bool status = steam::input_getDigitalAction(menuActions[i]);
+			if (status && !menuActionsActive[i]) {
+				processkey(-2100-i, true);
+				menuActionsActive[i] = status;
+			}
+			else if (!status && menuActionsActive[i]) {
+				processkey(-2100-i, false);
+				menuActionsActive[i] = status;
+			}
+		}
+		//if(steam::input_getDigitalAction("attack")) processkey(-2001, true);
+		//if(steam::input_getDigitalAction("jump")) processkey(-2002, true);
+	}
+
+	ICOMMAND(steaminput_binding, "", (), { SteamInput()->ShowBindingPanel(inputHandles[0]); });
 
 	// this is fucking stupid, but i'm sleep deprived and this seemed like the easiest way -Y
 	ICOMMAND(_steam_botmatch, "", (), { setAchievement("ACH_PLAY_BOTS"); });

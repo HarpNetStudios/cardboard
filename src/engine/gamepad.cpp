@@ -36,7 +36,6 @@ namespace gamepad {
 		if (numGamepads > 0)
 		{
 			// Open the controller
-			// TODO: Add multi-controller support.
 			SDL_GameController* pad = SDL_GameControllerOpen(0);
 			if (SDL_GameControllerGetAttached(pad) == 1) {
 				controller = pad;
@@ -196,6 +195,15 @@ namespace gamepad {
 
 	void setenabled(const int enabled)
 	{
+		#ifdef STEAM
+		if (steam::input_getConnectedControllers()>0 && enabled) {
+			setvar("gamepad", 0);
+			conoutf(CON_WARN, "\foSteam Input enabled controller detected, use that instead.");
+			release();
+			return;
+		}
+		#endif
+
 		if(enabled) init();
 		else release();
 	}

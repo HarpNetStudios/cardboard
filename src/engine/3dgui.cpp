@@ -1205,6 +1205,7 @@ bool g3d_key(int code, bool isdown)
 	editor *e = currentfocus();
 	if(fieldmode == FIELDKEY)
 	{
+		if (code <= -2000) return false;
 		switch(code)
 		{
 			case SDLK_ESCAPE:

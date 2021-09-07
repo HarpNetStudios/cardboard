@@ -1568,6 +1568,13 @@ int main(int argc, char **argv)
 	ASSERT(dedicated <= 1);
 	game::initclient();
 
+	// moved this above video so we don't get a blank window if steam fails init. -Y
+	#ifdef STEAM
+		logoutf("init: steam");
+		steam::initSteam();
+		steam::steamCallbacks();
+	#endif
+
 	logoutf("init: video");
 	SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "0");
 	#if !defined(WIN32) && !defined(__APPLE__)
@@ -1592,12 +1599,6 @@ int main(int argc, char **argv)
 	logoutf("init: sound");
 	execfile("data/sounds.cfg"); // load sounds early
 	initsound();
-
-	#ifdef STEAM
-		logoutf("init: steam");
-		steam::initSteam();
-		steam::steamCallbacks();
-	#endif
 
 	inbetweenframes = true;
 	renderbackground(NULL, NULL, NULL, NULL, false, false, true); // render splash
@@ -1647,11 +1648,19 @@ int main(int argc, char **argv)
 	initparticles();
 	initdecals();
 
+	#ifdef STEAM
+		steam::input_registerBinds();
+	#endif
+
 	identflags |= IDF_PERSIST;
 	#ifdef DISCORD
 		logoutf("init: discord");
 		discord::initDiscord();
 		discord::updatePresence(discord::D_MENU);
+	#endif
+
+	#ifdef STEAM
+		steam::input_updateActions(steam::ST_MENU);
 	#endif
 
 	logoutf("init: mainloop");
@@ -1733,14 +1742,24 @@ int main(int argc, char **argv)
 				#ifdef DISCORD
 					discord::updatePresence(discord::D_MENU);
 				#endif
+				#ifdef STEAM
+					steam::input_updateActions(steam::ST_MENU);
+				#endif
 			}
-			else gl_drawframe();
+			else {
+				#ifdef STEAM
+					steam::input_updateActions(steam::ST_PLAYING);
+				#endif
+				gl_drawframe();
+			}
 			swapbuffers();
 			renderedframe = inbetweenframes = true;
 			lastdrawmillis = millis;
 		}
 		#ifdef STEAM
 			steam::steamCallbacks();
+			steam::input_getConnectedControllers();
+			steam::input_checkController();
 		#endif
 		#ifdef DISCORD
 			discord::discordCallbacks();

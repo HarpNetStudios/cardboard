@@ -180,7 +180,7 @@ struct keym
 	~keym() { DELETEA(name); loopi(NUMACTIONS) DELETEA(actions[i]); }
 };
 
-hashtable<int, keym> keyms(128);
+hashtable<int, keym> keyms(2048);
 
 void keymap(int *code, char *key)
 {
@@ -606,6 +606,7 @@ void processtextinput(const char *str, int len)
 
 void processkey(int code, bool isdown, int modstate)
 {
+	//conoutf("processkey: code %d, isdown %d, modstate %d", code, isdown, modstate);
 	switch(code)
 	{
 		case SDLK_LGUI: case SDLK_RGUI:
@@ -639,7 +640,7 @@ void writebinds(stream *f)
 		loopv(binds)
 		{
 			keym &km = *binds[i];
-			if(*km.actions[j]) 
+			if(*km.actions[j] && strstr(km.name, "SI_") == NULL)
 			{
 				if(validateblock(km.actions[j])) f->printf("%s %s [%s]\n", cmds[j], escapestring(km.name), km.actions[j]);
 				else f->printf("%s %s %s\n", cmds[j], escapestring(km.name), escapestring(km.actions[j]));

@@ -634,6 +634,20 @@ namespace steam
 	extern void setPlayerAchievement(int player);
 
 	extern void addScreenshot(const char* gaming, int width, int height);
+
+	extern int input_getConnectedControllers();
+	extern void input_updateActions(int gamestate);
+
+	extern bool input_getDigitalAction(const char* action);
+
+	extern void input_registerBinds();
+	extern void input_checkController();
+
+	enum gamestates
+	{
+		ST_MENU = 0,
+		ST_PLAYING
+	};
 }
 #endif
 

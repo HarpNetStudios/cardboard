@@ -456,6 +456,8 @@ namespace gamepad
 	void handleevent(const SDL_Event& e, int focused);
 	void handlefocus(int focused);
 	void release();
+
+	extern int dbgjoy;
 }
 
 extern bool interceptkey(int sym);
