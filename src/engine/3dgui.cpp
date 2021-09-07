@@ -1202,10 +1202,10 @@ bool g3d_input(const char *str, int len)
 
 bool g3d_key(int code, bool isdown)
 {
+	if (code <= -2000 && code > -3000) return false;
 	editor *e = currentfocus();
 	if(fieldmode == FIELDKEY)
 	{
-		if (code <= -2000) return false;
 		switch(code)
 		{
 			case SDLK_ESCAPE:

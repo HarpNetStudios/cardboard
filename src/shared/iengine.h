@@ -638,7 +638,7 @@ namespace steam
 	extern int input_getConnectedControllers();
 	extern void input_updateActions(int gamestate);
 
-	extern bool input_getDigitalAction(const char* action);
+	extern bool input_getDigitalAction(const char* action, bool ignoreActive = false);
 
 	extern void input_registerBinds();
 	extern void input_checkController();

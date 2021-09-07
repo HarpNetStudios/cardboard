@@ -2119,6 +2119,7 @@
     <None Include="..\..\packages\lang\fr_CA.cfg" />
     <None Include="..\..\packages\lang\nl_NL.cfg" />
     <None Include="..\..\packages\lang\ru_RU.cfg" />
+    <None Include="..\..\README.md" />
     <None Include="..\..\restore.cfg" />
     <None Include="..\..\server-init.cfg" />
     <None Include="..\..\servers.cfg" />

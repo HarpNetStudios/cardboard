@@ -586,6 +586,7 @@
     <None Include="..\..\data\gamepad.cfg">
       <Filter>config</Filter>
     </None>
+    <None Include="..\..\README.md" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\CMakeLists.txt" />

@@ -207,7 +207,7 @@ void searchbinds(char *action, int type)
 	vector<char> names;
 	enumerate(keyms, keym, km,
 	{
-		if(!strcmp(km.actions[type], action))
+		if(!strcmp(km.actions[type], action) && !strstr(km.name, "SI_"))
 		{
 			if(names.length()) names.add(' ');
 			names.put(km.name, strlen(km.name));

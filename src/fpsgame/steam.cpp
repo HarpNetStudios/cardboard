@@ -282,10 +282,10 @@ namespace steam {
 		*/
 	}
 
-	bool input_getDigitalAction(const char* action) {
+	bool input_getDigitalAction(const char* action, bool ignoreActive) {
 		InputDigitalActionData_t data = SteamInput()->GetDigitalActionData(inputHandles[0], SteamInput()->GetDigitalActionHandle(action));
 		//if(gamepad::dbgjoy) conoutf("getting called, active %d, state %d", data.bActive, data.bState);
-		return (data.bActive && data.bState);
+		return ((data.bActive || ignoreActive) && data.bState);
 	}
 
 	vec2 input_getAnalogAction(const char* action) {
@@ -302,11 +302,16 @@ namespace steam {
 
 	const int numPlayActions = 18;
 	const int numMenuActions = 8;
+	const int numCustomActions = 5;
 
 	char *playActions[numPlayActions] = { "attack", "jump", "last_weap", "weap_cycle_up", "weap_cycle_dn", "weap_melee", "smg", "shotgun", "sniper", "chaingun", "rocket", "grenade", "taunt", "toggle_zoom", "hold_zoom", "scoreboard", "grapple", "drop_flag" };
 	bool playActionsActive[numPlayActions] = {};
 	char *menuActions[numMenuActions] = { "menu_select", "menu_cancel", "menu_up", "menu_down", "menu_left", "menu_right", "menu_tab_next", "menu_tab_prev" };
 	bool menuActionsActive[numMenuActions] = {};
+	char *customActions[numCustomActions] = { "custom_1", "custom_2", "custom_3", "custom_4", "custom_5" };
+	bool customActionsActive[numCustomActions] = {};
+
+	vec2 lastMoveStick = vec2(0,0);
 
 	void input_checkController() {
 		for (int i = 0; i < numPlayActions; i++)
@@ -322,9 +327,19 @@ namespace steam {
 			}
 		}
 
+		// TODO: fix this shit, WASD doesn't work properly when controller is active -Y
 		vec2 moveStick = input_getAnalogAction("move");
-		player->fmove = moveStick.y;
-		player->fstrafe = -moveStick.x;
+		if (moveStick.y != lastMoveStick.y)
+		{
+			player->fmove = moveStick.y;
+			lastMoveStick.y = moveStick.y;
+		}
+		if (moveStick.x != lastMoveStick.x)
+		{
+			player->fstrafe = -moveStick.x;
+			lastMoveStick.x = moveStick.x;
+		}
+		
 
 		// there are subtle differences between these, let the user decide -Y
 		vec2 cameraStick = input_getAnalogAction("camera_gamepad");
@@ -346,8 +361,19 @@ namespace steam {
 				menuActionsActive[i] = status;
 			}
 		}
-		//if(steam::input_getDigitalAction("attack")) processkey(-2001, true);
-		//if(steam::input_getDigitalAction("jump")) processkey(-2002, true);
+
+		for (int i = 0; i < numCustomActions; i++)
+		{
+			bool status = steam::input_getDigitalAction(customActions[i]);
+			if (status && !customActionsActive[i]) {
+				processkey(-3000-i, true);
+				customActionsActive[i] = status;
+			}
+			else if (!status && customActionsActive[i]) {
+				processkey(-3000-i, false);
+				customActionsActive[i] = status;
+			}
+		}
 	}
 
 	ICOMMAND(steaminput_binding, "", (), { SteamInput()->ShowBindingPanel(inputHandles[0]); });
