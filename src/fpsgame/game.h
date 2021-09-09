@@ -601,13 +601,16 @@ struct fpsent : dynent, fpsstate
 	ai::aiinfo *ai;
 	int ownernum, lastnode;
 
+	float maxcps;
+
 	fpsent *lastattacker;
+	fpsent *lasthitpushattacker;
 	
 	vec muzzle;
 	
 	bool hasflag;
 
-	fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1), frags(0), flags(0), deaths(0), totaldamage(0), totalshots(0), suicides(0), edit(NULL), smoothmillis(-1), playermodel(-1), ai(NULL), ownernum(-1), muzzle(-1, -1, -1), grappling(false), hasflag(false)
+	fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1), frags(0), flags(0), deaths(0), totaldamage(0), totalshots(0), suicides(0), edit(NULL), smoothmillis(-1), playermodel(-1), ai(NULL), ownernum(-1), muzzle(-1, -1, -1), grappling(false), hasflag(false), maxcps(0.0f)
 	{
 		name[0] = team[0] = info[0] = 0;
 		pinfo = new playerinfo;
@@ -627,6 +630,8 @@ struct fpsent : dynent, fpsstate
 		push.mul((actor==this && guns[gun].exprad ? EXP_SELFPUSH : 0.06f)*guns[gun].hitpush*guns[gun].damage/weight); // hitpush damage
 		vel.add(push);
 		lasthitpushgun = gun;
+		lasthitpushattacker = actor;
+
 		// TODO: store player that pushed for future use.
 	}
 
@@ -662,6 +667,10 @@ struct fpsent : dynent, fpsstate
 		lastcollect = vec(-1e10f, -1e10f, -1e10f);
 		stopattacksound();
 		lastnode = -1;
+		maxcps = 0.0f;
+		lastattacker = NULL;
+		lasthitpushattacker = NULL;
+		lasthitpushgun = -1;
 	}
 
 	int respawnwait(int secs, int delay = 0)
@@ -674,7 +683,7 @@ struct teamscore
 {
 	const char *team;
 	int score;
-	teamscore() {}
+	teamscore() : team(""), score(0) {}
 	teamscore(const char *s, int n) : team(s), score(n) {}
 
 	static bool compare(const teamscore &x, const teamscore &y)
@@ -704,7 +713,7 @@ struct extclient {
 		state = 0;
 		ip = 0;
 		copystring(name, "CardboardPlayer", MAXNAMELEN);
-		copystring(team, " ", MAXTEAMLEN);
+		copystring(team, "", MAXTEAMLEN);
 	}
 };
 static inline uint hthash(const teamscore &t) { return hthash(t.team); }

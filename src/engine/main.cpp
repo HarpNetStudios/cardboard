@@ -1758,8 +1758,7 @@ int main(int argc, char **argv)
 		}
 		#ifdef STEAM
 			steam::steamCallbacks();
-			steam::input_getConnectedControllers();
-			steam::input_checkController();
+			if(steam::input_getConnectedControllers()) steam::input_checkController();
 		#endif
 		#ifdef DISCORD
 			discord::discordCallbacks();

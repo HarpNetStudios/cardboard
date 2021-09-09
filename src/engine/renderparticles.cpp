@@ -1507,7 +1507,7 @@ void updateparticles()
    
 	flares.makelightflares();
 
-	if(!editmode || showparticles) 
+	if(showparticles) 
 	{
 		int emitted = 0, replayed = 0;
 		addedparticles = 0;

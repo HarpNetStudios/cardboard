@@ -927,7 +927,6 @@ COMMAND(resetsound, "");
 // Mumble positional audio
 // TODO: Update to version 2, add context and identity support.
 
-/*
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -1075,14 +1074,22 @@ void updatemumble() {
 	mumbleinfo->fCameraTop[2] = camtop.z;
 
 	// Identifier which uniquely identifies a certain player in a context (e.g. the ingame name).
-	wcsncpy(mumbleinfo->identity, L"asdf1234", 256);
+	fpsent *plr = (fpsent *)player;
+
+	wchar_t plrname[30];
+	size_t plrlen = strlen(plr->name);
+
+	mbstowcs_s(&plrlen, plrname, ((fpsent *)player)->name, plrlen);
+	wcsncpy(mumbleinfo->identity, plrname, 256);
 	// Context should be equal for players which should be able to hear each other positional and
 	// differ for those who shouldn't (e.g. it could contain the server+port and team)
+	defformatstring(mumblecontext, "TODO:SERVER_%s", plr->team);
 	memcpy(mumbleinfo->context, "ContextBlob\x00\x01\x02\x03\x04", 16); // "127.0.0.1:35000_red"
 	mumbleinfo->context_len = 16;
 }
-*/
 
+
+/*
 
 #ifdef WIN32
 
@@ -1190,4 +1197,4 @@ void updatemumble()
 	mumbleinfo->top = mumblevec(vec(RAD*player->yaw, RAD*(player->pitch+90)));
 #endif
 }
-
+*/

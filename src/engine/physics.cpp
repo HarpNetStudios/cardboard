@@ -1710,7 +1710,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 	}
 
 	vec d(m);
-	d.mul(pl->maxspeed*min(vec2(pl->fmove, pl->fstrafe).magnitude(), 1.0f)); // TODO: joystick analog movement speed 
+	d.mul(pl->maxspeed*min(vec2(pl->fmove, pl->fstrafe).magnitude(), 1.0f));
 	int meleespeed = 10; // percentage multiplier of melee weapon movement speed
 	if(pl->candouble) d.mul(1 + (meleespeed/100.0f));
 	if(pl->type==ENT_PLAYER)
@@ -2103,8 +2103,10 @@ dir(right,    fstrafe, -1.0f, k_right, k_left);
 ICOMMAND(jump,   "D", (int *down), {
 	if(!*down || game::canjump())
 	{
-		player->jumping = *down!=0;
-		if(*down!=0) player->jumpstate = min(player->jumpstate++, 2);
+		if (*down!=0) {
+			player->jumping = true;
+			player->jumpstate = min(player->jumpstate++, 2);
+		}
 	}
 });
 ICOMMAND(attack, "D", (int *down), { game::doattack(*down!=0); });

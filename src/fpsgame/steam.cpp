@@ -103,7 +103,7 @@ namespace steam {
 		// we may get callbacks for other games' stats arriving, ignore them
 		if (m_iAppID == pCallback->m_nGameID)
 		{
-			if (k_EResultOK == pCallback->m_eResult)
+			if (pCallback->m_eResult == k_EResultOK)
 			{
 				m_bInitialized = true;
 
@@ -131,9 +131,9 @@ namespace steam {
 	void CSteamAchievements::OnUserStatsStored(UserStatsStored_t* pCallback)
 	{
 		// we may get callbacks for other games' stats arriving, ignore them
-		if (m_iAppID == pCallback->m_nGameID)
+		if (pCallback->m_nGameID == m_iAppID)
 		{
-			if (k_EResultOK == pCallback->m_eResult)
+			if (pCallback->m_eResult == k_EResultOK)
 			{
 				//conoutf("Stored stats for Steam");
 			}
@@ -147,7 +147,7 @@ namespace steam {
 	void CSteamAchievements::OnAchievementStored(UserAchievementStored_t* pCallback)
 	{
 		// we may get callbacks for other games' stats arriving, ignore them
-		if (m_iAppID == pCallback->m_nGameID)
+		if (pCallback->m_nGameID == m_iAppID)
 		{
 			logoutf("[STEAM] Achievement \"%s\" stored.", pCallback->m_rgchAchievementName);
 		}
@@ -175,6 +175,16 @@ namespace steam {
 	InputActionSetHandle_t playSetHandle;
 	InputActionSetHandle_t menuSetHandle;
 
+	InputDigitalActionHandle_t menuButtonHandle;
+
+	InputDigitalActionHandle_t playActionHandles[numPlayActions] = {};
+	InputDigitalActionHandle_t menuActionHandles[numMenuActions] = {};
+	InputDigitalActionHandle_t customActionHandles[numCustomActions] = {};
+
+	InputAnalogActionHandle_t moveHandle;
+	InputAnalogActionHandle_t cameraMouseHandle;
+	InputAnalogActionHandle_t cameraGamepadHandle;
+
 	int initSteam()
 	{
 		if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) // Replace with your App ID
@@ -194,6 +204,16 @@ namespace steam {
 		menuSetHandle = SteamInput()->GetActionSetHandle("MenuControls");
 
 		input_getConnectedControllers();
+
+		menuButtonHandle = SteamInput()->GetDigitalActionHandle("menu");
+
+		for (int i = 0; i < numPlayActions; i++) playActionHandles[i] = SteamInput()->GetDigitalActionHandle(playActions[i]);
+		for (int i = 0; i < numMenuActions; i++) menuActionHandles[i] = SteamInput()->GetDigitalActionHandle(menuActions[i]);
+		for (int i = 0; i < numCustomActions; i++) customActionHandles[i] = SteamInput()->GetDigitalActionHandle(customActions[i]);
+
+		moveHandle = SteamInput()->GetAnalogActionHandle("move");
+		cameraMouseHandle = SteamInput()->GetAnalogActionHandle("camera_mouse");
+		cameraGamepadHandle = SteamInput()->GetAnalogActionHandle("camera_gamepad");
 
 		// temporary
 		SteamInput()->ActivateActionSet(inputHandles[0], playSetHandle);
@@ -251,6 +271,7 @@ namespace steam {
 	}
 
 	void input_registerBinds() {
+		execute("bind SI_MENU [togglemainmenu]");
 		execute("bind SI_ATTACK [attack]");
 		execute("bind SI_JUMP [jump]");
 		execute("bind SI_LAST_WEAP [weapon]");
@@ -282,15 +303,13 @@ namespace steam {
 		*/
 	}
 
-	bool input_getDigitalAction(const char* action, bool ignoreActive) {
-		InputDigitalActionData_t data = SteamInput()->GetDigitalActionData(inputHandles[0], SteamInput()->GetDigitalActionHandle(action));
-		//if(gamepad::dbgjoy) conoutf("getting called, active %d, state %d", data.bActive, data.bState);
+	bool input_getDigitalAction(InputDigitalActionHandle_t action, bool ignoreActive) {
+		InputDigitalActionData_t data = SteamInput()->GetDigitalActionData(inputHandles[0], action);
 		return ((data.bActive || ignoreActive) && data.bState);
 	}
 
-	vec2 input_getAnalogAction(const char* action) {
-		InputAnalogActionData_t data = SteamInput()->GetAnalogActionData(inputHandles[0], SteamInput()->GetAnalogActionHandle(action));
-		if(gamepad::dbgjoy) conoutf("getting called, x %d, y %d", data.x, data.y);
+	vec2 input_getAnalogAction(InputAnalogActionHandle_t action) {
+		InputAnalogActionData_t data = SteamInput()->GetAnalogActionData(inputHandles[0], action);
 		return vec2(data.x, data.y);
 	}
 
@@ -300,23 +319,29 @@ namespace steam {
 		SteamInput()->SetLEDColor(inputHandles[controller], color.r, color.g, color.b, k_ESteamControllerLEDFlag_SetColor);
 	}
 
-	const int numPlayActions = 18;
-	const int numMenuActions = 8;
-	const int numCustomActions = 5;
-
-	char *playActions[numPlayActions] = { "attack", "jump", "last_weap", "weap_cycle_up", "weap_cycle_dn", "weap_melee", "smg", "shotgun", "sniper", "chaingun", "rocket", "grenade", "taunt", "toggle_zoom", "hold_zoom", "scoreboard", "grapple", "drop_flag" };
 	bool playActionsActive[numPlayActions] = {};
-	char *menuActions[numMenuActions] = { "menu_select", "menu_cancel", "menu_up", "menu_down", "menu_left", "menu_right", "menu_tab_next", "menu_tab_prev" };
 	bool menuActionsActive[numMenuActions] = {};
-	char *customActions[numCustomActions] = { "custom_1", "custom_2", "custom_3", "custom_4", "custom_5" };
 	bool customActionsActive[numCustomActions] = {};
+
+	bool menuButtonActive = false;
 
 	vec2 lastMoveStick = vec2(0,0);
 
 	void input_checkController() {
+
+		bool status = steam::input_getDigitalAction(menuButtonHandle, false);
+		if (status && !menuButtonActive) {
+			processkey(-2000, true);
+			menuButtonActive = status;
+		}
+		else if (!status && menuButtonActive) {
+			processkey(-2000, false);
+			menuButtonActive = status;
+		}
+
 		for (int i = 0; i < numPlayActions; i++)
 		{
-			bool status = steam::input_getDigitalAction(playActions[i]);
+			bool status = steam::input_getDigitalAction(playActionHandles[i]);
 			if (status && !playActionsActive[i]) {
 				processkey(-2001-i, true);
 				playActionsActive[i] = status;
@@ -327,8 +352,7 @@ namespace steam {
 			}
 		}
 
-		// TODO: fix this shit, WASD doesn't work properly when controller is active -Y
-		vec2 moveStick = input_getAnalogAction("move");
+		vec2 moveStick = input_getAnalogAction(moveHandle);
 		if (moveStick.y != lastMoveStick.y)
 		{
 			player->fmove = moveStick.y;
@@ -339,19 +363,18 @@ namespace steam {
 			player->fstrafe = -moveStick.x;
 			lastMoveStick.x = moveStick.x;
 		}
-		
 
 		// there are subtle differences between these, let the user decide -Y
-		vec2 cameraStick = input_getAnalogAction("camera_gamepad");
+		vec2 cameraStick = input_getAnalogAction(cameraGamepadHandle);
 		player->camx = cameraStick.x;
 		player->camy = -cameraStick.y;
 
-		vec2 cameraMouse = input_getAnalogAction("camera_mouse");
+		vec2 cameraMouse = input_getAnalogAction(cameraMouseHandle);
 		mousemove(cameraMouse.x, cameraMouse.y);
 
 		for (int i = 0; i < numMenuActions; i++)
 		{
-			bool status = steam::input_getDigitalAction(menuActions[i]);
+			bool status = steam::input_getDigitalAction(menuActionHandles[i]);
 			if (status && !menuActionsActive[i]) {
 				processkey(-2100-i, true);
 				menuActionsActive[i] = status;
@@ -364,7 +387,7 @@ namespace steam {
 
 		for (int i = 0; i < numCustomActions; i++)
 		{
-			bool status = steam::input_getDigitalAction(customActions[i]);
+			bool status = steam::input_getDigitalAction(customActionHandles[i]);
 			if (status && !customActionsActive[i]) {
 				processkey(-3000-i, true);
 				customActionsActive[i] = status;
