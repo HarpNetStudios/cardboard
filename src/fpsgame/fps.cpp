@@ -33,7 +33,7 @@ namespace game
 		if(lastmillis-player1->lasttaunt<1000) return;
 		player1->lasttaunt = lastmillis;
 		addmsg(N_TAUNT, "rc", player1);
-		playsound(S_JUMPPAD, &player1->o);
+		playsound(S_ITEMSPAWN, &game::hudplayer()->o);
 	}
 	COMMAND(taunt, "");
 

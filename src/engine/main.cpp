@@ -53,6 +53,7 @@ void quit()                     // normal exit
 	localdisconnect();
 	writecfg();
 	cleanup();
+	logoutf("enjoy your run"); // -fruloo
 	exit(EXIT_SUCCESS);
 }
 

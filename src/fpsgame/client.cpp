@@ -1769,7 +1769,7 @@ namespace game
 			{
 				if(!d) return;
 				d->lasttaunt = lastmillis;
-				playsound(S_JUMPPAD, &d->o);
+				playsound(S_ITEMSPAWN, &d->o);
 				break;
 			}
 
