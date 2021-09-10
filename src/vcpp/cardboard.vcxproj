@@ -514,6 +514,7 @@
     <ClInclude Include="..\fpsgame\ctf.h" />
     <ClInclude Include="..\fpsgame\extinfo.h" />
     <ClInclude Include="..\fpsgame\game.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\engine\gamepad.cpp">
@@ -2126,6 +2127,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="cardboard.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

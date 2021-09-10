@@ -665,12 +665,12 @@ struct fpsent : dynent, fpsstate
 		flagpickup = 0;
 		tokens = 0;
 		lastcollect = vec(-1e10f, -1e10f, -1e10f);
-		stopattacksound();
 		lastnode = -1;
 		maxcps = 0.0f;
 		lastattacker = NULL;
 		lasthitpushattacker = NULL;
 		lasthitpushgun = -1;
+		stopattacksound();
 	}
 
 	int respawnwait(int secs, int delay = 0)

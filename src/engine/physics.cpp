@@ -1794,6 +1794,10 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 
 		d.mul(f);
 		loopi(moveres) if(!move(pl, d) && ++collisions<5) i--; // discrete steps collision detection & sliding
+		if (!pl->timeinair) {
+			((fpsent *)pl)->lasthitpushattacker = NULL;
+			((fpsent *)pl)->lasthitpushgun = -1;
+		}
 		if(timeinair > 800 && !pl->timeinair && !water) // if we land after long time must have been a high jump, make thud sound
 		{
 			game::physicstrigger(pl, local, -1, 0);
@@ -2100,13 +2104,15 @@ dir(forward,  fmove,    1.0f, k_up,    k_down);
 dir(left,     fstrafe,  1.0f, k_left,  k_right);
 dir(right,    fstrafe, -1.0f, k_right, k_left);
 
+VARP(scrolljump, 0, 0, 1);
+
 ICOMMAND(jump,   "D", (int *down), {
 	if(!*down || game::canjump())
 	{
-		if (*down!=0) {
-			player->jumping = true;
-			player->jumpstate = min(player->jumpstate++, 2);
-		}
+		if (scrolljump && *down==1) player->jumping = true;
+		else if (scrolljump) {} // a bad way to get around an input quirk -Y
+		else player->jumping = *down!=0;
+		player->jumpstate = min(player->jumpstate++, 2);
 	}
 });
 ICOMMAND(attack, "D", (int *down), { game::doattack(*down!=0); });

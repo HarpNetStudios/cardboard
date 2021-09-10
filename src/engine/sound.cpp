@@ -925,7 +925,7 @@ void resetsound()
 COMMAND(resetsound, "");
 
 // Mumble positional audio
-// TODO: Update to version 2, add context and identity support.
+// TODO: Check if this works, fix context to reflect connected server.
 
 #ifdef _WIN32
 #include <windows.h>

@@ -775,7 +775,9 @@ void dosecattack(bool on)
 		getplayerinfo(player1);
 
 		const char* info = m_valid(gamemode) ? gamemodes[gamemode - STARTGAMEMODE].info : NULL;
-		if(showmodeinfo && info) conoutf(CON_GAMEINFO, "\f2%s: \f0%s", server::modename(gamemode), info); // gamemode info, triggered twice on first map load?????? -Y
+		if (showmodeinfo && info) {
+			conoutf(CON_GAMEINFO, "\f2%s: \f0%s", server::modename(gamemode), info); // gamemode info, triggered twice on first map load?????? -Y
+		}
 
 		if(player1->playermodel != playermodel) switchplayermodel(playermodel);
 

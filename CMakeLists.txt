@@ -152,7 +152,7 @@ add_executable(native_master
 
 target_compile_definitions(native_master PUBLIC STANDALONE)
 
-list(APPEND cardboard_link_libraries_client "GL" "enet" "SDL2_image" "SDL2_mixer" "z" "SDL2_ttf" "freetype" "curl" "X11" "SDL2" "rt")
+list(APPEND cardboard_link_libraries_client "GL" "enet" "SDL2_image" "SDL2_mixer" "z" "curl" "X11" "SDL2" "rt")
 list(APPEND cardboard_link_libraries_server "enet" "curl" "z")
 list(APPEND cardboard_link_libraries_master "enet" "curl" "z")
 

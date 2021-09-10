@@ -865,7 +865,7 @@ namespace game
 			vec pos = bnc.offsetpos();
 			vec grenclr = (m_teammode ? (!strcmp(bnc.owner->team, "red") ? vec(1, 0.25f, 0.25f) : vec(0.25f, 0.25f, 1)) : vec(0.8f, 0.25f, 1));
 			// we're going to pretend this isn't gross. -Y
-			adddynlight(pos, (float)((bnc.lifetime/(float)100)+1), grenclr);
+			adddynlight(pos, (float)(bnc.lifetime/100.0f)+1.0f, grenclr);
 		}
 	}
 
@@ -1217,7 +1217,7 @@ namespace game
 
 	void shootgrapplev(vec& from, vec& to, fpsent* d, bool local)
 	{
-		newgrapple(from, to, GRAPPLETHROWSPEED * 4, local, d);
+		newgrapple(from, to, GRAPPLETHROWSPEED, local, d);
 	}
 
 	void shootgrapple(fpsent* d, vec& targ)

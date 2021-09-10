@@ -456,6 +456,7 @@
     <ClInclude Include="..\fpsgame\fragmessages.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="shared">
@@ -590,5 +591,8 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="cardboard.ico" />
   </ItemGroup>
 </Project>
