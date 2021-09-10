@@ -927,6 +927,7 @@ COMMAND(resetsound, "");
 // Mumble positional audio
 // TODO: Check if this works, fix context to reflect connected server.
 
+/*
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -1087,9 +1088,7 @@ void updatemumble() {
 	memcpy(mumbleinfo->context, "ContextBlob\x00\x01\x02\x03\x04", 16); // "127.0.0.1:35000_red"
 	mumbleinfo->context_len = 16;
 }
-
-
-/*
+*/
 
 #ifdef WIN32
 
@@ -1197,4 +1196,3 @@ void updatemumble()
 	mumbleinfo->top = mumblevec(vec(RAD*player->yaw, RAD*(player->pitch+90)));
 #endif
 }
-*/
