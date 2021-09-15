@@ -1546,55 +1546,26 @@ void phystest()
 
 COMMAND(phystest, "");
 
+void vecfromyawpitch(float yaw, float pitch, int move, int strafe, int vertical, vec &m)
+{
+	m.x = move*-sinf(RAD*yaw)*cosf(RAD*pitch) + vertical*-sinf(RAD*pitch)*-sinf(RAD*yaw) + strafe*cosf(RAD*yaw);
+	m.y = move* cosf(RAD*yaw)*cosf(RAD*pitch) + vertical*-sinf(RAD*pitch)* cosf(RAD*yaw) + strafe*sinf(RAD*yaw);
+	m.z = move*               sinf(RAD*pitch) + vertical* cosf(RAD*pitch);
+}
+
 void vecfromyawpitch(float yaw, float pitch, int move, int strafe, vec &m)
 {
-	if(move)
-	{
-		m.x = move*-sinf(RAD*yaw);
-		m.y = move*cosf(RAD*yaw);
-	}
-	else m.x = m.y = 0;
-
-	if(pitch)
-	{
-		m.x *= cosf(RAD*pitch);
-		m.y *= cosf(RAD*pitch);
-		m.z = move*sinf(RAD*pitch);
-	}
-	else m.z = 0;
-
-	if(strafe)
-	{
-		m.x += strafe*cosf(RAD*yaw);
-		m.y += strafe*sinf(RAD*yaw);
-	}
+	vecfromyawpitch(yaw, pitch, move, strafe, 0, m);
 }
 
 FVARP(joyminthreshold, 0.0f, 0.05f, 1.0f);
 FVARP(joymaxthreshold, 0.0f, 1.0f, 1.0f);
 
-void vecfrommovement(float yaw, float pitch, float move, float strafe, vec& m)
+void vecfrommovement(float yaw, float pitch, float move, float strafe, float vertical, vec& m)
 {
-	if(move)
-	{
-		m.x = move * -sinf(RAD * yaw);
-		m.y = move * cosf(RAD * yaw);
-	}
-	else m.x = m.y = 0;
-
-	if(pitch)
-	{
-		m.x *= cosf(RAD * pitch);
-		m.y *= cosf(RAD * pitch);
-		m.z = move * sinf(RAD * pitch);
-	}
-	else m.z = 0;
-
-	if(strafe)
-	{
-		m.x += strafe * cosf(RAD * yaw);
-		m.y += strafe * sinf(RAD * yaw);
-	}
+	m.x = move*-sinf(RAD*yaw)*cosf(RAD*pitch) + vertical*-sinf(RAD*pitch)*-sinf(RAD*yaw) + strafe*cosf(RAD*yaw);
+	m.y = move* cosf(RAD*yaw)*cosf(RAD*pitch) + vertical*-sinf(RAD*pitch)* cosf(RAD*yaw) + strafe*sinf(RAD*yaw);
+	m.z = move*               sinf(RAD*pitch) + vertical* cosf(RAD*pitch);
 
 	const float mag = m.magnitude();
 	if(mag <= joyminthreshold || joyminthreshold >= joymaxthreshold)
@@ -1606,6 +1577,11 @@ void vecfrommovement(float yaw, float pitch, float move, float strafe, vec& m)
 		(mag - joyminthreshold)
 		/ (joymaxthreshold - joyminthreshold);
 	m.mul(min(1.0f, scaledmag) / mag);
+}
+
+void vecfrommovement(float yaw, float pitch, float move, float strafe, vec &m)
+{
+	vecfrommovement(yaw, pitch, move, strafe, 0, m);
 }
 
 void vectoyawpitch(const vec &v, float &yaw, float &pitch)
@@ -1687,8 +1663,9 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 	if(!floating && pl->physstate == PHYS_FALL) pl->timeinair = min(pl->timeinair + curtime, 1000);
 
 	vec m(0.0f, 0.0f, 0.0f);
-	if(pl->tryingtomove() && allowmove)
+	if(pl->tryingtomove() && allowmove )
 	{
+		/*
 		vecfrommovement
 		(pl->yaw
 			, floating || water || pl->type == ENT_CAMERA ? pl->pitch : 0
@@ -1696,6 +1673,11 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 			, pl->fstrafe
 			, m
 		);
+		*/
+
+		//vecfromyawpitch(pl->yaw, floating || water || pl->type==ENT_CAMERA ? pl->pitch : 0, pl->move, pl->strafe, m);
+		bool allowvertical = !pl->hovering && (floating || water || pl->type==ENT_CAMERA);
+		vecfrommovement(pl->yaw, allowvertical ? pl->pitch : 0, pl->fmove, pl->fstrafe, pl->fvertical, m);
 
 		if(!floating && pl->physstate >= PHYS_SLOPE)
 		{
@@ -1765,7 +1747,7 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 	float secs = curtime/1000.f;
 
 	// apply gravity
-	if(!floating) modifygravity(pl, water, curtime);
+	if(!floating) { pl->fvertical = 0.0f; modifygravity(pl, water, curtime); }
 	// apply any player generated changes in velocity
 	modifyvelocity(pl, local, water, floating, curtime);
 
@@ -1846,6 +1828,21 @@ void physicsframe()          // optimally schedule physics frames inside the gra
 	}
 	cleardynentcache();
 }
+
+void fakephysicsframe()      // induces fake physsteps for moving camera while paused
+{
+	static int lastfakephysframe = 0;
+	int diff = totalmillis - lastfakephysframe;
+	if(diff > curtime) { diff = curtime; lastfakephysframe = totalmillis; }
+	if(diff <= 0) physsteps = 0;
+	else
+	{
+		physframetime = clamp(game::scaletime(PHYSFRAMETIME)/100, 1, PHYSFRAMETIME);
+		physsteps = (diff + physframetime - 1)/physframetime;
+		lastfakephysframe += physsteps * physframetime;
+	}
+}
+
 
 VAR(physinterp, 0, 1, 1);
 
@@ -2099,10 +2096,12 @@ bool moveplatform(physent *p, const vec &dir)
 
 #define dir(name,v,d,s,os) ICOMMAND(name, "D", (int *down), { player->s = *down!=0; player->v = player->s ? d : (player->os ? -(d) : 0); });
 
-dir(backward, fmove,   -1.0f, k_down,  k_up);
-dir(forward,  fmove,    1.0f, k_up,    k_down);
-dir(left,     fstrafe,  1.0f, k_left,  k_right);
-dir(right,    fstrafe, -1.0f, k_right, k_left);
+dir(forward,  fmove,      1.0f, k_forward,  k_backward);
+dir(backward, fmove,     -1.0f, k_backward, k_forward);
+dir(left,     fstrafe,    1.0f, k_left,     k_right);
+dir(right,    fstrafe,   -1.0f, k_right,    k_left);
+dir(up,       fvertical,  1.0f, k_up,       k_down);
+dir(down,     fvertical, -1.0f, k_down,     k_up);
 
 VARP(scrolljump, 0, 0, 1);
 
@@ -2115,6 +2114,7 @@ ICOMMAND(jump,   "D", (int *down), {
 		player->jumpstate = min(player->jumpstate++, 2);
 	}
 });
+ICOMMAND(hover,  "D", (int *down), { if(!*down || game::canhover()) player->hovering = *down!=0; });
 ICOMMAND(attack, "D", (int *down), { game::doattack(*down!=0); });
 ICOMMAND(secattack, "D", (int *down), { game::dosecattack(*down!=0); });
 ICOMMAND(usehook, "D", (int *down), { game::dograpple(*down!=0); });

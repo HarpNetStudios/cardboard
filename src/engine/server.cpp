@@ -638,8 +638,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
 		int scaledtime = server::scaletime(elapsedtime) + timeerr;
 		curtime = scaledtime/100;
 		timeerr = scaledtime%100;
-		if(server::ispaused()) curtime = 0;
-		lastmillis += curtime;
+		if(!server::ispaused()) lastmillis += curtime;
 		totalmillis = millis;
 		updatetime();
 	}

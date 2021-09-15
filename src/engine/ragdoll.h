@@ -508,7 +508,7 @@ VAR(ragdolleyesmoothmillis, 1, 250, 10000);
 
 void moveragdoll(dynent *d)
 {
-	if(!curtime || !d->ragdoll) return;
+	if(!curtime || game::ispaused() || !d->ragdoll) return;
 
 	if(!d->ragdoll->collidemillis || lastmillis < d->ragdoll->collidemillis)
 	{

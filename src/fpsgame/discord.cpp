@@ -58,7 +58,7 @@ namespace discord
 				activity.SetState("In the menus");
 				break;
 			case D_PLAYING:
-				activity.SetState("Playing");
+				activity.SetState("Offline");
 				break;
 			case D_SPECTATE:
 				activity.SetState("Spectating");
@@ -99,10 +99,13 @@ namespace discord
 
 				activity.GetAssets().SetLargeImage(largeKey);
 
-				activity.GetAssets().SetLargeText(game::getclientmap());
+				defformatstring(largeText, "Map: %s", game::getclientmap());
+				activity.GetAssets().SetLargeText(largeText);
+
 				if(address) {
 					if(enet_address_get_host_ip(address, partykey, strlen(partykey)) >= 0)
 					{
+						activity.SetState("Online");
 						defformatstring(partyid, "%s:%u", partykey, address->port);
 						defformatstring(newpartykey, "S_%s", partyid);
 						const char* b64key = b64_encode((unsigned char*)newpartykey, strlen(newpartykey));
@@ -112,9 +115,6 @@ namespace discord
 						activity.GetSecrets().SetJoin(b64key);
 						conoutf(CON_ECHO, "discord join secret: %s", b64key);
 					}
-				}
-				else {
-					activity.SetState("Playing alone");
 				}
 			}
 			else
@@ -143,6 +143,10 @@ namespace discord
 
 	void discordCallbacks() {
 		if(discord::connected()) discordCore->RunCallbacks();
+	}
+
+	void cleanup() {
+		discordCore->ActivityManager().ClearActivity([](discord::Result result) {});
 	}
 }
 #endif

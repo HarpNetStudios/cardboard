@@ -249,7 +249,12 @@ namespace game
 	void updateworld()        // main game update loop
 	{
 		if(!maptime) { maptime = lastmillis; maprealtime = totalmillis; return; }
-		if(!curtime) { gets2c(); if(player1->clientnum>=0) c2sinfo(); return; }
+		if(!curtime || ispaused()) {
+			gets2c();
+			if(curtime && player1->state==CS_SPECTATOR) { fakephysicsframe(); moveplayer(player1, 10, true); }
+			if(player1->clientnum>=0) c2sinfo();
+			return;
+		}
 
 		physicsframe();
 		ai::navigate();
@@ -261,7 +266,7 @@ namespace game
 		if(connected)
 		{
 			#ifdef DISCORD
-				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode - STARTGAMEMODE].name, player1);
+				discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode + -(STARTGAMEMODE)].name, player1);
 			#endif
 			if(player1->state == CS_DEAD)
 			{
@@ -396,6 +401,11 @@ void dosecattack(bool on)
 		if(!connected || intermission) return false;
 		if(jumpspawn) respawn();
 		return player1->state!=CS_DEAD;
+	}
+
+	bool canhover()
+	{
+		return player1->state==CS_SPECTATOR || player1->state==CS_EDITING;
 	}
 
 	bool allowmove(physent *d)
@@ -547,7 +557,7 @@ void dosecattack(bool on)
 		deathstate(d);
 		ai::killed(d, actor);
 		#ifdef DISCORD // this updates every time anyone gets a kill, shouldn't be an issue.
-			discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode - STARTGAMEMODE].name, player1, true);
+			discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode + -(STARTGAMEMODE)].name, player1, true);
 		#endif
 	}
 

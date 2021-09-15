@@ -2383,7 +2383,7 @@ void gl_drawhud()
 					   
 				if(showcps && !editmode)
 				{
-					float speed = game::hudplayer()->vel.magnitude();
+					float speed = game::hudplayer()->vel.magnitude2();
 					draw_textf("%3.1f cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, speed);
 					roffset += FONTH;
 				}
@@ -2391,7 +2391,7 @@ void gl_drawhud()
 				
 				if(showmaxcps && !editmode)
 				{
-					float speed = game::hudplayer()->vel.magnitude();
+					float speed = game::hudplayer()->vel.magnitude2();
 					if (speed > game::hudplayer()->maxcps)
 						game::hudplayer()->maxcps = speed;
 					draw_textf("\f2%3.1f cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, game::hudplayer()->maxcps);

@@ -23,6 +23,9 @@ void cleanup()
 	#ifdef STEAM
 		steam::cleanup();
 	#endif
+	#ifdef DISCORD
+		discord::cleanup();
+	#endif
 	rawinput::release();
 	gamepad::release();
 	cleanupserver();
@@ -1707,8 +1710,7 @@ int main(int argc, char **argv)
 		curtime = scaledtime/100;
 		timeerr = scaledtime%100;
 		if(!multiplayer(false) && curtime>200) curtime = 200;
-		if(game::ispaused()) curtime = 0;
-		lastmillis += curtime;
+		if(!game::ispaused()) lastmillis += curtime;
 		totalmillis = millis;
 		updatetime();
  
