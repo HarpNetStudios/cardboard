@@ -384,7 +384,7 @@ namespace game
 		f->lastpain = lastmillis;
 		if(actor->type==ENT_PLAYER && !isteam(actor->team, f->team) && f!=actor) actor->totaldamage += damage;
 
-		if(f->type==ENT_AI || (f->type==ENT_PLAYER && !m_parkour) || !m_mp(gamemode)) f->hitpush(damage, vel, actor, gun);
+		if(f->type==ENT_AI || f->type==ENT_PLAYER || !m_mp(gamemode)) f->hitpush(damage, vel, actor, gun);
 
 		if(!m_mp(gamemode)) damaged(damage, f, actor, gun);
 		else if(!m_parkour)
@@ -826,6 +826,8 @@ namespace game
 
 		shoteffects(d->gunselect, from, to, d, true, 0, prevaction);
 
+		d->gunwait[d->gunselect] = guns[d->gunselect].attackdelay;
+
 		if(d==player1 || d->ai)
 		{
 			addmsg(N_SHOOT, "rci2i6iv", d, lastmillis-maptime, d->gunselect,
@@ -834,7 +836,6 @@ namespace game
 				   hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
 		}
 
-		d->gunwait[d->gunselect] = guns[d->gunselect].attackdelay;
 		//if(d->ai) d->gunwait[d->gunselect] += int(d->gunwait[d->gunselect]*(((101-d->skill)+rnd(111-d->skill))/100.f));
 		d->totalshots += guns[d->gunselect].damage*guns[d->gunselect].rays;
 		recordpotentialdamage(d);

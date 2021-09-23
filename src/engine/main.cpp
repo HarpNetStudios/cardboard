@@ -330,7 +330,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
 	if(!restore) setbackgroundinfo(caption, mapshot, mapname, mapinfo);
 
-	if(splash) playsound(S_KILL);  // sound for splash screen
+	if(splash) playsound(S_LOGO);  // sound for splash screen
 }
 
 VAR(progressbackground, 0, 0, 1);

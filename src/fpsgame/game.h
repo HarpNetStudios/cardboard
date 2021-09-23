@@ -181,7 +181,9 @@ static const char * const mastermodeicons[] =  { "server", "server", "serverlock
 // hardcoded sounds, defined in sounds.cfg
 enum
 {
-	S_JUMP = 0, S_LAND, S_RIFLE, S_PUNCH1, S_SG, S_CG,
+	S_LOGO = 0,
+
+	S_JUMP, S_LAND, S_RIFLE, S_PUNCH1, S_SG, S_CG,
 	S_RLFIRE, S_RLHIT, S_WEAPLOAD, S_ITEMAMMO, S_ITEMHEALTH,
 	S_ITEMPUP, S_ITEMSPAWN, S_TELEPORT, S_NOAMMO, S_PUPOUT,
 	

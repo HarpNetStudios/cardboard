@@ -2207,12 +2207,8 @@ namespace server
 
 	void startintermission() { gamelimit = min(gamelimit, gamemillis); checkintermission(true); }
 
-	void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush, int headshot)
-	{
+	void dohitpush(clientinfo *target, clientinfo *actor, int damage, int gun, const vec &hitpush) {
 		gamestate &ts = target->state;
-		if(!m_parkour) ts.dodamage(damage);
-		if(target!=actor && !isteam(target->team, actor->team)) actor->state.damage += damage;
-		sendf(-1, 1, "ri6", N_DAMAGE, target->clientnum, actor->clientnum, damage, ts.health, gun);
 		if(target==actor) target->setpushed();
 		if(!hitpush.iszero())
 		{
@@ -2220,6 +2216,14 @@ namespace server
 			sendf(ts.health<=0 ? -1 : target->ownernum, 1, "ri7", N_HITPUSH, target->clientnum, gun, damage, v.x, v.y, v.z);
 			target->setpushed();
 		}
+	}
+
+	void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, int headshot)
+	{
+		gamestate &ts = target->state;
+		if(!m_parkour) ts.dodamage(damage);
+		if(target!=actor && !isteam(target->team, actor->team)) actor->state.damage += damage;
+		sendf(-1, 1, "ri6", N_DAMAGE, target->clientnum, actor->clientnum, damage, ts.health, gun);
 		if(ts.health<=0)
 		{
 			target->state.deaths++;
@@ -2296,9 +2300,10 @@ namespace server
 
 			int damage = guns[gun].damage;
 			damage = int(damage*(1-h.dist/EXP_DISTSCALE/guns[gun].exprad));
+			dohitpush(target, ci, damage, gun, h.dir);
 			if(!m_parkour && target!=ci)
 			{
-				if(!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.dir, h.headshot);
+				if(!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.headshot);
 			}
 		}
 	}
@@ -2337,9 +2342,10 @@ namespace server
 					if(totalrays>maxrays) continue;
 					int damage = h.rays*guns[gun].damage;
 					if(h.headshot) damage *= 1.25f;
+					dohitpush(target, ci, damage, gun, h.dir); // why is this needed for regular guns? -Y
 					if(!m_parkour && target!=ci)
 					{
-						if(!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.dir, h.headshot);
+						if(!m_teammode || strcmp(target->team, ci->team)) dodamage(target, ci, damage, gun, h.headshot);
 					}
 				}
 				break;
@@ -3129,7 +3135,7 @@ namespace server
 				{
 					ci->state.editstate = ci->state.state;
 					ci->state.state = CS_EDITING;
-					ci->events.setsize(0);
+					ci->events.deletecontents();
 					ci->state.rockets.reset();
 					ci->state.grenades.reset();
 				}

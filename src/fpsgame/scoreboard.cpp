@@ -1,6 +1,7 @@
 // creation of scoreboard
 #include "game.h"
 #include "colors.h"
+#include "weaponstats.h"
 
 namespace game
 {
@@ -19,6 +20,8 @@ namespace game
 	VARP(showflags, 0, 0, 1);
 	VARP(showkdr, 0, 0, 1);
 	VARP(showaccuracy, 0, 0, 2);
+	VARP(showdamage, 0, 0, 2);
+	VARP(showdamagereceived, 0, 0, 1);
 	VARP(showracetime, 0, 1, 1);
 	VARP(showracecheckpoints, 0, 1, 1);
 	VARP(showracelaps, 0, 1, 1);
@@ -95,8 +98,8 @@ namespace game
 		}
 	}
 
-	static vector<scoregroup *> groups;
-	static vector<fpsent *> spectators;
+	vector<scoregroup *> groups;
+	vector<fpsent *> spectators;
 
 	static inline bool scoregroupcmp(const scoregroup *x, const scoregroup *y)
 	{
@@ -112,7 +115,7 @@ namespace game
 		return x->team && y->team && strcmp(x->team, y->team) < 0;
 	}
 
-	static int groupplayers()
+	int groupplayers()
 	{
 		int numgroups = 0;
 		spectators.setsize(0);
@@ -225,7 +228,7 @@ namespace game
 					g.poplist(); \
 				}
 
-			#define fgcolor (o==player1 && highlightscore && (multiplayer(false) || demoplayback || players.length() > 1) ? sbhighlight : COL_WHITE)
+			#define fgcolor (o==hudplayer() && highlightscore && (multiplayer(false) || demoplayback || players.length() > 1) ? sbhighlight : COL_WHITE)
 
 			g.pushlist();
 			g.text("", 0, " ");
@@ -249,7 +252,6 @@ namespace game
 				if (sg.score >= 10000) g.textf("%s: WIN", teamcolor, NULL, sg.team);
 				else g.textf("%s: %d", teamcolor, NULL, sg.team, sg.score);
 				g.pushlist(); // horizontal
-				g.pushlist();
 			}
 
 			g.pushlist();
@@ -285,8 +287,8 @@ namespace game
 			}
 
 			// REWORK LATER -Y
-			/*
-			if(m_collect) {
+			if(m_collect)
+			{
 				g.pushlist();
 				g.text("", 0x000000);
 				loopscoregroup(o, {
@@ -308,7 +310,9 @@ namespace game
 					}
 				});
 				g.poplist();
-			} else if(m_ctf || m_protect || m_hold) {
+			}
+			else if(m_ctf || m_protect || m_hold) 
+			{
 				g.pushlist();
 				g.text("", 0x000000);
 				loopscoregroup(o, {
@@ -329,7 +333,6 @@ namespace game
 				})
 				g.poplist();
 			}
-			*/
 
 			if (showsuicides)
 			{
@@ -357,7 +360,12 @@ namespace game
 				g.pushlist();
 				g.strut(4);
 				rightjustified(g.text("acc", COL_GRAY))
-					loopscoregroup(o, rightjustified(g.textf("%.0f%%", fgcolor, NULL, playeraccuracy(o))));
+				loopscoregroup(o,
+					{
+						extclient* ec = getextclient(o->clientnum);
+						int acc = ec ? (ec)->accuracy : playeraccuracy(o);
+						rightjustified(g.textf("%.0f%%", fgcolor, NULL, acc));
+					});
 				g.poplist();
 			}
 
@@ -372,11 +380,11 @@ namespace game
 					loopscoregroup(o, {
 						switch (o->racestate) {
 						case 0:
-							g.textf("%s", 0xFFFFDD, NULL, "");
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, ""));
 							break;
 						case 1:
 						case 2:
-							g.textf("%02d", 0xFFFFDD, NULL, o->racerank);
+							rightjustified(g.textf("%02d", 0xFFFFDD, NULL, o->racerank));
 							break;
 						}
 					});
@@ -392,13 +400,13 @@ namespace game
 					loopscoregroup(o, {
 						switch (o->racestate) {
 						case 0:
-							g.textf("%s", 0xFFFFDD, NULL, "start");
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, "start"));
 							break;
 						case 1:
-							g.textf("%02d", 0xFFFFDD, NULL, o->racelaps);
+							rightjustified(g.textf("%02d", 0xFFFFDD, NULL, o->racelaps));
 							break;
 						case 2:
-							g.textf("%s", 0xFFFFDD, NULL, "finished");
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, "finished"));
 							break;
 						}
 					});
@@ -413,16 +421,15 @@ namespace game
 					rightjustified(g.text("check", COL_GRAY))
 					loopscoregroup(o, {
 						if (o->racestate == 1) {
-							g.textf("%02d", 0xFFFFDD, NULL, o->racecheckpoint);
+							rightjustified(g.textf("%02d", 0xFFFFDD, NULL, o->racecheckpoint));
 						}
 						else {
-							g.textf("%s", 0xFFFFDD, NULL, "");
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, ""));
 						}
 					});
 					g.poplist();
 				}
 				// why is this broken -Y
-				/*
 				if (showracetime)
 				{
 					g.space(2);
@@ -431,36 +438,19 @@ namespace game
 					rightjustified(g.text("time", COL_GRAY))
 					loopscoregroup(o, {
 						if (o->racestate >= 1) {
-							int secs = max(o->racetime, 0) / 1000, mins = secs / 60;
+							int secs = max(o->racetime, 0) / 1000;
+							int mins = secs / 60;
 							secs %= 60;
-							g.textf("%d:%02d", 0xFFFFDD, NULL, mins, secs);
+							rightjustified(g.textf("%d:%02d", 0xFFFFDD, NULL, mins, secs));
 						}
 						else {
-							g.textf("%s", 0xFFFFDD, NULL, "");
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, ""));
 						}
 					});
 					g.poplist();
 				}
-				*/
 			}
-
-			/*
-			if (showaccuracy) {
-				g.space(1);
-				g.pushlist();
-				g.text("acc", fgcolor);
-				g.strut(intermission ? 6 : 4);
-				loopscoregroup(o,
-					{
-						extclient* ec = getextclient(o->clientnum);
-						int acc = ec ? (ec)->accuracy : (o->totaldamage * 100) / max(o->totalshots, 1);
-						g.textf("%d%%", showaccuracy >= 2 ? (ec ? 0xFFFF00 : 0xFF7F00) : 0xFFFFDD, NULL, acc);
-					})
-					g.poplist();
-			}*/
-
-			// Currently broken -Y
-			/*
+			
 			if(!m_insta)
 			{
 				if(showdamage)
@@ -490,7 +480,7 @@ namespace game
 					});
 					g.poplist();
 				}
-			}*/
+			}
 
 			if(multiplayer(false) || demoplayback)
 			{
@@ -502,7 +492,7 @@ namespace game
 					rightjustified(g.text("ping", COL_GRAY))
 					loopscoregroup(o,
 					{
-						fpsent *p = getclient(o->ownernum);
+						fpsent *p = o->ownernum >= 0 ? getclient(o->ownernum) : o;
 						if(!p) p = o;
 						
 						const char* pcolor;
@@ -536,11 +526,11 @@ namespace game
 				{
 					g.space(2);
 					g.pushlist();
-					//g.strut(2);
+					g.strut(2);
 					rightjustified(g.text("pj", COL_GRAY))
 					loopscoregroup(o,
 					{
-						fpsent* p = getclient(o->ownernum);
+						fpsent* p = o->ownernum >= 0 ? getclient(o->ownernum) : o;
 						if(!p) p = o;
 						if(p==player1) rightjustified(g.text("0", fgcolor))
 						else rightjustified(g.textf("%d", fgcolor, NULL, abs(33-p->plag)))
@@ -602,7 +592,7 @@ namespace game
 					rightjustified(g.text("ping", COL_GRAY))
 					loopspectators(o,
 					{
-						fpsent *p = getclient(o->ownernum);
+						fpsent *p = o->ownernum >= 0 ? getclient(o->ownernum) : o;
 						if(!p) p = o;
 						if(p->state==CS_LAGGED) rightjustified(g.text("LAG", fgcolor))
 						else rightjustified(g.textf("%d", fgcolor, NULL, p->ping))
