@@ -45,3 +45,7 @@ update.cfg
 
 # Ignore bundled font creation utility
 /packages/fonts/cube2font
+
+# macOS/Xcode files
+.DS_Store
+xcuserdata/

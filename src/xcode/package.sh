@@ -22,12 +22,12 @@ ditto "$CARD_HOME/cardboard.app" "$CARDPKG/Cardboard.app"
 GAMEDIR="$CARDPKG/Cardboard.app/Contents/Resources"
 
 #copy readme and data and remove unneccesary stuff
-CpMac -r "$CARD_HOME/README.html" "$CARDPKG/"
-CpMac -r "$CARD_HOME/docs" "$CARDPKG/"
-CpMac -r "$CARD_HOME/data" "$GAMEDIR/"
-CpMac -r "$CARD_HOME/packages" "$GAMEDIR/"
-CpMac -r "$CARD_HOME/server-init.cfg" "$GAMEDIR/"
-CpMac -r "$CARD_HOME/src" "$CARDPKG/src"
+cp -r "$CARD_HOME/README.html" "$CARDPKG/"
+cp -r "$CARD_HOME/docs" "$CARDPKG/"
+cp -r "$CARD_HOME/data" "$GAMEDIR/"
+cp -r "$CARD_HOME/packages" "$GAMEDIR/"
+cp -r "$CARD_HOME/server-init.cfg" "$GAMEDIR/"
+#cp -r "$CARD_HOME/src" "$CARDPKG/src"
 find -d "$CARDPKG" -name ".git" -exec rm -rf {} \\;
 find "$CARDPKG" -name ".DS_Store" -exec rm -f {} \\;
 rm -rf "$CARDPKG/src/xcode/build"

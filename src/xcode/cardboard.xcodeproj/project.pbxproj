@@ -8,6 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		2D9FA6A523B9B042004A1465 /* glemu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D9FA6A423B9B042004A1465 /* glemu.cpp */; };
+		589F283A284E7DCE00DAE7D1 /* gamepad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F2824284E786800DAE7D1 /* gamepad.cpp */; };
+		589F283B284E7DD400DAE7D1 /* translate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F2823284E786800DAE7D1 /* translate.cpp */; };
+		589F283C284E7DE300DAE7D1 /* raw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F2826284E786800DAE7D1 /* raw.cpp */; };
+		589F283D284E7DEC00DAE7D1 /* discord.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F282F284E788D00DAE7D1 /* discord.cpp */; };
+		589F283E284E7DF100DAE7D1 /* fragmessages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F2832284E788D00DAE7D1 /* fragmessages.cpp */; };
+		589F283F284E7DF300DAE7D1 /* steam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F282E284E788D00DAE7D1 /* steam.cpp */; };
+		589F2840284E7DF800DAE7D1 /* weaponstats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F2829284E788D00DAE7D1 /* weaponstats.cpp */; };
+		589F2841284E7E6A00DAE7D1 /* microtar.c in Sources */ = {isa = PBXBuildFile; fileRef = 589F2833284E78A600DAE7D1 /* microtar.c */; };
+		589F2842284E7E6D00DAE7D1 /* cJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = 589F2838284E78A700DAE7D1 /* cJSON.c */; };
 		B90ADD4509B344D800A5B00B /* callbacks.c in Sources */ = {isa = PBXBuildFile; fileRef = B90ADD0009B344D800A5B00B /* callbacks.c */; };
 		B90ADD5709B344D800A5B00B /* host.c in Sources */ = {isa = PBXBuildFile; fileRef = B90ADD1309B344D800A5B00B /* host.c */; };
 		B90ADD6A09B344D800A5B00B /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = B90ADD2809B344D800A5B00B /* list.c */; };
@@ -64,18 +73,14 @@
 		D1B87D610F7F57C80063BD1C /* stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1B87D5E0F7F57C80063BD1C /* stream.cpp */; };
 		D1B87D620F7F57C80063BD1C /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1B87D5F0F7F57C80063BD1C /* zip.cpp */; };
 		D1C660CA0D5467C8002E52C1 /* pvs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1C660C90D5467C8002E52C1 /* pvs.cpp */; };
-		D1D040DA0F830C350043BA95 /* movie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D040D90F830C350043BA95 /* movie.cpp */; };
 		D1D07EFE0F645590007098A8 /* client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D07EF60F645590007098A8 /* client.cpp */; };
 		D1D07EFF0F645590007098A8 /* entities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D07EF70F645590007098A8 /* entities.cpp */; };
-		D1D07F000F645590007098A8 /* monster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D07EF80F645590007098A8 /* monster.cpp */; };
-		D1D07F010F645590007098A8 /* movable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D07EF90F645590007098A8 /* movable.cpp */; };
 		D1D07F020F645590007098A8 /* render.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D07EFA0F645590007098A8 /* render.cpp */; };
 		D1D07F030F645590007098A8 /* scoreboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D07EFB0F645590007098A8 /* scoreboard.cpp */; };
 		D1D07F040F645590007098A8 /* server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D07EFC0F645590007098A8 /* server.cpp */; };
 		D1D07F050F645590007098A8 /* weapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D07EFD0F645590007098A8 /* weapon.cpp */; };
 		D1D6C6AE0EAEA703009B1A5C /* blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D6C6AC0EAEA703009B1A5C /* blob.cpp */; };
 		D1E605B90E2416150045244E /* cardboard.icns in Resources */ = {isa = PBXBuildFile; fileRef = B97E99CE085F4B3E002F9BC6 /* cardboard.icns */; };
-
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +89,30 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		2D9FA6A423B9B042004A1465 /* glemu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glemu.cpp; sourceTree = "<group>"; };
 		2D9FA6A623B9B057004A1465 /* glemu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glemu.h; sourceTree = "<group>"; };
+		589F2823284E786800DAE7D1 /* translate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = translate.cpp; sourceTree = "<group>"; };
+		589F2824284E786800DAE7D1 /* gamepad.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gamepad.cpp; sourceTree = "<group>"; };
+		589F2825284E786800DAE7D1 /* translate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translate.h; sourceTree = "<group>"; };
+		589F2826284E786800DAE7D1 /* raw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = raw.cpp; sourceTree = "<group>"; };
+		589F2827284E788D00DAE7D1 /* weapon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = weapon.h; sourceTree = "<group>"; };
+		589F2828284E788D00DAE7D1 /* race.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = race.h; sourceTree = "<group>"; };
+		589F2829284E788D00DAE7D1 /* weaponstats.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = weaponstats.cpp; sourceTree = "<group>"; };
+		589F282A284E788D00DAE7D1 /* extserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = extserver.h; sourceTree = "<group>"; };
+		589F282B284E788D00DAE7D1 /* weaponstats_type.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = weaponstats_type.h; sourceTree = "<group>"; };
+		589F282C284E788D00DAE7D1 /* steam.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = steam.h; sourceTree = "<group>"; };
+		589F282D284E788D00DAE7D1 /* weaponstats.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = weaponstats.h; sourceTree = "<group>"; };
+		589F282E284E788D00DAE7D1 /* steam.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = steam.cpp; sourceTree = "<group>"; };
+		589F282F284E788D00DAE7D1 /* discord.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = discord.cpp; sourceTree = "<group>"; };
+		589F2830284E788D00DAE7D1 /* fragmessages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fragmessages.h; sourceTree = "<group>"; };
+		589F2831284E788D00DAE7D1 /* grapple.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = grapple.h; sourceTree = "<group>"; };
+		589F2832284E788D00DAE7D1 /* fragmessages.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = fragmessages.cpp; sourceTree = "<group>"; };
+		589F2833284E78A600DAE7D1 /* microtar.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = microtar.c; sourceTree = "<group>"; };
+		589F2834284E78A600DAE7D1 /* curl */ = {isa = PBXFileReference; lastKnownFileType = folder; path = curl; sourceTree = "<group>"; };
+		589F2835284E78A600DAE7D1 /* cJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cJSON.h; sourceTree = "<group>"; };
+		589F2836284E78A600DAE7D1 /* b64 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = b64; sourceTree = "<group>"; };
+		589F2837284E78A600DAE7D1 /* microtar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = microtar.h; sourceTree = "<group>"; };
+		589F2838284E78A700DAE7D1 /* cJSON.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = cJSON.c; sourceTree = "<group>"; };
+		589F2839284E78A700DAE7D1 /* discord */ = {isa = PBXFileReference; lastKnownFileType = folder; path = discord; sourceTree = "<group>"; };
+		589F2843284E7FE500DAE7D1 /* libcurl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurl.tbd; path = usr/lib/libcurl.tbd; sourceTree = SDKROOT; };
 		B2F67ED704C74A3F00A80002 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		B90ADD0009B344D800A5B00B /* callbacks.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = callbacks.c; sourceTree = "<group>"; };
 		B90ADD1309B344D800A5B00B /* host.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = host.c; sourceTree = "<group>"; };
@@ -169,29 +198,17 @@
 		D18B8FBE0DB0AF8200171439 /* explosion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = explosion.h; sourceTree = "<group>"; };
 		D18B8FBF0DB0AF8200171439 /* lensflare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lensflare.h; sourceTree = "<group>"; };
 		D18B8FC00DB0AF8200171439 /* lightning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lightning.h; sourceTree = "<group>"; };
-		D19E773011977E1E003753EF /* ent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ent.cpp; path = ../rpggame/ent.cpp; sourceTree = SOURCE_ROOT; };
-		D19E773111977E1E003753EF /* entities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = entities.cpp; path = ../rpggame/entities.cpp; sourceTree = SOURCE_ROOT; };
-		D19E773211977E1E003753EF /* objset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = objset.cpp; path = ../rpggame/objset.cpp; sourceTree = SOURCE_ROOT; };
-		D19E773311977E1E003753EF /* rpg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rpg.cpp; path = ../rpggame/rpg.cpp; sourceTree = SOURCE_ROOT; };
-		D19E773411977E1E003753EF /* rpg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rpg.h; path = ../rpggame/rpg.h; sourceTree = SOURCE_ROOT; };
-		D19E773511977E1E003753EF /* rpgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rpgent.h; path = ../rpggame/rpgent.h; sourceTree = SOURCE_ROOT; };
-		D19E773611977E1E003753EF /* rpgobj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rpgobj.h; path = ../rpggame/rpgobj.h; sourceTree = SOURCE_ROOT; };
-		D19E773711977E1E003753EF /* stats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stats.h; path = ../rpggame/stats.h; sourceTree = SOURCE_ROOT; };
 		D19E775D11977E82003753EF /* iqm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iqm.h; sourceTree = "<group>"; };
 		D19E775E11977E82003753EF /* mpr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mpr.h; sourceTree = "<group>"; };
 		D19E776011977E82003753EF /* smd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smd.h; sourceTree = "<group>"; };
 		D19E776111977E82003753EF /* glexts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glexts.h; sourceTree = "<group>"; };
-		D1AB44FB0E245F7A00B5D3A5 /* help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = help; sourceTree = "<group>"; };
 		D1B87D5D0F7F57C80063BD1C /* crypto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = crypto.cpp; sourceTree = "<group>"; };
 		D1B87D5E0F7F57C80063BD1C /* stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stream.cpp; sourceTree = "<group>"; };
 		D1B87D5F0F7F57C80063BD1C /* zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = zip.cpp; sourceTree = "<group>"; };
 		D1BAE4260F1F1B170077022C /* ragdoll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ragdoll.h; sourceTree = "<group>"; };
 		D1C660C90D5467C8002E52C1 /* pvs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pvs.cpp; sourceTree = "<group>"; };
-		D1D040D90F830C350043BA95 /* movie.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = movie.cpp; sourceTree = "<group>"; };
 		D1D07EF60F645590007098A8 /* client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = client.cpp; sourceTree = "<group>"; };
 		D1D07EF70F645590007098A8 /* entities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = entities.cpp; sourceTree = "<group>"; };
-		D1D07EF80F645590007098A8 /* monster.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monster.cpp; sourceTree = "<group>"; };
-		D1D07EF90F645590007098A8 /* movable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = movable.cpp; sourceTree = "<group>"; };
 		D1D07EFA0F645590007098A8 /* render.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = render.cpp; sourceTree = "<group>"; };
 		D1D07EFB0F645590007098A8 /* scoreboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scoreboard.cpp; sourceTree = "<group>"; };
 		D1D07EFC0F645590007098A8 /* server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = server.cpp; sourceTree = "<group>"; };
@@ -250,9 +267,9 @@
 			isa = PBXGroup;
 			children = (
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
- 				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
- 				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
 			);
 			name = cardboard;
 			sourceTree = "<group>";
@@ -273,8 +290,6 @@
 			children = (
 				B9CACA12092099DF00A13F04 /* cardboard.plist */,
 				B97E99CE085F4B3E002F9BC6 /* cardboard.icns */,
-				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
-				D1DB53E70D70F1CD003AE25C /* Localizable.strings */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -282,6 +297,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				589F2843284E7FE500DAE7D1 /* libcurl.tbd */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -306,7 +322,6 @@
 		B9AC7A830D06DB44005506F8 /* engine */ = {
 			isa = PBXGroup;
 			children = (
-				D1D040D90F830C350043BA95 /* movie.cpp */,
 				B9AC7A840D06DB44005506F8 /* 3dgui.cpp */,
 				B9AC7A850D06DB44005506F8 /* bih.cpp */,
 				D16E4E130ED107C300C401A2 /* blend.cpp */,
@@ -316,6 +331,7 @@
 				B9AC7A890D06DB44005506F8 /* console.cpp */,
 				B91D40200D525FE0004EF78A /* decal.cpp */,
 				D16BD00C0D7000EA0053CECE /* dynlight.cpp */,
+				589F2824284E786800DAE7D1 /* gamepad.cpp */,
 				D118DEB50D979281000E8C4C /* glare.cpp */,
 				B9AC7A8C0D06DB44005506F8 /* grass.cpp */,
 				B9AC7A8D0D06DB44005506F8 /* lightmap.cpp */,
@@ -328,6 +344,7 @@
 				D1C660C90D5467C8002E52C1 /* pvs.cpp */,
 				B9AC7A980D06DB44005506F8 /* octaedit.cpp */,
 				B9AC7A990D06DB44005506F8 /* octarender.cpp */,
+				589F2826284E786800DAE7D1 /* raw.cpp */,
 				B9AC7A9B0D06DB44005506F8 /* rendergl.cpp */,
 				B9AC7A9C0D06DB44005506F8 /* rendermodel.cpp */,
 				B9AC7A9D0D06DB44005506F8 /* renderparticles.cpp */,
@@ -340,6 +357,7 @@
 				B9AC7AA40D06DB44005506F8 /* shadowmap.cpp */,
 				B9AC7AA50D06DB44005506F8 /* sound.cpp */,
 				B9AC7AA60D06DB44005506F8 /* texture.cpp */,
+				589F2823284E786800DAE7D1 /* translate.cpp */,
 				B9AC7AA90D06DB44005506F8 /* water.cpp */,
 				B9AC7AAA0D06DB44005506F8 /* world.cpp */,
 				B9AC7AAC0D06DB44005506F8 /* worldio.cpp */,
@@ -365,6 +383,7 @@
 				D19E776011977E82003753EF /* smd.h */,
 				D16C16910E04812500A522EB /* textedit.h */,
 				B9AC7AA70D06DB44005506F8 /* texture.h */,
+				589F2825284E786800DAE7D1 /* translate.h */,
 				B9AC7AA80D06DB44005506F8 /* vertmodel.h */,
 				B9AC7AAB0D06DB44005506F8 /* world.h */,
 			);
@@ -377,21 +396,31 @@
 			children = (
 				D11B024A0F830BA400334D69 /* ai.cpp */,
 				D1D07EF60F645590007098A8 /* client.cpp */,
+				589F282F284E788D00DAE7D1 /* discord.cpp */,
+				B9AC7AB10D06DB44005506F8 /* fps.cpp */,
+				589F2832284E788D00DAE7D1 /* fragmessages.cpp */,
 				D1D07EF70F645590007098A8 /* entities.cpp */,
-				D1D07EF80F645590007098A8 /* monster.cpp */,
-				D1D07EF90F645590007098A8 /* movable.cpp */,
 				D1D07EFA0F645590007098A8 /* render.cpp */,
 				D1D07EFB0F645590007098A8 /* scoreboard.cpp */,
 				D1D07EFC0F645590007098A8 /* server.cpp */,
+				589F282E284E788D00DAE7D1 /* steam.cpp */,
 				D11B024D0F830BA400334D69 /* waypoint.cpp */,
 				D1D07EFD0F645590007098A8 /* weapon.cpp */,
-				B9AC7AB10D06DB44005506F8 /* fps.cpp */,
+				589F2829284E788D00DAE7D1 /* weaponstats.cpp */,
 				D11B024B0F830BA400334D69 /* ai.h */,
 				D11B024C0F830BA400334D69 /* aiman.h */,
 				D1DE11180E21986800FA387C /* extinfo.h */,
 				D123F95A0DA8B312001DB09F /* ctf.h */,
 				B9AC7AAE0D06DB44005506F8 /* capture.h */,
+				589F282A284E788D00DAE7D1 /* extserver.h */,
+				589F2830284E788D00DAE7D1 /* fragmessages.h */,
 				B9AC7AB40D06DB44005506F8 /* game.h */,
+				589F2831284E788D00DAE7D1 /* grapple.h */,
+				589F2828284E788D00DAE7D1 /* race.h */,
+				589F282C284E788D00DAE7D1 /* steam.h */,
+				589F2827284E788D00DAE7D1 /* weapon.h */,
+				589F282D284E788D00DAE7D1 /* weaponstats.h */,
+				589F282B284E788D00DAE7D1 /* weaponstats_type.h */,
 			);
 			name = fpsgame;
 			path = ../fpsgame;
@@ -400,6 +429,13 @@
 		B9AC7AC10D06DB44005506F8 /* shared */ = {
 			isa = PBXGroup;
 			children = (
+				589F2836284E78A600DAE7D1 /* b64 */,
+				589F2838284E78A700DAE7D1 /* cJSON.c */,
+				589F2835284E78A600DAE7D1 /* cJSON.h */,
+				589F2834284E78A600DAE7D1 /* curl */,
+				589F2839284E78A700DAE7D1 /* discord */,
+				589F2833284E78A600DAE7D1 /* microtar.c */,
+				589F2837284E78A600DAE7D1 /* microtar.h */,
 				2D9FA6A623B9B057004A1465 /* glemu.h */,
 				2D9FA6A423B9B042004A1465 /* glemu.cpp */,
 				D19E776111977E82003753EF /* glexts.h */,
@@ -448,16 +484,15 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = NO;
-				LastUpgradeCheck = 0620;
+				LastUpgradeCheck = 1340;
 			};
 			buildConfigurationList = B960CF35085F3CC7004FB142 /* Build configuration list for PBXProject "cardboard" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 1;
 			knownRegions = (
-				English,
 				en,
+				Base,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* cardboard */;
 			projectDirPath = "";
@@ -485,6 +520,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B90ADD4509B344D800A5B00B /* callbacks.c in Sources */,
+				589F283D284E7DEC00DAE7D1 /* discord.cpp in Sources */,
 				B90ADD5709B344D800A5B00B /* host.c in Sources */,
 				B90ADD6A09B344D800A5B00B /* list.c in Sources */,
 				B90ADD7109B344D800A5B00B /* packet.c in Sources */,
@@ -492,6 +528,8 @@
 				B90ADD7309B344D800A5B00B /* protocol.c in Sources */,
 				B90ADD7609B344D800A5B00B /* unix.c in Sources */,
 				B9AC7ACF0D06DB44005506F8 /* 3dgui.cpp in Sources */,
+				589F283F284E7DF300DAE7D1 /* steam.cpp in Sources */,
+				589F2841284E7E6A00DAE7D1 /* microtar.c in Sources */,
 				B9AC7AD00D06DB44005506F8 /* bih.cpp in Sources */,
 				B9AC7AD20D06DB44005506F8 /* client.cpp in Sources */,
 				B9AC7AD30D06DB44005506F8 /* command.cpp in Sources */,
@@ -507,12 +545,14 @@
 				2D9FA6A523B9B042004A1465 /* glemu.cpp in Sources */,
 				B9AC7AE40D06DB44005506F8 /* octarender.cpp in Sources */,
 				B9AC7AE50D06DB44005506F8 /* physics.cpp in Sources */,
+				589F283B284E7DD400DAE7D1 /* translate.cpp in Sources */,
 				B9AC7AE60D06DB44005506F8 /* rendergl.cpp in Sources */,
 				B9AC7AE70D06DB44005506F8 /* rendermodel.cpp in Sources */,
 				B9AC7AE80D06DB44005506F8 /* renderparticles.cpp in Sources */,
 				B9AC7AE90D06DB44005506F8 /* rendersky.cpp in Sources */,
 				B9AC7AEA0D06DB44005506F8 /* rendertext.cpp in Sources */,
 				B9AC7AEB0D06DB44005506F8 /* renderva.cpp in Sources */,
+				589F2842284E7E6D00DAE7D1 /* cJSON.c in Sources */,
 				B9AC7AEC0D06DB44005506F8 /* server.cpp in Sources */,
 				B9AC7AED0D06DB44005506F8 /* serverbrowser.cpp in Sources */,
 				B9AC7AEE0D06DB44005506F8 /* shader.cpp in Sources */,
@@ -523,6 +563,7 @@
 				B9AC7AF50D06DB44005506F8 /* world.cpp in Sources */,
 				B9AC7AF70D06DB44005506F8 /* worldio.cpp in Sources */,
 				B9AC7AFB0D06DB44005506F8 /* fps.cpp in Sources */,
+				589F283A284E7DCE00DAE7D1 /* gamepad.cpp in Sources */,
 				B9AC7B0D0D06DB44005506F8 /* geom.cpp in Sources */,
 				B9AC7B110D06DB44005506F8 /* pch.cpp in Sources */,
 				B9AC7B150D06DB44005506F8 /* tools.cpp in Sources */,
@@ -534,14 +575,15 @@
 				D16E4E140ED107C300C401A2 /* blend.cpp in Sources */,
 				D1D07EFE0F645590007098A8 /* client.cpp in Sources */,
 				D1D07EFF0F645590007098A8 /* entities.cpp in Sources */,
-				D1D07F000F645590007098A8 /* monster.cpp in Sources */,
-				D1D07F010F645590007098A8 /* movable.cpp in Sources */,
 				D1D07F020F645590007098A8 /* render.cpp in Sources */,
+				589F2840284E7DF800DAE7D1 /* weaponstats.cpp in Sources */,
 				D1D07F030F645590007098A8 /* scoreboard.cpp in Sources */,
 				D1D07F040F645590007098A8 /* server.cpp in Sources */,
 				D1D07F050F645590007098A8 /* weapon.cpp in Sources */,
+				589F283E284E7DF100DAE7D1 /* fragmessages.cpp in Sources */,
 				D1B87D600F7F57C80063BD1C /* crypto.cpp in Sources */,
 				D1B87D610F7F57C80063BD1C /* stream.cpp in Sources */,
+				589F283C284E7DE300DAE7D1 /* raw.cpp in Sources */,
 				D1B87D620F7F57C80063BD1C /* zip.cpp in Sources */,
 				D11B024E0F830BA400334D69 /* ai.cpp in Sources */,
 				D11B02510F830BA400334D69 /* waypoint.cpp in Sources */,
@@ -551,9 +593,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-			3E18417F123861470098590C /* Release */ = {
+		3E18417F123861470098590C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -562,7 +605,7 @@
 				);
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_VERSION = 4.0;
+				GCC_VERSION = "";
 				INSTALL_PATH = "";
 				SKIP_INSTALL = NO;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -572,7 +615,8 @@
 		3E184180123861470098590C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
@@ -589,21 +633,26 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					../include,
+					../engine,
+					../fpsgame,
 					../shared,
 					../enet/include,
 					/usr/X11/include/,
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "cardboard.plist";
+				INFOPLIST_FILE = cardboard.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MARKETING_VERSION = 2.8.2;
 				OTHER_CPLUSPLUSFLAGS = (
 					"-fomit-frame-pointer",
 					"-Wno-invalid-offsetof",
 				);
 				OTHER_LDFLAGS = (
 					"-lz",
+					"-lcurl",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.harpnetstudios.cardboard;
 				PRODUCT_NAME = cardboard;
 				SDKROOT = macosx;
 				SKIP_INSTALL = NO;
@@ -614,37 +663,41 @@
 		B94198C709207E810029DAD1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					../../cardboard.app/Contents/Frameworks,
 					"$(USER_LIBRARY_DIR)/Frameworks",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/Frameworks\"";
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/Frameworks\"";
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					../include,
+					../engine,
+					../fpsgame,
 					../shared,
 					../enet/include,
 					/usr/X11/include/,
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "cardboard.plist";
+				INFOPLIST_FILE = cardboard.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				OTHER_CPLUSPLUSFLAGS = (
-					"-Wno-invalid-offsetof",
-				);
+				MARKETING_VERSION = 2.8.2;
+				OTHER_CPLUSPLUSFLAGS = "-Wno-invalid-offsetof";
 				OTHER_LDFLAGS = (
 					"-lz",
+					"-lcurl",
 					"-L../../cardboard.app/Contents/Frameworks",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.harpnetstudios.cardboard;
 				PRODUCT_NAME = cardboard;
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
@@ -654,16 +707,17 @@
 		B960CF36085F3CC7004FB142 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(USER_LIBRARY_DIR)/Frameworks",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_VERSION = 4.0;
+				GCC_VERSION = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
-				PREBINDING = NO;
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
