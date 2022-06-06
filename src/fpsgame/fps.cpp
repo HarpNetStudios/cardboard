@@ -77,7 +77,7 @@ namespace game
 			stopfollowing();
 			return;
 		}
-		int cur = following >= 0 ? following : (dir < 0 ? clients.length() - 1 : 0);
+		int cur = following >= 0 ? following : (dir > 0 ? clients.length() - 1 : 0);
 		loopv(clients)
 		{
 			cur = (cur + dir + clients.length()) % clients.length();

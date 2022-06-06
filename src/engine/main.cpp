@@ -1244,7 +1244,7 @@ void swapbuffers(bool overlay)
 	SDL_GL_SwapWindow(screen);
 }
  
-VAR(menufps, 0, 60, 1000);
+VARP(menufps, 0, 60, 1000);
 VARP(maxfps, 0, 200, 1000);
 VARFP(maxtps, 0, 0, 1000, { if(maxtps && maxtps<60) {conoutf("Can't set maxtps < 60"); maxtps = 60;} });
 

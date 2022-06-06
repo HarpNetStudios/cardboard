@@ -34,10 +34,10 @@ void getmapfilenames(const char *fname, const char *cname, char *pakname, char *
 	}
 	else
 	{
-		copystring(pakname, "base", MAXSTRLEN);
+		copystring(pakname, "maps", MAXSTRLEN);
 		copystring(cfgname, name, MAXSTRLEN);
 	}
-	validmapname(mapname, fname, strpbrk(fname, "/\\") ? NULL : "base/");
+	validmapname(mapname, fname, strpbrk(fname, "/\\") ? NULL : "maps/");
 }
 
 static void fixent(entity &e, int version)

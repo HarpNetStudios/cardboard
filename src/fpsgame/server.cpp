@@ -828,7 +828,7 @@ namespace server
 		if(!ci) return false;
 		if(!ci->local && !ci->state.canpickup(sents[i].type))
 		{
-			sendf(sender, 1, "ri3", N_ITEMACC, i, -1);
+			sendf(ci->ownernum, 1, "ri3", N_ITEMACC, i, -1);
 			return false;
 		}
 		sents[i].spawned = false;
@@ -2013,7 +2013,7 @@ namespace server
 		{
 			clientinfo *ci = clients[i];
 			ci->mapchange();
-			/*defformatstring(fname, "packages/base/%s.cmr", smapname);
+			/*defformatstring(fname, "packages/maps/%s.cmr", smapname);
 			stream *map = openrawfile(path(fname), "wb");
 			mapdata = map;
 			if(!mapdata) sendf(-1, 1, "ris", N_SERVMSG, "no map to send");

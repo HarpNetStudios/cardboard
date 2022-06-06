@@ -239,7 +239,7 @@ static void mountzip(ziparchive &arch, vector<zipfile> &files, const char *mount
 					stripdir = f.name;
 					striplen = cmrdir + 1 - f.name;
 				}
-				if(!mountdir) mountdir = "packages/base/";
+				if(!mountdir) mountdir = "packages/maps/";
 				break;
 			}
 		}    
@@ -280,7 +280,7 @@ bool addzip(const char *name, const char *mount = NULL, const char *strip = NULL
 	FILE *f = fopen(findfile(pname, "rb"), "rb");
 	if(!f) 
 	{
-		if(!internal) conoutf(CON_ERROR, "could not open file %s", pname);
+		conoutf(CON_ERROR, "could not open file %s", pname);
 		return false;
 	}
 	zipdirectoryheader h;

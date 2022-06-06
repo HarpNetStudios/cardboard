@@ -2145,7 +2145,7 @@ void cleardamagescreen()
 }
 
 VAR(hidestats, 0, 0, 1);
-VAR(hidehud, 0, 0, 1);
+VAR(hidehud, 0, 0, 2);
 
 VARP(crosshairsize, -1, 15, 50);
 VARP(cursorsize, 0, 30, 50);

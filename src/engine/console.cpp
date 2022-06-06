@@ -436,48 +436,28 @@ bool consoleinput(const char *str, int len)
 	return true;
 }
 
-void killforward(int count)
+static char *skipword(char *s)
 {
-	int len = (int)strlen(commandbuf);
-	if(commandpos < 0) return;
-	memmove(&commandbuf[commandpos], &commandbuf[commandpos + count], len - commandpos);
-	resetcomplete();
-	if(commandpos >= len - count) commandpos = -1;
+	while(int c = *s++) if(!iscubespace(c))
+	{
+		while(int c = *s++) if(iscubespace(c)) break;
+		break;
+	}
+	return s-1;
 }
-void killbackward(int count)
+
+static char *skipwordrev(char *s, int n = -1)
 {
-	int len = (int)strlen(commandbuf), i = commandpos >= 0 ? commandpos : len;
-	if(i < 1) return;
-	memmove(&commandbuf[i - count], &commandbuf[i], len - i + 1);
-	resetcomplete();
-	if(commandpos > 0) commandpos -= count;
-	else if(!commandpos && len <= 1) commandpos = -1;
+	char *e = s + strlen(s);
+	if(n >= 0) e = min(e, &s[n]);
+	while(--e >= s) if(!iscubespace(*e))
+	{
+		while(--e >= s && !iscubespace(*e));
+		break;
+	}
+	return e+1;
 }
-inline bool wordpart(char c)
-{
-	return
-		(c >= 'a' && c <= 'z') ||
-		(c >= 'A' && c <= 'Z') ||
-		(c >= '0' && c <= '9');
-}
-int wordforward(const int start)
-{
-	int i = start;
-	for (; commandbuf[i] && !wordpart(commandbuf[i]); i++);
-	for (; commandbuf[i] && wordpart(commandbuf[i]); i++);
-	return i;
-}
-inline int commandindex()
-{
-	return commandpos >= 0 ? commandpos : strlen(commandbuf);
-}
-int wordbackward(const int start)
-{
-	int i = max(0, start - 1);
-	for (; i > 0 && !wordpart(commandbuf[i]); i--);
-	for (; i > 0 && wordpart(commandbuf[i]); i--);
-	return min(start, i + 1);
-}
+
 
 bool consolekey(int code, bool isdown)
 {
@@ -485,85 +465,98 @@ bool consolekey(int code, bool isdown)
 
 	#ifdef __APPLE__
 		#define MOD_KEYS (KMOD_LGUI|KMOD_RGUI)
+		#define SKIP_KEYS (KMOD_LALT|KMOD_RALT)
 	#else
 		#define MOD_KEYS (KMOD_LCTRL|KMOD_RCTRL)
+		#define SKIP_KEYS (KMOD_LCTRL|KMOD_RCTRL)
 	#endif
-	const SDL_Keymod modifier = SDL_GetModState();
 
 	if(isdown)
 	{
 		switch(code)
 		{
-			case SDLK_RETURN:
-			case SDLK_KP_ENTER:
-				break;
+		case SDLK_RETURN:
+		case SDLK_KP_ENTER:
+			break;
 
-			case SDLK_HOME:
-				if(strlen(commandbuf)) commandpos = 0;
-				break;
+		case SDLK_HOME:
+			if(commandbuf[0]) commandpos = 0;
+			break;
 
-			case SDLK_END:
-				commandpos = -1;
-				break;
+		case SDLK_END:
+			commandpos = -1;
+			break;
 
-			case SDLK_DELETE:
+		case SDLK_DELETE:
+		{
+			int len = (int)strlen(commandbuf);
+			if(commandpos<0) break;
+			int end = commandpos+1;
+			if(SDL_GetModState()&SKIP_KEYS) end = skipword(&commandbuf[commandpos]) - commandbuf;
+			memmove(&commandbuf[commandpos], &commandbuf[end], len + 1 - end);
+			resetcomplete();
+			if(commandpos>=len-1) commandpos = -1;
+			break;
+		}
+
+		case SDLK_BACKSPACE:
+		{
+			int len = (int)strlen(commandbuf), i = commandpos>=0 ? commandpos : len;
+			if(i<1) break;
+			int start = i-1;
+			if(SDL_GetModState()&SKIP_KEYS) start = skipwordrev(commandbuf, i) - commandbuf;
+			memmove(&commandbuf[start], &commandbuf[i], len - i + 1);
+			resetcomplete();
+			if(commandpos>0) commandpos = start;
+			else if(!commandpos && len<=1) commandpos = -1;
+			break;
+		}
+
+		case SDLK_LEFT:
+			if(SDL_GetModState()&SKIP_KEYS) commandpos = skipwordrev(commandbuf, commandpos) - commandbuf;
+			else if(commandpos>0) commandpos--;
+			else if(commandpos<0) commandpos = (int)strlen(commandbuf)-1;
+			break;
+
+		case SDLK_RIGHT:
+			if(commandpos>=0)
 			{
-				if(modifier & KMOD_ALT)
-				{
-					int word = wordforward(commandpos);
-					if(word > 0) killforward(word - commandpos);
-				}
-				else killforward(1);
-				break;
+				if(SDL_GetModState()&SKIP_KEYS) commandpos = skipword(&commandbuf[commandpos]) - commandbuf;
+				else ++commandpos;
+				if(commandpos>=(int)strlen(commandbuf)) commandpos = -1;
 			}
+			break;
 
-			case SDLK_BACKSPACE:
+		case SDLK_UP:
+			if(histpos > history.length()) histpos = history.length();
+			if(histpos > 0)
 			{
-				if(modifier & KMOD_ALT)
-				{
-					const int start = commandindex();
-					int back = start - wordbackward(start);
-					if(back > 0) killbackward(back);
-				}
-				else killbackward(1);
-				break;
+				if(SDL_GetModState()&SKIP_KEYS) histpos = 0;
+				else --histpos;
+				history[histpos]->restore();
+			} 
+			break;
+
+		case SDLK_DOWN:
+			if(histpos + 1 < history.length())
+			{
+				if(SDL_GetModState()&SKIP_KEYS) histpos = history.length()-1;
+				else ++histpos;
+				history[histpos]->restore();
 			}
+			break;
 
-			case SDLK_LEFT:
-				if(modifier&KMOD_ALT) commandpos = wordbackward(commandindex());
-				else if(commandpos>0) commandpos--;
-				else if(commandpos<0) commandpos = (int)strlen(commandbuf)-1;
-				break;
+		case SDLK_TAB:
+			if(commandflags&CF_COMPLETE)
+			{
+				complete(commandbuf, sizeof(commandbuf), commandflags&CF_EXECUTE ? "/" : NULL);
+				if(commandpos>=0 && commandpos>=(int)strlen(commandbuf)) commandpos = -1;
+			}
+			break;
 
-			case SDLK_RIGHT:
-				if(modifier&KMOD_ALT) commandpos = wordforward(commandpos);
-				else if(commandpos>=0) commandpos++;
-				if(commandpos >= (int)strlen(commandbuf)) commandpos = -1;
-				break;
-
-			case SDLK_UP:
-				if(histpos > history.length()) histpos = history.length();
-				if(histpos > 0) history[--histpos]->restore(); 
-				break;
-
-			case SDLK_DOWN:
-				if(histpos + 1 < history.length()) history[++histpos]->restore();
-				break;
-
-			case SDLK_TAB:
-				if(commandflags&CF_COMPLETE)
-				{
-					complete(commandbuf, sizeof(commandbuf), commandflags&CF_EXECUTE ? "/" : NULL);
-					if(commandpos>=0 && commandpos>=(int)strlen(commandbuf)) commandpos = -1;
-				}
-				break;
-
-			case SDLK_v:
-				if(modifier & MOD_KEYS)
-				{
-					pasteconsole();
-					break;
-				}
+		case SDLK_v:
+			if(SDL_GetModState()&MOD_KEYS) pasteconsole();
+			break;
 		}
 	}
 	else

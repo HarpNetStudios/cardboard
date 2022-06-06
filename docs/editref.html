@@ -1329,7 +1329,7 @@ Of course, in order to push a selection box, you must be holding it.
 <pre id="map">map name</pre>
 <p>
 Loads up map "name" in the gamemode set previously by "mode". A map given as
-"blah" refers to "packages/base/blah.cmr", "mypackage/blah" refers to
+"blah" refers to "packages/maps/blah.cmr", "mypackage/blah" refers to
 "packages/mypackage/blah.cmr". The menu has a set of maps that can be loaded.
 See also map in the gameplay docs.
 <br><br>
@@ -1366,7 +1366,7 @@ lose a map. With "savemap", if you leave out the "name" argument, it is saved un
 With "savecurrentmap", the map is saved with the name determined by the current game.
 <br><br>
 Where you store a map depends on the complexity of what you are creating: if
-its a single map (maybe with its own .cfg) then the "base" package is the best
+its a single map (maybe with its own .cfg) then the "maps" package is the best
 place. If its multiple maps or a map with new media (textures etc.) its better
 to store it in its own package (a directory under "packages"), which makes
 distributing it less messy.

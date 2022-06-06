@@ -468,6 +468,7 @@ namespace game
 		}
 	}
 
+	VARP(playersearch, 0, 3, 10);
 	int parseplayer(const char *arg)
 	{
 		char *end;
@@ -487,7 +488,23 @@ namespace game
 		loopv(players)
 		{
 			fpsent *o = players[i];
-			if(!strcasecmp(arg, o->name)) return o->clientnum;
+			if(cubecaseequal(o->name, arg)) return o->clientnum;
+		}
+		int len = strlen(arg);
+		if(playersearch && len >= playersearch)
+		{
+			// try case insensitive prefix
+			loopv(players)
+			{
+				fpsent *o = players[i];
+				if(cubecaseequal(o->name, arg, len)) return o->clientnum;
+			}
+			// try case insensitive substring
+			loopv(players)
+			{
+				fpsent *o = players[i];
+				if(cubecasefind(o->name, arg)) return o->clientnum;
+			}
 		}
 		return -1;
 	}
@@ -2200,7 +2217,7 @@ namespace game
 				cbstring oldname;
 				copystring(oldname, getclientmap());
 				defformatstring(mname, "getmap_%d", lastmillis);
-				defformatstring(fname, "packages/base/%s.cmr", mname);
+				defformatstring(fname, "packages/maps/%s.cmr", mname);
 				stream *map = openrawfile(path(fname), "wb");
 				if(!map) return;
 				conoutf("received map");
@@ -2299,7 +2316,7 @@ namespace game
 		conoutf("sending map...");
 		defformatstring(mname, "sendmap_%d", lastmillis);
 		save_world(mname, true);
-		defformatstring(fname, "packages/base/%s.cmr", mname);
+		defformatstring(fname, "packages/maps/%s.cmr", mname);
 		stream *map = openrawfile(path(fname), "rb");
 		if(map)
 		{
