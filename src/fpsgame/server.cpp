@@ -2311,9 +2311,8 @@ namespace server
 	void shotevent::process(clientinfo *ci)
 	{
 		gamestate &gs = ci->state;
-		int wait = millis - gs.lastshot;
 		if(!gs.isalive(gamemillis) ||
-		   wait<gs.gunwait[gs.gunselect] ||
+		   0<gs.gunwait[gs.gunselect] ||
 		   gun<GUN_FIST || gun>GUN_GL ||
 		   gs.ammo[gun]<=0 || (guns[gun].range && from.dist(to) > guns[gun].range + 1))
 			return;
