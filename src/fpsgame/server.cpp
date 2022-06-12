@@ -133,7 +133,7 @@ namespace server
 		vec o;
 		int state, editstate;
 		int lastdeath, deadflush, lastspawn, lifesequence;
-		int lastshot;
+		int lastshot[NUMGUNS];
 		projectilestate<8> rockets, grenades;
 		int frags, flags, deaths, shotdamage, damage, tokens;
 		int lasttimeplayed, timeplayed;
@@ -148,7 +148,7 @@ namespace server
 
 		bool waitexpired(int gamemillis)
 		{
-			return gamemillis - lastshot >= gunwait[gunselect];
+			return gamemillis - lastshot[gunselect] >= gunwait[gunselect];
 		}
 
 		void reset()
@@ -173,7 +173,7 @@ namespace server
 			o = vec(-1e10f, -1e10f, -1e10f);
 			deadflush = 0;
 			lastspawn = -1;
-			lastshot = 0;
+			loopi(NUMGUNS) lastshot[i] = 0;
 			tokens = 0;
 		}
 
@@ -2311,13 +2311,14 @@ namespace server
 	void shotevent::process(clientinfo *ci)
 	{
 		gamestate &gs = ci->state;
+		int wait = millis - gs.lastshot[gs.gunselect];
 		if(!gs.isalive(gamemillis) ||
-		   0<gs.gunwait[gs.gunselect] ||
+		   wait<gs.gunwait[gs.gunselect] ||
 		   gun<GUN_FIST || gun>GUN_GL ||
 		   gs.ammo[gun]<=0 || (guns[gun].range && from.dist(to) > guns[gun].range + 1))
 			return;
 		if(gun!=GUN_FIST) gs.ammo[gun]--;
-		gs.lastshot = millis;
+		gs.lastshot[gs.gunselect] = millis;
 		gs.gunwait[gs.gunselect] = guns[gun].attackdelay;
 		sendf(-1, 1, "rii9x", N_SHOTFX, ci->clientnum, gun, id,
 				int(from.x*DMF), int(from.y*DMF), int(from.z*DMF),
