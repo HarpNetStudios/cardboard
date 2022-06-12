@@ -592,8 +592,6 @@ namespace game
 		}
 	}
 
-	extern int chainsawhudgun;
-
 	VARP(muzzleflash, 0, 1, 1);
 	VARP(muzzlelight, 0, 1, 1);
 
@@ -607,7 +605,7 @@ namespace game
 		switch(gun)
 		{
 			case GUN_FIST:
-				if(d->type==ENT_PLAYER && chainsawhudgun) sound = S_CHAINSAW_ATTACK;
+				if(d->type==ENT_PLAYER) sound = S_CHAINSAW_ATTACK;
 				if((muzzlelight) && (darkmap)) adddynlight(hudgunorigin(gun, d->o, to, d), 25, vec(0.6f, 0.275f, 0.15f), 10, 10, DL_FLASH, 0, vec(0, 0, 0), d);
 				break;
 
@@ -946,7 +944,7 @@ namespace game
 		switch(d->attacksound)
 		{
 			case S_CHAINSAW_ATTACK:
-				if(chainsawhudgun) gun = GUN_FIST;
+				gun = GUN_FIST;
 				break;
 			default:
 				return;
@@ -967,7 +965,7 @@ namespace game
 		if(d->clientnum >= 0 && d->state == CS_ALIVE) switch(d->gunselect)
 		{
 			case GUN_FIST:
-				if(chainsawhudgun && d->attacksound < 0)
+				if(d->attacksound < 0)
 				{
 					sound = S_CHAINSAW_IDLE;
 					radius = 50;
