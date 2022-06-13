@@ -3,8 +3,12 @@ name: Continous integration for Carmine Impact
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'src/**'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'src/**'
 
 jobs:
   build-windows:

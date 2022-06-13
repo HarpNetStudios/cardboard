@@ -20,7 +20,7 @@ namespace gamepad {
 		{
 			SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER);
 			if (SDL_GameControllerAddMappingsFromFile("data/gamecontrollerdb.txt") < 0) {
-				conoutf(CON_ERROR, "SDL_GameControllerDB error: %d", SDL_GetError());
+				conoutf(CON_ERROR, "SDL_GameControllerDB error: %s", SDL_GetError());
 			}
 		}
 
@@ -41,7 +41,7 @@ namespace gamepad {
 				controller = pad;
 				conoutf(CON_INFO, "Enabled \"%s\" gamepad. \fpThis feature is still experimental.", SDL_GameControllerName(controller));
 			}
-			else conoutf(CON_ERROR, "SDL_GetError() = ", SDL_GetError());
+			else conoutf(CON_ERROR, "SDL_GetError() = %s", SDL_GetError());
 			SDL_GameControllerEventState(SDL_ENABLE);
 		}
 		else conoutf(CON_WARN, "\foNo controllers detected, please plug one in.");

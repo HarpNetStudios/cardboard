@@ -687,7 +687,7 @@ void dosecattack(bool on)
 		const cJSON* jmessage = cJSON_GetObjectItemCaseSensitive(json, "message");
 		if(cJSON_IsNumber(jstatus) && cJSON_IsString(jmessage)) {
 			if(jstatus->valueint > 0) {
-				if(dbgplayerinfo) conoutf(CON_INFO, "\fs\f3getting player info for %s failed! (non-zero) [%s]\fr", d->name, jmessage);
+				if(dbgplayerinfo) conoutf(CON_INFO, "\fs\f3getting player info for %s failed! (non-zero) [%s]\fr", d->name, jmessage->valuestring);
 				d->pinfo->status = playerinfo::FAIL;
 				return false;
 			}
