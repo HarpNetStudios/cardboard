@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		2D9FA6A523B9B042004A1465 /* glemu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D9FA6A423B9B042004A1465 /* glemu.cpp */; };
+		5819F97C2858F83F00DFE8FB /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5819F9732858F69700DFE8FB /* SDL2_image.framework */; };
+		5819F97D2858F83F00DFE8FB /* SDL2_image.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5819F9732858F69700DFE8FB /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5819F97F2858F84000DFE8FB /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5819F9722858F69700DFE8FB /* SDL2_mixer.framework */; };
+		5819F9802858F84000DFE8FB /* SDL2_mixer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5819F9722858F69700DFE8FB /* SDL2_mixer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5819F9812858F84100DFE8FB /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5819F9742858F69700DFE8FB /* SDL2.framework */; };
+		5819F9822858F84100DFE8FB /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5819F9742858F69700DFE8FB /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		589F283A284E7DCE00DAE7D1 /* gamepad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F2824284E786800DAE7D1 /* gamepad.cpp */; };
 		589F283B284E7DD400DAE7D1 /* translate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F2823284E786800DAE7D1 /* translate.cpp */; };
 		589F283C284E7DE300DAE7D1 /* raw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F2826284E786800DAE7D1 /* raw.cpp */; };
@@ -25,9 +31,6 @@
 		B90ADD7309B344D800A5B00B /* protocol.c in Sources */ = {isa = PBXBuildFile; fileRef = B90ADD3109B344D800A5B00B /* protocol.c */; };
 		B90ADD7609B344D800A5B00B /* unix.c in Sources */ = {isa = PBXBuildFile; fileRef = B90ADD3409B344D800A5B00B /* unix.c */; };
 		B91D40210D525FE0004EF78A /* decal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B91D40200D525FE0004EF78A /* decal.cpp */; };
-		B92DC0FC09D08CF9008219BD /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B92DC0F909D08CF9008219BD /* SDL2_image.framework */; };
-		B92DC0FD09D08CF9008219BD /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B92DC0FA09D08CF9008219BD /* SDL2_mixer.framework */; };
-		B92DC0FE09D08CF9008219BD /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B92DC0FB09D08CF9008219BD /* SDL2.framework */; };
 		B94198C309207E810029DAD1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B94198C409207E810029DAD1 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2F67ED704C74A3F00A80002 /* OpenGL.framework */; };
 		B9AC7ACF0D06DB44005506F8 /* 3dgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9AC7A840D06DB44005506F8 /* 3dgui.cpp */; };
@@ -83,12 +86,31 @@
 		D1E605B90E2416150045244E /* cardboard.icns in Resources */ = {isa = PBXBuildFile; fileRef = B97E99CE085F4B3E002F9BC6 /* cardboard.icns */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		5819F97E2858F83F00DFE8FB /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				5819F9822858F84100DFE8FB /* SDL2.framework in Embed Frameworks */,
+				5819F97D2858F83F00DFE8FB /* SDL2_image.framework in Embed Frameworks */,
+				5819F9802858F84000DFE8FB /* SDL2_mixer.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		2D9FA6A423B9B042004A1465 /* glemu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glemu.cpp; sourceTree = "<group>"; };
 		2D9FA6A623B9B057004A1465 /* glemu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glemu.h; sourceTree = "<group>"; };
+		5819F9722858F69700DFE8FB /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
+		5819F9732858F69700DFE8FB /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
+		5819F9742858F69700DFE8FB /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		589F2823284E786800DAE7D1 /* translate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = translate.cpp; sourceTree = "<group>"; };
 		589F2824284E786800DAE7D1 /* gamepad.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gamepad.cpp; sourceTree = "<group>"; };
 		589F2825284E786800DAE7D1 /* translate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translate.h; sourceTree = "<group>"; };
@@ -223,11 +245,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5819F9812858F84100DFE8FB /* SDL2.framework in Frameworks */,
+				5819F97F2858F84000DFE8FB /* SDL2_mixer.framework in Frameworks */,
 				B94198C309207E810029DAD1 /* Cocoa.framework in Frameworks */,
 				B94198C409207E810029DAD1 /* OpenGL.framework in Frameworks */,
-				B92DC0FC09D08CF9008219BD /* SDL2_image.framework in Frameworks */,
-				B92DC0FD09D08CF9008219BD /* SDL2_mixer.framework in Frameworks */,
-				B92DC0FE09D08CF9008219BD /* SDL2.framework in Frameworks */,
+				5819F97C2858F83F00DFE8FB /* SDL2_image.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,6 +319,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5819F9732858F69700DFE8FB /* SDL2_image.framework */,
+				5819F9722858F69700DFE8FB /* SDL2_mixer.framework */,
+				5819F9742858F69700DFE8FB /* SDL2.framework */,
 				589F2843284E7FE500DAE7D1 /* libcurl.tbd */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
@@ -467,6 +492,7 @@
 				B94198A409207E810029DAD1 /* Resources */,
 				B94198A709207E810029DAD1 /* Sources */,
 				B94198C209207E810029DAD1 /* Frameworks */,
+				5819F97E2858F83F00DFE8FB /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -607,6 +633,8 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_VERSION = "";
 				INSTALL_PATH = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
 				SKIP_INSTALL = NO;
 				STRIP_INSTALLED_PRODUCT = YES;
 			};
@@ -621,6 +649,7 @@
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Frameworks",
 					../../cardboard.app/Contents/Frameworks,
 					"$(USER_LIBRARY_DIR)/Frameworks",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -641,7 +670,8 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = cardboard.plist;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				INSTALL_PATH = "$(LOCAL_APPS_DIR)";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MARKETING_VERSION = 2.8.2;
 				OTHER_CPLUSPLUSFLAGS = (
@@ -656,7 +686,6 @@
 				PRODUCT_NAME = cardboard;
 				SDKROOT = macosx;
 				SKIP_INSTALL = NO;
-				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
@@ -667,11 +696,11 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Frameworks",
 					../../cardboard.app/Contents/Frameworks,
 					"$(USER_LIBRARY_DIR)/Frameworks",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/Frameworks\"";
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -688,19 +717,19 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = cardboard.plist;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				INSTALL_PATH = "";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MARKETING_VERSION = 2.8.2;
 				OTHER_CPLUSPLUSFLAGS = "-Wno-invalid-offsetof";
 				OTHER_LDFLAGS = (
 					"-lz",
 					"-lcurl",
-					"-L../../cardboard.app/Contents/Frameworks",
+					"-LFrameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.harpnetstudios.cardboard;
 				PRODUCT_NAME = cardboard;
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
