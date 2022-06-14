@@ -14,6 +14,7 @@
 		5819F9802858F84000DFE8FB /* SDL2_mixer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5819F9722858F69700DFE8FB /* SDL2_mixer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5819F9812858F84100DFE8FB /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5819F9742858F69700DFE8FB /* SDL2.framework */; };
 		5819F9822858F84100DFE8FB /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5819F9742858F69700DFE8FB /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5819F9842859351A00DFE8FB /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5819F9832859351A00DFE8FB /* Icons.xcassets */; };
 		589F283A284E7DCE00DAE7D1 /* gamepad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F2824284E786800DAE7D1 /* gamepad.cpp */; };
 		589F283B284E7DD400DAE7D1 /* translate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F2823284E786800DAE7D1 /* translate.cpp */; };
 		589F283C284E7DE300DAE7D1 /* raw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 589F2826284E786800DAE7D1 /* raw.cpp */; };
@@ -83,7 +84,6 @@
 		D1D07F040F645590007098A8 /* server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D07EFC0F645590007098A8 /* server.cpp */; };
 		D1D07F050F645590007098A8 /* weapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D07EFD0F645590007098A8 /* weapon.cpp */; };
 		D1D6C6AE0EAEA703009B1A5C /* blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1D6C6AC0EAEA703009B1A5C /* blob.cpp */; };
-		D1E605B90E2416150045244E /* cardboard.icns in Resources */ = {isa = PBXBuildFile; fileRef = B97E99CE085F4B3E002F9BC6 /* cardboard.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -111,6 +111,7 @@
 		5819F9722858F69700DFE8FB /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
 		5819F9732858F69700DFE8FB /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
 		5819F9742858F69700DFE8FB /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		5819F9832859351A00DFE8FB /* Icons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Icons.xcassets; path = cardboard/Icons.xcassets; sourceTree = "<group>"; };
 		589F2823284E786800DAE7D1 /* translate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = translate.cpp; sourceTree = "<group>"; };
 		589F2824284E786800DAE7D1 /* gamepad.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gamepad.cpp; sourceTree = "<group>"; };
 		589F2825284E786800DAE7D1 /* translate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translate.h; sourceTree = "<group>"; };
@@ -151,7 +152,6 @@
 		B92DC0FA09D08CF9008219BD /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = /Library/Frameworks/SDL2_mixer.framework; sourceTree = "<absolute>"; };
 		B92DC0FB09D08CF9008219BD /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = /Library/Frameworks/SDL2.framework; sourceTree = "<absolute>"; };
 		B94198CB09207E810029DAD1 /* cardboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cardboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B97E99CE085F4B3E002F9BC6 /* cardboard.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = cardboard.icns; sourceTree = "<group>"; };
 		B9AC7A840D06DB44005506F8 /* 3dgui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = 3dgui.cpp; sourceTree = "<group>"; };
 		B9AC7A850D06DB44005506F8 /* bih.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bih.cpp; sourceTree = "<group>"; };
 		B9AC7A860D06DB44005506F8 /* bih.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bih.h; sourceTree = "<group>"; };
@@ -310,8 +310,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5819F9832859351A00DFE8FB /* Icons.xcassets */,
 				B9CACA12092099DF00A13F04 /* cardboard.plist */,
-				B97E99CE085F4B3E002F9BC6 /* cardboard.icns */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -534,7 +534,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D1E605B90E2416150045244E /* cardboard.icns in Resources */,
+				5819F9842859351A00DFE8FB /* Icons.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -622,6 +622,7 @@
 		3E18417F123861470098590C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
@@ -643,6 +644,8 @@
 		3E184180123861470098590C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = CardboardIcon;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -650,7 +653,6 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/Frameworks",
-					../../cardboard.app/Contents/Frameworks,
 					"$(USER_LIBRARY_DIR)/Frameworks",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
@@ -692,12 +694,13 @@
 		B94198C709207E810029DAD1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = CardboardIcon;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/Frameworks",
-					../../cardboard.app/Contents/Frameworks,
 					"$(USER_LIBRARY_DIR)/Frameworks",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
@@ -730,12 +733,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.harpnetstudios.cardboard;
 				PRODUCT_NAME = cardboard;
 				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
 		B960CF36085F3CC7004FB142 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_TESTABILITY = YES;

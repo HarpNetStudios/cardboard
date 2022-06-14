@@ -391,7 +391,7 @@ void dosecattack(bool on)
 	{
 		if (!on) removegrapples(player1, false);
 		if (!connected || intermission || !m_edit) return;
-		if (player1->grappling = on) respawn();
+        if ((player1->grappling = on)) respawn();
 	}
 
 	VARP(jumpspawn, 0, 1, 1);
