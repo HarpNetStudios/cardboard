@@ -1639,11 +1639,11 @@ int main(int argc, char **argv)
 	initing = NOT_INITING;
 
 	logoutf("init: auth");
-	if(strcmp(__hnapi, HNAPI)) renderprogress(0, "connecting to UNOFFICIAL auth server...");
-	else renderprogress(0, "connecting to auth server...");
+	if(strcmp(__hnapi, HNAPI)) renderprogress(0.0f, "connecting to UNOFFICIAL auth server...");
+	else renderprogress(0.0f, "connecting to auth server...");
 	getuserinfo_(false, true);
-	if (strcmp(__hnapi, HNAPI)) renderprogress(1, "connected to UNOFFICIAL auth server");
-	else renderprogress(1, "connected to auth server");
+	if (strcmp(__hnapi, HNAPI)) renderprogress(1.0f, "connected to UNOFFICIAL auth server");
+	else renderprogress(1.0f, "connected to auth server");
 
 	logoutf("init: render");
 	restoregamma();
@@ -1653,6 +1653,7 @@ int main(int argc, char **argv)
 	initdecals();
 
 	#ifdef STEAM
+		logoutf("init: steam");
 		steam::input_registerBinds();
 	#endif
 
@@ -1690,6 +1691,8 @@ int main(int argc, char **argv)
 	#ifdef STEAM
 		steam::setAchievement("ACH_FIRST_LAUNCH");
 	#endif
+
+	bool menumap = false; //load_world("neo_noir");
 
 	for(;;)
 	{
@@ -1741,7 +1744,7 @@ int main(int argc, char **argv)
 		{
 			inbetweenframes = false;
 			if(mainmenu) {
-				gl_drawmainmenu(); 
+				gl_drawmainmenu(menumap);
 				#ifdef DISCORD
 					discord::updatePresence(discord::D_MENU);
 				#endif
