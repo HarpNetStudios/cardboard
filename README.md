@@ -1,21 +1,30 @@
 # Cardboard Engine / Carmine Impact
+
+[![](https://img.shields.io/static/v1?label=Steam&message=wishlist&logo=steam&labelColor=000000&color=ff2400)](https://store.steampowered.com/app/1359640/Carmine_Impact/) [![](https://img.shields.io/static/v1?label=itch.io&message=download&logo=itchdotio&labelColor=fa5c5c&color=ff2400&logoColor=FFFFFF)](https://harpnetstudios.itch.io/carmine-impact)
+
 A live copy of our game engine, the Cardboard Engine!
 Based on the fantastic Cube 2 game engine.
 
 It currently also houses the source for Carmine Impact,
 as it's deeply rooted within the engine itself.
 
-## Supported Systems
-Windows: ✓ | Mac: ❌ | Linux: ✓ (build required)
+## Supported Platforms
+### Desktop
+- Windows 10+: ✅
+- OSX 10.9+:
+	- x86_64: ⚠️
+	- ARM64: ❌
+- Linux: ✅
 
 ## Build instructions
 ### Windows
 - Build with Visual Studio 2019, `msbuild` should also work.
 
-### Mac
-*Coming sooner than you might think.*
+### Mac (WIP)
 
-*Developing for M1 is cringe, I hate my life.*
+***This currently only works on Intel Macs, until SDL2_image and SDL2_mixer are updated for Apple Silicon.***
+- Ensure you have at least Xcode Command Line Tools installed, if not Xcode itself.
+- Build with Xcode, or use `src/macbuild.sh`
 
 ### Linux
 - Get dependencies (make and git are not included in the list, as they should be installed on your system already.)

@@ -820,8 +820,10 @@ void fixcamerarange()
 void mousemove(int dx, int dy)
 {
 	if(!game::allowmouselook()) return;
-	SDL_SetWindowGrab(screen, SDL_TRUE);
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+	
+    if(SDL_SetRelativeMouseMode(SDL_TRUE) >= 0) SDL_SetWindowGrab(screen, SDL_TRUE);
+    else SDL_SetWindowGrab(screen, SDL_FALSE);
+    
 	float cursens = sensitivity, curaccel = mouseaccel;
 	if(zoom)
 	{
