@@ -900,9 +900,7 @@ namespace ai
 		}
 		if(jump)
 		{
-			gunselect(GUN_FIST, d);
 			d->jumping = true;
-			d->jumpstate++;
 			int seed = (111-d->skill)*(d->inwater ? 3 : 5);
 			d->ai->jumpseed = lastmillis+seed+rnd(seed);
 			seed *= b.idle ? 50 : 25;
