@@ -440,7 +440,7 @@ enum
 };
 extern bool initwarning(const char *desc, int level = INIT_RESET, int type = CHANGE_GFX);
 
-extern bool grabinput, minimized;
+extern bool minimized;
 
 namespace rawinput
 {

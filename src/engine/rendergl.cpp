@@ -820,6 +820,8 @@ void fixcamerarange()
 void mousemove(int dx, int dy)
 {
 	if(!game::allowmouselook()) return;
+	SDL_SetWindowGrab(screen, SDL_TRUE);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 	float cursens = sensitivity, curaccel = mouseaccel;
 	if(zoom)
 	{
@@ -868,7 +870,6 @@ void joymove(float dx, float dy)
 		}
 	}
 	float balls = curaccel * sqrtf(dx * dx + dy * dy) / curtime;
-	//conoutf("awesome: %f", balls);
 	if(curaccel && curtime && (dx || dy)) cursens += balls;
 	camera1->yaw += dx * cursens * mouseyaw;
 	camera1->pitch -= dy * cursens * mousepitch;

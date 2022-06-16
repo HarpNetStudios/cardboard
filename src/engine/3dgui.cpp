@@ -1304,14 +1304,13 @@ void g3d_resetcursor()
 	cursorx = cursory = 0.5f;
 }
 
-FVARP(guisens, 1e-3f, 1, 1e3f);
-
-bool g3d_movecursor(int dx, int dy)
+bool g3d_movecursor(int x, int y)
 {
 	if(!guis2d.length() || !hascursor) return false;
-	const float CURSORSCALE = 500.0f;
-	cursorx = max(0.0f, min(1.0f, cursorx+guisens*dx*(screenh/(screenw*CURSORSCALE))));
-	cursory = max(0.0f, min(1.0f, cursory+guisens*dy/CURSORSCALE));
+	SDL_SetWindowGrab(screen, SDL_FALSE);
+	SDL_SetRelativeMouseMode(SDL_FALSE);
+	cursorx = max(0.0f, min(1.0f, x / (float)screenw));
+	cursory = max(0.0f, min(1.0f, y / (float)screenh));
 	return true;
 }
 
