@@ -1008,14 +1008,6 @@ static void ignoremousemotion()
 	SDL_FlushEvent(SDL_MOUSEMOTION);
 }
 
-static void resetmousemotion()
-{
-	if(!(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
-	{
-		SDL_WarpMouseInWindow(screen, screenw / 2, screenh / 2);
-	}
-}
-
 static void checkmousemotion(int &dx, int &dy)
 {
 	while(pumpevents(events))
@@ -1155,7 +1147,6 @@ void checkinput()
 				break;
 		}
 	}
-	//if(mousemoved) resetmousemotion(); // disabled due to issues on macOS
 }
 
 void swapbuffers(bool overlay)
