@@ -856,20 +856,25 @@ const GLint *swizzlemask(GLenum format)
 	}
 	return NULL;
 }
-	
+
+VARFP(crispy, 0, 0, 1, initwarning("texture filtering", INIT_LOAD));
+
 void setuptexparameters(int tnum, void *pixels, int clamp, int filter, GLenum format, GLenum target, bool swizzle)
 {
+	bool crispytex = crispy && clamp == 0; // definitely a bit of a hack, but it works! -Y
+
 	glBindTexture(target, tnum);
 	glTexParameteri(target, GL_TEXTURE_WRAP_S, clamp&1 ? GL_CLAMP_TO_EDGE : (clamp&0x100 ? GL_MIRRORED_REPEAT : GL_REPEAT));
 	glTexParameteri(target, GL_TEXTURE_WRAP_T, clamp&2 ? GL_CLAMP_TO_EDGE : (clamp&0x200 ? GL_MIRRORED_REPEAT : GL_REPEAT));
 	if(target==GL_TEXTURE_2D && hasAF && min(aniso, hwmaxaniso) > 0 && filter > 1) glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, min(aniso, hwmaxaniso));
-	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter && bilinear ? GL_LINEAR : GL_NEAREST);
+	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter && (bilinear && !crispytex) ? GL_LINEAR : GL_NEAREST);
 	glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
 		filter > 1 ?
-			(trilinear ?
-				(bilinear ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_LINEAR) :
-				(bilinear ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST)) :
-			(filter && bilinear ? GL_LINEAR : GL_NEAREST));
+		((trilinear && !crispytex) ?
+			((bilinear && !crispytex) ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_LINEAR) :
+			((bilinear && !crispytex) ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST)) :
+		(filter && (bilinear && !crispytex) ? GL_LINEAR : GL_NEAREST));
+	
 	if(swizzle && hasTRG && hasTSW)
 	{
 		const GLint *mask = swizzlemask(format);
