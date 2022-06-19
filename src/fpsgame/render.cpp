@@ -173,6 +173,8 @@ namespace game
 #if 1
 	// for testing spawns
 
+	VAR(dbgspawns, 0, 0, 2);
+
 	float hsv2rgb(float h, float s, float v, int n)
 	{
 		float k = fmod(n + h / 60.0f, 6.0f);
@@ -199,9 +201,13 @@ namespace game
 		vector<spawninfo> spawninfos;
 		float ratingsum = gatherspawninfos(player1, 0, spawninfos);
 		loopv(spawninfos) renderspawn(spawninfos[i].e->o, spawninfos[i].weight * 100, spawninfos[i].weight / ratingsum);
+		if (dbgspawns > 1) { // render team spawns too
+			ratingsum = gatherspawninfos(player1, 1, spawninfos);
+			loopv(spawninfos) renderspawn(spawninfos[i].e->o, spawninfos[i].weight * 100, spawninfos[i].weight / ratingsum);
+			ratingsum = gatherspawninfos(player1, 2, spawninfos);
+			loopv(spawninfos) renderspawn(spawninfos[i].e->o, spawninfos[i].weight * 100, spawninfos[i].weight / ratingsum);
+		}
 	}
-
-	VAR(dbgspawns, 0, 0, 1);
 #endif
 
 	void rendergame(bool mainpass)
@@ -263,8 +269,10 @@ namespace game
 		if(cmode) cmode->rendergame();
 		rendergrapples();
 
-#if 1
+#if _DEBUG
 		if(dbgspawns) renderspawns();
+#else
+		if(dbgspawns && m_edit) renderspawns();
 #endif
 
 		endmodelbatches();
@@ -327,14 +335,6 @@ namespace game
 		sway.z = swayup*(fabs(sinf(steps)) - 1);
 		sway.add(swaydir).add(d->o);
 		if(!hudgunsway) sway = d->o;
-
-#if 0
-		if(player1->state!=CS_DEAD && player1->quadmillis)
-		{
-			float t = 0.5f + 0.5f*sinf(2*M_PI*lastmillis/1000.0f);
-			color.y = color.y*(1-t) + t;
-		}
-#endif
 		const playermodelinfo &mdl = getplayermodelinfo(d);
 		defformatstring(gunname, "%s/%s", hudgunsdir[0] ? hudgunsdir : mdl.hudguns, guns[d->gunselect].file);
 		if((m_teammode || teamskins) && teamhudguns)
