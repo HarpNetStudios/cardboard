@@ -308,7 +308,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 #define CARDBOARD_SERVER_PORT 35000
 #define CARDBOARD_SERVINFO_PORT 35001
 #define CARDBOARD_MASTER_PORT 35002
-#define PROTOCOL_VERSION 1010           // bump when protocol changes
+#define PROTOCOL_VERSION 1011           // bump when protocol changes
 #define DEMO_VERSION 2                  // bump when demo format changes
 #define DEMO_MAGIC "CARDBOARD_DEMO"
 
