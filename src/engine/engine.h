@@ -150,7 +150,7 @@ extern void rendergame(bool mainpass = false);
 extern void invalidatepostfx();
 extern void gl_drawhud();
 extern void gl_drawframe();
-extern void gl_drawmainmenu(bool menumap);
+extern void gl_drawmainmenu();
 extern void drawminimap();
 extern void drawtextures();
 extern void enablepolygonoffset(GLenum type);

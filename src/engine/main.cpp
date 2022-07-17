@@ -1602,8 +1602,6 @@ int main(int argc, char **argv)
 		steam::setAchievement("ACH_FIRST_LAUNCH");
 	#endif
 
-	bool menumap = false; //load_world("neo_noir");
-
 	for(;;)
 	{
 		static int frames = 0, lastdrawmillis = 0;
@@ -1654,7 +1652,7 @@ int main(int argc, char **argv)
 		{
 			inbetweenframes = false;
 			if(mainmenu) {
-				gl_drawmainmenu(menumap);
+				gl_drawmainmenu();
 				#ifdef DISCORD
 					discord::updatePresence(discord::D_MENU);
 				#endif

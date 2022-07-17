@@ -2031,7 +2031,6 @@ void gl_drawframe()
 	renderedgame = false;
 }
 
-/*
 void gl_drawmainmenu()
 {
 	xtravertsva = xtraverts = glde = gbatches = 0;
@@ -2040,112 +2039,6 @@ void gl_drawmainmenu()
 	renderpostfx();
 
 	gl_drawhud();
-}
-*/
-
-void gl_drawmainmenu(bool menumap)
-{
-	if (!menumap) {
-		xtravertsva = xtraverts = glde = gbatches = 0;
-
-		renderbackground(NULL, NULL, NULL, NULL, true, true);
-		renderpostfx();
-
-		gl_drawhud();
-	}
-	else {
-		if (deferdrawtextures) drawtextures();
-
-		updatedynlights();
-
-		int w = screenw, h = screenh;
-		aspect = forceaspect ? forceaspect : w / float(h);
-		fovy = 2 * atan2(tan(50.0f * RAD), aspect) / RAD;
-
-		int fogmat = lookupmaterial(camera1->o) & (MATF_VOLUME | MATF_INDEX), abovemat = MAT_AIR;
-		float fogblend = 1.0f, causticspass = 0.0f;
-		if (isliquid(fogmat & MATF_VOLUME))
-		{
-			float z = findsurface(fogmat, camera1->o, abovemat) - WATER_OFFSET;
-			if (camera1->o.z < z + 1) fogblend = min(z + 1 - camera1->o.z, 1.0f);
-			else fogmat = abovemat;
-			if (caustics && (fogmat & MATF_VOLUME) == MAT_WATER && camera1->o.z < z)
-				causticspass = min(z - camera1->o.z, 1.0f);
-		}
-		else fogmat = MAT_AIR;
-		setfog(fogmat, fogblend, abovemat);
-		if (fogmat != MAT_AIR)
-		{
-			float blend = abovemat == MAT_AIR ? fogblend : 1.0f;
-			fovy += blend * sinf(lastmillis / 1000.0) * 2.0f;
-			aspect += blend * sinf(lastmillis / 1000.0 + M_PI) * 0.1f;
-		}
-
-		farplane = worldsize * 2;
-
-		projmatrix.perspective(fovy, aspect, nearplane, farplane);
-		setcamprojmatrix();
-
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-
-		xtravertsva = xtraverts = glde = gbatches = 0;
-
-		visiblecubes();
-
-		glClear(GL_DEPTH_BUFFER_BIT | 0);
-
-		if (limitsky()) drawskybox(farplane, true);
-
-		rendergeom(causticspass);
-
-		extern int outline;
-		if (!wireframe && outline) renderoutline();
-
-		queryreflections();
-
-		generategrass();
-
-		if (!limitsky()) drawskybox(farplane, false);
-
-		renderdecals(true);
-
-		rendermapmodels();
-		rendergame(true);
-
-		drawglaretex();
-		drawdepthfxtex();
-		drawreflections();
-
-		renderwater();
-		rendergrass();
-
-		rendermaterials();
-		renderalphageom();
-
-		renderparticles(true);
-
-		extern int hidehud;
-		if (editmode && !hidehud)
-		{
-			glDepthMask(GL_FALSE);
-			renderblendbrush();
-			rendereditcursor();
-			glDepthMask(GL_TRUE);
-		}
-
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
-
-		addmotionblur();
-		addglare();
-		if (isliquid(fogmat & MATF_VOLUME)) drawfogoverlay(fogmat, fogblend, abovemat);
-		renderpostfx();
-
-		gl_drawhud();
-
-		renderedgame = false;
-	}	
 }
 
 VARNP(damagecompass, usedamagecompass, 0, 1, 1);
