@@ -1611,6 +1611,8 @@ void calcfric(physent *pl, bool local, bool water, bool floating, int curtime, v
 	//pl->vel.lerp(pl->vel, d, fpsfric);
 }
 
+float waterdamp = 1.5f;
+
 void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curtime)
 {
 	bool allowmove = game::allowmove(pl);
@@ -1631,13 +1633,13 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 	}
 	else if(pl->physstate >= PHYS_SLOPE || water)
 	{
-		if(water && !pl->inwater) pl->vel.div(2);
+		//if(water && !pl->inwater) pl->vel.div(2);
 		if(pl->jumping && allowmove)
 		{
 			pl->jumping = false;
 
 			pl->vel.z = max(pl->vel.z, JUMPVEL); // physics impulse upwards
-			if(water) { pl->vel.x /= 2.0f; pl->vel.y /= 2.0f; } // dampen velocity change even harder, gives correct water feel
+			if(water) { pl->vel.x /= waterdamp; pl->vel.y /= waterdamp; } // dampen velocity change even harder, gives correct water feel
 
 			pl->jumpstate = 1;
 
@@ -1650,7 +1652,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 			
 			pl->falling.z = 10; // set back gravity to 10, so you can jump again with less down force immediately
 			pl->vel.z = max(pl->vel.z, pl->vel.z + (JUMPVEL / 2)); // physics impulse upwards
-			if(water) { pl->vel.x /= 2.0f; pl->vel.y /= 2.0f; } // dampen velocity change even harder, gives correct water feel
+			if(water) { pl->vel.x /= waterdamp; pl->vel.y /= waterdamp; } // dampen velocity change even harder, gives correct water feel
 
 			pl->jumpstate = 2;
 
@@ -1702,6 +1704,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 			if(pl==player) d.mul(floatspeed/100.0f);
 		}
 		else if(!water && allowmove) d.mul(1.3f * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
+		else if(water && allowmove) d.mul(1.1f);
 	}
 	calcfric(pl, local, water, floating, curtime, d);
 
@@ -1716,13 +1719,14 @@ void modifygravity(physent *pl, bool water, int curtime)
 {
 	float secs = curtime/1000.0f;
 	vec g(0, 0, 0);
+	logoutf("gravity: %f", gravity * secs);
 	if(pl->physstate == PHYS_FALL) g.z -= gravity*secs;
 	else if(pl->floor.z > 0 && pl->floor.z < FLOORZ)
 	{
 		g.z = -1;
 		g.project(pl->floor);
 		g.normalize();
-		g.mul(gravity*secs);
+		g.add(gravity*secs);
 	}
 	if(!water || !game::allowmove(pl) || !pl->tryingtomove()) pl->falling.add(g);
 
@@ -1732,7 +1736,7 @@ void modifygravity(physent *pl, bool water, int curtime)
 		float c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
 		pl->falling.mul(pow(1 - c/fric, curtime/20.0f));
 	}
-	pl->falling.z = max(pl->falling.z, -600.0f); // limit gravity to sane amounts.
+	pl->falling.z = max(pl->falling.z, -300.0f); // limit gravity to sane amounts.
 }
 
 // main physics routine, moves a player for a curtime step
@@ -2109,7 +2113,7 @@ ICOMMAND(jump,   "D", (int *down), {
 	if(!*down || game::canjump())
 	{
 		if (scrolljump && *down==1) player->jumping = true;
-		else if (scrolljump) {} // a bad way to get around an input quirk -Y
+		else if (scrolljump) { } // a bad way to get around an input quirk -Y
 		else player->jumping = *down!=0;
 		player->jumpstate = min(player->jumpstate++, 2);
 	}

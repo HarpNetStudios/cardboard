@@ -523,9 +523,9 @@ struct fpsstate
 		}
 		else if(m_race)
 		{
-			// racetime = 0;
-			// racelaps = 0;
-			// racecheckpoint = 0;
+			racetime = 0;
+			racelaps = 0;
+			racecheckpoint = 0;
 			health = 100;
 			gunselect = GUN_GL;
 			ammo[GUN_SMG] = 0;
@@ -631,6 +631,7 @@ struct fpsent : dynent, fpsstate
 		vec push(dir);
 		push.mul((actor==this && guns[gun].exprad ? EXP_SELFPUSH : 0.06f)*guns[gun].hitpush*guns[gun].damage/weight); // hitpush damage
 		vel.add(push);
+		falling.z = 0;
 		lasthitpushgun = gun;
 		lasthitpushattacker = actor;
 

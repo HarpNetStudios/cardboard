@@ -2363,6 +2363,7 @@ VARP(showgravity, 0, 0, 1);
 
 VARP(showcps, 0, 1, 1);
 VARP(showmaxcps, 0, 1, 1);
+VARP(cpsyvel, 0, 1, 1);
 
 VARP(showfps, 0, 1, 1);
 VARP(showfpsrange, 0, 0, 1);
@@ -2490,24 +2491,26 @@ void gl_drawhud()
 						roffset += FONTH;
 					}
 				}
-					   
-				if(showcps && !editmode)
-				{
-					float speed = game::hudplayer()->vel.magnitude2();
-					draw_textf("%3.1f cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, speed);
-					roffset += FONTH;
-				}
 
+				if((showcps || showmaxcps) && !editmode)
+				{
+					float speed = game::hudplayer()->vel.magnitude();
+
+					if (showcps)
+					{
+						draw_textf("%3.1f cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, speed);
+						roffset += FONTH;
+					}
+
+					if (showmaxcps)
+					{
+						if(speed > game::hudplayer()->maxcps) game::hudplayer()->maxcps = speed;
+						draw_textf("\f2%3.1f cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, game::hudplayer()->maxcps);
+						roffset += FONTH;
+					}
+
+				}
 				
-				if(showmaxcps && !editmode)
-				{
-					float speed = game::hudplayer()->vel.magnitude2();
-					if (speed > game::hudplayer()->maxcps)
-						game::hudplayer()->maxcps = speed;
-					draw_textf("\f2%3.1f cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, game::hudplayer()->maxcps);
-					roffset += FONTH;
-				}
-
 				if(showgravity && !editmode)
 				{
 					float grav = -game::hudplayer()->falling.z;
