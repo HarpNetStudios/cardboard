@@ -1385,7 +1385,7 @@ namespace game
 			if(-(d->frags)>d->suicides) d->suicides = -(d->frags); // best effort suicides initialization when joining a running game
 			d->flags = getint(p);
 			d->deaths = getint(p);
-			if(d==player1) getint(p);
+			//if(d==player1) getint(p); // this shit is fucked
 			getint(p); // quad
 		}
 		d->lifesequence = getint(p);
