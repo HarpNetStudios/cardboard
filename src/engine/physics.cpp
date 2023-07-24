@@ -1561,7 +1561,7 @@ void vecfromyawpitch(float yaw, float pitch, int move, int strafe, vec &m)
 FVARP(joyminthreshold, 0.0f, 0.05f, 1.0f);
 FVARP(joymaxthreshold, 0.0f, 1.0f, 1.0f);
 
-void vecfrommovement(float yaw, float pitch, float move, float strafe, float vertical, vec& m)
+void vecfrommovement(float yaw, float pitch, float move, float strafe, int vertical, vec& m)
 {
 	m.x = move*-sinf(RAD*yaw)*cosf(RAD*pitch) + vertical*-sinf(RAD*pitch)*-sinf(RAD*yaw) + strafe*cosf(RAD*yaw);
 	m.y = move* cosf(RAD*yaw)*cosf(RAD*pitch) + vertical*-sinf(RAD*pitch)* cosf(RAD*yaw) + strafe*sinf(RAD*yaw);
@@ -1604,7 +1604,7 @@ VAR(floatspeed, 1, 100, 10000);
 void calcfric(physent *pl, bool local, bool water, bool floating, int curtime, vec d)
 {
 	float fric = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
-	pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f));
+	pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f)); // DISABLE WHEN SLICK MATERIAL
 // old fps friction
 	//float friction = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
 	//float fpsfric = min(curtime/(20.0f*friction), 1.0f);
@@ -1665,7 +1665,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 	if(!floating && pl->physstate == PHYS_FALL) pl->timeinair = min(pl->timeinair + curtime, 1000);
 
 	vec m(0.0f, 0.0f, 0.0f);
-	if(pl->tryingtomove() && allowmove )
+	if(pl->tryingtomove() && allowmove)
 	{
 		/*
 		vecfrommovement
@@ -1679,7 +1679,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 
 		//vecfromyawpitch(pl->yaw, floating || water || pl->type==ENT_CAMERA ? pl->pitch : 0, pl->move, pl->strafe, m);
 		bool allowvertical = !pl->hovering && (floating || water || pl->type==ENT_CAMERA);
-		vecfrommovement(pl->yaw, allowvertical ? pl->pitch : 0, pl->fmove, pl->fstrafe, pl->fvertical, m);
+		vecfrommovement(pl->yaw, allowvertical ? pl->pitch : 0, pl->fmove, pl->fstrafe, pl->vertical, m);
 
 		if(!floating && pl->physstate >= PHYS_SLOPE)
 		{
@@ -1703,11 +1703,12 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 		{
 			if(pl==player) d.mul(floatspeed/100.0f);
 		}
-		else if(!water && allowmove) d.mul(1.3f * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
-		else if(water && allowmove) d.mul(1.1f);
+		else if (!water && allowmove) d.mul((pl->fmove && !pl->fstrafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
+		//else if(!water && allowmove) d.mul(1.3f * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
+		//else if(water && allowmove) d.mul(1.1f);
 	}
 	calcfric(pl, local, water, floating, curtime, d);
-
+	
 	/*
 	conoutf("jumping: %d", pl->jumping);
 	conoutf("candouble: %d", pl->candouble);
@@ -1719,14 +1720,13 @@ void modifygravity(physent *pl, bool water, int curtime)
 {
 	float secs = curtime/1000.0f;
 	vec g(0, 0, 0);
-	logoutf("gravity: %f", gravity * secs);
 	if(pl->physstate == PHYS_FALL) g.z -= gravity*secs;
 	else if(pl->floor.z > 0 && pl->floor.z < FLOORZ)
 	{
 		g.z = -1;
 		g.project(pl->floor);
 		g.normalize();
-		g.add(gravity*secs);
+		g.mul(gravity*secs);
 	}
 	if(!water || !game::allowmove(pl) || !pl->tryingtomove()) pl->falling.add(g);
 
@@ -1751,7 +1751,7 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 	float secs = curtime/1000.f;
 
 	// apply gravity
-	if(!floating) { pl->fvertical = 0.0f; modifygravity(pl, water, curtime); }
+	if(!floating) { pl->vertical = 0.0f; modifygravity(pl, water, curtime); }
 	// apply any player generated changes in velocity
 	modifyvelocity(pl, local, water, floating, curtime);
 
@@ -2104,8 +2104,8 @@ dir(forward,  fmove,      1.0f, k_forward,  k_backward);
 dir(backward, fmove,     -1.0f, k_backward, k_forward);
 dir(left,     fstrafe,    1.0f, k_left,     k_right);
 dir(right,    fstrafe,   -1.0f, k_right,    k_left);
-dir(up,       fvertical,  1.0f, k_up,       k_down);
-dir(down,     fvertical, -1.0f, k_down,     k_up);
+dir(up,       vertical,   1,    k_up,       k_down);
+dir(down,     vertical,  -1,    k_down,     k_up);
 
 VARP(scrolljump, 0, 0, 1);
 

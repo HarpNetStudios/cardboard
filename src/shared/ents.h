@@ -80,7 +80,8 @@ struct physent                                  // base entity type, can be affe
 	bool jumping, hovering;
 	int jumpstate;								// state of the jump, 1 for single, 2 for double
 	bool candouble;								// used to see if the player can double jump
-	float fmove, fstrafe, fvertical;            // used by the joystick for constant movement
+	float fmove, fstrafe;                       // used by the joystick for constant movement
+	schar vertical;
 	float camx, camy;                           // used by the joystick for constant camera updates
 
 	uchar physstate;                            // one of PHYS_* above
@@ -112,6 +113,7 @@ struct physent                                  // base entity type, can be affe
 		jumpstate = 0;
 		hovering = false;
 		fstrafe = fmove = 0.0f;
+		vertical = 0;
 		camx = camy = 0.0f;
 		physstate = PHYS_FALL;
 		vel = falling = vec(0, 0, 0);
@@ -122,7 +124,7 @@ struct physent                                  // base entity type, can be affe
 	vec headpos(float offset = 0) const { return vec(o).add(vec(0, 0, offset)); }
 
 	bool maymove() const { return timeinair || physstate < PHYS_FLOOR || vel.squaredlen() > 1e-4f || deltapos.squaredlen() > 1e-4f; } 
-	bool tryingtomove() const { return fmove != 0.0f || fstrafe != 0.0f || fvertical != 0.0f; }
+	bool tryingtomove() const { return fmove != 0.0f || fstrafe != 0.0f || vertical != 0; }
 };
 
 enum
@@ -230,6 +232,7 @@ struct dynent : physent                         // animated characters, or chara
 	{
 		k_left = k_right = k_forward = k_backward = k_up = k_down = jumping = hovering = false;
 		fmove = fstrafe = 0.0f;
+		vertical = 0;
 	}
 		
 	void reset()

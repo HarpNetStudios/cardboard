@@ -4,7 +4,7 @@ namespace game
 {
 	char* gametitle = "Carmine Impact"; // game name: are you dumb
 	char* gamestage = "Alpha"; // stage: alpha, beta, release, whatever
-	char* gameversion = "2.9"; // version: major.minor(.patch)
+	char* gameversion = "2.9.1"; // version: major.minor(.patch)
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
@@ -477,6 +477,7 @@ void dosecattack(bool on)
 		else
 		{
 			d->fmove = d->fstrafe = 0.0f;
+			d->vertical = 0;
 			d->resetinterp();
 			d->smoothmillis = 0;
 			playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel), &d->o);
@@ -673,12 +674,12 @@ void dosecattack(bool on)
 	{
 		if(offline) return false; // can't retrieve info in offline mode
 		if(!d->name[0] || !strcmp(d->name, "CardboardPlayer")) return false; // no name or default name
-		if(dbgplayerinfo) conoutf(CON_INFO, "\fs\f1getting player info for %s...\fr,", d->name);
+		if(dbgplayerinfo) conoutf(CON_INFO, "\fs\f1getting player info for %s...\fr", d->name);
 		if(d->pinfo->status == playerinfo::OK) return true; // already have player info
 		copystring(d->pinfo->tags, "");
 		loopi(NUMGUNS) d->pinfo->wskins[i] = 0;
 		cbstring apiurl;
-		formatstring(apiurl, "%s/game/get/playerinfo?id=1&name=%s", __hnapi, d->name);
+		formatstring(apiurl, "%s/game/playerinfo?game=1&name=%s", __hnapi, d->name);
 		char* resp = web_get(apiurl, false);
 		cJSON* json = cJSON_Parse(resp);
 
@@ -1339,8 +1340,15 @@ void dosecattack(bool on)
 		return (n>=MM_START && size_t(n-MM_START)<sizeof(mastermodeicons)/sizeof(mastermodeicons[0])) ? mastermodeicons[n-MM_START] : unknown;
 	}
 
+	SVAR(filterservers, "");
+
 	bool serverinfoentry(g3d_gui *g, int i, const char *name, int port, const char *sdesc, const char *map, int ping, const vector<int> &attr, int np)
 	{
+		if (*filterservers)
+			if (!cubecasefind(sdesc, filterservers) &&
+				!cubecasefind(map, filterservers) &&
+				(attr.length() < 2 || !cubecasefind(server::modename(attr[1], ""), filterservers))) return false;
+
 		#define leftjustified(elem)   justified(elem,true,0)
 		#define rightjustified(elem)  justified(elem,true,1)
 
@@ -1396,10 +1404,8 @@ void dosecattack(bool on)
 		switch(i)
 		{
 			case 0:
-			{
 				rightjustified(g->buttonf("%s%d", COL_WHITE, NULL, pingcolor, ping));
 				break;
-			}
 
 			case 1:
 				rightjustified(g->buttonf(attr.length()>=4 && np >= attr[3] ? "\f3%d" : "%d", COL_WHITE, NULL, np));

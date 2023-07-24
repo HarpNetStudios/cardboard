@@ -198,7 +198,7 @@ namespace steam {
 			return 1;
 		}
 
-		SteamInput()->Init();
+		SteamInput()->Init(true);
 
 		playSetHandle = SteamInput()->GetActionSetHandle("InGameControls");
 		menuSetHandle = SteamInput()->GetActionSetHandle("MenuControls");
@@ -370,7 +370,8 @@ namespace steam {
 		player->camy = -cameraStick.y;
 
 		vec2 cameraMouse = input_getAnalogAction(cameraMouseHandle);
-		mousemove(cameraMouse.x, cameraMouse.y);
+		if (cameraMouse.magnitude() > 0.01f) // fixes strange mouse behavior when controller plugged in -Y
+			mousemove(cameraMouse.x, cameraMouse.y);
 
 		for (int i = 0; i < numMenuActions; i++)
 		{
@@ -397,6 +398,7 @@ namespace steam {
 				customActionsActive[i] = status;
 			}
 		}
+		SteamInput()->RunFrame();
 	}
 
 	ICOMMAND(steaminput_binding, "", (), { SteamInput()->ShowBindingPanel(inputHandles[0]); });

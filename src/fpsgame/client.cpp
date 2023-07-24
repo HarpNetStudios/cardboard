@@ -1027,6 +1027,8 @@ namespace game
 	void connectattempt(const char *name, const char *password, const ENetAddress &address)
 	{
 		copystring(connectpass, password);
+		extern char* filterservers;
+		setsvar("filterservers", "");
 	}
 
 	void connectfail()

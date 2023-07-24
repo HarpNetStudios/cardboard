@@ -34,7 +34,10 @@
 launcher.json
 Newtonsoft.Json.dll
 Facepunch.Steamworks.Win64.dll
+Microsoft.Web.WebView2.Core.dll
+Microsoft.Web.WebView2.WinForms.dll
 steam_api64.dll
+/*.WebView2
 
 # Update temp files
 update.cfg

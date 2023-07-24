@@ -444,6 +444,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\engine\engine.h" />
+    <ClInclude Include="..\engine\icon.h" />
     <ClInclude Include="..\engine\lightmap.h" />
     <ClInclude Include="..\engine\mpr.h" />
     <ClInclude Include="..\engine\octa.h" />

@@ -2220,6 +2220,7 @@ namespace server
 
 	void dodamage(clientinfo *target, clientinfo *actor, int damage, int gun, int headshot)
 	{
+		if (!actor->state.health) return;
 		gamestate &ts = target->state;
 		if(!m_parkour) ts.dodamage(damage);
 		if(target!=actor && !isteam(target->team, actor->team)) actor->state.damage += damage;
@@ -2698,7 +2699,7 @@ namespace server
 	bool checkpubtoken(clientinfo* ci, const char* pubtoken)
 	{
 		cbstring apiurl;
-		formatstring(apiurl, "%s/game/check/pubtoken?id=1&token=%s", __hnapi, pubtoken);
+		formatstring(apiurl, "%s/game/pubtoken?game=1&token=%s", __hnapi, pubtoken);
 		char* thing = web_get(apiurl, false);
 		if(!thing[0]) {
 			return false;
