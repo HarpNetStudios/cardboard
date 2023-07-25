@@ -32,6 +32,11 @@ namespace game
 		if(player1->state!=CS_ALIVE || player1->physstate<PHYS_SLOPE) return;
 		if(lastmillis-player1->lasttaunt<1000) return;
 		player1->lasttaunt = lastmillis;
+		loopi(NUMGUNS)
+		{
+			player1->lastaction[i] = lastmillis;
+			player1->gunwait[i] = 1000;
+		}
 		addmsg(N_TAUNT, "rc", player1);
 		playsound(S_ITEMSPAWN, &game::hudplayer()->o);
 	}
