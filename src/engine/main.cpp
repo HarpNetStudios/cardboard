@@ -1159,13 +1159,13 @@ VAR(numcpus, 1, 1, 64);
 
 VARFP(offline, 0, 0, 1, { getuserinfo_(false); });
 
-void getuserinfo_(bool debug, bool first) {
-	if(offline) return; // don't waste time trying to check everything if we are offline.
+bool getuserinfo_(bool debug, bool first) {
+	if(offline) return false; // don't waste time trying to check everything if we are offline.
 	if(!strcmp(gametoken, "OFFLINE")) // check if playing without logging into launcher
 	{
 		if(!first) conoutf(CON_ERROR, "\f3[HNID] Please restart the game and log in with your HNID to play online!");
 		offline = 1;
-		return;
+		return false;
 	}
 	cbstring apiurl;
 	formatstring(apiurl, "%s/game/login?game=1", __hnapi);
@@ -1173,7 +1173,7 @@ void getuserinfo_(bool debug, bool first) {
 	if(!thing[0]) {
 		conoutf(CON_ERROR, "\f3[HNID] No data recieved from server, switching to offline mode!");
 		offline = 1;
-		return; 
+		return false; 
 	}
 	cJSON *json = cJSON_Parse(thing);
 
@@ -1184,7 +1184,7 @@ void getuserinfo_(bool debug, bool first) {
 		if(status->valueint > 0) {
 			conoutf(CON_ERROR, "\f3[HNID] Could not log in! Error: \"%s\" (%d)", message->valuestring, status->valueint);
 			offline = 1;
-			return;
+			return false;
 		}
 		else {
 			// actual parse
@@ -1197,17 +1197,19 @@ void getuserinfo_(bool debug, bool first) {
 				game::switchname(name->valuestring);
 				game::setpubtoken(pubt->valuestring);
 				if (!first) conoutf(CON_INFO, "\f1[HNID] Successfully logged in as %s!", name->valuestring);
-				return;
+				return true;
 			}
 			conoutf(CON_ERROR, "\f3[HNID] Malformed JSON recieved from server (server blocked?)");
 			logoutf("[MALFORMED JSON]: %s", thing);
 			offline = 1;
+			return false;
 		}
 	}
 	else {
 		conoutf(CON_ERROR, "\f3[HNID] Malformed JSON recieved from server (server blocked?)");
 		logoutf("[MALFORMED JSON]: %s", thing);
 		offline = 1;
+		return false;
 	}
 }
 

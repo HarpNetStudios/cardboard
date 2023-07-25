@@ -674,8 +674,8 @@ void dosecattack(bool on)
 	{
 		if(offline) return false; // can't retrieve info in offline mode
 		if(!d->name[0] || !strcmp(d->name, "CardboardPlayer")) return false; // no name or default name
-		if(dbgplayerinfo) conoutf(CON_INFO, "\fs\f1getting player info for %s...\fr", d->name);
 		if(d->pinfo->status == playerinfo::OK) return true; // already have player info
+		if(dbgplayerinfo) conoutf(CON_INFO, "\fs\f1getting player info for %s...\fr", d->name);
 		copystring(d->pinfo->tags, "");
 		loopi(NUMGUNS) d->pinfo->wskins[i] = 0;
 		cbstring apiurl;
@@ -1302,9 +1302,9 @@ void dosecattack(bool on)
 		if(dir) g->spring(); \
 		g->pushlist(); /* get vertical list dir back, so mergehits works */ \
 		int up = elem; \
+		g->poplist(); \
+		g->poplist(); \
 		if(handleclick && up&G3D_UP) return true; \
-		g->poplist(); \
-		g->poplist(); \
 	}
 
 #include "colors.h"
