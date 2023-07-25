@@ -1,478 +1,1497 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html 
-     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="YellowberryHN">
+      
+      
+        <link rel="canonical" href="https://harpnetstudios.github.io/cardboard/models.html">
+      
+      
+        <link rel="prev" href="editref.html">
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+    
+    
+      
+        <title>Carmine Impact Docs — Model Reference - Carmine Impact Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.26e3688c.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ecc896b0.min.css">
+      
+      
 
-<head>
-<title>Carmine Impact - Model Reference</title>
-<link rel="stylesheet" type="text/css" href="style.css" />
-<link rel="shortcut icon" href="favicon.ico" />
-</head>
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="css/extra.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-<body>
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#md2-format" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
 
-<h1>Carmine Impact - Model Reference</h1>
+  
 
-<div class="contents">
-<ul class="contents">
-<li>
-<a href="#md2_format"><b>MD2 Format</b></a>
-<ul class="contents2">
-<li>
-<a href="#md2anim"><tt>md2anim</tt></a>
-</li>
-</ul>
-</li>
-<li>
-<a href="#md3_format"><b>MD3 Format</b></a>
-<ul class="contents2">
-<li>
-<a href="#without_configuration">Without Configuration</a>
-</li>
-<li>
-<a href="#with_configuration">With Configuration</a>
-<ul class="contents3">
-<li>
-<a href="#md3load"><tt>md3load</tt></a>
-</li>
-<li>
-<a href="#md3pitch"><tt>md3pitch</tt></a>
-</li>
-<li>
-<a href="#md3skin"><tt>md3skin</tt></a>
-</li>
-<li>
-<a href="#md3bumpmap"><tt>md3bumpmap</tt></a>
-</li>
-<li>
-<a href="#md3spec"><tt>md3spec</tt></a>
-</li>
-<li>
-<a href="#md3alphatest"><tt>md3alphatest</tt></a>
-</li>
-<li>
-<a href="#md3alphablend"><tt>md3alphablend</tt></a>
-</li>
-<li>
-<a href="#md3shader"><tt>md3shader</tt></a>
-</li>
-<li>
-<a href="#md3ambient"><tt>md3ambient</tt></a>
-</li>
-<li>
-<a href="#md3envmap"><tt>md3envmap</tt></a>
-</li>
-<li>
-<a href="#md3glow"><tt>md3glow</tt></a>
-</li>
-<li>
-<a href="#md3glare"><tt>md3glow</tt></a>
-</li>
-<li>
-<a href="#md3fullbright"><tt>md3fullbright</tt></a>
-</li>
-<li>
-<a href="#md3anim"><tt>md3anim</tt></a>
-</li>
-<li>
-<a href="#md3link"><tt>md3link</tt></a>
-</li>
-</ul>
-</li>
-<li>
-<a href="#sample_configuration">Sample Configuration</a>
-</li>
-</ul>
-</li>
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="Carmine Impact Docs" class="md-header__button md-logo" aria-label="Carmine Impact Docs" data-md-component="logo">
+      
+  <img src="assets/logo.svg" alt="logo">
 
-<li>
-<a href="#obj_format"><b>OBJ Format</b></a>
-</li>
-
-<li>
-<a href="#md5_format"><b>MD5 Format</b></a>
-<ul class="contents2">
-<li>
-<a href="#md5load"><tt>md5load</tt></a>
-</li>
-<li>
-<a href="#md5pitch"><tt>md5pitch</tt></a>
-</li>
-<li>
-<a href="#md5skin"><tt>md5skin</tt></a>
-</li>
-<li>
-<a href="#md5bumpmap"><tt>md5bumpmap</tt></a>
-</li>
-<li>
-<a href="#md5spec"><tt>md5spec</tt></a>
-</li>
-<li>
-<a href="#md5alphatest"><tt>md5alphatest</tt></a>
-</li>
-<li>
-<a href="#md5alphablend"><tt>md5alphablend</tt></a>
-</li>
-<li>
-<a href="#md5shader"><tt>md5shader</tt></a>
-</li>
-<li>
-<a href="#md5ambient"><tt>md5ambient</tt></a>
-</li>
-<li>
-<a href="#md5envmap"><tt>md5envmap</tt></a>
-</li>
-<li>
-<a href="#md5glow"><tt>md5glow</tt></a>
-</li>
-<li>
-<a href="#md5glare"><tt>md5glare</tt></a>
-</li>
-<li>
-<a href="#md5fullbright"><tt>md5fullbright</tt></a>
-</li>
-<li>
-<a href="#md5anim"><tt>md5anim</tt></a>
-</li>
-<li>
-<a href="#md5animpart"><tt>md5animpart</tt></a>
-</li>
-<li>
-<a href="#md5tag"><tt>md5tag</tt></a>
-</li>
-<li>
-<a href="#md5link"><tt>md5link</tt></a>
-</li>
-<li>
-<a href="#md5adjust"><tt>md5adjust</tt></a>
-</li>
-</ul>
-</li>
-
-<li>
-<a href="#smd_format"><b>SMD Format</b></a>
-</li>
-
-<li>
-<a href="#iqm_format"><b>IQM Format</b></a>
-</li>
-
-<li>
-<a href="#common_commands"><b>Common Commands</b></a>
-<ul class="contents2">
-<li>
-<a href="#mdlcollide"><tt>mdlcollide</tt></a>
-</li>
-<li>
-<a href="#mdlellipsecollide"><tt>mdlellipsecollide</tt></a>
-</li>
-<li>
-<a href="#mdlbb"><tt>mdlbb</tt></a>
-</li>
-<li>
-<a href="#mdlcullface"><tt>mdlcullface</tt></a>
-</li>
-<li>
-<a href="#mdlspec"><tt>mdlspec</tt></a>
-</li>
-<li>
-<a href="#mdlalphatest"><tt>mdlalphatest</tt></a>
-</li>
-<li>
-<a href="#mdlalphablend"><tt>mdlalphablend</tt></a>
-</li>
-<li>
-<a href="#mdlglow"><tt>mdlglow</tt></a>
-</li>
-<li>
-<a href="#mdlglare"><tt>mdlglare</tt></a>
-</li>
-<li>
-<a href="#mdlshader"><tt>mdlshader</tt></a>
-</li>
-<li>
-<a href="#mdlambient"><tt>mdlambient</tt></a>
-</li>
-<li>
-<a href="#mdlscale"><tt>mdlscale</tt></a>
-</li>
-<li>
-<a href="#mdltrans"><tt>mdltrans</tt></a>
-</li>
-<li>
-<a href="#mdlyaw"><tt>mdlyaw</tt></a>
-</li>
-<li>
-<a href="#mdlpitch"><tt>mdlpitch</tt></a>
-</li>
-<li>
-<a href="#mdlspin"><tt>mdlspin</tt></a>
-</li>
-<li>
-<a href="#mdlenvmap"><tt>mdlenvmap</tt></a>
-</li>
-<li>
-<a href="#mdlfullbright"><tt>mdlfullbright</tt></a>
-</li>
-<li>
-<a href="#mdlshadow"><tt>mdlshadow</tt></a>
-</li>
-</ul>
-</li>
-
-</ul>
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Carmine Impact Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Carmine Impact Docs — Model Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/HarpNetStudios/cardboard" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
 
-<h2 id="md2_format">MD2 Format</h2>
 
-<p>
-MD2 files must be located in a directory in <i>packages/models/</i>, you must provide a skin
-(either <i>skin.png</i> or <i>skin.jpg</i>) and the md2 itself (<i>tris.md2</i>).
-Optionally you may provide a <i>masks.png</i> that holds a specmap in the R channel, a glowmap
-in the G channel, and a chrome map in the B channel. The engine will apply it automatically.
-<br><br>
-If either of these files is not found, the engine will search the parent directory for them.
-For example, if for the <i>flags/red</i> model, the tris.md2 is not found in
-<i>packages/models/flags/red/</i>, then it will look for tris.md2 in <i>packages/models/flags/</i>.
-This allows the sharing of skins and geometry.
-<br><br>
-It is expected that md2 format files use Quake-compatible scale and animations, unless you configure the model otherwise.
-<br><br>
-You may also supply a config file (<i>md2.cfg</i>) in your model directory, which allows you to
-customize the model's animations. The following commands may be used in an <i>md2.cfg</i>:
-</p>
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="Carmine Impact Docs" class="md-nav__button md-logo" aria-label="Carmine Impact Docs" data-md-component="logo">
+      
+  <img src="assets/logo.svg" alt="logo">
 
-<pre id="md2anim">md2anim N F M [S [P]]</pre>
-<p>
-N is the name of the animation to define. Any of the following names may be used:
-</p>
+    </a>
+    Carmine Impact Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/HarpNetStudios/cardboard" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          Info
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Info
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="game.html" class="md-nav__link">
+        Command Reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="config.html" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="editing.html" class="md-nav__link">
+        Editing Tutorial
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="editref.html" class="md-nav__link">
+        Editing Reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Model Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="models.html" class="md-nav__link md-nav__link--active">
+        Model Reference
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#md2-format" class="md-nav__link">
+    MD2 Format
+  </a>
+  
+    <nav class="md-nav" aria-label="MD2 Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#md2anim" class="md-nav__link">
+    md2anim N F M [S [P]]
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#md3-format" class="md-nav__link">
+    MD3 Format
+  </a>
+  
+    <nav class="md-nav" aria-label="MD3 Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#without-configuration" class="md-nav__link">
+    Without Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-configuration" class="md-nav__link">
+    With Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3load" class="md-nav__link">
+    md3load P
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3pitch" class="md-nav__link">
+    md3pitch S O M N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3skin" class="md-nav__link">
+    md3skin H S M [E [F]]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3bumpmap" class="md-nav__link">
+    md3bumpmap H N [S]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3spec" class="md-nav__link">
+    md3spec MESH S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3alphatest" class="md-nav__link">
+    md3alphatest MESH T
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3alphablend" class="md-nav__link">
+    md3alphablend MESH B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3shader" class="md-nav__link">
+    md3shader MESH S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3glow" class="md-nav__link">
+    md3glow MESH G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3glare" class="md-nav__link">
+    md3glare MESH S G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3envmap" class="md-nav__link">
+    md3envmap MESH P
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3ambient" class="md-nav__link">
+    md3ambient MESH A
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3fullbright" class="md-nav__link">
+    md3fullbright MESH N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3anim" class="md-nav__link">
+    md3anim A F N [S [P]]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3link" class="md-nav__link">
+    md3link P C T [X Y Z]
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#obj-format" class="md-nav__link">
+    OBJ Format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#md5-format" class="md-nav__link">
+    MD5 Format
+  </a>
+  
+    <nav class="md-nav" aria-label="MD5 Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#md5load" class="md-nav__link">
+    md5load P [S]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5pitch" class="md-nav__link">
+    md5pitch B S O M N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5skin" class="md-nav__link">
+    md5skin H S M [E [F]]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5bumpmap" class="md-nav__link">
+    md5bumpmap H N [S]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5spec" class="md-nav__link">
+    md5spec MESH S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5alphatest" class="md-nav__link">
+    md5alphatest MESH T
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5alphablend" class="md-nav__link">
+    md5alphablend MESH B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5shader" class="md-nav__link">
+    md5shader MESH S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5glow" class="md-nav__link">
+    md5glow MESH G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5glare" class="md-nav__link">
+    md5glare MESH S G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5envmap" class="md-nav__link">
+    md5envmap MESH P
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5ambient" class="md-nav__link">
+    md5ambient MESH A
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5fullbright" class="md-nav__link">
+    md5fullbright MESH N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5anim" class="md-nav__link">
+    md5anim A F [S] [P] [START] [END]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5animpart" class="md-nav__link">
+    md5animpart B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5tag" class="md-nav__link">
+    md5tag B T [X Y Z] [RX RY RZ]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5link" class="md-nav__link">
+    md5link P C T [X Y Z]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5adjust" class="md-nav__link">
+    md5adjust BONE YAW [PITCH] [ROLL] [X Y Z]
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#smd-format" class="md-nav__link">
+    SMD Format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iqm-format" class="md-nav__link">
+    IQM Format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-commands" class="md-nav__link">
+    Common Commands
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#md1collide" class="md-nav__link">
+    mdlcollide N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mdlellipsecollide" class="md-nav__link">
+    mdlellipsecollide N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1bb" class="md-nav__link">
+    mdlbb R H [E]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1cullface" class="md-nav__link">
+    mdlcullface N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1spec" class="md-nav__link">
+    mdlspec S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1alphatest" class="md-nav__link">
+    mdlalphatest T
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1alphablend" class="md-nav__link">
+    mdlalphablend B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1glow" class="md-nav__link">
+    mdlglow G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1glare" class="md-nav__link">
+    mdlglare S G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1shader" class="md-nav__link">
+    mdlshader S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1ambient" class="md-nav__link">
+    mdlambient A
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1scale" class="md-nav__link">
+    mdlscale S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1trans" class="md-nav__link">
+    mdltrans X Y Z
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1yaw" class="md-nav__link">
+    mdlyaw Y
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1pitch" class="md-nav__link">
+    mdlpitch P
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1spin" class="md-nav__link">
+    mdlspin Y
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1envmap" class="md-nav__link">
+    mdlenvmap E F [P]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1fullbright" class="md-nav__link">
+    mdlfullbright N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1shadow" class="md-nav__link">
+    mdlshadow B
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#md2-format" class="md-nav__link">
+    MD2 Format
+  </a>
+  
+    <nav class="md-nav" aria-label="MD2 Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#md2anim" class="md-nav__link">
+    md2anim N F M [S [P]]
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#md3-format" class="md-nav__link">
+    MD3 Format
+  </a>
+  
+    <nav class="md-nav" aria-label="MD3 Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#without-configuration" class="md-nav__link">
+    Without Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-configuration" class="md-nav__link">
+    With Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3load" class="md-nav__link">
+    md3load P
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3pitch" class="md-nav__link">
+    md3pitch S O M N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3skin" class="md-nav__link">
+    md3skin H S M [E [F]]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3bumpmap" class="md-nav__link">
+    md3bumpmap H N [S]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3spec" class="md-nav__link">
+    md3spec MESH S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3alphatest" class="md-nav__link">
+    md3alphatest MESH T
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3alphablend" class="md-nav__link">
+    md3alphablend MESH B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3shader" class="md-nav__link">
+    md3shader MESH S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3glow" class="md-nav__link">
+    md3glow MESH G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3glare" class="md-nav__link">
+    md3glare MESH S G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3envmap" class="md-nav__link">
+    md3envmap MESH P
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3ambient" class="md-nav__link">
+    md3ambient MESH A
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3fullbright" class="md-nav__link">
+    md3fullbright MESH N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3anim" class="md-nav__link">
+    md3anim A F N [S [P]]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md3link" class="md-nav__link">
+    md3link P C T [X Y Z]
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#obj-format" class="md-nav__link">
+    OBJ Format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#md5-format" class="md-nav__link">
+    MD5 Format
+  </a>
+  
+    <nav class="md-nav" aria-label="MD5 Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#md5load" class="md-nav__link">
+    md5load P [S]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5pitch" class="md-nav__link">
+    md5pitch B S O M N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5skin" class="md-nav__link">
+    md5skin H S M [E [F]]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5bumpmap" class="md-nav__link">
+    md5bumpmap H N [S]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5spec" class="md-nav__link">
+    md5spec MESH S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5alphatest" class="md-nav__link">
+    md5alphatest MESH T
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5alphablend" class="md-nav__link">
+    md5alphablend MESH B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5shader" class="md-nav__link">
+    md5shader MESH S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5glow" class="md-nav__link">
+    md5glow MESH G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5glare" class="md-nav__link">
+    md5glare MESH S G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5envmap" class="md-nav__link">
+    md5envmap MESH P
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5ambient" class="md-nav__link">
+    md5ambient MESH A
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5fullbright" class="md-nav__link">
+    md5fullbright MESH N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5anim" class="md-nav__link">
+    md5anim A F [S] [P] [START] [END]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5animpart" class="md-nav__link">
+    md5animpart B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5tag" class="md-nav__link">
+    md5tag B T [X Y Z] [RX RY RZ]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5link" class="md-nav__link">
+    md5link P C T [X Y Z]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md5adjust" class="md-nav__link">
+    md5adjust BONE YAW [PITCH] [ROLL] [X Y Z]
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#smd-format" class="md-nav__link">
+    SMD Format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iqm-format" class="md-nav__link">
+    IQM Format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-commands" class="md-nav__link">
+    Common Commands
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#md1collide" class="md-nav__link">
+    mdlcollide N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mdlellipsecollide" class="md-nav__link">
+    mdlellipsecollide N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1bb" class="md-nav__link">
+    mdlbb R H [E]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1cullface" class="md-nav__link">
+    mdlcullface N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1spec" class="md-nav__link">
+    mdlspec S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1alphatest" class="md-nav__link">
+    mdlalphatest T
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1alphablend" class="md-nav__link">
+    mdlalphablend B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1glow" class="md-nav__link">
+    mdlglow G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1glare" class="md-nav__link">
+    mdlglare S G
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1shader" class="md-nav__link">
+    mdlshader S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1ambient" class="md-nav__link">
+    mdlambient A
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1scale" class="md-nav__link">
+    mdlscale S
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1trans" class="md-nav__link">
+    mdltrans X Y Z
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1yaw" class="md-nav__link">
+    mdlyaw Y
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1pitch" class="md-nav__link">
+    mdlpitch P
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1spin" class="md-nav__link">
+    mdlspin Y
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1envmap" class="md-nav__link">
+    mdlenvmap E F [P]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1fullbright" class="md-nav__link">
+    mdlfullbright N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#md1shadow" class="md-nav__link">
+    mdlshadow B
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Model Reference</h1>
+
+<h2 id="md2-format">MD2 Format</h2>
+<p>MD2 files must be located in a directory in packages/models/, you must provide a skin
+(either skin.png or skin.jpg) and the md2 itself (tris.md2).
+Optionally you may provide a masks.png that holds a specmap in the R channel, a glowmap
+in the G channel, and a chrome map in the B channel. The engine will apply it automatically.</p>
+<p>If either of these files is not found, the engine will search the parent directory for them.
+For example, if for the flags/red model, the tris.md2 is not found in
+packages/models/flags/red/, then it will look for tris.md2 in packages/models/flags/.
+This allows the sharing of skins and geometry.</p>
+<p>It is expected that md2 format files use Quake-compatible scale and animations, unless you configure the model otherwise.</p>
+<p>You may also supply a config file (md2.cfg) in your model directory, which allows you to
+customize the model's animations. The following commands may be used in an md2.cfg:</p>
+<h3 id="md2anim"><code>md2anim N F M [S [P]]</code></h3>
+<p>N is the name of the animation to define. Any of the following names may be used:</p>
 <ul>
-	<li>dying</li>
-	<li>dead</li>
-	<li>pain</li>
-	<li>idle</li>
-	<li>forward</li>
-	<li>backward</li>
-	<li>left</li>
-	<li>right</li>
-    <li>hold 1 ... hold 7</li>
-    <li>attack 1 ... attack 7</li>
-	<li>jump</li>
-    <li>sink</li>
-	<li>swim</li>
-	<li>edit</li>
-	<li>lag</li>
-    <li>taunt</li>
-    <li>win</li>
-    <li>lose</li>
-	<li>gun shoot</li>
-	<li>gun idle</li>
-    <li>vwep shoot</li>
-    <li>vwep idle</li>
-	<li>mapmodel</li>
-	<li>trigger</li>
+<li>dying</li>
+<li>dead</li>
+<li>pain</li>
+<li>idle</li>
+<li>forward</li>
+<li>backward</li>
+<li>left</li>
+<li>right</li>
+<li>hold 1 ... hold 7</li>
+<li>attack 1 ... attack 7</li>
+<li>jump</li>
+<li>sink</li>
+<li>swim</li>
+<li>edit</li>
+<li>lag</li>
+<li>taunt</li>
+<li>win</li>
+<li>lose</li>
+<li>gun shoot</li>
+<li>gun idle</li>
+<li>vwep shoot</li>
+<li>vwep idle</li>
+<li>mapmodel</li>
+<li>trigger</li>
 </ul>
-
-<p style="border-top:2px solid #555;">
-F is the frame number the animation starts at. M is the number of frames in the
+<p>F is the frame number the animation starts at. M is the number of frames in the
 animation. S is the optional frames per second at which to run the anim. If none is specified,
-10 FPS is the default. P specifies an optional priority for the animation (defaults to P=0).
-<br><br>
-For example, defining a "pain" animation starting at frame 50 with 6 frames and running at 30 frames per
-second would look like: <i>md2anim "pain" 50 6 30</i>
-</p>
-
-
-<h2 id="md3_format">MD3 Format</h2>
-<p>
-MD3 file can be used in one of two ways.
-</p>
-
-<h3 id="without_configuration">Without Configuration</h3>
-
-<p>
-Go this way if your md3 has no animations (static) and takes only one texture, they must be
-located in a directory in <i>packages/models/</i>, and provide a skin (either <i>skin.png</i>
-or <i>skin.jpg</i>) and the md3 itself (<i>tris.md3</i>). Optionally you may provide a
-<i>masks.png</i> that holds a specmap in the R channel, a glowmap in the G channel, and a
-chrome map in the B channel. The engine will apply it automatically.
-<br><br>
-If either of these files is not found, the engine will search the parent directory for them.
-For example, if for the <i>flags/red model</i>, the <i>tris.md3</i> is not found in
-<i>packages/models/flags/red/</i>, then it will look for <i>tris.md3</i> in
-<i>packages/models/flags/</i>. This allows the sharing of skins and geometry.
-</p>
-
-<h3 id="with_configuration">With Configuration</h3>
-
-<p>
-MD3 files with animations multiple skins, or if you want to make use of other configuration
-possibilities, need to be set up this way. You must place a <i>md3.cfg</i> in a directory in
-<i>packages/models/</i>. This file specifies which models should be loaded, linked, etc. The
-following commands may be used in the <i>md3.cfg</i>:
-</p>
-
-<pre id="md3load">md3load P</pre>
-<p>
-This command loads the first part of your model. As an example, this could be the <i>head.md3</i>
+10 FPS is the default. P specifies an optional priority for the animation (defaults to P=0).</p>
+<p>For example, defining a "pain" animation starting at frame 50 with 6 frames and running at 30 frames per
+second would look like: md2anim "pain" 50 6 30</p>
+<h2 id="md3-format">MD3 Format</h2>
+<p>MD3 file can be used in one of two ways.</p>
+<h3 id="without-configuration">Without Configuration</h3>
+<p>Go this way if your md3 has no animations (static) and takes only one texture, they must be
+located in a directory in packages/models/, and provide a skin (either skin.png
+or skin.jpg) and the md3 itself (tris.md3). Optionally you may provide a
+masks.png that holds a specmap in the R channel, a glowmap in the G channel, and a
+chrome map in the B channel. The engine will apply it automatically.</p>
+<p>If either of these files is not found, the engine will search the parent directory for them.
+For example, if for the flags/red model, the tris.md3 is not found in
+packages/models/flags/red/, then it will look for tris.md3 in
+packages/models/flags/. This allows the sharing of skins and geometry.</p>
+<h3 id="with-configuration">With Configuration</h3>
+<p>MD3 files with animations multiple skins, or if you want to make use of other configuration
+possibilities, need to be set up this way. You must place a md3.cfg in a directory in
+packages/models/. This file specifies which models should be loaded, linked, etc. The
+following commands may be used in the md3.cfg:</p>
+<h3 id="md3load"><code>md3load P</code></h3>
+<p>This command loads the first part of your model. As an example, this could be the head.md3
 of a playermodel. P is the path to the md3 file to load, its relative to the location of the
-<i>md3.cfg</i>.
-</p>
-
-<pre id="md3pitch">md3pitch S O M N</pre>
-<p>
-This command controls how a model responds to the model's pitch. The pitch (in degrees) is scaled
+md3.cfg.</p>
+<h3 id="md3pitch"><code>md3pitch S O M N</code></h3>
+<p>This command controls how a model responds to the model's pitch. The pitch (in degrees) is scaled
 by S, offset by O, and then clamped to the range M..N, i.e. clamp(pitch*S + O, M, N). By default, 
-all model parts have S=1, O=0, M=-360, and N=360, such that the model part will pitch one-to-one.
-</p>
-
-<pre id="md3skin">md3skin H S M [E [F]]</pre>
-<p>
-This loads a texture and assigns it to a mesh of the last loaded model (md3load). H is the name
+all model parts have S=1, O=0, M=-360, and N=360, such that the model part will pitch one-to-one.</p>
+<h3 id="md3skin"><code>md3skin H S M [E [F]]</code></h3>
+<p>This loads a texture and assigns it to a mesh of the last loaded model (md3load). H is the name
 of the mesh you want to assign the texture to. S is the path to the texture, its recursive
-to the location of the <i>md3.cfg</i>. The optional M sets a texture for spec (red channel)/glow
+to the location of the md3.cfg. The optional M sets a texture for spec (red channel)/glow
 (green channel) maps as above. If E is non-zero, then the blue channel of the masks is
 interpreted as a chrome map. E (maximum envmap intensity) and F (minimum envmap intensity, default: 0) are floating point 
 values in the range of 0 to 1, and specify the range in which the envmapping intensity will vary based on a viewing angle
 (a Fresnel term that is maximal at glancing angles, minimal when viewed dead-on). The intensity, 
-after scaled into this range, is then multiplied by the chrome map.
-</p>
-
-<pre id="md3bumpmap">md3bumpmap H N [S]</pre>
-<p>
-This command enables bumpmapping for a given mesh in the last loaded model (md3load). H is the name
+after scaled into this range, is then multiplied by the chrome map.</p>
+<h3 id="md3bumpmap"><code>md3bumpmap H N [S]</code></h3>
+<p>This command enables bumpmapping for a given mesh in the last loaded model (md3load). H is the name
 of the mesh you want to assign bumpmapping textures to. S is the path to a diffuse skin texture which is (if specified)
 used instead of the skin supplied with the "md3skin" command only if the user's 3D card supports bumpmapping, 
 otherwise the skin supplied with "md3skin" takes precedence and no bumpmapping is done. These
 two diffuse skins may be the same. However a diffuse skin intended for bumpmapping should generally have
 little to no directional shading baked into it, whereas flat diffuse skins (no bumpmapping) generally should,
 and this command allows you to provide a separate skin for the bumpmapping case. N is a normal map texture which is 
-used to shade the supplied diffuse skin texture.
-</p>
-
-<pre id="md3spec">md3spec MESH S</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. S is the specular intensity (not given or 0 gives the default of 100, good for metal/plastics and anything shiny, use lower values like 50 for wood etc, -1 means off entirely).</p>
-
-<pre id="md3alphatest">md3alphatest MESH T</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. Controls the cut-off threshold, T, at which alpha-channel skins will discard pixels where alpha is less than T.
-T is a floating point value in the range of 0 to 1 (Default: 0.9). 
-</p>
-
-<pre id="md3alphablend">md3alphablend MESH B</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. Controls whether a model with an alpha-channel skin will alpha blend (Default: 1). 
-</p>
-
-<pre id="md3shader">md3shader MESH S</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. S is the name of the shader to use for rendering the model (Default: "stdmodel"). 
-</p>
-
-<pre id="md3glow">md3glow MESH G</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. G is the glowmap scale (not given or 0 gives the default of 300, -1 means off entirely), such that
-the glow is G percent of the diffuse skin color.
-</p>
-
-<pre id="md3glare">md3glare MESH S G</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. S and G are floating point values that scale the amount of glare generated by specular light and glare, respectively (Default: 1 1).
-</p>
-
-<pre id="md3envmap">md3envmap MESH P</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. Sets the environment map used for the model, where P is a pathname in the same syntax as the
+used to shade the supplied diffuse skin texture.</p>
+<h3 id="md3spec"><code>md3spec MESH S</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. S is the specular intensity (not given or 0 gives the default of 100, good for metal/plastics and anything shiny, use lower values like 50 for wood etc, -1 means off entirely).</p>
+<h3 id="md3alphatest"><code>md3alphatest MESH T</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. Controls the cut-off threshold, T, at which alpha-channel skins will discard pixels where alpha is less than T.
+T is a floating point value in the range of 0 to 1 (Default: 0.9). </p>
+<h3 id="md3alphablend"><code>md3alphablend MESH B</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. Controls whether a model with an alpha-channel skin will alpha blend (Default: 1). </p>
+<h3 id="md3shader"><code>md3shader MESH S</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. S is the name of the shader to use for rendering the model (Default: "stdmodel"). </p>
+<h3 id="md3glow"><code>md3glow MESH G</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. G is the glowmap scale (not given or 0 gives the default of 300, -1 means off entirely), such that
+the glow is G percent of the diffuse skin color.</p>
+<h3 id="md3glare"><code>md3glare MESH S G</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. S and G are floating point values that scale the amount of glare generated by specular light and glare, respectively (Default: 1 1).</p>
+<h3 id="md3envmap"><code>md3envmap MESH P</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. Sets the environment map used for the model, where P is a pathname in the same syntax as the
 "loadsky" command. If this is not specified, the mesh will use the closest "envmap" entity,
-or skybox, if none is available (unless overridden by "mdlenvmap").
-</p>
-
-<pre id="md3ambient">md3ambient MESH A</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to.  A is the percent of the ambient light that should be used for shading. Not given or 0 gives the
-default of 30%, -1 means no ambient.
-</p>
-
-<pre id="md3fullbright">md3fullbright MESH N</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. Uses a constant lighting level of N instead of the normal lighting. N is a floating-point value on a scale of 0 to 1.
-</p>
-
-<pre id="md3anim">md3anim A F N [S [P]]</pre>
-<p>
-This assigns a new animation to the last loaded model (md3load). A is the name of the animation
-to define. Any of the following names may be used:
-</p>
+or skybox, if none is available (unless overridden by "mdlenvmap").</p>
+<h3 id="md3ambient"><code>md3ambient MESH A</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to.  A is the percent of the ambient light that should be used for shading. Not given or 0 gives the
+default of 30%, -1 means no ambient.</p>
+<h3 id="md3fullbright"><code>md3fullbright MESH N</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. Uses a constant lighting level of N instead of the normal lighting. N is a floating-point value on a scale of 0 to 1.</p>
+<h3 id="md3anim"><code>md3anim A F N [S [P]]</code></h3>
+<p>This assigns a new animation to the last loaded model (md3load). A is the name of the animation
+to define. Any of the following names may be used:</p>
 <ul>
-	<li>dying</li>
-	<li>dead</li>
-	<li>pain</li>
-	<li>idle</li>
-	<li>forward</li>
-	<li>backward</li>
-	<li>left</li>
-	<li>right</li>
-    <li>hold 1 ... hold 7</li>
-    <li>attack 1 ... attack 7</li>
-	<li>jump</li>
-    <li>sink</li>
-	<li>swim</li>
-	<li>edit</li>
-	<li>lag</li>
-    <li>taunt</li>
-    <li>win</li>
-    <li>lose</li>
-	<li>gun shoot</li>
-	<li>gun idle</li>
-    <li>vwep shoot</li>
-    <li>vwep idle</li>
-	<li>mapmodel</li>
-	<li>trigger</li>
+<li>dying</li>
+<li>dead</li>
+<li>pain</li>
+<li>idle</li>
+<li>forward</li>
+<li>backward</li>
+<li>left</li>
+<li>right</li>
+<li>hold 1 ... hold 7</li>
+<li>attack 1 ... attack 7</li>
+<li>jump</li>
+<li>sink</li>
+<li>swim</li>
+<li>edit</li>
+<li>lag</li>
+<li>taunt</li>
+<li>win</li>
+<li>lose</li>
+<li>gun shoot</li>
+<li>gun idle</li>
+<li>vwep shoot</li>
+<li>vwep idle</li>
+<li>mapmodel</li>
+<li>trigger</li>
 </ul>
-
-<p style="border-top:2px solid #555;">
-F is the frame number the animation starts at. N is the number of frames in the animation.
+<p>F is the frame number the animation starts at. N is the number of frames in the animation.
 S is frames per second at which to run the anim. If none is specified or S=0, 10 FPS is the default.
-P specifies an optional priority for the animation (defaults to P=0).
-</p>
-
-<p style="border-top:2px solid #555;">
-A character model will have up to 2 animations simultaneously playing - a primary animation
+P specifies an optional priority for the animation (defaults to P=0).</p>
+<p>A character model will have up to 2 animations simultaneously playing - a primary animation
 and a secondary animation. If a character model defines the primary animation, it will be used,
-otherwise the secondary will be used if it is available. Primary animations are:
-</p>
+otherwise the secondary will be used if it is available. Primary animations are:</p>
 <ul>
-	<li>dying</li>
-	<li>dead</li>
-	<li>pain</li>
-    <li>hold 1 ... hold 7</li>
-    <li>attack 1 ... attack 7</li>
-	<li>edit</li>
-	<li>lag</li>
-    <li>taunt</li>
-    <li>win</li>
-    <li>lose</li>
+<li>dying</li>
+<li>dead</li>
+<li>pain</li>
+<li>hold 1 ... hold 7</li>
+<li>attack 1 ... attack 7</li>
+<li>edit</li>
+<li>lag</li>
+<li>taunt</li>
+<li>win</li>
+<li>lose</li>
 </ul>
-
-<p style="border-top:2px solid #555;">
-Secondary animations are:
-</p>
+<p>Secondary animations are:</p>
 <ul>
-	<li>idle</li>
-	<li>forward</li>
-	<li>backward</li>
-	<li>left</li>
-	<li>right</li>
-	<li>jump</li>
-    <li>sink</li>
-	<li>swim</li>
+<li>idle</li>
+<li>forward</li>
+<li>backward</li>
+<li>left</li>
+<li>right</li>
+<li>jump</li>
+<li>sink</li>
+<li>swim</li>
 </ul>
-
-<p style="border-top:2px solid #555;">
-This allows, for example, a torso part to "shoot" (a primary animation) while a leg part
+<p>This allows, for example, a torso part to "shoot" (a primary animation) while a leg part
 simultaneously runs "forward" (a secondary animation). In the event that a secondary animation
 other than "idle" is playing and there is no primary animation, then the secondary animation
 will behave as if it were primary, and the secondary animation will effectively be "idle".
@@ -482,50 +1501,39 @@ which animation is primary for a specific part, you can set an explicit priority
 and the animation with the highest priority is chosen, regardless of which is primary and 
 which is secondary. So, for example, you could give an animation a -1 priority so that all animations
 with the default 0 priority are chosen first, or you could give an animation a 1 or greater priority
-so that it is always chosen before animations with the default 0 priority.
-<br><br>
-For example, to define a "punch" animation starting at frame 131 with 6 frames and running at
-15 frames per second: <i>md3anim "punch" 131 6 15</i>
-</p>
-
-<pre id="md3link">md3link P C T [X Y Z]</pre>
-<p>
-This links two models together. Every model you load with md3load has an ID. The first model
+so that it is always chosen before animations with the default 0 priority.</p>
+<p>For example, to define a "punch" animation starting at frame 131 with 6 frames and running at
+15 frames per second: md3anim "punch" 131 6 15</p>
+<h3 id="md3link"><code>md3link P C T [X Y Z]</code></h3>
+<p>This links two models together. Every model you load with md3load has an ID. The first model
 you load has the ID 0, the second has the ID 1, and so on, those ID's are now used to identify
 the models and link them together. P the ID of the parent model. C to ID of the
 child model. T name of the tag that specifies at which vertex the models should be linked. 
-X, Y, and Z are optional translation for this link.
-<br><br>
-Hint: <i>Make sure you understand the difference between the parent and child model.
+X, Y, and Z are optional translation for this link.</p>
+<p>Hint: Make sure you understand the difference between the parent and child model.
 Rendering starts at model 0 (first loaded model) and then continues with model 0's children,
-etc. Imagine a tree, model 0 is the root if it.</i>
-</p>
-
-<h3 id="sample_configuration">Sample Configuration</h3>
-<pre>
-md3load lower.md3 // model no. 0
+etc. Imagine a tree, model 0 is the root if it.</p>
+<pre><code>md3load lower.md3 // model no. 0
 md3skin l_lower ./default_l.png
 
 md3anim dying           0   30  20
 md3anim dead            30  1   25
-md3anim "forward|backward|left|right|swim" 114 10  18
+md3anim &quot;forward|backward|left|right|swim&quot; 114 10  18
 md3anim idle            164 30  30
-md3anim "jump|lag|edit" 147	8	15
+md3anim &quot;jump|lag|edit&quot; 147 8   15
 
 md3load upper.md3 // model no. 1
 md3skin u_torso ./default.png
 
 md3anim dying           0   30  20
 md3anim dead            30  1   25
-md3anim "lag|edit"      91  40  18
-md3anim "attack *"      131 6   15
+md3anim &quot;lag|edit&quot;      91  40  18
+md3anim &quot;attack *&quot;      131 6   15
 md3anim idle            152 1   15
 md3anim pain            152 1   15
 
-
 md3load head.md3 // model no. 2
 md3skin h_head ./default_h.png
-
 
 md3link 0 1 tag_torso
 md3link 1 2 tag_head
@@ -533,330 +1541,246 @@ md3link 1 2 tag_head
 mdlspec 50
 mdlscale 20         // 20 percent of the original size
 mdltrans 0 0 -1.5   // lower the model a bit
-</pre>
-
-<h2 id="obj_format">OBJ Format</h2>
-<p>
-The Wavefront OBJ format is configured almost identically to how MD3s are used. The only differences are that OBJ specific commands are prefixed with "obj" instead of "md3" (i.e. "objskin" instead of "md3skin") which are specified in "obj.cfg" instead of "md3.cfg", it looks for "tris.obj" instead of "tris.md3" by default, and there is no support for animation ("objanim") or linking ("objlink"). Group names are used to identify meshes within the model.
-</p>
-
-<h2 id="md5_format">MD5 Format</h2>
-<p>
-MD5 models require a proper configuration to function; make sure your exporter properly exports mesh names in the MD5 file so that these can be referenced in the configuration file (the Blender exporter does not export these, but a fixed  Blender MD5 exporter can be gotten from the Cube wiki).
-<br><br>
-Make sure no more than 4 blend weights are used per vertex, any extra blend weights will be dropped silently. The skeleton should use no more than 256 bones, and less than 70 or so bones should be used if you wish the model to be skeletally animated on the GPU. To optimize animation of the model on both CPU and GPU, keep the number of blend weights per vertex to a minimum. Also, similar combinations of blend weights are cached while animating, especially on the CPU, such that if two or more vertices use the same blend weights, blending calculations only have to be done once for all the vertices - so try and minimize the number of distinct combinations of blend weights if possible. 
-<br><br>
-When animating skeletal models, you should model the animations as a single piece for the entire body (unlike for MD3 which requires splitting the mesh). In the configuration file, you can choose a bone at which to split the model into an upper and lower part (via "md5animpart"), which allows, for example, the upper body movement of one animation to be combined with the lower body movement of another animation automatically. The bone at which you split the animation up should ideally be a root bone, of which the upper body and lower body are separate sub-trees. Rigging the model in this way also allows for pitch animation (which also requires selecting a bone to pitch at) to take place such as bending at the waist, which similarly requires the upper body to be a sub-tree of the bone at which the pitch animation will occur.
-<br><br>
-The included MD5 support allows for two methods of attaching models to another: via tags (by assigning a tag name to a bone with "md5tag"), or by animating multiple models against a common, named skeleton that will be shared among all of them (useful for modeling clothing attachments and similar items). To use a shared skeleton, you simply export all the models with the same skeleton. Animations only need to be specified for the base model. A name for the skeleton is specified via the "md5load" command, for both the model exporting the skeleton and the models using it. When one of the models is attached to the one supplying the skeleton internally, the tag setup is instead ignored and the skeleton/animations of the base model are used to animate the attachment as if it were a sub-mesh of the base model itself.
-</p>
-
-<p style="border-top:2px solid #555;">
-You must place a <i>md5.cfg</i> in a directory in <i>packages/models/</i>.
-The following commands may be used in the <i>md5.cfg</i>:
-</p>
-
-<pre id="md5load">md5load P [S]</pre>
-<p>
-This command loads the first part of your model. As an example, this could be the <i>head.md5mesh</i>
+</code></pre>
+<h2 id="obj-format">OBJ Format</h2>
+<p>The Wavefront OBJ format is configured almost identically to how MD3s are used. The only differences are that OBJ specific commands are prefixed with "obj" instead of "md3" (i.e. "objskin" instead of "md3skin") which are specified in "obj.cfg" instead of "md3.cfg", it looks for "tris.obj" instead of "tris.md3" by default, and there is no support for animation ("objanim") or linking ("objlink"). Group names are used to identify meshes within the model.</p>
+<h2 id="md5-format">MD5 Format</h2>
+<p>MD5 models require a proper configuration to function; make sure your exporter properly exports mesh names in the MD5 file so that these can be referenced in the configuration file (the Blender exporter does not export these, but a fixed  Blender MD5 exporter can be gotten from the Cube wiki).</p>
+<p>Make sure no more than 4 blend weights are used per vertex, any extra blend weights will be dropped silently. The skeleton should use no more than 256 bones, and less than 70 or so bones should be used if you wish the model to be skeletally animated on the GPU. To optimize animation of the model on both CPU and GPU, keep the number of blend weights per vertex to a minimum. Also, similar combinations of blend weights are cached while animating, especially on the CPU, such that if two or more vertices use the same blend weights, blending calculations only have to be done once for all the vertices - so try and minimize the number of distinct combinations of blend weights if possible. </p>
+<p>When animating skeletal models, you should model the animations as a single piece for the entire body (unlike for MD3 which requires splitting the mesh). In the configuration file, you can choose a bone at which to split the model into an upper and lower part (via "md5animpart"), which allows, for example, the upper body movement of one animation to be combined with the lower body movement of another animation automatically. The bone at which you split the animation up should ideally be a root bone, of which the upper body and lower body are separate sub-trees. Rigging the model in this way also allows for pitch animation (which also requires selecting a bone to pitch at) to take place such as bending at the waist, which similarly requires the upper body to be a sub-tree of the bone at which the pitch animation will occur.</p>
+<p>The included MD5 support allows for two methods of attaching models to another: via tags (by assigning a tag name to a bone with "md5tag"), or by animating multiple models against a common, named skeleton that will be shared among all of them (useful for modeling clothing attachments and similar items). To use a shared skeleton, you simply export all the models with the same skeleton. Animations only need to be specified for the base model. A name for the skeleton is specified via the "md5load" command, for both the model exporting the skeleton and the models using it. When one of the models is attached to the one supplying the skeleton internally, the tag setup is instead ignored and the skeleton/animations of the base model are used to animate the attachment as if it were a sub-mesh of the base model itself.</p>
+<p>You must place a md5.cfg in a directory in packages/models/.
+The following commands may be used in the md5.cfg:</p>
+<h3 id="md5load"><code>md5load P [S]</code></h3>
+<p>This command loads the first part of your model. As an example, this could be the head.md5mesh
 of a playermodel. P is the path to the md5mesh file to load, its relative to the location of the
-<i>md5.cfg</i>. S is an optional name that can be assigned to the skeleton specified in the md5mesh
+md5.cfg. S is an optional name that can be assigned to the skeleton specified in the md5mesh
 for skeleton sharing, but need not be specified if you do not wish to share the skeleton. This skeleton 
-name must be specified for both the model supplying a skeleton and an attached model intending to use the skeleton.
-</p>
-
-<pre id="md5pitch">md5pitch B S O M N</pre>
-<p>
-This command controls how a model responds to the model's pitch. B is the name of the bone which
+name must be specified for both the model supplying a skeleton and an attached model intending to use the skeleton.</p>
+<h3 id="md5pitch"><code>md5pitch B S O M N</code></h3>
+<p>This command controls how a model responds to the model's pitch. B is the name of the bone which
 the pitch animation is applied to, as well as all bones in the sub-tree below it. The pitch (in degrees) 
 is scaled by S, offset by O, and then clamped to the range M..N, i.e. clamp(pitch*S + O, M, N). By default,
-all model parts have S=1, O=0, M=-360, and N=360, such that the model part will pitch one-to-one.
-</p>
-
-<pre id="md5skin">md5skin H S M [E [F]]</pre>
-<p>
-This loads a texture and assigns it to a mesh of the last loaded model (md5load). H is the name
+all model parts have S=1, O=0, M=-360, and N=360, such that the model part will pitch one-to-one.</p>
+<h3 id="md5skin"><code>md5skin H S M [E [F]]</code></h3>
+<p>This loads a texture and assigns it to a mesh of the last loaded model (md5load). H is the name
 of the mesh you want to assign the texture to. S is the path to the texture, its recursive
-to the location of the <i>md5.cfg</i>. The optional M sets a texture for spec (red channel)/glow
+to the location of the md5.cfg. The optional M sets a texture for spec (red channel)/glow
 (green channel) maps as above. If E is non-zero, then the blue channel of the masks is
 interpreted as a chrome map. E (maximum envmap intensity) and F (minimum envmap intensity, default: 0) are floating point
 values in the range of 0 to 1, and specify the range in which the envmapping intensity will vary based on a viewing angle
 (a Fresnel term that is maximal at glancing angles, minimal when viewed dead-on). The intensity,
-after scaled into this range, is then multiplied by the chrome map.
-</p>
-
-<pre id="md5bumpmap">md5bumpmap H N [S]</pre>
-<p>
-This command enables bumpmapping for a given mesh in the last loaded model (md5load). H is the name
+after scaled into this range, is then multiplied by the chrome map.</p>
+<h3 id="md5bumpmap"><code>md5bumpmap H N [S]</code></h3>
+<p>This command enables bumpmapping for a given mesh in the last loaded model (md5load). H is the name
 of the mesh you want to assign bumpmapping textures to. S is the path to a diffuse skin texture which is
 used (if specified) instead of the skin supplied with the "md5skin" command only if the user's 3D card supports bumpmapping,
 otherwise the skin supplied with "md5skin" takes precedence and no bumpmapping is done. These
 two diffuse skins may be the same. However a diffuse skin intended for bumpmapping should generally have
 little to no directional shading baked into it, whereas flat diffuse skins (no bumpmapping) generally should,
 and this command allows you to provide a separate skin for the bumpmapping case. N is a normal map texture which is
-used to shade the supplied diffuse skin texture.
-</p>
-
-<pre id="md5spec">md5spec MESH S</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. S is the specular intensity (not given or 0 gives the default of 100, good for metal/plastics and anything shiny, use lower values like 50 for wood etc, -1 means off entirely).</p>
-
-<pre id="md5alphatest">md5alphatest MESH T</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. Controls the cut-off threshold, T, at which alpha-channel skins will discard pixels where alpha is less than T.
-T is a floating point value in the range of 0 to 1 (Default: 0.9).
-</p>
-
-<pre id="md5alphablend">md5alphablend MESH B</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. Controls whether a model with an alpha-channel skin will alpha blend (Default: 1).
-</p>
-
-<pre id="md5shader">md5shader MESH S</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. S is the name of the shader to use for rendering the model (Default: "stdmodel").
-</p>
-
-<pre id="md5glow">md5glow MESH G</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. G is the glowmap scale (not given or 0 gives the default of 300, -1 means off entirely), such that
-the glow is G percent of the diffuse skin color.
-</p>
-
-<pre id="md5glare">md5glare MESH S G</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. S and G are floating point values that scale the amount of glare generated by specular light and glare, respectively (Default: 1 1).
-</p>
-
-<pre id="md5envmap">md5envmap MESH P</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. Sets the environment map used for the model, where P is a pathname in the same syntax as the
+used to shade the supplied diffuse skin texture.</p>
+<h3 id="md5spec"><code>md5spec MESH S</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. S is the specular intensity (not given or 0 gives the default of 100, good for metal/plastics and anything shiny, use lower values like 50 for wood etc, -1 means off entirely).</p>
+<h3 id="md5alphatest"><code>md5alphatest MESH T</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. Controls the cut-off threshold, T, at which alpha-channel skins will discard pixels where alpha is less than T.
+T is a floating point value in the range of 0 to 1 (Default: 0.9).</p>
+<h3 id="md5alphablend"><code>md5alphablend MESH B</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. Controls whether a model with an alpha-channel skin will alpha blend (Default: 1).</p>
+<h3 id="md5shader"><code>md5shader MESH S</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. S is the name of the shader to use for rendering the model (Default: "stdmodel").</p>
+<h3 id="md5glow"><code>md5glow MESH G</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. G is the glowmap scale (not given or 0 gives the default of 300, -1 means off entirely), such that
+the glow is G percent of the diffuse skin color.</p>
+<h3 id="md5glare"><code>md5glare MESH S G</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. S and G are floating point values that scale the amount of glare generated by specular light and glare, respectively (Default: 1 1).</p>
+<h3 id="md5envmap"><code>md5envmap MESH P</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. Sets the environment map used for the model, where P is a pathname in the same syntax as the
 "loadsky" command. If this is not specified, the mesh will use the closest "envmap" entity,
-or skybox, if none is available (unless overridden by "mdlenvmap").
-</p>
-
-<pre id="md5ambient">md5ambient MESH A</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to.  A is the percent of the ambient light that should be used for shading. Not given or 0 gives the
-default of 30%, -1 means no ambient.
-</p>
-
-<pre id="md5fullbright">md5fullbright MESH N</pre>
-<p>
-MESH specifies the name of the mesh this setting applies to. Uses a constant lighting level of N instead of the normal lighting. N is a floating-point value on a scale of 0 to 1.
-</p>
-
-<pre id="md5anim">md5anim A F [S] [P] [START] [END]</pre>
-<p>
-This assigns a new animation to the current animation part of the last loaded model (md5load). A is the name of the animation
-to define. Any of the following names may be used:
-</p>
+or skybox, if none is available (unless overridden by "mdlenvmap").</p>
+<h3 id="md5ambient"><code>md5ambient MESH A</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to.  A is the percent of the ambient light that should be used for shading. Not given or 0 gives the
+default of 30%, -1 means no ambient.</p>
+<h3 id="md5fullbright"><code>md5fullbright MESH N</code></h3>
+<p>MESH specifies the name of the mesh this setting applies to. Uses a constant lighting level of N instead of the normal lighting. N is a floating-point value on a scale of 0 to 1.</p>
+<h3 id="md5anim"><code>md5anim A F [S] [P] [START] [END]</code></h3>
+<p>This assigns a new animation to the current animation part of the last loaded model (md5load). A is the name of the animation
+to define. Any of the following names may be used:</p>
 <ul>
-    <li>dying</li>
-    <li>dead</li>
-    <li>pain</li>
-    <li>idle</li>
-    <li>forward</li>
-    <li>backward</li>
-    <li>left</li>
-    <li>right</li>
-    <li>hold 1 ... hold 7</li>
-    <li>attack 1 ... attack 7</li>
-    <li>jump</li>
-    <li>sink</li>
-    <li>swim</li>
-    <li>edit</li>
-    <li>lag</li>
-    <li>taunt</li>
-    <li>win</li>
-    <li>lose</li>
-    <li>gun shoot</li>
-    <li>gun idle</li>
-    <li>vwep shoot</li>
-    <li>vwep idle</li>
-    <li>mapmodel</li>
-    <li>trigger</li>
+<li>dying</li>
+<li>dead</li>
+<li>pain</li>
+<li>idle</li>
+<li>forward</li>
+<li>backward</li>
+<li>left</li>
+<li>right</li>
+<li>hold 1 ... hold 7</li>
+<li>attack 1 ... attack 7</li>
+<li>jump</li>
+<li>sink</li>
+<li>swim</li>
+<li>edit</li>
+<li>lag</li>
+<li>taunt</li>
+<li>win</li>
+<li>lose</li>
+<li>gun shoot</li>
+<li>gun idle</li>
+<li>vwep shoot</li>
+<li>vwep idle</li>
+<li>mapmodel</li>
+<li>trigger</li>
 </ul>
-
-<p style="border-top:2px solid #555;">
-F is the file name of an md5 animation file. S is frames per second at which to run the anim. If none is specified or S=0, 10 FPS is the default. P specifies an optional priority for the animation (defaults to P=0). START is an optional start frame offset within the animation, where a positive values is an offset from the first frame, and a negative value is an offset from end. END is an optional animation length in frames, where positive values specify the length, or negative values merely subtract off from the length.
-</p>
-
-<p style="border-top:2px solid #555;">
-A character model will have up to 2 animations simultaneously playing - a primary animation
+<p>F is the file name of an md5 animation file. S is frames per second at which to run the anim. If none is specified or S=0, 10 FPS is the default. P specifies an optional priority for the animation (defaults to P=0). START is an optional start frame offset within the animation, where a positive values is an offset from the first frame, and a negative value is an offset from end. END is an optional animation length in frames, where positive values specify the length, or negative values merely subtract off from the length.</p>
+<p>A character model will have up to 2 animations simultaneously playing - a primary animation
 and a secondary animation. If a character model defines the primary animation, it will be used,
-otherwise the secondary will be used if it is available. Primary animations are:
-</p>
+otherwise the secondary will be used if it is available. Primary animations are:</p>
 <ul>
-    <li>dying</li>
-    <li>dead</li>
-    <li>pain</li>
-    <li>hold 1 ... hold 7</li>
-    <li>attack 1 ... attack 7</li>
-    <li>edit</li>
-    <li>lag</li>
-    <li>taunt</li>
-    <li>win</li>
-    <li>lose</li>
+<li>dying</li>
+<li>dead</li>
+<li>pain</li>
+<li>hold 1 ... hold 7</li>
+<li>attack 1 ... attack 7</li>
+<li>edit</li>
+<li>lag</li>
+<li>taunt</li>
+<li>win</li>
+<li>lose</li>
 </ul>
-
-<p style="border-top:2px solid #555;">
-Secondary animations are:
-</p>
+<p>Secondary animations are:</p>
 <ul>
-    <li>idle</li>
-    <li>forward</li>
-    <li>backward</li>
-    <li>left</li>
-    <li>right</li>
-    <li>jump</li>
-    <li>sink</li>
-    <li>swim</li>
+<li>idle</li>
+<li>forward</li>
+<li>backward</li>
+<li>left</li>
+<li>right</li>
+<li>jump</li>
+<li>sink</li>
+<li>swim</li>
 </ul>
-
-<pre id="md5animpart">md5animpart B</pre>
-<p>
-Starts a new animation part that will include bone B and all its sub-bones. This effectively splits animations up at the bone B, such that each animation part animates as if it were a separate model. Note that a new animation part has no animations (does not inherit any from the previous animation part). After an "md5load", an implicit animation part is started that involves all bones not used by other animation parts. Each model currently may only have 2 animation parts, including the implicit default part, so this command may only be used once and only once per md5mesh loaded. However, you do not need to specify any animation parts explicitly and can just use the default part for all animations, if you do not wish the animations to be split up/blended together.
-</p>
-
-<pre id="md5tag">md5tag B T [X Y Z] [RX RY RZ]</pre>
-<p>
-Assigns the tag name T to the bone B, for either use with "md5link" or attachment of other models via tags. X, Y, and Z are an optional translation, whereas RX, RY, and RZ are optional rotations in degrees.
-</p>
-
-<pre id="md5link">md5link P C T [X Y Z]</pre>
-<p>
-This links two models together. Every model you load with md5load has an ID. The first model
+<h3 id="md5animpart"><code>md5animpart B</code></h3>
+<p>Starts a new animation part that will include bone B and all its sub-bones. This effectively splits animations up at the bone B, such that each animation part animates as if it were a separate model. Note that a new animation part has no animations (does not inherit any from the previous animation part). After an "md5load", an implicit animation part is started that involves all bones not used by other animation parts. Each model currently may only have 2 animation parts, including the implicit default part, so this command may only be used once and only once per md5mesh loaded. However, you do not need to specify any animation parts explicitly and can just use the default part for all animations, if you do not wish the animations to be split up/blended together.</p>
+<h3 id="md5tag"><code>md5tag B T [X Y Z] [RX RY RZ]</code></h3>
+<p>Assigns the tag name T to the bone B, for either use with "md5link" or attachment of other models via tags. X, Y, and Z are an optional translation, whereas RX, RY, and RZ are optional rotations in degrees.</p>
+<h3 id="md5link"><code>md5link P C T [X Y Z]</code></h3>
+<p>This links two models together. Every model you load with md5load has an ID. The first model
 you load has the ID 0, the second has the ID 1, and so on, those ID's are now used to identify
 the models and link them together. P the ID of the parent model. C to ID of the
 child model. T name of the tag that specifies at which vertex the models should be linked.
-X, Y, and Z are an optional translation for this link.
-</p>
-
-<pre id="md5adjust">md5adjust BONE YAW [PITCH] [ROLL] [X Y Z]</pre>
-<p>
-Adjusts bone BONE with the specified rotations, in degrees, on any animations loaded after this command is specified. X, Y, and Z are an optional translation.
-</p>
-
-<h2 id="smd_format">SMD Format</h2>
-<p>
-The Half-Life SMD format is configured almost identically to how MD5s are used. The only differences are that SMD specific commands are prefixed with "smd" instead of "md5" (i.e. "smdskin" instead of "md5skin") which are specified in "smd.cfg" instead of "md5.cfg".
-</p>
-
-<h2 id="iqm_format">IQM Format</h2>
-<p>
-The Inter-Quake Model (IQM) format is configured almost identically to how MD5s are used. The only differences are that IQM specific commands are prefixed with "iqm" instead of "md5" (i.e. "iqmskin" instead of "md5skin") which are specified in "iqm.cfg" instead of "md5.cfg".
-</p>
- 
-<h2 id="common_commands">Common Commands</h2>
-<pre id="mdlcollide">mdlcollide N</pre>
-<p>
-If N is 0, collisions with the model are disabled (Default: 1).
-</p>
-
-<pre id="mdlellipsecollide">mdlellipsecollide N</pre>
-<p>
-If N is 1, the model uses an elliptical collision volume instead of a box (Default: 0). This setting is good for barrels, trees, etc.
-</p>
-
-<pre id="mdlbb">mdlbb R H [E]</pre>
-<p>
-Sets the model's bounding box to radius R and height H. If this is not set, or R and H are 0, 
+X, Y, and Z are an optional translation for this link.</p>
+<h3 id="md5adjust"><code>md5adjust BONE YAW [PITCH] [ROLL] [X Y Z]</code></h3>
+<p>Adjusts bone BONE with the specified rotations, in degrees, on any animations loaded after this command is specified. X, Y, and Z are an optional translation.</p>
+<h2 id="smd-format">SMD Format</h2>
+<p>The Half-Life SMD format is configured almost identically to how MD5s are used. The only differences are that SMD specific commands are prefixed with "smd" instead of "md5" (i.e. "smdskin" instead of "md5skin") which are specified in "smd.cfg" instead of "md5.cfg".</p>
+<h2 id="iqm-format">IQM Format</h2>
+<p>The Inter-Quake Model (IQM) format is configured almost identically to how MD5s are used. The only differences are that IQM specific commands are prefixed with "iqm" instead of "md5" (i.e. "iqmskin" instead of "md5skin") which are specified in "iqm.cfg" instead of "md5.cfg".</p>
+<h2 id="common-commands">Common Commands</h2>
+<h3 id="md1collide"><code>mdlcollide N</code></h3>
+<p>If N is 0, collisions with the model are disabled (Default: 1).</p>
+<h3 id="mdlellipsecollide"><code>mdlellipsecollide N</code></h3>
+<p>If N is 1, the model uses an elliptical collision volume instead of a box (Default: 0). This setting is good for barrels, trees, etc.</p>
+<h3 id="md1bb"><code>mdlbb R H [E]</code></h3>
+<p>Sets the model's bounding box to radius R and height H. If this is not set, or R and H are 0, 
 a bounding box is automatically generated from the model's geometry. E is fraction of the
-model's height to be used as the eyeheight (Default: 0.9).
-</p>
-
-<pre id="mdlcullface">mdlcullface N</pre>
-<p>
-If N is 0, backface culling is disabled for this model. Otherwise, backface culling is enabled
-(Default: 1).
-</p>
-
-<pre id="mdlspec">mdlspec S</pre>
-<p>
-S is the specular intensity (not given or 0 gives the default of 100, good for metal/plastics
-and anything shiny, use lower values like 50 for wood etc, -1 means off entirely).
-</p>
-
-<pre id="mdlalphatest">mdlalphatest T</pre>
-<p>
-Controls the cut-off threshold, T, at which alpha-channel skins will discard pixels where alpha is less than T.
-T is a floating point value in the range of 0 to 1 (Default: 0.9).
-</p>
-
-<pre id="mdlalphablend">mdlalphablend B</pre>
-<p>
-Controls whether a model with an alpha-channel skin will alpha blend (Default: 1).
-</p>
-
-<pre id="mdlglow">mdlglow G</pre>
-<p>
-G is the glowmap scale (not given or 0 gives the default of 300, -1 means off entirely), such that 
-the glow is G percent of the diffuse skin color.
-</p>
-
-<pre id="mdlglare">mdlglare S G</pre>
-<p>
-S and G are floating point values that scale the amount of glare generated by specular light and glare, respectively (Default: 1 1).
-</p>
-
-<pre id="mdlshader">mdlshader S</pre>
-<p>
-S is the name of the shader to use for rendering the model (Default: "stdmodel").
-</p>
-
-<pre id="mdlambient">mdlambient A</pre>
-<p>
-A is the percent of the ambient light that should be used for shading. Not given or 0 gives the
-default of 30%, -1 means no ambient.
-</p>
-
-<pre id="mdlscale">mdlscale S</pre>
-<p>
-Scale the model's size to be S percent of its default size.
-</p>
-
-<pre id="mdltrans">mdltrans X Y Z</pre>
-<p>
-Translate the model's center by (X, Y, Z), where X/Y/Z are in model units (may use floating
-point).
-</p>
-
-<pre id="mdlyaw">mdlyaw Y</pre>
-<p>
-Offsets the model's yaw by Y degrees.
-</p>
-
-<pre id="mdlpitch">mdlpitch P</pre>
-<p>
-Offsets the model's pitch by P degrees.
-</p>
-
-<pre id="mdlspin">mdlspin Y</pre>
-<p>
-Simple spin animation that yaws the model by Y degrees per second.
-</p>
-
-<pre id="mdlenvmap">mdlenvmap E F [P]</pre>
-<p>
-Sets the environment map used for the model, where P is a pathname in the same syntax as the
+model's height to be used as the eyeheight (Default: 0.9).</p>
+<h3 id="md1cullface"><code>mdlcullface N</code></h3>
+<p>If N is 0, backface culling is disabled for this model. Otherwise, backface culling is enabled
+(Default: 1).</p>
+<h3 id="md1spec"><code>mdlspec S</code></h3>
+<p>S is the specular intensity (not given or 0 gives the default of 100, good for metal/plastics
+and anything shiny, use lower values like 50 for wood etc, -1 means off entirely).</p>
+<h3 id="md1alphatest"><code>mdlalphatest T</code></h3>
+<p>Controls the cut-off threshold, T, at which alpha-channel skins will discard pixels where alpha is less than T.
+T is a floating point value in the range of 0 to 1 (Default: 0.9).</p>
+<h3 id="md1alphablend"><code>mdlalphablend B</code></h3>
+<p>Controls whether a model with an alpha-channel skin will alpha blend (Default: 1).</p>
+<h3 id="md1glow"><code>mdlglow G</code></h3>
+<p>G is the glowmap scale (not given or 0 gives the default of 300, -1 means off entirely), such that 
+the glow is G percent of the diffuse skin color.</p>
+<h3 id="md1glare"><code>mdlglare S G</code></h3>
+<p>S and G are floating point values that scale the amount of glare generated by specular light and glare, respectively (Default: 1 1).</p>
+<h3 id="md1shader"><code>mdlshader S</code></h3>
+<p>S is the name of the shader to use for rendering the model (Default: "stdmodel").</p>
+<h3 id="md1ambient"><code>mdlambient A</code></h3>
+<p>A is the percent of the ambient light that should be used for shading. Not given or 0 gives the
+default of 30%, -1 means no ambient.</p>
+<h3 id="md1scale"><code>mdlscale S</code></h3>
+<p>Scale the model's size to be S percent of its default size.</p>
+<h3 id="md1trans"><code>mdltrans X Y Z</code></h3>
+<p>Translate the model's center by (X, Y, Z), where X/Y/Z are in model units (may use floating
+point).</p>
+<h3 id="md1yaw"><code>mdlyaw Y</code></h3>
+<p>Offsets the model's yaw by Y degrees.</p>
+<h3 id="md1pitch"><code>mdlpitch P</code></h3>
+<p>Offsets the model's pitch by P degrees.</p>
+<h3 id="md1spin"><code>mdlspin Y</code></h3>
+<p>Simple spin animation that yaws the model by Y degrees per second.</p>
+<h3 id="md1envmap"><code>mdlenvmap E F [P]</code></h3>
+<p>Sets the environment map used for the model, where P is a pathname in the same syntax as the
 "loadsky" command. If this is not specified, the model will use the closest "envmap" entity,
 or skybox, if none is available. If E is non-zero, then the blue channel of the masks is
 interpreted as a chrome map. E (maximum envmap intensity) and F (minimum envmap intensity, default: 0) are floating point
 values in the range of 0 to 1, and specify the range in which the envmapping intensity will vary based on a viewing angle
 (a Fresnel term that is maximal at glancing angles, minimal when viewed dead-on). The intensity,
-after scaled into this range, is then multiplied by the chrome map.
-</p>
+after scaled into this range, is then multiplied by the chrome map.</p>
+<h3 id="md1fullbright"><code>mdlfullbright N</code></h3>
+<p>Uses a constant lighting level of N instead of the normal lighting. N is a floating-point value on a scale of 0 to 1.</p>
+<h3 id="md1shadow"><code>mdlshadow B</code></h3>
+<p>Controls whether a mapmodel will cast shadows (Default: 1).</p>
 
-<pre id="mdlfullbright">mdlfullbright N</pre>
-<p>
-Uses a constant lighting level of N instead of the normal lighting. N is a floating-point value on a scale of 0 to 1.
-</p>
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      Last update:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 25, 2023</span>
+      
+    
+  </small>
+</div>
 
-<pre id="mdlshadow">mdlshadow B</pre>
-<p>
-Controls whether a mapmodel will cast shadows (Default: 1).
-</p>
 
-</body>
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.sections", "navigation.tracking", "toc.follow"], "search": "assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.b4d07000.min.js"></script>
+      
+    
+  </body>
 </html>

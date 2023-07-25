@@ -1,364 +1,1421 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html 
-     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="YellowberryHN">
+      
+      
+        <link rel="canonical" href="https://harpnetstudios.github.io/cardboard/game.html">
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="config.html">
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+    
+    
+      
+        <title>Carmine Impact Docs — Command Reference - Carmine Impact Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.26e3688c.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ecc896b0.min.css">
+      
+      
 
-<head>
-<title>Carmine Impact - Command Reference</title>
-<link rel="stylesheet" type="text/css" href="style.css" />
-<link rel="shortcut icon" href="favicon.ico" />
-</head>
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="css/extra.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-<body>
-<h1>Carmine Impact - Command Reference</h1>
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#gameplay-commands" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
 
-<div class="contents">
-<ul class="contents">
-<li>
-<a href="#gameplay_commands"><b>Gameplay Commands</b></a>
-<ul class="contents2">
-<li>
-<a href="#map"><tt>map</tt></a>
-</li>
-<li>
-<a href="#team"><tt>team</tt></a>
-</li>
-<li>
-<a href="#say"><tt>say</tt></a>
-</li>
-<li>
-<a href="#ignore"><tt>ignore</tt></a>
-</li>
-<li>
-<a href="#unignore"><tt>unignore</tt></a>
-</li>
-<li>
-<a href="#echo"><tt>echo</tt></a>
-</li>
-<li>
-<a href="#saycommand"><tt>saycommand</tt></a>
-</li>
-<li>
-<a href="#connect"><tt>connect</tt></a>
-</li>
-<li>
-<a href="#lanconnect"><tt>lanconnect</tt></a>
-</li>
-<li>
-<a href="#disconnect"><tt>disconnect</tt></a>
-</li>
-<li>
-<a href="#reconnect"><tt>reconnect</tt></a>
-</li>
-<li>
-<a href="#rate"><tt>rate</tt></a>
-</li>
-<li>
-<a href="#showscores"><tt>showscores</tt></a>
-</li>
-<li>
-<a href="#conskip"><tt>conskip</tt></a>
-</li>
-<li>
-<a href="#toggleconsole"><tt>toggleconsole</tt></a>
-</li>
-<li>
-<a href="#weapon"><tt>weapon</tt></a>
-</li>
-<li>
-<a href="#setweapon"><tt>setweapon</tt></a>
-</li>
-<li>
-<a href="#cycleweapon"><tt>cycleweapon</tt></a>
-</li>
-<li>
-<a href="#nextweapon"><tt>nextweapon</tt></a>
-</li>
-<li>
-<a href="#gamespeed"><tt>gamespeed</tt></a>
-</li>
-<li>
-<a href="#mode"><tt>mode</tt></a>
-</li>
-<li>
-<a href="#skill"><tt>skill</tt></a>
-</li>
-<li>
-<a href="#showgui"><tt>showgui</tt></a>
-</li>
-<li>
-<a href="#updatefrommaster"><tt>updatefrommaster</tt></a>
-</li>
-<li>
-<a href="#clearservers"><tt>clearservers</tt></a>
-</li>
-<li>
-<a href="#keepserver"><tt>keepserver</tt></a>
-</li>
-<li>
-<a href="#addserver"><tt>addserver</tt></a>
-</li>
-<li>
-<a href="#paused"><tt>paused</tt></a>
-</li>
-<li>
-<a href="#blood"><tt>blood</tt></a>
-</li>
-<li>
-<a href="#bloodcolor"><tt>bloodcolor</tt></a>
-</li>
-<li>
-<a href="#rifletrail"><tt>rifletrail</tt></a>
-</li>
-<li>
-<a href="#teamriflecolor"><tt>teamriflecolor</tt></a>
-</li>
-<li>
-<a href="#damageblendfactor"><tt>damageblendfactor</tt></a>
-</li>
-<li>
-<a href="#damageblend"><tt>damageblend</tt></a>
-</li>
-<li>
-<a href="#damagecompass"><tt>damagecompass</tt></a>
-</li>
-<li>
-<a href="#shownames"><tt>shownames</tt></a>
-</li>
-<li>
-<a href="#sendmap"><tt>sendmap</tt></a>
-</li>
-<li>
-<a href="#getmap"><tt>getmap</tt></a>
-</li>
-</ul>
-</li>
-<li>
-<a href="#items_and_gameplay"><b>Items and Gameplay</b></a>
-</li>
-<li>
-<a href="#multiplayer"><b>Multiplayer</b></a>
-</li>
-<li>
-<a href="#capture"><b>Capture</b></a>
-</li>
-<li>
-<a href="#singleplayer_modes"><b>Singleplayer Modes</b></a>
-<ul class="contents2">
-<li>
-<a href="#sp_respawning">SP Respawning</a>
-</li>
-</ul>
-</li>
-<li>
-<a href="#network_code"><b>Network Code</b></a>
-</li>
-<li>
-<a href="#multiplayer_online"><b>Multiplayer Online</b></a>
-<ul class="contents2">
-<li>
-<a href="#setmaster"><tt>setmaster</tt></a>
-</li>
-<li>
-<a href="#mastermode"><tt>mastermode</tt></a>
-</li>
-<li>
-<a href="#kick"><tt>kick</tt></a>
-</li>
-<li>
-<a href="#clearbans"><tt>clearbans</tt></a>
-</li>
-<li>
-<a href="#spectator"><tt>spectator</tt></a>
-</li>
-<li>
-<a href="#goto"><tt>goto</tt></a>
-</li>
-<li>
-<a href="#pausegame"><tt>pausegame</tt></a>
-</li>
-</ul>
-</li>
-<li>
-<a href="#demo_recording"><b>Demo Recording</b></a>
-<ul class="contents2">
-<li>
-<a href="#recorddemo"><tt>recorddemo</tt></a>
-</li>
-<li>
-<a href="#stopdemo"><tt>stopdemo</tt></a>
-</li>
-<li>
-<a href="#cleardemos"><tt>cleardemos</tt></a>
-</li>
-<li>
-<a href="#listdemos"><tt>listdemos</tt></a>
-</li>
-<li>
-<a href="#getdemo"><tt>getdemo</tt></a>
-</li>
-<li>
-<a href="#demo"><tt>demo</tt></a>
-</li>
-</ul>
-</li>
+  
 
-<li>
-<a href="#bots"><b>Bots</b></a>
-<ul class="contents2">
-<li>
-<a href="#addbot"><tt>addbot</tt></a>
-</li>
-<li>
-<a href="#delbot"><tt>delbot</tt></a>
-</li>
-<li>
-<a href="#botlimit"><tt>botlimit</tt></a>
-</li>
-<li>
-<a href="#botbalance"><tt>botbalance</tt></a>
-</li>
-</ul>
-</li>
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="Carmine Impact Docs" class="md-header__button md-logo" aria-label="Carmine Impact Docs" data-md-component="logo">
+      
+  <img src="assets/logo.svg" alt="logo">
 
-</ul>
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Carmine Impact Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Carmine Impact Docs — Command Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/HarpNetStudios/cardboard" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
 
-<h2 id="gameplay_commands">Gameplay Commands</h2>
 
-<p>
-The following commands can be applied in the game by pressing T, and then typing
-<i>/commandname</i>.  The backquote key (`) is a shortcut for having the / typed for you.
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="Carmine Impact Docs" class="md-nav__button md-logo" aria-label="Carmine Impact Docs" data-md-component="logo">
+      
+  <img src="assets/logo.svg" alt="logo">
+
+    </a>
+    Carmine Impact Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/HarpNetStudios/cardboard" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          Info
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Info
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Command Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="game.html" class="md-nav__link md-nav__link--active">
+        Command Reference
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#gameplay-commands" class="md-nav__link">
+    Gameplay Commands
+  </a>
+  
+    <nav class="md-nav" aria-label="Gameplay Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#map" class="md-nav__link">
+    map M
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#team" class="md-nav__link">
+    team teamname
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#say" class="md-nav__link">
+    say text...
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ignore" class="md-nav__link">
+    ignore N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unignore" class="md-nav__link">
+    unignore N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#echo" class="md-nav__link">
+    echo text...
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saycommand" class="md-nav__link">
+    saycommand P...
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command" class="md-nav__link">
+    connect serverip [port [password]]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lanconnect" class="md-nav__link">
+    lanconnect
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disconnect" class="md-nav__link">
+    disconnect
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reconnect" class="md-nav__link">
+    reconnect [password]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate" class="md-nav__link">
+    rate N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#showscores" class="md-nav__link">
+    showscores
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conskip" class="md-nav__link">
+    conskip N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toggleconsole" class="md-nav__link">
+    toggleconsole
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weapon" class="md-nav__link">
+    weapon a b c
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setweapon" class="md-nav__link">
+    setweapon N [F]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cycleweapon" class="md-nav__link">
+    cycleweapon A B C D E
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nextweapon" class="md-nav__link">
+    nextweapon [N] [F]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gamespeed" class="md-nav__link">
+    gamespeed P
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode" class="md-nav__link">
+    mode N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skill" class="md-nav__link">
+    skill N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#showgui" class="md-nav__link">
+    showgui servers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatefrommaster" class="md-nav__link">
+    updatefrommaster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clearservers" class="md-nav__link">
+    clearservers [N]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keepserver" class="md-nav__link">
+    keepserver NAME PORT [PASSWORD]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addserver" class="md-nav__link">
+    addserver NAME PORT [PASSWORD]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paused" class="md-nav__link">
+    paused B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blood" class="md-nav__link">
+    blood B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bloodcolor" class="md-nav__link">
+    bloodcolor R [G B]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rifletrail" class="md-nav__link">
+    rifletrail R [G B]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#teamcolorrifle" class="md-nav__link">
+    teamcolorrifle B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#damageblendfactor" class="md-nav__link">
+    damageblendfactor F
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#damageblend" class="md-nav__link">
+    damageblend B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#damagecompass" class="md-nav__link">
+    damagecompass B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shownames" class="md-nav__link">
+    shownames B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sendmap" class="md-nav__link">
+    sendmap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getmap" class="md-nav__link">
+    getmap
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#movement-controls-physics" class="md-nav__link">
+    Movement, controls &amp; physics
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#items-and-gameplay" class="md-nav__link">
+    Items and Gameplay
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiplayer" class="md-nav__link">
+    Multiplayer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capture" class="md-nav__link">
+    Capture
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-code" class="md-nav__link">
+    Network Code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiplayer-online" class="md-nav__link">
+    Multiplayer Online
+  </a>
+  
+    <nav class="md-nav" aria-label="Multiplayer Online">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setmaster" class="md-nav__link">
+    setmaster B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mastermode" class="md-nav__link">
+    mastermode N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kick" class="md-nav__link">
+    kick N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clearbans" class="md-nav__link">
+    clearbans
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spectator" class="md-nav__link">
+    spectator B [N]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goto" class="md-nav__link">
+    goto N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pausegame" class="md-nav__link">
+    pausegame N
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demo-recording" class="md-nav__link">
+    Demo Recording
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo Recording">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recorddemo" class="md-nav__link">
+    recorddemo B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stopdemo" class="md-nav__link">
+    stopdemo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleardemos" class="md-nav__link">
+    cleardemos
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#listdemos" class="md-nav__link">
+    listdemos
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getdemo" class="md-nav__link">
+    getdemo [N]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo" class="md-nav__link">
+    demo F
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bots" class="md-nav__link">
+    Bots
+  </a>
+  
+    <nav class="md-nav" aria-label="Bots">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#addbot" class="md-nav__link">
+    addbot [SKILL]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delbot" class="md-nav__link">
+    delbot
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#botlimit" class="md-nav__link">
+    botlimit N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#botbalance" class="md-nav__link">
+    botbalance B
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="config.html" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="editing.html" class="md-nav__link">
+        Editing Tutorial
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="editref.html" class="md-nav__link">
+        Editing Reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="models.html" class="md-nav__link">
+        Model Reference
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#gameplay-commands" class="md-nav__link">
+    Gameplay Commands
+  </a>
+  
+    <nav class="md-nav" aria-label="Gameplay Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#map" class="md-nav__link">
+    map M
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#team" class="md-nav__link">
+    team teamname
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#say" class="md-nav__link">
+    say text...
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ignore" class="md-nav__link">
+    ignore N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unignore" class="md-nav__link">
+    unignore N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#echo" class="md-nav__link">
+    echo text...
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saycommand" class="md-nav__link">
+    saycommand P...
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command" class="md-nav__link">
+    connect serverip [port [password]]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lanconnect" class="md-nav__link">
+    lanconnect
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disconnect" class="md-nav__link">
+    disconnect
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reconnect" class="md-nav__link">
+    reconnect [password]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate" class="md-nav__link">
+    rate N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#showscores" class="md-nav__link">
+    showscores
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conskip" class="md-nav__link">
+    conskip N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toggleconsole" class="md-nav__link">
+    toggleconsole
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weapon" class="md-nav__link">
+    weapon a b c
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setweapon" class="md-nav__link">
+    setweapon N [F]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cycleweapon" class="md-nav__link">
+    cycleweapon A B C D E
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nextweapon" class="md-nav__link">
+    nextweapon [N] [F]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gamespeed" class="md-nav__link">
+    gamespeed P
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode" class="md-nav__link">
+    mode N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skill" class="md-nav__link">
+    skill N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#showgui" class="md-nav__link">
+    showgui servers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatefrommaster" class="md-nav__link">
+    updatefrommaster
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clearservers" class="md-nav__link">
+    clearservers [N]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keepserver" class="md-nav__link">
+    keepserver NAME PORT [PASSWORD]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addserver" class="md-nav__link">
+    addserver NAME PORT [PASSWORD]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paused" class="md-nav__link">
+    paused B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blood" class="md-nav__link">
+    blood B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bloodcolor" class="md-nav__link">
+    bloodcolor R [G B]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rifletrail" class="md-nav__link">
+    rifletrail R [G B]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#teamcolorrifle" class="md-nav__link">
+    teamcolorrifle B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#damageblendfactor" class="md-nav__link">
+    damageblendfactor F
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#damageblend" class="md-nav__link">
+    damageblend B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#damagecompass" class="md-nav__link">
+    damagecompass B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shownames" class="md-nav__link">
+    shownames B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sendmap" class="md-nav__link">
+    sendmap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getmap" class="md-nav__link">
+    getmap
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#movement-controls-physics" class="md-nav__link">
+    Movement, controls &amp; physics
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#items-and-gameplay" class="md-nav__link">
+    Items and Gameplay
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiplayer" class="md-nav__link">
+    Multiplayer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capture" class="md-nav__link">
+    Capture
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-code" class="md-nav__link">
+    Network Code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiplayer-online" class="md-nav__link">
+    Multiplayer Online
+  </a>
+  
+    <nav class="md-nav" aria-label="Multiplayer Online">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setmaster" class="md-nav__link">
+    setmaster B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mastermode" class="md-nav__link">
+    mastermode N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kick" class="md-nav__link">
+    kick N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clearbans" class="md-nav__link">
+    clearbans
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spectator" class="md-nav__link">
+    spectator B [N]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goto" class="md-nav__link">
+    goto N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pausegame" class="md-nav__link">
+    pausegame N
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demo-recording" class="md-nav__link">
+    Demo Recording
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo Recording">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recorddemo" class="md-nav__link">
+    recorddemo B
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stopdemo" class="md-nav__link">
+    stopdemo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleardemos" class="md-nav__link">
+    cleardemos
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#listdemos" class="md-nav__link">
+    listdemos
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getdemo" class="md-nav__link">
+    getdemo [N]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo" class="md-nav__link">
+    demo F
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bots" class="md-nav__link">
+    Bots
+  </a>
+  
+    <nav class="md-nav" aria-label="Bots">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#addbot" class="md-nav__link">
+    addbot [SKILL]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delbot" class="md-nav__link">
+    delbot
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#botlimit" class="md-nav__link">
+    botlimit N
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#botbalance" class="md-nav__link">
+    botbalance B
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Command Reference</h1>
+
+<h2 id="gameplay-commands">Gameplay Commands</h2>
+<p>The following commands can be applied in the game by pressing <kbd>T</kbd>, and then typing
+<code>/commandname</code>.  The backquote key <kbd>`</kbd> is a shortcut for having the / typed for you.
 To have these commands applied automatically before the game starts open the autoexec.cfg
-file and add them there, without the /.  <i>Name</i> and <i>team</i> in particular should be
-changed there.
-</p>
-
-<pre id="map">map M</pre>
-<p>
-Loads a map. If connected to a multiplayer server, votes to load this map (others will have to type "map M" as well to agree with loading this map). To vote for a map with a specific mode, set the mode before you issue the map command (see multiplayer menu). See also map in the <a href="editref.html">editref</a>.
-</p>
-
-<pre id="team">team teamname</pre>
-<p>
-Determines who are your teammates in any team game mode (choose between "red" or "blue").
-</p>
-
-<pre id="say">say text...</pre>
-<p>
-Outputs text to all players, as if you typed it.
-</p>
-
-<pre id="ignore">ignore N</pre>
-<p>
-Ignores all chat messages from player N, where N is either the player's name or client number.
-</p>
-
-<pre id="unignore">unignore N</pre>
-<p>
-Stops ignoring chat messages from player N, where N is either the player's name or client number.
-</p>
-
-<pre id="echo">echo text...</pre>
-<p>
-Outputs text to the console.  Most useful for scripts.
-</p>
-
-<pre id="saycommand">saycommand P...</pre>
-<p>
-This puts a prompt on screen where you can type stuff into, which will capture  all keystrokes until you press return (or esc to cancel). You may press tab to autocomplete commands/aliases/variables, and up/down keys to browse the command history. If what you typed started with a "/", the rest of it will be executed as a command, otherwise its something you "say" to all players. default key = T for talk, ` for commands. If P is prefix to insert to the buffer, (default key ` inserts a /).
-</p>
-
-<pre id="connect">connect serverip [port [password]]</pre>
-<p>
-Connects to a server, e.g. "connect hnss.gq". You can optionally specify a port for connecting to servers with custom ports. If port is 0 or not specified, then it connects to the default port. You can optionally specify a password for connecting to password-protected servers.
-</p>
-
-<pre id="lanconnect">lanconnect</pre>
-<p>
-Connects to any server on the local area network by broadcasting the connection request.
-</p>
-
-<pre id="disconnect">disconnect</pre>
-<p>
-Leave the server.
-</p>
-
-<pre id="reconnect">reconnect [password]</pre>
-<p>
-Reconnects to the server which you were last connected to. You can optionally specify a password if the server was password-protected.
-</p>
-
-<pre id="rate">rate N</pre>
-<p>
-Sets your clients maximum downstream bandwidth to N kilobytes per second. Leaving it at 0 (the default) means the server will dynamically try to do the best thing, this is recommended for players who don't have a clue what their bandwidth is (setting your rate unoptimally is worse than not setting it all). Modem players (56k) could try rate 4 and tweak from there, dsl players can try rate 6-10. Note that the more players on a server, the more critical the effect of your rate.
-</p>
-
-<pre id="showscores">showscores</pre>
-<p>
-+showscores turns display of scores (name/frags/network) on and -showscores turns it off. Default key = tab
-</p>
-
-<pre id="conskip">conskip N</pre>
-<p>
-Allows you to browse through the console history, by offsetting the console  output by N. Default key keypad - scrolls into the history (conskip 1) and keypad + resets the history (conskip -1000).
-</p>
-
-<pre id="toggleconsole">toggleconsole</pre>
-<p>
-Toggle between a more permanent and bigger console display and default, scroll off the screen variety. Unlike other games, you can
-play the game normally with the larger console on.
-</p>
-
-<pre id="weapon">weapon a b c</pre>
-<p>
-Tries to select weapons a, b &amp; c, in that order, if they have ammo (0 = fist, 1 = smg, 2 = sg, 3 = cg, 4 = rl, 5 = rifle, 6 = gl). If none of the 3 indicated have any ammo, it will try the remaining weapons for one with ammo (in order 3/2/1/4/0) (the fist needs no ammo). You can use the weapon command with 0 to 3 arguments. 
-examples:
-</p>
-<pre>weapon 3 2 0 // close up selection
+file and add them there, without the /.  Name and team in particular should be
+changed there.</p>
+<h3 id="map"><code>map M</code></h3>
+<p>Loads a map. If connected to a multiplayer server, votes to load this map (others will have to type "map M" as well to agree with loading this map). To vote for a map with a specific mode, set the mode before you issue the map command (see multiplayer menu). See also map in the editref.</p>
+<h3 id="team"><code>team teamname</code></h3>
+<p>Determines who are your teammates in any team game mode (choose between "red" or "blue").</p>
+<h3 id="say"><code>say text...</code></h3>
+<p>Outputs text to all players, as if you typed it.</p>
+<h3 id="ignore"><code>ignore N</code></h3>
+<p>Ignores all chat messages from player N, where N is either the player's name or client number.</p>
+<h3 id="unignore"><code>unignore N</code></h3>
+<p>Stops ignoring chat messages from player N, where N is either the player's name or client number.</p>
+<h3 id="echo"><code>echo text...</code></h3>
+<p>Outputs text to the console.  Most useful for scripts.</p>
+<h3 id="saycommand"><code>saycommand P...</code></h3>
+<p>This puts a prompt on screen where you can type stuff into, which will capture  all keystrokes until you press return (or esc to cancel). You may press tab to autocomplete commands/aliases/variables, and up/down keys to browse the command history. If what you typed started with a "/", the rest of it will be executed as a command, otherwise its something you "say" to all players. default key = T for talk, <code>for commands. If P is prefix to insert to the buffer, (default key</code> inserts a /).</p>
+<h3 id="command"><code>connect serverip [port [password]]</code></h3>
+<p>Connects to a server, e.g. "connect hnss.gq". You can optionally specify a port for connecting to servers with custom ports. If port is 0 or not specified, then it connects to the default port. You can optionally specify a password for connecting to password-protected servers.</p>
+<h3 id="lanconnect"><code>lanconnect</code></h3>
+<p>Connects to any server on the local area network by broadcasting the connection request.</p>
+<h3 id="disconnect"><code>disconnect</code></h3>
+<p>Leave the server.</p>
+<h3 id="reconnect"><code>reconnect [password]</code></h3>
+<p>Reconnects to the server which you were last connected to. You can optionally specify a password if the server was password-protected.</p>
+<h3 id="rate"><code>rate N</code></h3>
+<p>Sets your clients maximum downstream bandwidth to N kilobytes per second. Leaving it at 0 (the default) means the server will dynamically try to do the best thing, this is recommended for players who don't have a clue what their bandwidth is (setting your rate unoptimally is worse than not setting it all). Modem players (56k) could try rate 4 and tweak from there, dsl players can try rate 6-10. Note that the more players on a server, the more critical the effect of your rate.</p>
+<h3 id="showscores"><code>showscores</code></h3>
+<p>+showscores turns display of scores (name/frags/network) on and -showscores turns it off. Default key = tab</p>
+<h3 id="conskip"><code>conskip N</code></h3>
+<p>Allows you to browse through the console history, by offsetting the console  output by N. Default key keypad - scrolls into the history (conskip 1) and keypad + resets the history (conskip -1000).</p>
+<h3 id="toggleconsole"><code>toggleconsole</code></h3>
+<p>Toggle between a more permanent and bigger console display and default, scroll off the screen variety. Unlike other games, you can
+play the game normally with the larger console on.</p>
+<h3 id="weapon"><code>weapon a b c</code></h3>
+<p>Tries to select weapons a, b &amp; c, in that order, if they have ammo (0 = fist, 1 = smg, 2 = sg, 3 = cg, 4 = rl, 5 = rifle, 6 = gl). If none of the 3 indicated have any ammo, it will try the remaining weapons for one with ammo (in order 3/2/1/4/0) (the fist needs no ammo). You can use the weapon command with 0 to 3 arguments. 
+examples:</p>
+<pre><code>weapon 3 2 0 // close up selection
 weapon 5 4 3 // far away selection
 weapon 4 3 2 // medium distance selection
 weapon 0 // humiliate selection :)
 weapon // just switch to anything with ammo
-</pre>
-<p>
-In any selection, it will skip whichever weapon you have currently selected, so executing a weapon command repeatedly toggles between the two best weapons with ammo within a given selection. default keys 0 to 4 select the corresponding weapons, with sensible default alternatives, middle mouse button is a simple weapon switch.
-</p>
-
-<pre id="setweapon">setweapon N [F]</pre>
-<p>
-Sets with weapon to gun N, only if the gun has ammo. If F=1, then the gun is set to N, regardless of whether the gun has any ammo.
-</p>
-
-<pre id="cycleweapon">cycleweapon A B C D E</pre>
-<p>
-Cycles through the guns specified (may specify 1-5 guns). The next gun with ammo after the currently used gun in the sequence is selected.
-</p>
-
-<pre id="nextweapon">nextweapon [N] [F]</pre>
-<p>
-Cycles through all available guns with ammo (or even empty guns if F=1 is specified). If N is -1, then it cycles through the available guns in reverse.
-</p>
-
-<pre id="gamespeed">gamespeed P</pre>
-<p>
-Sets the gamespeed in percent, i.e. 50 is playing in slowmotion at half the speed. does not work in multiplayer. for entertainment purposes only :)
-</p>
-
-<pre id="mode">mode N</pre>
-<p>
-Set gameplay mode to N for the next game played (next map load). N can be:
-</p>
-
+</code></pre>
+<p>In any selection, it will skip whichever weapon you have currently selected, so executing a weapon command repeatedly toggles between the two best weapons with ammo within a given selection. default keys 0 to 4 select the corresponding weapons, with sensible default alternatives, middle mouse button is a simple weapon switch.</p>
+<h3 id="setweapon"><code>setweapon N [F]</code></h3>
+<p>Sets with weapon to gun N, only if the gun has ammo. If F=1, then the gun is set to N, regardless of whether the gun has any ammo.</p>
+<h3 id="cycleweapon"><code>cycleweapon A B C D E</code></h3>
+<p>Cycles through the guns specified (may specify 1-5 guns). The next gun with ammo after the currently used gun in the sequence is selected.</p>
+<h3 id="nextweapon"><code>nextweapon [N] [F]</code></h3>
+<p>Cycles through all available guns with ammo (or even empty guns if F=1 is specified). If N is -1, then it cycles through the available guns in reverse.</p>
+<h3 id="gamespeed"><code>gamespeed P</code></h3>
+<p>Sets the gamespeed in percent, i.e. 50 is playing in slowmotion at half the speed. does not work in multiplayer. for entertainment purposes only :)</p>
+<h3 id="mode"><code>mode N</code></h3>
+<p>Set gameplay mode to N for the next game played (next map load). N can be:</p>
 <ul>
 <li>0: "ffa" / "default" mode. This is the default normal ffa game, and can also be used as "prewar" while setting up teams / voting for the next game.</li>
 <li>1: coop edit mode. This simply enables map editing in multiplayer, otherwise identical to mode 0.</li>
 <li>2: a standard teamplay game. will work with any number of teams with any number of players: you are allied with all players whose "team" setting is the same as yours.</li>
 <li>3/4: instagib [team] mode. No items will spawn, but everyone will have 100 rifle rounds and 1 health.</li>
 <li>5/6: tactics [team] mode. No items will spawn, but everyone will spawn with only base ammo for 2 random weapons.</li>
-<li>7: capture mode, see capture mode section below.</li> 
+<li>7: capture mode, see capture mode section below.</li>
 <li>8: regen capture mode, like capture mode but with no respawn timer, and you regenerate health and ammo by standing on bases you own.</li>
 <li>9: ctf mode. Capture the flag where you must retrieve the enemy flag and return it to your own flag for points.</li>
 <li>10: insta ctf mode. Capture the flag as above, but with weapons, health, and items as in instagib mode.</li>
@@ -366,7 +1423,7 @@ Set gameplay mode to N for the next game played (next map load). N can be:
 <li>12: insta protect mode. Like protect mode above, but with weapons, health, and items as in instagib mode.</li>
 <li>13: hold mode. Hold the flag for a time to score points.</li>
 <li>14: insta hold mode. Like hold mode above, but with weapons, health, and items as in instagib mode.</li>
-<li>15: collect mode. Frag the enemy team to drop skulls. Collect them and bring them to the enemy base for points.<li>
+<li>15: collect mode. Frag the enemy team to drop skulls. Collect them and bring them to the enemy base for points.</li>
 <li>16: insta collect mode. Like collect mode above, but with weapons, health, and items as in instagib mode.</li>
 <li>17: parkour mode. Just jump around. Players take no damage from all sources except the world.</li>
 <li>18/19: [team] insta tactics mode. No items will spawn, but everyone will spawn with only base ammo for 2 random weapons, and everyone has 1 health.</li>
@@ -377,440 +1434,209 @@ Set gameplay mode to N for the next game played (next map load). N can be:
 <li>-1: demo playback mode, see demo recording section below.</li>
 <li>-2, -3: single player, see single player mode section below.</li>
 </ul>
-
-<p style="border-top:2px solid #555;">
-Frag counting is the same for all modes: 1 for a frag, -1 for a suicide. Timelimit for all game modes is 10 minutes, except for coop-edit mode and parkour mode where there is no limit.
-</p>
-
-<pre id="skill">skill N</pre>
-<p>
-Sets the skill level (1-10) for single player modes. Default = 3. Affects number of monsters in DMSP mode, and general monster AI in all SP modes.
-</p>
-
-<pre id="showgui">showgui servers</pre>
-<p>
-Displays the server menu. The server menu contains the last N servers you connected to, sorted by ping (servers are pinged automatically when bringing up this menu). Just select one to connect again. If you connect to a server by typing "connect" manually, the server gets added here automatically. You can also add servers to "servers.cfg" manually.
-</p>
-
-<pre id="updatefrommaster">updatefrommaster</pre>
-<p>
-Contacts the masterserver and adds any new servers to the server list (written to servers.cfg on exit). (see also multiplayer menu).
-</p>
-
-<pre id="clearservers">clearservers [N]</pre>
-<p>
-Clears all servers from the server browser's list. If N is 0 or not specified, only servers added by the masterserver are cleared. If N is 1, all servers are cleared, including kept servers.
-</p>
-
-<pre id="keepserver">keepserver NAME PORT [PASSWORD]</pre>
-<p>
-Adds a server to the server browser's list with ip address NAME and port PORT. If PASSWORD is specified, this password is used when clicking on the server in the server browser.
-This command causes the server to remain in the server browser's list even if the server list is updated from the master server or servers are cleared.
-</p>
-
-<pre id="addserver">addserver NAME PORT [PASSWORD]</pre>
-<p>
-Adds a server to the server browser's list with ip address NAME and port PORT. If PASSWORD is specified, this password is used when clicking on the server in the server browser.
-Note that servers added to the list with this command will be removed when the list is updated from the masterserver!
-</p>
-
-<pre id="paused">paused B</pre>
-<p>
-Whether the game is paused or not (default 0, default key F1 toggles).
-</p>
-
-<pre id="blood">blood B</pre>
-<p>
-Toggles whether blood is enabled (default 1).
-</p>
-
-<pre id="bloodcolor">bloodcolor R [G B]</pre>
-<p>
-Changes the color of blood locally.
-</p>
-
-<pre id="rifletrail">rifletrail R [G B]</pre>
-<p>
-Changes the color of blood locally.
-</p>
-
-<pre id="teamcolorrifle">teamcolorrifle B</pre>
-<p>
-Changes rifle trails to team colors in team modes (default: 1)
-</p>
-
-<pre id="damageblendfactor">damageblendfactor F</pre>
-<p>
-The higher F, the longer the screen will stay red when you are damaged.
-</p>
-
-<pre id="damageblend">damageblend B</pre>
-<p>
-Toggles whether the screen is blended red when damaged (default 1).
-</p>
-
-<pre id="damagecompass">damagecompass B</pre>
-<p>
-Toggles whether compass arrows are shown, indicating the amount and direction of damage taken (default 1).
-</p>
-
-<pre id="shownames">shownames B</pre>
-<p>
-Toggles whether player names are displayed above their head (default 1).
-</p>
-
-<pre id="sendmap">sendmap</pre>
-<pre id="getmap">getmap</pre>
-<p>
-These two commands allow you to send other players maps they may not have while in multiplayer mode, and easily keep maps in sync while doing coop edit. "sendmap" reloads the current map you are on, then uploads it to the server and sends every other player a message about it. Other players can then simply type "getmap" to receive the current map, which is written to their local disk then reloaded. A second variant "sendmap name" is available which is particularly useful for coop editing, which first does a "savemap name" before performing the actual "sendmap". Thus in both cases you must already be on the map you 
-want to send before issuing the command! (in some multiplayer that requires voting). Also note that "getmap" operates on the last map send by some other player, whatever it is.
-</p>
-</li>
-
-<h2 id="H2_1">Movement, controls &amp; physics</h2>
-
-<p>
-Jumping gains a 30% speedboost while in the air.
+<p>Frag counting is the same for all modes: 1 for a frag, -1 for a suicide. Timelimit for all game modes is 10 minutes, except for coop-edit mode and parkour mode where there is no limit.</p>
+<h3 id="skill"><code>skill N</code></h3>
+<p>Sets the skill level (1-10) for single player modes. Default = 3. Affects number of monsters in DMSP mode, and general monster AI in all SP modes.</p>
+<h3 id="showgui"><code>showgui servers</code></h3>
+<p>Displays the server menu. The server menu contains the last N servers you connected to, sorted by ping (servers are pinged automatically when bringing up this menu). Just select one to connect again. If you connect to a server by typing "connect" manually, the server gets added here automatically. You can also add servers to "servers.cfg" manually.</p>
+<h3 id="updatefrommaster"><code>updatefrommaster</code></h3>
+<p>Contacts the masterserver and adds any new servers to the server list (written to servers.cfg on exit). (see also multiplayer menu).</p>
+<h3 id="clearservers"><code>clearservers [N]</code></h3>
+<p>Clears all servers from the server browser's list. If N is 0 or not specified, only servers added by the masterserver are cleared. If N is 1, all servers are cleared, including kept servers.</p>
+<h3 id="keepserver"><code>keepserver NAME PORT [PASSWORD]</code></h3>
+<p>Adds a server to the server browser's list with ip address NAME and port PORT. If PASSWORD is specified, this password is used when clicking on the server in the server browser.
+This command causes the server to remain in the server browser's list even if the server list is updated from the master server or servers are cleared.</p>
+<h3 id="addserver"><code>addserver NAME PORT [PASSWORD]</code></h3>
+<p>Adds a server to the server browser's list with ip address NAME and port PORT. If PASSWORD is specified, this password is used when clicking on the server in the server browser.
+Note that servers added to the list with this command will be removed when the list is updated from the masterserver!</p>
+<h3 id="paused"><code>paused B</code></h3>
+<p>Whether the game is paused or not (default 0, default key F1 toggles).</p>
+<h3 id="blood"><code>blood B</code></h3>
+<p>Toggles whether blood is enabled (default 1).</p>
+<h3 id="bloodcolor"><code>bloodcolor R [G B]</code></h3>
+<p>Changes the color of blood locally.</p>
+<h3 id="rifletrail"><code>rifletrail R [G B]</code></h3>
+<p>Changes the color of blood locally.</p>
+<h3 id="teamcolorrifle"><code>teamcolorrifle B</code></h3>
+<p>Changes rifle trails to team colors in team modes (default: 1)</p>
+<h3 id="damageblendfactor"><code>damageblendfactor F</code></h3>
+<p>The higher F, the longer the screen will stay red when you are damaged.</p>
+<h3 id="damageblend"><code>damageblend B</code></h3>
+<p>Toggles whether the screen is blended red when damaged (default 1).</p>
+<h3 id="damagecompass"><code>damagecompass B</code></h3>
+<p>Toggles whether compass arrows are shown, indicating the amount and direction of damage taken (default 1).</p>
+<h3 id="shownames"><code>shownames B</code></h3>
+<p>Toggles whether player names are displayed above their head (default 1).</p>
+<h3 id="sendmap"><code>sendmap</code></h3>
+<h3 id="getmap"><code>getmap</code></h3>
+<p>These two commands allow you to send other players maps they may not have while in multiplayer mode, and easily keep maps in sync while doing coop edit. "sendmap" reloads the current map you are on, then uploads it to the server and sends every other player a message about it. Other players can then simply type "getmap" to receive the current map, which is written to their local disk then reloaded. A second variant "sendmap name" is available which is particularly useful for coop editing, which first does a "savemap name" before performing the actual "sendmap". Thus in both cases you must already be on the map you 
+want to send before issuing the command! (in some multiplayer that requires voting). Also note that "getmap" operates on the last map send by some other player, whatever it is.</p>
+<h2 id="movement-controls-physics">Movement, controls &amp; physics</h2>
+<p>Jumping gains a 30% speedboost while in the air.
 Moving forwards or backwards without strafing also gains a 30% speedboost. Forward and jumping
 speedboosts are cumulative.</p>
-<p>
-This has been designed such to give you multiple options to control your speed while navigating
+<p>This has been designed such to give you multiple options to control your speed while navigating
 a level, you can use strafe for example to slowdown forward motion as you approach a corner to
 make navigating the corner easier. What this achieves is giving you both speed and precision at
-the same time, because pure speed (all action being equally fast) just makes you bump into walls.
-</p>
-
-<h2 id="items_and_gameplay">Items and Gameplay</h2>
-
-<p>
-Official game storyline: "You kill stuff. The End."  <b>All of the following is assumed to be highly in flux.  Once things settled down the document will reflect the changes.</b>
-<br><br>
-There are initially 7 weapons:
-</p>
-
-<table>
-<tr>
-<td>num</td>
-<td>name</td>
-<td>damage</td>
-<td>reload</td>
-<td>dam/sec</td>
-<td>technically similar to</td>
-</tr>
-<tr>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td>0</td>
-<td>fist</td>
-<td>50</td>
-<td>0.25s</td>
-<td>200</td>
-<td>quake3 gauntlet</td>
-</tr>
-<tr>
-<td>1</td>
-<td>smg</td>
-<td>35</td>
-<td>0.5s</td>
-<td>70</td>
-<td>quake SG, but more precise</td>
-</tr>
-<tr>
-<td>2</td>
-<td>shotgun</td>
-<td>
-20x10</td>
-<td>1.4s</td>
-<td>143</td>
-<td>doom2 SSG (wide angle, but less than in doom2)</td>
-</tr>
-<tr>
-<td>3</td>
-<td>chaingun</td>
-<td>30</td>
-<td>0.1s</td>
-<td>300</td>
-<td>quake LG (mild spread at distance)</td>
-</tr>
-<tr>
-<td>4</td>
-<td>rocket launcher</td>
-<td>120</td>
-<td>0.8s</td>
-<td>150</td>
-<td>quake RL (splash damage)</td>
-</tr>
-<tr>
-<td>5</td>
-<td>sniper rifle</td>
-<td>100</td>
-<td>1.5s</td>
-<td>66</td>
-<td>quake2 RG</td>
-</tr>
-<tr>
-<td>6</td>
-<td>grenade launcher</td>
-<td>90</td>
-<td>0.6s</td>
-<td>150</td>
-<td>any quake GL, except faster but less damaging</td>
-</tr>
-</table>
-
-<p style="border-top:2px solid #555;">
-The player has available all weapons when he spawns, but no ammo for them (except 40 pistol ammo), 100 health, and no armour.
-</p>
-
+the same time, because pure speed (all action being equally fast) just makes you bump into walls.</p>
+<h2 id="items-and-gameplay">Items and Gameplay</h2>
+<p>Official game storyline: "You kill stuff. The End."  All of the following is assumed to be highly in flux.  Once things settled down the document will reflect the changes.</p>
+<p>There are initially 7 weapons:</p>
+<p>The player has available all weapons when he spawns, but no ammo for them (except 40 pistol ammo), 100 health, and no armour.</p>
 <h2 id="multiplayer">Multiplayer</h2>
-<p>
-Quick start to multiplayer gaming:
-</p>
-
-<ul>
-<li>Open up autoexec.cfg with an editor and make sure you have your name set to something unique.</li>
-<li>Start the game</li>
-<li>go to the multiplayer menu and select "update from master server", this will get you the lastest server list (you only need to do this once every day of multiplayer gaming or so).</li>
-<li>select the server browser in the multiplayer menu. see how all servers get pinged automatically and information on player/map/game mode are displayed.</li>
-<li>select a server with a good ping (near the top of the list, below 200 is very playable, above may give noticable delays on gameplay events but is still playable).</li>
-<li>run, shoot and enjoy!</li>
-<li>you may want to get familiar with the various game modes the game has, and how to vote for other maps and modes (again, easily done using the multiplayer menu) Be cooperative with the other players on the server, and vote. Remember, press T to talk to others.</li>
-</ul>
-
-<p style="border-top:2px solid #555;">
-Setting up a LAN game:
-</p>
-
-<ul>
-<li>One of the computers on the LAN has to run server.bat. It really doesn't matter which.</li>
-<li>The simplest way for all players to connect is for them to type "lanconnect" (if there is only one server on the LAN) or "connect servername" (if there are multiple servers) in the console (press ` to get in the console), where servername is the network name or ip address of the machine running server.bat. if all went well you should now be in the game together, as above.</li>
-<li>If your LAN is connected to the internet, by default your server will register with the masterserver, and players could thus follow the procedure above to join the game: your server will show up in the list, and may thus be joined by people over the internet! If you want to avoid your server to contact the master server, you can start it with -mblah or something.</li>
-</ul>
-
+<p>Quick start to multiplayer gaming:</p>
+<p>Setting up a LAN game:</p>
 <h2 id="capture">Capture</h2>
-
-<p>
-This is the most complicated multiplayer mode so some explanation is required. This mode is centered around the idea of capturing and holding bases, and has similarities to
-the game "battlefield 1942" and the "onslaught" mode of unreal 2004: "bases" are placed thruout the map
-<br><br>
-A base (flag) can be in 2 states: captured or neutral. When captured, it is
+<p>This is the most complicated multiplayer mode so some explanation is required. This mode is centered around the idea of capturing and holding bases, and has similarities to
+the game "battlefield 1942" and the "onslaught" mode of unreal 2004: "bases" are placed thruout the map</p>
+<p>A base (flag) can be in 2 states: captured or neutral. When captured, it is
 captured by a certain team. This is shown
 by the texture its rendered with (red means enemy captured, blue means
-your team, grey means neutral). When a base is captured, it will produce ammo periodically (every 20 seconds). Your team may take ammo (shown as ammo boxes orbiting the base) by either touching the base, or explicitly with the R key ("repammo" command).
-<br><br>
-A neutral base can be converted to your team by standing next to
+your team, grey means neutral). When a base is captured, it will produce ammo periodically (every 20 seconds). Your team may take ammo (shown as ammo boxes orbiting the base) by either touching the base, or explicitly with the R key ("repammo" command).</p>
+<p>A neutral base can be converted to your team by standing next to
 it for N seconds (N = 7 or so) within a certain radius. Multiple players speed up
 the process proportionally. The time accumulated to N is counted by the server as soon
 as the first player enters the radius,
-and reset to 0 immediately once all players of the initial team leave the radius.
-<br><br>
-A base of the enemy color can be converted to neutral in exactly the same way.
-(so often it is a 2 step process to take over a base). However, it takes twice as long to convert an enemy base to neutral, as it does to convert a neutral base to your team.
-<br><br>
-Current team name and capture status is shown above the base using a text particle.
-<br><br>
-At the spawn of a map, all bases are neutral, and all players spawn at normal player spawns,
+and reset to 0 immediately once all players of the initial team leave the radius.</p>
+<p>A base of the enemy color can be converted to neutral in exactly the same way.
+(so often it is a 2 step process to take over a base). However, it takes twice as long to convert an enemy base to neutral, as it does to convert a neutral base to your team.</p>
+<p>Current team name and capture status is shown above the base using a text particle.</p>
+<p>At the spawn of a map, all bases are neutral, and all players spawn at normal player spawns,
 and try to capture whatever they can. Once bases are captured, players will
 spawn at spawnpoints close to whichever of their bases is closest to an enemy base.
-spawning will be preferred at bases which are not currently being captured by an enemy.
-<br><br>
-If a player dies, they wait 5 seconds before they can respawn again.
+spawning will be preferred at bases which are not currently being captured by an enemy.</p>
+<p>If a player dies, they wait 5 seconds before they can respawn again.
 If you have no bases left (the enemy has captured yours, or at least made em neutral)
-you will spawn at random spawnpoints. 
-<br><br>
-If all bases are captured by one team, then that team wins the game automaticaly. Alternatively, 
+you will spawn at random spawnpoints. </p>
+<p>If all bases are captured by one team, then that team wins the game automaticaly. Alternatively, 
 if this doesn't happen, at the timelimit the team that wins is the team
 that has held the most bases for the most amount of time (1 point per X seconds for every
-base in your color).
-<br><br>
-No points are awarded for kills or self-deaths. Infact, no individual score is ever displayed,
-your score is the same as the team's score.
-<br><br>
-When you spawn, you are given a certain amount of ammo for randomly 2 weapons out of the
+base in your color).</p>
+<p>No points are awarded for kills or self-deaths. Infact, no individual score is ever displayed,
+your score is the same as the team's score.</p>
+<p>When you spawn, you are given a certain amount of ammo for randomly 2 weapons out of the
 5 main ones, + pistol ammo. Ammo will periodically spawn at bases owned by a given team which
-can be collected by only that team.
-<br><br>
-A simple HUD shows bases relative to your current position in red or blue (can be a sphere with
-blips on it, with blips on the border for faraway bases).
-</p>
-
-<h2 id="network_code">Network Code</h2>
-
-<p>
-You will notice that the engine plays and responds better on a high ping connection than most games out there; the reason for this is that just about everything is done clientside, not just movement (as is common in games today) but also aim (the fat client / thin server model).
-<br><br>
-The benefits of this are that the effects of lag are minimised, and someone on a 200 ping can compete on an almost even playing field with someone with a 20 ping, the disadvantages are mainly in that its harder to combat cheating. Further advantages for server admins are that servers use virtually no cpu, and very little bandwidth for a lot of clients (you can host a 4 player game on a modem!).
-<br><br>
-It is impossible to completely hide lag however, and these are some of the effects that can still show lag if you or someone you play with has a high ping / bad connection:
-</p>
-
-<ul>
-<li>if the connection has packetloss. There is no direct indicator of packetloss, instead the "packet jump" figure is provided on the hud (use "showscores"). Packet jump says as much as the amount of milliseconds that pass between updates from the indicated player. If it is extremely variable, or is high(&gt;80) then your gameplay may be hampered (players jumping from place to place). Ideally it is a steady 40 or lower. A consistent packet jump is more vital to gameplay than ping.
-There is also player prediction based on extrapolation using the physics model, in an attempt to be both as up to date as possible in relation to the game state, and as realistic with regards to physics. However, under packet loss this model breaks down and player movement becomes choppy.</li>
-<li>if ping is high (either yours or someone you play with), some actions may appear lagged. The effect of ping is generally that the players in a game are effectively playing more and more seperate games, as someone with a high ping is "playing in the past". The local effects of this are masked out by client side movement &amp; aim, but may become noticable across players:
-<ul>
-<li>you may get hit by someone even though you are already out of his view. This is because he is aiming at your movements of a while ago, and his hits take a while to arrive back at you. You may therefore be hit by gunfire up to his lag + your lag milliseconds after you leave his FOV.</li>
-<li>item pickup: you may be denied an item if you try to pick it up at virtually the same time as someone else (server decides who was "first"). Item pickup is server side, only when you hear the sound effect have you actually picked up the item.</li>
-<li>players dying appears lagged. This will improve.</li>
-</ul>
-</li>
-<li>if a player is severely lagged (or you are) he temporarily becomes a "ghost" that cannot be hit (if &gt;1sec packet jump).</li>
-</ul>
-
-
-
-<h2 id="multiplayer_online">Multiplayer Online</h2>
-
-<p>
-Besides the abovementioned client-side gameplay, the code is also open source, which makes it too easy to cheat with. Anyone can modify the source to add cheats, recompile, and join multiplayer games.
-<br><br>
-There is no real trivial way to combat this:
-</p>
-<ul>
-<li>Moving the gameplay entirely serverside makes things a lot more complicated, hurts smoothness of gameplay, and still doesn't really solve the cheating problem</li>
-<li>Cube 2's predecessor, Cube, had "official binaries" which differed from the Open Source version in a different network protocol. This helped combat cheating somewhat, but still not entirely.</li>
-<li>A social solution, "Trusted Communities" was proposed, that would give players an identity, and only allow you to play on trusted servers if you were trusted by other players. This system could work well but requires a lot of infrastructure and organization</li>
-</ul>
-
-<p>
-Cube and Cube 2 have rather small communities, and the main issue is not necessarily to combat cheating (a lost battle to start with), but more to allow non-cheaters to have undisturbed games together.
-Hence Sauerbraten multiplayer has a very simple solution:
-<br><br>
-There is no cheat protection at all. Nada.
-<br><br>
-Servers operate in a so called "master mode" which allows people to easily and painlessly have games with people they know, without being disturbed by cheaters.
-The way it works is very simple: the first person to enter a server and use the "setmaster" command becomes the "master" of that server. The master has 4 commands at his disposal which other players have not:
-</p>
-
-<pre id="setmaster">setmaster B</pre>
-<p>
-Attempts to set master status to B. 0 gives up master status, 1 claims master status, or the admin password may be specified to steal master status from the current master. If you specify a password, you are granted "admin" status, which allows you to enable server features that an ordinary master can't. 
-</p>
-
-<pre id="mastermode">mastermode N</pre>
-<p>
-Sets the server to master mode N. N can be (ranging from very open to very private):
-</p>
-
-<ul>
-<li>0 (open): anyone can enter the server. This is the default mode. It is good for games with random people, if no cheaters appear to be around.</li>
-<li>1 (veto): as 0, but now the master can force map changes. This is good when playing with new players who may not understand how to vote for map changes.</li>
-<li>2 (locked): as 1, but anyone joining after this mode has been set will be forced to be spectator only. This mode is ideal for tournament play, or games with friends only.</li>
-<li>3 (private): as 2, but now noone can join the server anymore. Good for games with friends when cheaters are around, cheaters wont even connect, so wont have the chance to try and screw things up.</li>
-</ul> 
-
-<pre id="kick">kick N</pre>
-<p>
-Kick's the player with client number N (displayed in parentheses next to name) off the server, and bans his ip until 4 hours or the server is empty. You can't kick yourself. N may also just be the player's name.
+can be collected by only that team.</p>
+<p>A simple HUD shows bases relative to your current position in red or blue (can be a sphere with
+blips on it, with blips on the border for faraway bases).</p>
+<h2 id="network-code">Network Code</h2>
+<p>You will notice that the engine plays and responds better on a high ping connection than most games out there; the reason for this is that just about everything is done clientside, not just movement (as is common in games today) but also aim (the fat client / thin server model).</p>
+<p>The benefits of this are that the effects of lag are minimised, and someone on a 200 ping can compete on an almost even playing field with someone with a 20 ping, the disadvantages are mainly in that its harder to combat cheating. Further advantages for server admins are that servers use virtually no cpu, and very little bandwidth for a lot of clients (you can host a 4 player game on a modem!).</p>
+<p>It is impossible to completely hide lag however, and these are some of the effects that can still show lag if you or someone you play with has a high ping / bad connection:</p>
+<h2 id="multiplayer-online">Multiplayer Online</h2>
+<p>Besides the abovementioned client-side gameplay, the code is also open source, which makes it too easy to cheat with. Anyone can modify the source to add cheats, recompile, and join multiplayer games.</p>
+<p>There is no real trivial way to combat this:</p>
+<p>Cube and Cube 2 have rather small communities, and the main issue is not necessarily to combat cheating (a lost battle to start with), but more to allow non-cheaters to have undisturbed games together.
+Hence Sauerbraten multiplayer has a very simple solution:</p>
+<p>There is no cheat protection at all. Nada.</p>
+<p>Servers operate in a so called "master mode" which allows people to easily and painlessly have games with people they know, without being disturbed by cheaters.
+The way it works is very simple: the first person to enter a server and use the "setmaster" command becomes the "master" of that server. The master has 4 commands at his disposal which other players have not:</p>
+<h3 id="setmaster"><code>setmaster B</code></h3>
+<p>Attempts to set master status to B. 0 gives up master status, 1 claims master status, or the admin password may be specified to steal master status from the current master. If you specify a password, you are granted "admin" status, which allows you to enable server features that an ordinary master can't. </p>
+<h3 id="mastermode"><code>mastermode N</code></h3>
+<p>Sets the server to master mode N. N can be (ranging from very open to very private):</p>
+<h3 id="kick"><code>kick N</code></h3>
+<p>Kick's the player with client number N (displayed in parentheses next to name) off the server, and bans his ip until 4 hours or the server is empty. You can't kick yourself. N may also just be the player's name.
 This command is useful when you started playing an open game, and a cheater joins. Additionally you can move to a higher mastermode for additional protection.
-Don't use this command for anything other than cheaters or people otherwise obstructing games.
-</p>
-
-<pre id="clearbans">clearbans</pre>
-<p>
-Clears all previously set bans, as if the server were empty.
-</p>
-
-<pre id="spectator">spectator B [N]</pre>
-<p>
-Sets whether a player is a spectator (B=1 to enable, 0 to disable). N is specified as for kick. A player can voluntarily make himself a spectator, but only the current master can make other players spectators.
-</p>
-
-<pre id="goto">goto N</pre>
-<p>
-If you are a spectator, then this takes you to the location of player N (where N is a client number or the player's name).
-</p>
-
-<pre id="pausegame">pausegame N</pre>
-<p>
-Pauses a multiplayer game if N=1, or unpauses it if N=0. Requires admin privileges.
-<br><br>
-The important thing to see about these commands is that they don't prevent cheating, nor are necessarily a fair way of adminning a server. They just make it real easy to have fun games with friends without being disturbed by cheaters or people you don't want to play with.
-<br><br>
-In the event that a cheater is the master, or someone is being abusive with his masters powers, you can simply leave the server and start a game somewhere else. There are usually more servers than players anyway, and more players than cheaters.
-<br><br>
-If the current master leaves the server, other players may attempt to claim master status. Mastermode will be reset to 0 when this happens (also when the server clears). At any time, all
-players will see who is the master in a game because his name is marked in a different color on the scoreboard.
-</p>
-
-<h2 id="demo_recording">Demo Recording</h2>
-
-<p>
-You may record server-side demos during multiplayer games. You must have gained "admin" privileges by using the "setmaster"
+Don't use this command for anything other than cheaters or people otherwise obstructing games.</p>
+<h3 id="clearbans"><code>clearbans</code></h3>
+<p>Clears all previously set bans, as if the server were empty.</p>
+<h3 id="spectator"><code>spectator B [N]</code></h3>
+<p>Sets whether a player is a spectator (B=1 to enable, 0 to disable). N is specified as for kick. A player can voluntarily make himself a spectator, but only the current master can make other players spectators.</p>
+<h3 id="goto"><code>goto N</code></h3>
+<p>If you are a spectator, then this takes you to the location of player N (where N is a client number or the player's name).</p>
+<h3 id="pausegame"><code>pausegame N</code></h3>
+<p>Pauses a multiplayer game if N=1, or unpauses it if N=0. Requires admin privileges.</p>
+<p>The important thing to see about these commands is that they don't prevent cheating, nor are necessarily a fair way of adminning a server. They just make it real easy to have fun games with friends without being disturbed by cheaters or people you don't want to play with.</p>
+<p>In the event that a cheater is the master, or someone is being abusive with his masters powers, you can simply leave the server and start a game somewhere else. There are usually more servers than players anyway, and more players than cheaters.</p>
+<p>If the current master leaves the server, other players may attempt to claim master status. Mastermode will be reset to 0 when this happens (also when the server clears). At any time, all
+players will see who is the master in a game because his name is marked in a different color on the scoreboard.</p>
+<h2 id="demo-recording">Demo Recording</h2>
+<p>You may record server-side demos during multiplayer games. You must have gained "admin" privileges by using the "setmaster"
 command to enable demo recording for a match. Once enabled, the next map that is played will start recording a demo. Once this map finishes, the server
 will provide the demo, so that any interested clients can download it. Demo recording is disabled automatically again for the next map, unless
 it is explicitly enabled again. The server will only store a fixed number of demos, and the oldest demo will be removed to make room for new ones if
-it already has the maximum number of demos (currently 5).
-<br><br>
-Demos may be played back via the special local "demo" mode (mode -1), where the map name is the name of the demo to be played.
-</p>
-
-<pre id="recorddemo">recorddemo B</pre>
-<p>
-Sets whether demo recording will be enabled for the next match (B=1 to enable, 0 to disable). Requires admin privileges.
-</p>
-
-<pre id="stopdemo">stopdemo</pre>
-<p>
-If in multiplayer, this command will finish recording a demo prematurely instead of waiting till the end of a match. Requires admin privileges.
-<br><br>
-If used during local demo playback, this will stop demo playback.
-</p>
-
-<pre id="cleardemos">cleardemos</pre>
-<p>
-Clears all demos from the server. Requires admin privileges.
-</p>
-
-<pre id="listdemos">listdemos</pre>
-<p>
-This lists all demos available on the server. Any client may use this command.
-</p>
-
-<pre id="getdemo">getdemo [N]</pre>
-<p>
-This command retrieves a demo from the server, where N corresponds to the demo number provided by the "listdemos" command.
+it already has the maximum number of demos (currently 5).</p>
+<p>Demos may be played back via the special local "demo" mode (mode -1), where the map name is the name of the demo to be played.</p>
+<h3 id="recorddemo"><code>recorddemo B</code></h3>
+<p>Sets whether demo recording will be enabled for the next match (B=1 to enable, 0 to disable). Requires admin privileges.</p>
+<h3 id="stopdemo"><code>stopdemo</code></h3>
+<p>If in multiplayer, this command will finish recording a demo prematurely instead of waiting till the end of a match. Requires admin privileges.</p>
+<p>If used during local demo playback, this will stop demo playback.</p>
+<h3 id="cleardemos"><code>cleardemos</code></h3>
+<p>Clears all demos from the server. Requires admin privileges.</p>
+<h3 id="listdemos"><code>listdemos</code></h3>
+<p>This lists all demos available on the server. Any client may use this command.</p>
+<h3 id="getdemo"><code>getdemo [N]</code></h3>
+<p>This command retrieves a demo from the server, where N corresponds to the demo number provided by the "listdemos" command.
 If no number is specified, this command will get the most recent demo. The demo will be saved locally in the main directory as
-a file with the extension ".cdm". Any client may use this command.
-</p>
-
-<pre id="demo">demo F</pre>
-<p>
-This alias sets the mode to -1 (the special demo playback game mode) and map to F, where F is the name of a demo file, but without 
-the ".cdm" file extension. The "stopdemo" command may be used to terminate playback early when in this game mode.
-</p>
-
+a file with the extension ".cdm". Any client may use this command.</p>
+<h3 id="demo"><code>demo F</code></h3>
+<p>This alias sets the mode to -1 (the special demo playback game mode) and map to F, where F is the name of a demo file, but without 
+the ".cdm" file extension. The "stopdemo" command may be used to terminate playback early when in this game mode.</p>
 <h2 id="bots">Bots</h2>
+<p>Bots are supported in all multiplayer modes, so long as they have waypoints available to guide them. Bots range in skill from 0 to 100, with an extra skill level 101 making the bots as skilled as possible. You must either be master or playing locally to add or remove bots. At the end of a match, all bots are removed. </p>
+<h3 id="addbot"><code>addbot [SKILL]</code></h3>
+<p>Adds a bot at skill level SKILL if provided, or defaults to a random skill level between 50 and 100 if not provided. You must be master or playing locally to use this command. Bots may only be added up to the server specified bot limit unless you are an admin or local player. This also causes waypoints to load if any are available for the current map.</p>
+<h3 id="delbot"><code>delbot</code></h3>
+<p>Removes a bot. You must be master or playing locally to use this command.</p>
+<h3 id="botlimit"><code>botlimit N</code></h3>
+<p>Sets the bot limit for masters to N. This limit does not effect admins or local players. Only admins or local players can use this command.</p>
+<h3 id="botbalance"><code>botbalance B</code></h3>
+<p>Enables automatic team balancing for bots if B=1 and disables it if B=0. Only masters or local players can use this command.</p>
 
-<p>
-Bots are supported in all multiplayer modes, so long as they have waypoints available to guide them. Bots range in skill from 0 to 100, with an extra skill level 101 making the bots as skilled as possible. You must either be master or playing locally to add or remove bots. At the end of a match, all bots are removed. 
-</p>
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      Last update:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 25, 2023</span>
+      
+    
+  </small>
+</div>
 
-<pre id="addbot">addbot [SKILL]</pre>
-<p>
-Adds a bot at skill level SKILL if provided, or defaults to a random skill level between 50 and 100 if not provided. You must be master or playing locally to use this command. Bots may only be added up to the server specified bot limit unless you are an admin or local player. This also causes waypoints to load if any are available for the current map.
-</p>
 
-<pre id="delbot">delbot</pre>
-<p>
-Removes a bot. You must be master or playing locally to use this command.
-</p>
 
-<pre id="botlimit">botlimit N</pre>
-<p>
-Sets the bot limit for masters to N. This limit does not effect admins or local players. Only admins or local players can use this command.
-</p>
 
-<pre id="botbalance">botbalance B</pre>
-<p>
-Enables automatic team balancing for bots if B=1 and disables it if B=0. Only masters or local players can use this command.
-</p>
 
-</body>
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.sections", "navigation.tracking", "toc.follow"], "search": "assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.b4d07000.min.js"></script>
+      
+    
+  </body>
 </html>
