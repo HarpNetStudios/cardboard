@@ -224,6 +224,7 @@ namespace steam {
 	}
 
 	void cleanup() {
+		// Shutdown Steam Input
 		SteamInput()->Shutdown();
 		// Shutdown Steam
 		SteamAPI_Shutdown();
@@ -256,6 +257,13 @@ namespace steam {
 		return SteamInput()->GetConnectedControllers(inputHandles);
 	}
 
+	void input_setColor(int controller, bvec color) {
+		if (controller + 1 > sizeof(inputHandles) || controller < 0) return;
+		ESteamInputType controllerType = SteamInput()->GetInputTypeForHandle(inputHandles[controller]);
+		if (controllerType == k_ESteamInputType_SteamController) return; // Prevent Steam Controller LED from flickering -Y
+		SteamInput()->SetLEDColor(inputHandles[controller], color.r, color.g, color.b, k_ESteamInputLEDFlag_SetColor);
+	}
+
 	void input_updateActions(int gamestate) {
 		InputActionSetHandle_t handle = playSetHandle;
 
@@ -263,8 +271,10 @@ namespace steam {
 		{
 			case ST_MENU:
 				handle = menuSetHandle;
+				break;
 			case ST_PLAYING:
 				handle = playSetHandle;
+				break;
 		}
 
 		SteamInput()->ActivateActionSet(inputHandles[0], handle);
@@ -311,12 +321,6 @@ namespace steam {
 	vec2 input_getAnalogAction(InputAnalogActionHandle_t action) {
 		InputAnalogActionData_t data = SteamInput()->GetAnalogActionData(inputHandles[0], action);
 		return vec2(data.x, data.y);
-	}
-
-	// TODO: implement eventually, I don't have a DS4/5 to test with. -Y
-	void input_setColor(int controller, bvec color) {
-		if(controller+1 > sizeof(inputHandles) || controller < 0) return;
-		SteamInput()->SetLEDColor(inputHandles[controller], color.r, color.g, color.b, k_ESteamControllerLEDFlag_SetColor);
 	}
 
 	bool playActionsActive[numPlayActions] = {};

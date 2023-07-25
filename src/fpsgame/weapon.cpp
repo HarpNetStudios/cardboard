@@ -19,6 +19,23 @@ namespace game
 
 	ICOMMAND(getweapon, "", (), intret(player1->gunselect));
 
+	bvec guncolor(int gun) {
+		bvec color;
+		switch (gun)
+		{
+			case GUN_FIST:  color = bvec( 35, 124, 232); break;
+			case GUN_SMG:   color = bvec( 64,  64,  64); break;
+			case GUN_SG:    color = bvec(166,  15,  15); break;
+			case GUN_RIFLE: color = bvec( 11,  88, 153); break;
+			case GUN_CG:    color = bvec(  0, 140,   0); break;
+			case GUN_RL:    color = bvec(204,  96,  11); break;
+			case GUN_GL:    color = bvec(170,   0, 221); break;
+
+			default:        color = bvec(255, 255, 255); break;
+		}
+		return color;
+	}
+
 	void gunselect(int gun, fpsent *d)
 	{
 		if(gun!=d->gunselect)
@@ -28,6 +45,9 @@ namespace game
 			playsound(S_WEAPLOAD, d == player1 ? NULL : &d->o);
 			d->candouble = (gun==GUN_FIST);
 			if(d->attacking) d->attacking = false; // no more unlockable scrollwheel shenanigans -Y
+			#ifdef STEAM
+			steam::input_setColor(0, guncolor(gun));
+			#endif
 		}
 		d->gunselect = gun;
 	}

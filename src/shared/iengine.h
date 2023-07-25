@@ -638,6 +638,7 @@ namespace steam
 	extern void addScreenshot(const char* gaming, int width, int height);
 
 	extern int input_getConnectedControllers();
+	extern void input_setColor(int controller, bvec color);
 	extern void input_updateActions(int gamestate);
 
 	extern bool input_getDigitalAction(InputDigitalActionHandle_t action, bool ignoreActive = false);
