@@ -23,21 +23,23 @@ namespace discord
 			#endif
 			discordCore->SetLogHook(LogLevel::Debug, discordLogging);
 			conoutf(CON_DEBUG, "\f0Discord: Successfully connected.");
-			discordCore->ActivityManager().OnActivityJoin.Connect([](const char* secret) { 
-					conoutf(CON_DEBUG, "Join: %s", secret);
-					unsigned char* yes = b64_decode(secret, strlen(secret));
-					conoutf(CON_DEBUG, "Decoded: %s", yes);
-				});
+			discordCore->ActivityManager().OnActivityJoin.Connect([](const char* secret) {
+				//conoutf(CON_DEBUG, "Join: %s", secret);
+				char* decoded = (char*)b64_decode(secret, strlen(secret));
+				defformatstring(bruh, "connect %s", decoded);
+				execute(bruh); // yo what the fuck -Y
+				//conoutf(CON_DEBUG, "Decoded: %s", decoded);
+			});
 			discordCore->ActivityManager().OnActivitySpectate.Connect([](const char* secret) {
-					conoutf(CON_DEBUG, "Spectate: %s", secret); 
-				});
+				conoutf(CON_DEBUG, "Spectate: %s", secret); 
+			});
 			discordCore->ActivityManager().OnActivityJoinRequest.Connect([](discord::User const& user) {
-					conoutf(CON_DEBUG, "Join Request: %s", user.GetUsername());
-					// always accept, for testing reasons
-					discordCore->ActivityManager().SendRequestReply(user.GetId(), discord::ActivityJoinRequestReply::Yes, [](discord::Result res) {
-						if (res == discord::Result::Ok) conoutf(CON_DEBUG, "Accepted join request automatically");
-					});
+				conoutf(CON_DEBUG, "Join Request from %s", user.GetUsername());
+				// always accept, for testing reasons
+				discordCore->ActivityManager().SendRequestReply(user.GetId(), discord::ActivityJoinRequestReply::Yes, [](discord::Result res) {
+					if (res == discord::Result::Ok) conoutf(CON_DEBUG, "Accepted join request automatically");
 				});
+			});
 		} else conoutf(CON_ERROR, "\f2Discord: Failed to initialize! Status code: %d", (int)initStatus);
 	}
 
@@ -49,7 +51,7 @@ namespace discord
 	void updatePresence(int gamestate, const char* modename, physent* d, bool force)
 	{
 		if((globalgamestate != gamestate || force) && discord::connected()) {
-			cbstring partykey;
+			cbstring serverip;
 			discord::Activity activity{};
 
 			switch (gamestate)
@@ -103,17 +105,17 @@ namespace discord
 				activity.GetAssets().SetLargeText(largeText);
 
 				if(address) {
-					if(enet_address_get_host_ip(address, partykey, strlen(partykey)) >= 0)
+					if(enet_address_get_host_ip(address, serverip, strlen(serverip)) >= 0)
 					{
 						activity.SetState("Online");
-						defformatstring(partyid, "%s:%u", partykey, address->port);
-						defformatstring(newpartykey, "S_%s", partyid);
-						const char* b64key = b64_encode((unsigned char*)newpartykey, strlen(newpartykey));
+						defformatstring(partykey, "%s %u", serverip, address->port);
+						defformatstring(partyid, "S_%s", partyid);
+						const char* b64key = b64_encode((unsigned char*)partykey, strlen(partykey));
 						activity.GetParty().SetId(partyid);
 						activity.GetParty().GetSize().SetCurrentSize(game::players.length());
 						activity.GetParty().GetSize().SetMaxSize(game::players.length() + 1);
 						activity.GetSecrets().SetJoin(b64key);
-						conoutf(CON_ECHO, "discord join secret: %s", b64key);
+						conoutf(CON_DEBUG, "discord join secret: %s", b64key);
 					}
 				}
 			}

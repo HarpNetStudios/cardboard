@@ -20,6 +20,8 @@ as it's deeply rooted within the engine itself.
 ### Windows
 - Build with Visual Studio 2019, `msbuild` should also work.
 
+*It theoretically can be built for XP using Platform Toolset `v141_xp`. Do with this knowledge what you will.*
+
 ### Mac (WIP)
 
 ***This currently only works on Intel Macs, until SDL2_image and SDL2_mixer are updated for Apple Silicon.***
