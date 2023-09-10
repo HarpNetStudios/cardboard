@@ -320,7 +320,7 @@ namespace game
 					if(m_ctf && !m_protect && !m_hold) {
 						icon = !isteam("red", o->team) ? (char *)"../hud/blip_red_flag.png" : (char *)"../hud/blip_blue_flag.png";
 					} else if(m_protect) {
-						icon = !isteam("red", o->team) ? (char *)"..hud/blip_blue_flag.png" : (char *)"../hud/blip_red_flag.png";
+						icon = !isteam("red", o->team) ? (char *)"../hud/blip_blue_flag.png" : (char *)"../hud/blip_red_flag.png";
 					} else { // m_hold
 						icon = (char *)"../hud/blip_neutral_flag.png";
 					}
