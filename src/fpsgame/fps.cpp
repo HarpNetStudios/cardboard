@@ -35,7 +35,7 @@ namespace game
 		loopi(NUMGUNS)
 		{
 			player1->lastaction[i] = lastmillis;
-			player1->gunwait[i] = 1000;
+			player1->gunwait[i] = max(player1->gunwait[i], 1000);
 		}
 		addmsg(N_TAUNT, "rc", player1);
 		playsound(S_ITEMSPAWN, &game::hudplayer()->o);
@@ -926,6 +926,7 @@ void dosecattack(bool on)
 	const char *teamcolor(const char *name, const char *team, const char *alt)
 	{
 		cidx = (cidx + 1) % 3;
+		if (!team) return name; // team could be null, maybe indicative of problems elsewhere?
 		formatstring(cname[cidx], strcmp(team, "red") ? "\fs\f1%s\fr" : "\fs\f3%s\fr", name);
 		return cname[cidx];
 	}
