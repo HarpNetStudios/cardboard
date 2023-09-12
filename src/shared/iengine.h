@@ -42,7 +42,7 @@ enum // cube empty-space materials
 	MAT_JUMPRESET = 8 << MATF_FLAG_SHIFT,  // resets double jump
 };
 
-#define isliquid(mat) ((mat)==MAT_WATER || (mat)==MAT_LAVA)
+#define isliquid(mat) (((mat)>=MAT_WATER && (mat)<MAT_WATER+4) || ((mat)>=MAT_LAVA && (mat)<MAT_LAVA+4))
 #define isclipped(mat) ((mat)==MAT_GLASS)
 #define isdeadly(mat) ((mat)==MAT_LAVA)
 #define isjumpreset(mat) ((mat)==MAT_JUMPRESET)

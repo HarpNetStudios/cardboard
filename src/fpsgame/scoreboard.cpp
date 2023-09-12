@@ -230,6 +230,14 @@ namespace game
 
 			#define fgcolor (o==hudplayer() && highlightscore && (multiplayer(false) || demoplayback || players.length() > 1) ? sbhighlight : COL_WHITE)
 
+			if (sg.team && m_teammode)
+			{
+				g.pushlist(); // vertical
+				if (sg.score >= 10000) g.textf("%s: WIN", teamcolor, NULL, sg.team);
+				else g.textf("%s: %d", teamcolor, NULL, sg.team, sg.score);
+				g.pushlist(); // horizontal
+			}
+
 			g.pushlist();
 			g.text("", 0, " ");
 			loopscoregroup(o,
@@ -245,14 +253,6 @@ namespace game
 				if (o == player1 && highlightscore && (multiplayer(false) || demoplayback || players.length() > 1)) g.poplist();
 			});
 			g.poplist();
-
-			if (sg.team && m_teammode)
-			{
-				g.pushlist(); // vertical
-				if (sg.score >= 10000) g.textf("%s: WIN", teamcolor, NULL, sg.team);
-				else g.textf("%s: %d", teamcolor, NULL, sg.team, sg.score);
-				g.pushlist(); // horizontal
-			}
 
 			g.pushlist();
 			g.text("name", COL_GRAY);
@@ -286,14 +286,15 @@ namespace game
 				g.poplist();
 			}
 
-			// REWORK LATER -Y
+			// TODO: REWORK LATER -Y
 			if(m_collect)
 			{
+				g.space(1);
 				g.pushlist();
 				g.text("", 0x000000);
 				loopscoregroup(o, {
 					if(o->tokens) {
-						g.textf("%d", 0xFFFFDD, NULL, o->tokens);
+						g.textf("%d", fgcolor, NULL, o->tokens);
 					} else {
 						g.text("", 0x000000);
 					}
@@ -303,8 +304,10 @@ namespace game
 				g.pushlist();
 				g.text("", 0x000000);
 				loopscoregroup(o, {
-					if(o->tokens) {
-						g.text("", 0x000000, !isteam("red", o->team) ? "../hud/blip_red_skull.png" : "../hud/blip_blue_skull.png");
+					cbstring icon;
+					if(icon && o->tokens) {
+						formatstring(icon, "../hud/blip_%s_skull.png", o->team);
+						g.text("", 0x000000, icon);
 					} else {
 						g.text("", 0x000000);
 					}

@@ -294,7 +294,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 				text_bounds(mapinfo, mw, mh, infowidth);
 				//int tw = text_width(mapinfo);
 				float tsz = sz / (8 * FONTH),
-					tx = (w / 2) - (mw / 4),
+					tx = (w / 2) - (mw / 3),
 					ty = 0.125f * sz - FONTH * tsz;
 				pushhudmatrix();
 				//hudmatrix.translate(x+sz+FONTH*msz, y, 0);

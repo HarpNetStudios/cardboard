@@ -4,7 +4,7 @@ namespace game
 {
 	char* gametitle = "Carmine Impact"; // game name: are you dumb
 	char* gamestage = "Alpha"; // stage: alpha, beta, release, whatever
-	char* gameversion = "2.9.1"; // version: major.minor(.patch)
+	char* gameversion = "2.9.2"; // version: major.minor(.patch)
 
 	ICOMMAND(version, "", (), {
 		defformatstring(vers, "%s %s %s", gametitle, gamestage, gameversion);
@@ -77,7 +77,7 @@ namespace game
 
 	void nextfollow(int dir)
 	{
-		if(spectating(player1) || clients.empty())
+		if(!spectating(player1) || clients.empty())
 		{
 			stopfollowing();
 			return;
@@ -897,7 +897,7 @@ void dosecattack(bool on)
 				}
 				else
 				{
-					formatstring(cname[cidx], "%s%s \fs\f4(%d) \fs\f5[%d]\fr%s", prefix, name, d->skill, d->clientnum, suffix);
+					formatstring(cname[cidx], "%s%s \fs\f4(%d)\fr \fs\f5[%d]\fr%s", prefix, name, d->skill, d->clientnum, suffix);
 				}
 			}
 			else formatstring(cname[cidx], "%s%s%s", prefix, name, suffix);
@@ -915,6 +915,7 @@ void dosecattack(bool on)
 		return colorname(d, NULL, strcmp(d->team, "red") ? "\fs\f1" : "\fs\f3", "\fr", alt, tags);
 	}
 
+	// unused??
 	const char *teamcolor(const char *name, bool sameteam, const char *alt)
 	{
 		if(!teamcolortext || !m_teammode) return sameteam || !alt ? name : alt;

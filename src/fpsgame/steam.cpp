@@ -241,7 +241,7 @@ namespace steam {
 	}
 
 	void setPlayerAchievement(int player) {
-		if(player >= 0 && player <= 5) setAchievement(g_Achievements[player+2].m_pchAchievementID);
+		if(player >= 0 && player <= 5) setAchievement(g_Achievements[ACH_CHAR_SARAH+player].m_pchAchievementID);
 	}
 
 	int getSteamID() {
