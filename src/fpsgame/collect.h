@@ -13,7 +13,7 @@ struct collectclientmode : clientmode
 	static const int BASEHEIGHT = 16;
 	static const int MAXBASES = 20;
 	static const int TOKENRADIUS = 16;
-	static const int TOKENLIMIT = 5;
+	static const int TOKENLIMIT = 20;
 	static const int UNOWNEDTOKENLIMIT = 15;
 	static const int TOKENDIST = 16;
 	static const int SCORELIMIT = 50;
@@ -219,6 +219,7 @@ struct collectclientmode : clientmode
 	{
 		if(notgotbases) return;
 		int team = collectteambase(ci->team), totalenemy = penalty ? 0 : ci->state.tokens, totalfriendly = 1, expired = 0;
+		int enemyteam = team == collectteambase("red") ? collectteambase("blue") : collectteambase("red");
 		packetbuf p(300, ENET_PACKET_FLAG_RELIABLE);
 		loopvrev(tokens)
 		{
@@ -240,7 +241,7 @@ struct collectclientmode : clientmode
 		int numdrops = 1 + (penalty ? 0 : ci->state.tokens), yaw = rnd(360);
 		loopi(numdrops)
 		{
-			token &t = droptoken(ci->state.o, yaw + (i*360)/numdrops, !i ? team : -team, lastmillis, ci->clientnum); 
+			token &t = droptoken(ci->state.o, yaw + (i*360)/numdrops, !i ? team : enemyteam, lastmillis, ci->clientnum);
 			putint(p, t.id);
 			putint(p, t.team);
 			putint(p, t.yaw);
@@ -285,7 +286,7 @@ struct collectclientmode : clientmode
 
 	void died(clientinfo *ci, clientinfo *actor)
 	{
-		droptokens(ci, !actor || isteam(actor->team, ci->team));
+		droptokens(ci);
 	}
 
 	bool canspawn(clientinfo *ci, bool connecting)
@@ -446,7 +447,7 @@ struct collectclientmode : clientmode
 	{
 		if(d->state == CS_ALIVE && d->tokens > 0)
 		{
-			int x = HICON_X + 3*HICON_STEP;
+			int x = HICON_X + 2*HICON_STEP;
 			pushhudmatrix();
 			hudmatrix.scale(2, 2, 1);
 			flushhudmatrix();
@@ -507,31 +508,30 @@ struct collectclientmode : clientmode
 
 	void rendergame()
 	{
-		int team = collectteambase(player1->team);
 		vec theight(0, 0, 0);
 		abovemodel(theight, "skull/red");
 		loopv(bases)
 		{
 			base &b = bases[i];
-			const char *basename = b.team==team ? "base/blue" : "base/red";
+			const char* basename = b.team == collectteambase("red") ? "base/red" : "base/blue";
 			rendermodel(&b.light, basename, ANIM_MAPMODEL|ANIM_LOOP, b.o, 0, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED);
 			float fradius = 1.0f, fheight = 0.5f;
-			regular_particle_flame(PART_FLAME, vec(b.tokenpos.x, b.tokenpos.y, b.tokenpos.z - 4.5f), fradius, fheight, b.team==team ? 0x2020FF : 0x802020, 3, 2.0f);
+			regular_particle_flame(PART_FLAME, vec(b.tokenpos.x, b.tokenpos.y, b.tokenpos.z - 4.5f), fradius, fheight, b.team==collectteambase("red") ? 0x802020 : 0x2020FF, 3, 2.0f);
 			vec tokenpos(b.tokenpos);
 			tokenpos.z -= theight.z/2 + sinf(lastmillis/100.0f)/20;
 			float alpha = player1->state == CS_ALIVE && player1->tokens <= 0 && lastmillis < b.laststeal + STEALTOKENTIME ? 0.5f : 1.0f; 
-			rendermodel(&b.light, b.team==team ? "skull/blue" : "skull/red", ANIM_MAPMODEL|ANIM_LOOP, tokenpos, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED, NULL, NULL, 0, 0, alpha);
+			rendermodel(&b.light, b.team==collectteambase("red") ? "skull/red" : "skull/blue", ANIM_MAPMODEL|ANIM_LOOP, tokenpos, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED, NULL, NULL, 0, 0, alpha);
 			formatstring(b.info, "%d", totalscore(b.team));
 			vec above(b.tokenpos);
 			above.z += TOKENHEIGHT;
-			if(b.info[0]) particle_text(above, b.info, PART_TEXT, 1, b.team==team ? 0x6496FF : 0xFF4B19, 2.0f);
+			if(b.info[0]) particle_text(above, b.info, PART_TEXT, 1, b.team== collectteambase("red") ? 0xFF4B19 : 0x6496FF, 2.0f);
 		}
 		loopv(tokens)
 		{
 			token &t = tokens[i];
 			vec p = t.o;
 			p.z += 1+sinf(lastmillis/100.0+t.o.x+t.o.y)/20;
-			rendermodel(&t.light, t.team == team || (t.team < 0 && -t.team != team) ? "skull/blue" : "skull/red", ANIM_MAPMODEL|ANIM_LOOP, p, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED);
+			rendermodel(&t.light, t.team == collectteambase("red") ? "skull/red" : "skull/blue", ANIM_MAPMODEL|ANIM_LOOP, p, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED);
 		}
 		fpsent *exclude = isthirdperson() ? NULL : hudplayer();
 		loopv(players)
@@ -544,7 +544,7 @@ struct collectclientmode : clientmode
 			int dteam = collectteambase(d->team);
 			loopj(d->tokens)
 			{
-				rendermodel(&light, dteam != team ? "skull/blue" : "skull/red", ANIM_MAPMODEL|ANIM_LOOP, pos, d->yaw+90, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED);
+				rendermodel(&light, dteam != collectteambase("red") ? "skull/red" : "skull/blue", ANIM_MAPMODEL|ANIM_LOOP, pos, d->yaw+90, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED);
 				pos.z += TOKENHEIGHT + 1;
 			}
 		}        
@@ -633,8 +633,8 @@ struct collectclientmode : clientmode
 	{
 		int fcolor;
 		vec color;
-		if(team==collectteambase(player1->team)) { fcolor = 0x2020FF; color = vec(0.25f, 0.25f, 1); }
-		else { fcolor = 0x802020; color = vec(1, 0.25f, 0.25f); }
+		if (team == collectteambase("red")) { fcolor = 0x802020; color = vec(1, 0.25f, 0.25f); }
+		else { fcolor = 0x2020FF; color = vec(0.25f, 0.25f, 1); }
 		particle_fireball(loc, 30, PART_EXPLOSION, -1, fcolor, 4.8f);
 		adddynlight(loc, 35, color, 900, 100);
 		particle_splash(PART_SPARK, 150, 300, loc, fcolor, 0.24f);
@@ -645,7 +645,7 @@ struct collectclientmode : clientmode
 		if(showfrom) baseexplosion(i, team, from);
 		if(from==to) return;
 		if(showto) baseexplosion(i, team, to);
-		particle_flare(from, to, 600, PART_LIGHTNING, team==collectteambase(player1->team) ? 0x2222FF : 0xFF2222, 1.0f);
+		particle_flare(from, to, 600, PART_LIGHTNING, team == collectteambase("red") ? 0xFF2222 : 0x2222FF, 1.0f);
 	}
 
 	void expiretoken(int id)
@@ -662,7 +662,8 @@ struct collectclientmode : clientmode
 		token *t = findtoken(id);
 		if(t) 
 		{
-			playsound(t->team == team || (t->team < 0 && -t->team != team) ? S_ITEMAMMO : S_ITEMHEALTH, d!=player1 ? &d->o : NULL);
+			// TODO: I don't know if this logic makes sense, revisit -Y
+			playsound(t->team == team ? S_ITEMAMMO : S_ITEMHEALTH, d!=player1 ? &d->o : NULL);
 			removetoken(id);
 		}
 		d->tokens = total;

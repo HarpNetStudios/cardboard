@@ -3,6 +3,10 @@
 #include "ffi.h"
 #include "event.h"
 
+#ifdef __GNUC__
+#include <cstdint>
+#endif // __GNUC__
+
 namespace discord {
 
 enum class Result {

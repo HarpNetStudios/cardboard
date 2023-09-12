@@ -44,7 +44,7 @@
 					<Add library="enet" />
 					<Add library="ws2_32" />
 					<Add library="winmm" />
-					<Add library="discord-rpc" />
+					<Add library="discord_game_sdk" />
 					<Add library="libcurl" />
 					<Add directory="../../bin64" />
 					<Add directory="../lib64" />
@@ -91,7 +91,7 @@
 					<Add library="enet" />
 					<Add library="ws2_32" />
 					<Add library="winmm" />
-					<Add library="discord-rpc" />
+					<Add library="discord_game_sdk" />
 					<Add library="libcurl" />
 					<Add directory="../../bin" />
 					<Add directory="../lib" />
@@ -104,6 +104,9 @@
 		<VirtualTargets>
 			<Add alias="All" targets="client32;client64;" />
 		</VirtualTargets>
+		<Compiler>
+			<Add option="-std=c++14" />
+		</Compiler>
 		<Unit filename="../engine/3dgui.cpp" />
 		<Unit filename="../engine/animmodel.h" />
 		<Unit filename="../engine/bih.cpp" />
@@ -121,12 +124,11 @@
 			<Option weight="0" />
 		</Unit>
 		<Unit filename="../engine/explosion.h" />
+		<Unit filename="../engine/gamepad.cpp" />
 		<Unit filename="../engine/glare.cpp" />
 		<Unit filename="../engine/grass.cpp" />
+		<Unit filename="../engine/icon.h" />
 		<Unit filename="../engine/iqm.h" />
-		<Unit filename="../engine/irc.cpp" />
-		<Unit filename="../engine/irc.h" />
-		<Unit filename="../engine/joy.cpp" />
 		<Unit filename="../engine/lensflare.h" />
 		<Unit filename="../engine/lightmap.cpp" />
 		<Unit filename="../engine/lightmap.h" />
@@ -179,24 +181,46 @@
 		<Unit filename="../fpsgame/capture.h" />
 		<Unit filename="../fpsgame/client.cpp" />
 		<Unit filename="../fpsgame/collect.h" />
+		<Unit filename="../fpsgame/colors.h" />
 		<Unit filename="../fpsgame/ctf.h" />
 		<Unit filename="../fpsgame/discord.cpp" />
 		<Unit filename="../fpsgame/entities.cpp" />
 		<Unit filename="../fpsgame/extinfo.h" />
+		<Unit filename="../fpsgame/extserver.h" />
 		<Unit filename="../fpsgame/fps.cpp" />
+		<Unit filename="../fpsgame/fragmessages.cpp" />
+		<Unit filename="../fpsgame/fragmessages.h" />
 		<Unit filename="../fpsgame/game.h">
 			<Option compile="1" />
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="../fpsgame/grapple.h" />
+		<Unit filename="../fpsgame/race.h" />
 		<Unit filename="../fpsgame/render.cpp" />
 		<Unit filename="../fpsgame/scoreboard.cpp" />
 		<Unit filename="../fpsgame/server.cpp" />
+		<Unit filename="../fpsgame/steam.cpp" />
+		<Unit filename="../fpsgame/steam.h" />
 		<Unit filename="../fpsgame/waypoint.cpp" />
 		<Unit filename="../fpsgame/weapon.cpp" />
-		<Unit filename="../shared/cJSON/cJSON.c">
+		<Unit filename="../fpsgame/weapon.h" />
+		<Unit filename="../fpsgame/weaponstats.cpp" />
+		<Unit filename="../fpsgame/weaponstats.h" />
+		<Unit filename="../fpsgame/weaponstats_type.h" />
+		<Unit filename="../shared/b64/b64.h" />
+		<Unit filename="../shared/b64/buffer.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../shared/cJSON/cJSON.h" />
+		<Unit filename="../shared/b64/decode.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../shared/b64/encode.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../shared/cJSON.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../shared/cJSON.h" />
 		<Unit filename="../shared/command.h" />
 		<Unit filename="../shared/crypto.cpp" />
 		<Unit filename="../shared/cube.h">
@@ -211,6 +235,38 @@
 		<Unit filename="../shared/curl/stdcheaders.h" />
 		<Unit filename="../shared/curl/system.h" />
 		<Unit filename="../shared/curl/typecheck-gcc.h" />
+		<Unit filename="../shared/discord/achievement_manager.cpp" />
+		<Unit filename="../shared/discord/achievement_manager.h" />
+		<Unit filename="../shared/discord/activity_manager.cpp" />
+		<Unit filename="../shared/discord/activity_manager.h" />
+		<Unit filename="../shared/discord/application_manager.cpp" />
+		<Unit filename="../shared/discord/application_manager.h" />
+		<Unit filename="../shared/discord/core.cpp" />
+		<Unit filename="../shared/discord/core.h" />
+		<Unit filename="../shared/discord/discord.h" />
+		<Unit filename="../shared/discord/discord_game_sdk.h" />
+		<Unit filename="../shared/discord/event.h" />
+		<Unit filename="../shared/discord/ffi.h" />
+		<Unit filename="../shared/discord/image_manager.cpp" />
+		<Unit filename="../shared/discord/image_manager.h" />
+		<Unit filename="../shared/discord/lobby_manager.cpp" />
+		<Unit filename="../shared/discord/lobby_manager.h" />
+		<Unit filename="../shared/discord/network_manager.cpp" />
+		<Unit filename="../shared/discord/network_manager.h" />
+		<Unit filename="../shared/discord/overlay_manager.cpp" />
+		<Unit filename="../shared/discord/overlay_manager.h" />
+		<Unit filename="../shared/discord/relationship_manager.cpp" />
+		<Unit filename="../shared/discord/relationship_manager.h" />
+		<Unit filename="../shared/discord/storage_manager.cpp" />
+		<Unit filename="../shared/discord/storage_manager.h" />
+		<Unit filename="../shared/discord/store_manager.cpp" />
+		<Unit filename="../shared/discord/store_manager.h" />
+		<Unit filename="../shared/discord/types.cpp" />
+		<Unit filename="../shared/discord/types.h" />
+		<Unit filename="../shared/discord/user_manager.cpp" />
+		<Unit filename="../shared/discord/user_manager.h" />
+		<Unit filename="../shared/discord/voice_manager.cpp" />
+		<Unit filename="../shared/discord/voice_manager.h" />
 		<Unit filename="../shared/ents.h" />
 		<Unit filename="../shared/geom.cpp" />
 		<Unit filename="../shared/geom.h" />
@@ -227,14 +283,13 @@
 		<Unit filename="../shared/tools.cpp" />
 		<Unit filename="../shared/tools.h" />
 		<Unit filename="../shared/zip.cpp" />
+		<Unit filename="cardboard.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
 		<Unit filename="mingw.rc">
 			<Option compilerVar="WINDRES" />
 			<Option compiler="gcc" use="1" buildCommand="$rescomp -F $WINDRES_TARGET -i $file -J rc -o $resource_output -O coff $res_includes" />
 		</Unit>
-		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
-		</Extensions>
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

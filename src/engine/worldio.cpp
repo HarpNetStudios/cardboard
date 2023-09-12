@@ -751,18 +751,16 @@ void saveslotconfig(stream* h, Slot& s, int index)
 		if(s.shader)
 		{
 			h->printf("setshader %s\n", s.shader->name);
+		
+			// this code does not account for uniform, pixel or vertex params. fix eventually. -Y 2023-09-11
+			
+			loopvj(s.params)
+			{
+				h->printf("setshaderparam \"%s\"", s.params[j].name);
+				for(int k = 0; k < 4; ++k) h->printf(" %f", s.params[j].val[k]);
+				h->printf("\n");
+			}
 		}
-		// old standard, too lazy to rewrite. -Y 12/16/19
-		/*
-		loopvj(s.params)
-		{
-			h->printf("set%sparam", s.params[j].type == SHPARAM_LOOKUP ? "shader" : (s.params[j].type == SHPARAM_UNIFORM ? "uniform" : (s.params[j].type == SHPARAM_PIXEL ? "pixel" : "vertex")));
-			if(s.params[j].type == SHPARAM_LOOKUP || s.params[j].type == SHPARAM_UNIFORM) h->printf(" \"%s\"", s.params[j].name);
-			else h->printf(" %d", s.params[j].index);
-			for(int k = 0; k < 4; ++k) h->printf(" %f", s.params[j].val[k]);
-			h->printf("\n");
-		}
-		*/
 	}
 	loopvj(s.sts)
 	{

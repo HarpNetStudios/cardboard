@@ -460,6 +460,30 @@
     <ClInclude Include="..\engine\icon.h">
       <Filter>engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared\curl\curl.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\curlver.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\easy.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\mprintf.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\multi.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\stdcheaders.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\system.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\typecheck-gcc.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="shared">
@@ -480,11 +504,14 @@
     <Filter Include="docs">
       <UniqueIdentifier>{2a4b0ce2-2226-49a6-9c7d-e4a15c9311f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="shared\discord">
-      <UniqueIdentifier>{4046b8b6-ab84-460e-bf7d-f194a6aa64d2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shared\b64">
       <UniqueIdentifier>{c4e0bb67-4fa4-4b6f-8d4d-1a7b64abde38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared\curl">
+      <UniqueIdentifier>{cfa11a22-3848-42dd-86af-8b1184f8449a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared\discord">
+      <UniqueIdentifier>{4046b8b6-ab84-460e-bf7d-f194a6aa64d2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

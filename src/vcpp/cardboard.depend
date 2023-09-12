@@ -2511,3 +2511,1359 @@
 1571282929 source:f:\!code\c++\cardboard-rewrite\src\engine\translate.cpp
 	"engine.h"
 
+1674389278 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\engine.h
+	"cube.h"
+	"world.h"
+	"octa.h"
+	"lightmap.h"
+	"bih.h"
+	"texture.h"
+	"model.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\cube.h
+	<cmath>
+	<cstring>
+	<cstdio>
+	<cstdlib>
+	<cctype>
+	<cstdarg>
+	<climits>
+	<cassert>
+	<ctime>
+	<string>
+	<thread>
+	<mutex>
+	<regex>
+	"windows.h"
+	<eh.h>
+	<dbghelp.h>
+	<intrin.h>
+	"SDL.h"
+	<OpenGL/gl.h>
+	<SDL.h>
+	<SDL_opengl.h>
+	<SDL_gamecontroller.h>
+	<discord/discord_game_sdk.h>
+	<discord/discord.h>
+	<steam/steam_api.h>
+	<b64/b64.h>
+	<enet/enet.h>
+	<curl/curl.h>
+	<cJSON.h>
+	<zlib.h>
+	"translate.h"
+	"tools.h"
+	"geom.h"
+	"ents.h"
+	"command.h"
+	"glexts.h"
+	"glemu.h"
+	"iengine.h"
+	"igame.h"
+	"game.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl.h
+	"SDL_main.h"
+	"SDL_stdinc.h"
+	"SDL_assert.h"
+	"SDL_atomic.h"
+	"SDL_audio.h"
+	"SDL_clipboard.h"
+	"SDL_cpuinfo.h"
+	"SDL_endian.h"
+	"SDL_error.h"
+	"SDL_events.h"
+	"SDL_filesystem.h"
+	"SDL_gamecontroller.h"
+	"SDL_haptic.h"
+	"SDL_hints.h"
+	"SDL_joystick.h"
+	"SDL_loadso.h"
+	"SDL_log.h"
+	"SDL_messagebox.h"
+	"SDL_metal.h"
+	"SDL_mutex.h"
+	"SDL_power.h"
+	"SDL_render.h"
+	"SDL_rwops.h"
+	"SDL_sensor.h"
+	"SDL_shape.h"
+	"SDL_system.h"
+	"SDL_thread.h"
+	"SDL_timer.h"
+	"SDL_version.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_main.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_stdinc.h
+	"SDL_config.h"
+	<sys/types.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdarg.h>
+	<stdlib.h>
+	<malloc.h>
+	<stddef.h>
+	<stdarg.h>
+	<memory.h>
+	<string.h>
+	<strings.h>
+	<wchar.h>
+	<inttypes.h>
+	<stdint.h>
+	<ctype.h>
+	<math.h>
+	<float.h>
+	<alloca.h>
+	<malloc.h>
+	<malloc.h>
+	<malloc.h>
+	<stdlib.h>
+	<sal.h>
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_config.h
+	"SDL_platform.h"
+	"SDL_config_windows.h"
+	"SDL_config_winrt.h"
+	"SDL_config_macosx.h"
+	"SDL_config_iphoneos.h"
+	"SDL_config_android.h"
+	"SDL_config_psp.h"
+	"SDL_config_os2.h"
+	"SDL_config_minimal.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_platform.h
+	"AvailabilityMacros.h"
+	"TargetConditionals.h"
+	<winapifamily.h>
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\begin_code.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\close_code.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_config_windows.h
+	"SDL_platform.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_config_winrt.h
+	"SDL_platform.h"
+	<sdkddkver.h>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_config_macosx.h
+	"SDL_platform.h"
+	<AvailabilityMacros.h>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_config_iphoneos.h
+	"SDL_platform.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_config_android.h
+	"SDL_platform.h"
+	<stdarg.h>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_config_psp.h
+	"SDL_platform.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_config_os2.h
+	"SDL_platform.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_config_minimal.h
+	"SDL_platform.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_assert.h
+	"SDL_config.h"
+	"begin_code.h"
+	<signal.h>
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_atomic.h
+	"SDL_stdinc.h"
+	"SDL_platform.h"
+	"begin_code.h"
+	<sys/cpuinline.h>
+	<mbarrier.h>
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_audio.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_endian.h"
+	"SDL_mutex.h"
+	"SDL_thread.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_error.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_endian.h
+	"SDL_stdinc.h"
+	<endian.h>
+	<endian.h>
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_mutex.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_thread.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_atomic.h"
+	"SDL_mutex.h"
+	"begin_code.h"
+	<process.h>
+	<process.h>
+	<stdlib.h>
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_rwops.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_clipboard.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_cpuinfo.h
+	"SDL_stdinc.h"
+	<intrin.h>
+	<intrin.h>
+	<altivec.h>
+	<arm_neon.h>
+	<armintr.h>
+	<arm_neon.h>
+	<arm64intr.h>
+	<arm64_neon.h>
+	<mm3dnow.h>
+	<immintrin.h>
+	<mmintrin.h>
+	<xmmintrin.h>
+	<emmintrin.h>
+	<pmmintrin.h>
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_events.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_keyboard.h"
+	"SDL_mouse.h"
+	"SDL_joystick.h"
+	"SDL_gamecontroller.h"
+	"SDL_quit.h"
+	"SDL_gesture.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_video.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_surface.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_pixels.h
+	"SDL_stdinc.h"
+	"SDL_endian.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_rect.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_pixels.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_surface.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_blendmode.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_blendmode.h
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_keyboard.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_keycode.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_keycode.h
+	"SDL_stdinc.h"
+	"SDL_scancode.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_scancode.h
+	"SDL_stdinc.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_mouse.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_joystick.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_gamecontroller.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_rwops.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_quit.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_gesture.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_touch.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_filesystem.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_haptic.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_hints.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_loadso.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_log.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_messagebox.h
+	"SDL_stdinc.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_metal.h
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_power.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_render.h
+	"SDL_stdinc.h"
+	"SDL_rect.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_sensor.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_shape.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_surface.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_system.h
+	"SDL_stdinc.h"
+	"SDL_keyboard.h"
+	"SDL_render.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_timer.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_version.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_opengl.h
+	"SDL_config.h"
+	"gl_mangle.h"
+	<windows.h>
+	"SDL_opengl_glext.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_opengl_glext.h
+	<windows.h>
+	<stddef.h>
+	<inttypes.h>
+	<inttypes.h>
+	<inttypes.h>
+	<stdint.h>
+	<stdint.h>
+	<inttypes.h>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\discord_game_sdk.h
+	<stdint.h>
+	<string.h>
+	<stdbool.h>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\discord.h
+	"types.h"
+	"core.h"
+	"application_manager.h"
+	"user_manager.h"
+	"image_manager.h"
+	"activity_manager.h"
+	"relationship_manager.h"
+	"lobby_manager.h"
+	"network_manager.h"
+	"overlay_manager.h"
+	"storage_manager.h"
+	"store_manager.h"
+	"voice_manager.h"
+	"achievement_manager.h"
+
+1694437277 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\types.h
+	"ffi.h"
+	"event.h"
+	<cstdint>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\ffi.h
+	<stdint.h>
+	<string.h>
+	<stdbool.h>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\event.h
+	<functional>
+	<vector>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\core.h
+	"types.h"
+	"application_manager.h"
+	"user_manager.h"
+	"image_manager.h"
+	"activity_manager.h"
+	"relationship_manager.h"
+	"lobby_manager.h"
+	"network_manager.h"
+	"overlay_manager.h"
+	"storage_manager.h"
+	"store_manager.h"
+	"voice_manager.h"
+	"achievement_manager.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\application_manager.h
+	"types.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\user_manager.h
+	"types.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\image_manager.h
+	"types.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\activity_manager.h
+	"types.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\relationship_manager.h
+	"types.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\lobby_manager.h
+	"types.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\network_manager.h
+	"types.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\overlay_manager.h
+	"types.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\storage_manager.h
+	"types.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\store_manager.h
+	"types.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\voice_manager.h
+	"types.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\achievement_manager.h
+	"types.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\steam_api.h
+	"steam_api_common.h"
+	"isteamclient.h"
+	"isteamuser.h"
+	"isteamfriends.h"
+	"isteamutils.h"
+	"isteammatchmaking.h"
+	"isteamuserstats.h"
+	"isteamapps.h"
+	"isteamnetworking.h"
+	"isteamremotestorage.h"
+	"isteamscreenshots.h"
+	"isteammusic.h"
+	"isteammusicremote.h"
+	"isteamhttp.h"
+	"isteamcontroller.h"
+	"isteamugc.h"
+	"isteamapplist.h"
+	"isteamhtmlsurface.h"
+	"isteaminventory.h"
+	"isteamvideo.h"
+	"isteamparentalsettings.h"
+	"isteaminput.h"
+	"isteamremoteplay.h"
+	"isteamnetworkingmessages.h"
+	"isteamnetworkingsockets.h"
+	"isteamnetworkingutils.h"
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\steam_api_common.h
+	"steamtypes.h"
+	"steamclientpublic.h"
+	"steam_api_internal.h"
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\steamtypes.h
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\steamclientpublic.h
+	"steamtypes.h"
+	"steamuniverse.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\steamuniverse.h
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\steam_api_internal.h
+	<string.h>
+	"../../clientdll/steam_api_callback_inspection.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamclient.h
+	"steam_api_common.h"
+
+1682712001 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamuser.h
+	"steam_api_common.h"
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamfriends.h
+	"steam_api_common.h"
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamutils.h
+	"steam_api_common.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteammatchmaking.h
+	"steam_api_common.h"
+	"matchmakingtypes.h"
+	"isteamfriends.h"
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\matchmakingtypes.h
+	<stdio.h>
+	<string.h>
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamuserstats.h
+	"steam_api_common.h"
+	"isteamremotestorage.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamremotestorage.h
+	"steam_api_common.h"
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamapps.h
+	"steam_api_common.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamnetworking.h
+	"steam_api_common.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamscreenshots.h
+	"steam_api_common.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteammusic.h
+	"steam_api_common.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteammusicremote.h
+	"steam_api_common.h"
+	"isteammusic.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamhttp.h
+	"steam_api_common.h"
+	"steamhttpenums.h"
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\steamhttpenums.h
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamcontroller.h
+	"steam_api_common.h"
+	"isteaminput.h"
+
+1682712001 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteaminput.h
+	"steam_api_common.h"
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamugc.h
+	"steam_api_common.h"
+	"isteamremotestorage.h"
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamapplist.h
+	"steam_api_common.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamhtmlsurface.h
+	"steam_api_common.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteaminventory.h
+	"steam_api_common.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamvideo.h
+	"steam_api_common.h"
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamparentalsettings.h
+	"steam_api_common.h"
+
+1682712001 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamremoteplay.h
+	"steam_api_common.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamnetworkingmessages.h
+	"steamnetworkingtypes.h"
+	"steam_api_common.h"
+
+1680201690 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\steamnetworkingtypes.h
+	<string.h>
+	<stdint.h>
+	"steamtypes.h"
+	"steamclientpublic.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamnetworkingsockets.h
+	"steamnetworkingtypes.h"
+	"steam_api_common.h"
+
+1680108513 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\steam\isteamnetworkingutils.h
+	"steamnetworkingtypes.h"
+	"steam_api_common.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\b64\b64.h
+
+1669258582 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\enet\include\enet\enet.h
+	<stdlib.h>
+	"enet/win32.h"
+	"enet/unix.h"
+	"enet/types.h"
+	"enet/protocol.h"
+	"enet/list.h"
+	"enet/callbacks.h"
+
+1669258582 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\enet\include\enet\win32.h
+	<stdlib.h>
+	<winsock2.h>
+
+1669258582 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\enet\include\enet\unix.h
+	<stdlib.h>
+	<sys/time.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<netinet/in.h>
+	<unistd.h>
+
+1669258582 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\enet\include\enet\types.h
+
+1669258582 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\enet\include\enet\protocol.h
+	"enet/types.h"
+
+1669258582 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\enet\include\enet\list.h
+	<stdlib.h>
+
+1669258582 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\enet\include\enet\callbacks.h
+	<stdlib.h>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\curl\curl.h
+	"curlver.h"
+	"system.h"
+	<stdio.h>
+	<limits.h>
+	<osreldate.h>
+	<sys/types.h>
+	<time.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<sys/select.h>
+	<sys/socket.h>
+	<sys/time.h>
+	<support/SupportDefs.h>
+	"easy.h"
+	"multi.h"
+	"typecheck-gcc.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\curl\curlver.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\curl\system.h
+	<winsock2.h>
+	<windows.h>
+	<ws2tcpip.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<sys/poll.h>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\curl\easy.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\curl\multi.h
+	"curl.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\curl\typecheck-gcc.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\cjson.h
+	<stddef.h>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\zlib.h
+	"zconf.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\zconf.h
+	<stddef.h>
+	<windows.h>
+	<limits.h>
+	<sys/types.h>
+	<stdarg.h>
+	<stddef.h>
+	<unistd.h>
+	<unixio.h>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\translate.h
+
+1674388968 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\tools.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\geom.h
+
+1672628330 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\ents.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\command.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\glexts.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\glemu.h
+
+1690269522 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\iengine.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\igame.h
+
+1690270521 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\game.h
+	"cube.h"
+	"weapon.h"
+	"ai.h"
+	"weaponstats_type.h"
+	"fragmessages.h"
+	"weaponstats.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\weapon.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\ai.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\weaponstats_type.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\fragmessages.h
+	"game.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\weaponstats.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\world.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\octa.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\lightmap.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\bih.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\texture.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\model.h
+
+1690270521 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\game.h
+	"cube.h"
+	"weapon.h"
+	"ai.h"
+	"weaponstats_type.h"
+	"fragmessages.h"
+	"weaponstats.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\cube.h
+	<cmath>
+	<cstring>
+	<cstdio>
+	<cstdlib>
+	<cctype>
+	<cstdarg>
+	<climits>
+	<cassert>
+	<ctime>
+	<string>
+	<thread>
+	<mutex>
+	<regex>
+	"windows.h"
+	<eh.h>
+	<dbghelp.h>
+	<intrin.h>
+	"SDL.h"
+	<OpenGL/gl.h>
+	<SDL.h>
+	<SDL_opengl.h>
+	<SDL_gamecontroller.h>
+	<discord/discord_game_sdk.h>
+	<discord/discord.h>
+	<steam/steam_api.h>
+	<b64/b64.h>
+	<enet/enet.h>
+	<curl/curl.h>
+	<cJSON.h>
+	<zlib.h>
+	"translate.h"
+	"tools.h"
+	"geom.h"
+	"ents.h"
+	"command.h"
+	"glexts.h"
+	"glemu.h"
+	"iengine.h"
+	"igame.h"
+	"game.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\3dgui.cpp
+	"engine.h"
+	"textedit.h"
+
+1674389278 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\engine.h
+	"cube.h"
+	"world.h"
+	"octa.h"
+	"lightmap.h"
+	"bih.h"
+	"texture.h"
+	"model.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\textedit.h
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\bih.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\blend.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\blob.cpp
+	"engine.h"
+
+1690246287 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\client.cpp
+	"engine.h"
+
+1674389289 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\command.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\console.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\decal.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\dynlight.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\glare.cpp
+	"engine.h"
+	"rendertarget.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\rendertarget.h
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\grass.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\lightmap.cpp
+	"engine.h"
+
+1694435375 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\main.cpp
+	<engine.h>
+	<game.h>
+	<icon.h>
+	"SDL_syswm.h"
+
+1689239906 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\icon.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_syswm.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_version.h"
+	<windows.h>
+	<Inspectable.h>
+	<X11/Xlib.h>
+	<X11/Xatom.h>
+	<directfb.h>
+	<UIKit/UIKit.h>
+	"SDL_egl.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_egl.h
+	<EGL/egl.h>
+	<EGL/eglext.h>
+	<stdint.h>
+	<inttypes.h>
+	<stdint.h>
+	<windows.h>
+	<Unknwn.h>
+	<mir_toolkit/mir_client_library.h>
+	<X11/Xlib.h>
+	<X11/Xutil.h>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\material.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\menus.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\normal.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\octa.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\octaedit.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\octarender.cpp
+	"engine.h"
+
+1674375261 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\physics.cpp
+	"engine.h"
+	"mpr.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\mpr.h
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\pvs.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\raw.cpp
+	"engine.h"
+	"SDL_syswm.h"
+	<fcntl.h>
+	<unistd.h>
+	<errno.h>
+	<poll.h>
+	<linux/input.h>
+
+1690547570 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\rendergl.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\rendermodel.cpp
+	"engine.h"
+	"ragdoll.h"
+	"animmodel.h"
+	"vertmodel.h"
+	"skelmodel.h"
+	"md2.h"
+	"md3.h"
+	"md5.h"
+	"obj.h"
+	"smd.h"
+	"iqm.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\ragdoll.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\animmodel.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\vertmodel.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\skelmodel.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\md2.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\md3.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\md5.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\obj.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\smd.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\iqm.h
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\renderparticles.cpp
+	"engine.h"
+	"rendertarget.h"
+	"depthfx.h"
+	"explosion.h"
+	"lensflare.h"
+	"lightning.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\depthfx.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\explosion.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\lensflare.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\lightning.h
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\rendersky.cpp
+	"engine.h"
+
+1690245938 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\rendertext.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\renderva.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\server.cpp
+	"engine.h"
+	"shellapi.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\serverbrowser.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\shader.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\shadowmap.cpp
+	"engine.h"
+	"rendertarget.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\sound.cpp
+	"engine.h"
+	"SDL_mixer.h"
+	<windows.h>
+	<sys/mman.h>
+	<fcntl.h>
+	<wchar.h>
+	<unistd.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<sys/mman.h>
+	<fcntl.h>
+	<wchar.h>
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_mixer.h
+	"SDL_stdinc.h"
+	"SDL_rwops.h"
+	"SDL_audio.h"
+	"SDL_endian.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\texture.cpp
+	"engine.h"
+	"SDL_image.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\include\sdl_image.h
+	"SDL.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\translate.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\water.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\world.cpp
+	"engine.h"
+
+1694435243 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\worldio.cpp
+	"engine.h"
+
+1694414416 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\ai.cpp
+	"game.h"
+
+1674389113 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\client.cpp
+	"game.h"
+	"weaponstats.h"
+	"capture.h"
+	"ctf.h"
+	"collect.h"
+	"race.h"
+	"extserver.h"
+	"capture.h"
+	"ctf.h"
+	"collect.h"
+	"race.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\capture.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\ctf.h
+
+1694372535 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\collect.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\race.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\extserver.h
+
+1690548856 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\discord.cpp
+	"game.h"
+	"engine.h"
+	"cube.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\entities.cpp
+	"game.h"
+
+1694435771 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\fps.cpp
+	"game.h"
+	"weaponstats.h"
+	"colors.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\colors.h
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\render.cpp
+	"game.h"
+
+1694374862 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\scoreboard.cpp
+	"game.h"
+	"colors.h"
+	"weaponstats.h"
+
+1673000609 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\server.cpp
+	"game.h"
+	"capture.h"
+	"ctf.h"
+	"collect.h"
+	"race.h"
+	"capture.h"
+	"ctf.h"
+	"collect.h"
+	"race.h"
+	"extinfo.h"
+	"aiman.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\extinfo.h
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\aiman.h
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\waypoint.cpp
+	"game.h"
+
+1694414362 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\weapon.cpp
+	"game.h"
+	"weaponstats.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\crypto.cpp
+	"cube.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\geom.cpp
+	"cube.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\glemu.cpp
+	"cube.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\microtar.c
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<string.h>
+	"microtar.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\microtar.h
+	<stdio.h>
+	<stdlib.h>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\stream.cpp
+	"cube.h"
+	<shlobj.h>
+	<unistd.h>
+	<sys/stat.h>
+	<sys/types.h>
+	<dirent.h>
+
+1690244570 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\tools.cpp
+	"cube.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\zip.cpp
+	"cube.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\vcpp\mingw.rc
+	"cardboard.rc"
+
+1694435920 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\vcpp\cardboard.rc
+	"resource.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\vcpp\resource.h
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\engine\gamepad.cpp
+	"engine.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\fragmessages.cpp
+	"game.h"
+
+1694403242 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\steam.cpp
+	"game.h"
+	"engine.h"
+	"cube.h"
+	"steam/steam_api.h"
+	"steam.h"
+
+1669258581 c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\steam.h
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\fpsgame\weaponstats.cpp
+	"game.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\b64\buffer.c
+	<stdlib.h>
+	<ctype.h>
+	"b64.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\b64\decode.c
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	"b64.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\b64\encode.c
+	<stdio.h>
+	<stdlib.h>
+	"b64.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\cjson.c
+	<string.h>
+	<stdio.h>
+	<math.h>
+	<stdlib.h>
+	<limits.h>
+	<ctype.h>
+	<float.h>
+	<locale.h>
+	"cJSON.h"
+
+1694435920 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\vcpp\cardboard.rc
+	"resource.h"
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\achievement_manager.cpp
+	"achievement_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\activity_manager.cpp
+	"activity_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\application_manager.cpp
+	"application_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\core.cpp
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\image_manager.cpp
+	"image_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\lobby_manager.cpp
+	"lobby_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\network_manager.cpp
+	"network_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\overlay_manager.cpp
+	"overlay_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\relationship_manager.cpp
+	"relationship_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\storage_manager.cpp
+	"storage_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\store_manager.cpp
+	"store_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\types.cpp
+	"types.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\user_manager.cpp
+	"user_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+
+1669258581 source:c:\users\zsolt\source\repos\harpnetstudios\cardboard\src\shared\discord\voice_manager.cpp
+	"voice_manager.h"
+	"core.h"
+	<cstring>
+	<memory>
+

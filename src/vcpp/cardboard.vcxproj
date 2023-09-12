@@ -481,6 +481,14 @@
     <ClInclude Include="..\shared\cJSON.h" />
     <ClInclude Include="..\shared\command.h" />
     <ClInclude Include="..\shared\cube.h" />
+    <ClInclude Include="..\shared\curl\curl.h" />
+    <ClInclude Include="..\shared\curl\curlver.h" />
+    <ClInclude Include="..\shared\curl\easy.h" />
+    <ClInclude Include="..\shared\curl\mprintf.h" />
+    <ClInclude Include="..\shared\curl\multi.h" />
+    <ClInclude Include="..\shared\curl\stdcheaders.h" />
+    <ClInclude Include="..\shared\curl\system.h" />
+    <ClInclude Include="..\shared\curl\typecheck-gcc.h" />
     <ClInclude Include="..\shared\discord\achievement_manager.h" />
     <ClInclude Include="..\shared\discord\activity_manager.h" />
     <ClInclude Include="..\shared\discord\application_manager.h" />
