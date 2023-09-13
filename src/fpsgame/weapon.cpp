@@ -622,6 +622,8 @@ namespace game
 	void shoteffects(int gun, const vec &from, const vec &to, fpsent *d, bool local, int id, int prevaction)     // create visual effect from a shot
 	{
 		int sound = guns[gun].sound, pspeed = 25;
+		float dist = to.dist(from);
+		bool toofar = (guns[gun].range && dist+10 > guns[gun].range);
 		switch(gun)
 		{
 			case GUN_FIST:
@@ -636,7 +638,7 @@ namespace game
 					particle_flare(d->muzzle, d->muzzle, 200, PART_MUZZLE_FLASH3, 0xFFFFFF, 2.75f, d);
 				loopi(guns[gun].rays)
 				{
-					particle_splash(PART_SPARK, 20, 250, rays[i], 0xB49B4B, 0.24f);
+					if(!toofar) particle_splash(PART_SPARK, 20, 250, rays[i], 0xB49B4B, 0.24f);
 					particle_flare(hudgunorigin(gun, from, rays[i], d), rays[i], 300, PART_STREAK, 0xFFC864, 0.28f);
 					if(!local) adddecal(DECAL_BULLET, rays[i], vec(from).sub(rays[i]).safenormalize(), 2.0f);
 				}
@@ -647,7 +649,7 @@ namespace game
 			case GUN_CG:
 			case GUN_SMG:
 			{
-				particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
+				if(!toofar) particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
 				particle_flare(hudgunorigin(gun, from, to, d), to, 600, PART_STREAK, 0xFFC864, 0.28f);
 				if(muzzleflash && d->muzzle.x >= 0)
 					particle_flare(d->muzzle, d->muzzle, gun==GUN_CG ? 100 : 200, PART_MUZZLE_FLASH1, 0xFFFFFF, gun==GUN_CG ? 2.25f : 1.25f, d);
@@ -677,7 +679,7 @@ namespace game
 			}
 
 			case GUN_RIFLE:
-				particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
+				if(!toofar) particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
 				
 				int rcolor = !strcmp(d->team, "red") ? 0xFF0000 : 0x0000FF;
 				if(!m_teammode || !teamcolorrifle) rcolor = rifletrail;

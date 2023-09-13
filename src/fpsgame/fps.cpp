@@ -341,6 +341,8 @@ namespace game
 	void pickgamespawn(fpsent *d)
 	{
 		int tag = cmode ? cmode->getspawngroup(d) : 0;
+		if(m_teammode && !cmode) tag = (!strcmp(d->team, "red") ? 1 : (!strcmp(d->team, "blue") ? 2 : 0));
+		//conoutf("spawn tag: %d, team: %s, cmode: %s", tag, d->team, cmode ? "true" : "false");
 		findplayerspawn(d, -1, tag);
 	}
 
