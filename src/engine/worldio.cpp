@@ -1140,6 +1140,9 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 	lilswap(&hdr.version, 6);
 	if(memcmp(hdr.magic, "CARD", 4) || hdr.worldsize <= 0|| hdr.numents < 0) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
 	if(hdr.version>MAPVERSION) { conoutf(CON_ERROR, "map %s requires a newer version of this game", cmrname); delete f; return false; }
+	#ifndef STANDALONE
+	if (hdr.worldsize <= 1) { conoutf(CON_ERROR, "could not read map %s: likely a stripped map", cmrname); return false; }
+	#endif
 	compatheader chdr;
 	if(hdr.version <= 28)
 	{

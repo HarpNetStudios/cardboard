@@ -369,7 +369,6 @@ static const char* officialmaps[] =
 	"hr",
 	"illusion",
 	"indust1",
-	"maze",
 	"neo_falls",
 	"neo_noir",
 	"precipice",

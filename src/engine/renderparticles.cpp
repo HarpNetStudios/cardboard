@@ -1545,11 +1545,30 @@ void updateparticles()
 			entity &e = *ents[entgroup[i]];
 			particle_textcopy(e.o, entname(e), PART_TEXT, 1, 0xFF4B19, 2.0f);
 		}
+		int text_color = 0;
 		loopv(ents)
 		{
 			entity &e = *ents[i];
 			if(e.type==ET_EMPTY) continue;
-			particle_textcopy(e.o, entname(e), PART_TEXT, 1, 0x1EC850, 2.0f);
+			if(e.type==ET_PLAYERSTART || e.type==FLAG)
+			{
+				switch(e.attr2) {
+					case 0:
+						text_color = 0xFFFFFF;
+						break;
+					case 1:
+						text_color = 0xFF0000;
+						break;
+					case 2:
+						text_color = 0x0000FF;
+						break;
+					default:
+						text_color = 0x1EC850;
+						break;
+				}
+			}
+			else text_color = 0x1EC850;
+			particle_textcopy(e.o, entname(e), PART_TEXT, 1, text_color, 2.0f);
 			regular_particle_splash(PART_EDIT, 2, 40, e.o, 0x3232FF, 0.32f*particlesize/100.0f);
 		}
 	}

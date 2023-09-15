@@ -612,7 +612,7 @@ namespace entities
 				renderentarrow(e, vec((int)(char)e.attr3*10.0f, (int)(char)e.attr2*10.0f, e.attr1*12.5f).normalize(), 4);
 				break;
 
-case RACE_START:
+			case RACE_START:
 				loopv(ents) {
 					// successor
 					if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == 1) {
