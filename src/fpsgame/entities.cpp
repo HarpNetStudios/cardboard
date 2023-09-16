@@ -47,15 +47,13 @@ namespace entities
 		static const char * const entmdlnames[] =
 		{
 			NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+			NULL, NULL, // health, ammo
+			NULL, NULL, "race/gem", // race start, finish, checkpoint
 			NULL, NULL, NULL, NULL, NULL, NULL,
-			NULL, NULL, NULL, NULL, NULL, NULL,
-			NULL, NULL,
-			NULL,
-			NULL, NULL,
-			NULL,
-			NULL, NULL,
-			NULL, NULL,
-			NULL
+			NULL, NULL, // teleport, teledest
+			NULL, // base
+			NULL, NULL, NULL, NULL, NULL,
+			NULL // flag
 		};
 		return entmdlnames[type];
 	}
@@ -79,7 +77,7 @@ namespace entities
 				case I_AMMO: case I_HEALTH:
 					break;
 				case RACE_START: case RACE_FINISH: case RACE_CHECKPOINT:
-					if (!m_race) continue;
+					if (!m_race || !m_edit) continue;
 					break;
 			}
 			const char *mdl = entmdlname(i);
@@ -110,6 +108,8 @@ namespace entities
 			{
 				case TELEPORT:
 					if(e.attr2 < 0) continue;
+					break;
+				case RACE_CHECKPOINT:
 					break;
 				default:
 					if(!e.spawned() || e.type < I_AMMO || e.type > I_HEALTH) continue;
@@ -594,6 +594,14 @@ namespace entities
 		}
 	}
 
+	void raceyaw(extentity& e)
+	{
+		gle::colorf(0, 1, 1);
+		vec dir;
+		vecfromyawpitch(e.attr1, 0, 1, 0, dir);
+		renderentarrow(e, dir, 4);
+	}
+
 	void entradius(extentity &e, bool color)
 	{
 		int maxcheckpoints = 0;
@@ -613,19 +621,24 @@ namespace entities
 				break;
 
 			case RACE_START:
+				gle::colorf(1, 0, 0);
 				loopv(ents) {
 					// successor
 					if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == 1) {
 						renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
 					}
 					// precessor
+					/*
 					if(ents[i]->type == RACE_FINISH) {
 						renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
 					}
+					*/
 				}
+				raceyaw(e);
 				break;
 
 			case RACE_CHECKPOINT:
+				gle::colorf(1, 0, 0);
 				loopv(ents) {
 					// successor
 					if(ents[i]->type == RACE_CHECKPOINT && (e.attr2+1) == ents[i]->attr2) {
@@ -635,21 +648,29 @@ namespace entities
 					if(ents[i]->type == RACE_CHECKPOINT && (e.attr2-1) == ents[i]->attr2) {
 						renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
 					}
+					else if (ents[i]->type == RACE_START && e.attr2 == 1) {
+						renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
+					}
 				}
+				raceyaw(e);
 				break;
 
 			case RACE_FINISH:
+				gle::colorf(1, 0, 0);
 				loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 > maxcheckpoints) {
 					maxcheckpoints = ents[i]->attr2;
 				}
 				// successor
+				/*
 				loopv(ents) if(ents[i]->type == RACE_START) {
 					renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
 				}
+				*/
 				// precessor
 				loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == maxcheckpoints) {
 					renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
 				}
+				raceyaw(e);
 				break;
 
 			case FLAG:

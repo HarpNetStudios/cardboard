@@ -675,7 +675,7 @@ static inline bool plcollide(physent *d, const vec &dir, physent *o)
 
 bool plcollide(physent *d, const vec &dir, bool insideplayercol) // collide with player
 {
-	if(d->type==ENT_CAMERA || d->state!=CS_ALIVE) return false;
+	if(d->type==ENT_CAMERA || d->state!=CS_ALIVE || d->racing) return false;
 	int lastinside = collideinside;
 	physent *insideplayer = NULL;
 	loopdynentcache(x, y, d->o, d->radius)

@@ -1,7 +1,12 @@
 // race.h: client and server state for race gamemode
 #ifndef PARSEMESSAGES
 
+#define raceteamname(s) (!strcmp(s, "red") ? 1 : (!strcmp(s, "blue") ? 2 : 0))
+
 #ifdef SERVMODE
+
+extern void sendspawn(clientinfo *ci);
+
 struct raceservmode : servmode
 #else
 
@@ -45,6 +50,7 @@ struct raceclientmode : clientmode
             d->racetime = 0;
             d->racerank = -1;
             d->racestate = 0;
+            d->racing = true;
         }
     }
 
@@ -68,14 +74,14 @@ struct raceclientmode : clientmode
         temp.index = i;
         v.add(temp);
       }
-      /*putint(p, N_SPAWNLOC);
+      putint(p, N_SPAWNLOC);
       putint(p, v.length());
       loopv(v){
         spawnloc &sploc = v[i];
         loopk(3) putint(p, int(sploc.o[k]*DMF));
         putint(p, sploc.team);
         putint(p, sploc.index);
-      }*/
+      }
     }
 
     void drawblip(fpsent *d, float x, float y, float s, const vec &pos, float size_factor)
@@ -111,7 +117,7 @@ struct raceclientmode : clientmode
       {
           fpsent *p = players[i];
           if(p == player1 || p->state!=CS_ALIVE) continue;
-          if(!m_teammode || strcmp(p->team, player1->team) != 0) settexture("packages/hud/blip_red.png", 3);
+          if(!m_teammode || raceteamname(p->team)) settexture("packages/hud/blip_red.png", 3);
           else settexture("packages/hud/blip_blue.png", 3);
           drawblip(d, x, y, s, p->o, 2.0f);
       }
@@ -151,6 +157,8 @@ struct raceclientmode : clientmode
             pickspawnbyenttype(d, PLAYERSTART);
         } else if (d->racestate == 1) {
             pickspawnbyenttype(d, RACE_CHECKPOINT);
+        } else if (d->racestate == 0) {
+            pickspawnbyenttype(d, RACE_START);
         } else {
             if(entities::ents.inrange(myspawnloc)) {
                 extentity& e = *entities::ents[myspawnloc];
@@ -215,7 +223,7 @@ struct raceclientmode : clientmode
     // int gotcheckpoints[];
     // int timepenalties[];
 
-#define COUNTDOWNSECONDS 3
+#define COUNTDOWNSECONDS 5
 
     void setup() {
         maxcheckpoint = getmaxcheckpoint();
@@ -247,15 +255,15 @@ struct raceclientmode : clientmode
                 m = e.attr2;
             }
         }
-        conoutf("MAX CHECKPOINT: %d", m);
+        //conoutf("MAX CHECKPOINT: %d", m);
         return m;
     }
 
     bool parsespawnloc(ucharbuf &p, bool commit) {
         int numsploc = getint(p);
-        for(int i = 0; i < int(numsploc); ++i){
+        loopi(numsploc){
             vec o;
-            for(int k = 0; k < 3; ++k) o[k] = max(getint(p)/DMF, 0.0f);
+            loopk(3) o[k] = max(getint(p)/DMF, 0.0f);
             int team = getint(p), index = getint(p);
             if(p.overread()) break;
             if(m_teammode ? team < 1 || team > 2 : team) return false;
@@ -272,7 +280,7 @@ struct raceclientmode : clientmode
       if(notgotspawnlocations) return;
       switch(sequence){
       case 0:
-        if(totalmillis - timecounter >= 10000) {
+        if(totalmillis - timecounter >= 1000) {
             sendservmsg("Map load complete (grannies left behind).");
         } else {
           loopv(spawnlocs){
@@ -292,12 +300,12 @@ struct raceclientmode : clientmode
         int remaining = COUNTDOWNSECONDS*1000 - (totalmillis - timecounter);
         if(remaining <= 0){
           sequence = 2;
-          sendservmsg("GO!");
+          sendservmsg("\f4GO!");
           timestarted = totalmillis;
           forcepaused(false);
         }
         else if(remaining/1000 != countdown){
-            defformatstring(msg, "- %d -", countdown--);
+            defformatstring(msg, "\f3- %d -", countdown--);
             sendservmsg(msg);
         }
         break;
@@ -315,13 +323,18 @@ struct raceclientmode : clientmode
 
     bool checkfinished() {
         if(interm) return false;
-        int allplayersfinished = true;
-        loopv(raceinfos) if (raceinfos[i]->timefinished == -1 && raceinfos[i]->cn != -1) allplayersfinished = false;
+        bool allplayersfinished = true;
+        loopv(raceinfos) {
+            //defformatstring(msg, "raceinfo, timefinished:%d cn:%d", raceinfos[i]->timefinished, raceinfos[i]->cn);
+            //sendservmsg(msg);
+            if (raceinfos[i]->timefinished == -1 && raceinfos[i]->cn != -1) 
+                allplayersfinished = false;
+        }
         return allplayersfinished;
     }
 
     void update() {
-        if (totalmillis > lastupdatecheck + 1000) {
+        if (totalmillis > lastupdatecheck + 10) {
             lastupdatecheck = totalmillis;
             if(checkfinished()) server::startintermission();
             loopv(clients) {
@@ -352,7 +365,7 @@ struct raceclientmode : clientmode
             timepenalties = raceinfos[i]->timepenalties;
         }
         loopv(raceinfos) if(raceinfos[i]->cn != cn) {
-            conoutf("cn:%d gotcheckpoints:%d", raceinfos[i]->cn, raceinfos[i]->gotcheckpoints);
+            //conoutf("cn:%d gotcheckpoints:%d", raceinfos[i]->cn, raceinfos[i]->gotcheckpoints);
             if(raceinfos[i]->timefinished > timefinished || raceinfos[i]->gotcheckpoints > gotcheckpoints || (raceinfos[i]->timefinished == timefinished && raceinfos[i]->gotcheckpoints == gotcheckpoints && raceinfos[i]->timepenalties > timepenalties)) rank++;
         }
         return rank;
@@ -370,9 +383,11 @@ struct raceclientmode : clientmode
         return totalmillis - ci->state.racetime;
     }
 
+
+
     void sendfinishannounce(clientinfo *ci) {
         int rank = ci->state.racerank;
-        defformatstring(msg, "%d%s", rank, (rank==1 ? "st" : (rank==2 ? "nd" : (rank==3 ? "rd": "th"))));
+        defformatstring(msg, "%d%s", rank, getordinal(rank));
         sendservmsg(msg);
     }
 
@@ -406,8 +421,6 @@ struct raceclientmode : clientmode
         raceinfos.deletecontents();
     }
 
-    #define raceteamname(s) (!strcmp(s, "red") ? 1 : (!strcmp(s, "blue") ? 2 : 0))
-
     void sendspawnlocs(bool resuscitate = false){
         vector<clientinfo*> activepl;
         loopv(clients){
@@ -417,7 +430,7 @@ struct raceclientmode : clientmode
         }
         vector<spawnloc*> pool[3];
         loopv(spawnlocs) pool[spawnlocs[i]->team].add(spawnlocs[i]);
-        /*loopi(3) pool[i].shuffle();
+        loopi(3) pool[i].shuffle();
         for(int i = 0; i < activepl.length(); i++){
             vector<spawnloc*>& tpool = pool[m_teammode ? raceteamname(activepl[i]->team) : 0];
             if(tpool.length()){
@@ -426,7 +439,7 @@ struct raceclientmode : clientmode
                 if(resuscitate) sendspawn(activepl[i]);
                 tpool.removeunordered(0);
             }
-        }*/
+        }
     }
 
     bool canspawn(clientinfo *ci, bool connecting) {
@@ -434,7 +447,7 @@ struct raceclientmode : clientmode
         /* loopv(raceinfos) if(raceinfos[i]->cn == ci->clientnum){
             if(raceinfos[i]->timefinished > 0) return false;
         } */
-        if (connecting) return true;
+        if (connecting || ci->state.aitype > 0) return true;
         if(notgotspawnlocations) {conoutf("not got spawn locations yet"); return false; }
         int i = 0;
         for(; i < spawnlocs.length(); i++) if(spawnlocs[i]->cn == ci->clientnum) break;
@@ -471,7 +484,7 @@ extern raceclientmode racemode;
 
 #elif SERVMODE
 
-#define RACELAPS 3
+#define RACELAPS 1
 case N_RACEFINISH:
 {
   if(smode==&racemode && cq) {
@@ -480,14 +493,14 @@ case N_RACEFINISH:
           cq->state.racelaps++;
           cq->state.racerank = racemode.getrank(cq->clientnum);
           sendf(-1, 1, "ri7", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
-          conoutf("racelabs:%d RACELAPS:%d timefinished:%d", cq->state.racelaps, RACELAPS, racemode.raceinfos[i]->timefinished);
+          conoutf("laps:%d RACELAPS:%d timefinished:%d cn:%d", cq->state.racelaps, RACELAPS, racemode.raceinfos[i]->timefinished, racemode.raceinfos[i]->cn);
           if (cq->state.racelaps == RACELAPS) {
               cq->state.racestate = 2;
               racemode.raceinfos[i]->timefinished = totalmillis - racemode.timestarted;
               racemode.sendfinishannounce(cq);
-              sendf(-1, 1, "ri ", N_RACEFINISH, cq->clientnum);
+              sendf(-1, 1, "ri", N_RACEFINISH, cq->clientnum);
               // cq->state.state = CS_FINISHED;
-              // sendf(-1, 1, "ri4", N_DIED, cq->clientnum, cq->clientnum, cq->state.frags);
+              sendf(-1, 1, "ri4", N_DIED, cq->clientnum, cq->clientnum, cq->state.frags);
           } else {
               defformatstring(msg, "%d %s REMAINING", RACELAPS - cq->state.racelaps, RACELAPS - cq->state.racelaps != 1 ? "LAPS" : "LAP");
               sendservmsg(msg);
@@ -505,7 +518,7 @@ case N_RACESTART:
           cq->state.racetime = totalmillis;
           cq->state.racerank = racemode.getrank(cq->clientnum);
           cq->state.racestate = 1;
-          sendf(-1, 1, "ri ", N_RACESTART, cq->clientnum);
+          sendf(-1, 1, "ri", N_RACESTART, cq->clientnum);
           sendf(-1, 1, "ri7", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, 0, cq->state.racerank);
       }
   }
@@ -526,6 +539,14 @@ case N_RACECHECKPOINT:
   break;
 }
 
+case N_SPAWNLOC:
+{
+    if (smode == &racemode)
+        if (!racemode.parsespawnloc(p, (ci->state.state != CS_SPECTATOR || ci->privilege || ci->local) && !strcmp(ci->clientmap, smapname)))
+            disconnect_client(sender, DISC_MSGERR);
+    break;
+}
+
 #else
 
 case N_RACEINFO:
@@ -536,7 +557,7 @@ case N_RACEINFO:
   int checkpoint = getint(p);
   int time = getint(p);
   int rank = getint(p);
-  conoutf("N_RACEINFO cn:%d lap:%d checkpoint:%d", rcn, lap, checkpoint, time);
+  //conoutf("N_RACEINFO state:%d cn:%d lap:%d checkpoint:%d", state, rcn, lap, checkpoint, time);
   fpsent *d = rcn==player1->clientnum ? player1 : getclient(rcn);
   if(m_race && d) {
       d->racestate = state;
@@ -568,6 +589,12 @@ case N_RACEFINISH:
             d->racestate = 2;
         }
     }
+}
+
+case N_SPAWNLOC:
+{
+    racemode.myspawnloc = getint(p);
+    break;
 }
 
 #endif

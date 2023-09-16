@@ -508,6 +508,17 @@ static inline bool htcmp(const char *x, const char *y)
 	return !strcmp(x, y);
 }
 
+static inline const char *getordinal(int num) {
+	// this code has no reason to be this robust, but it is, because why not -Y
+	const char* ordinal;
+	if (num % 100 >= 11 && num % 100 <= 19) ordinal = "th";
+	else {
+		int lastdigit = num % 10;
+		ordinal = (lastdigit == 1 ? "st" : (lastdigit == 2 ? "nd" : (lastdigit == 3 ? "rd" : "th")));
+	}
+	return ordinal;
+}
+
 struct stringslice
 {
 	const char *str;
@@ -668,6 +679,16 @@ template <class T> struct vector
 
 	void sort() { sort(sortless()); }
 	void sortname() { sort(sortnameless()); }
+
+	void shuffle() {
+		extern uint randomMT();
+		for (int i = 0; i < ulen; i++) {
+			int indx = rnd(ulen);
+			T temp = buf[i];
+			buf[i] = buf[indx];
+			buf[indx] = temp;
+		}
+	}
 
 	void growbuf(int sz)
 	{

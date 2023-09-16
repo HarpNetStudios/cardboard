@@ -779,6 +779,7 @@ namespace server
 		virtual void changeteam(clientinfo *ci, const char *oldteam, const char *newteam) {}
 		virtual void initclient(clientinfo *ci, packetbuf &p, bool connecting) {}
 		virtual void update() {}
+		virtual void updatelimbo() {}
 		virtual void cleanup() {}
 		virtual void setup() {}
 		virtual void newmap() {}
@@ -2462,6 +2463,7 @@ namespace server
 				if(smode) smode->update();
 			}
 		}
+		else if (smode) smode->updatelimbo();
 
 		while(bannedips.length() && bannedips[0].expire-totalmillis <= 0) bannedips.remove(0);
 		loopv(connects) if(totalmillis-connects[i]->connectmillis>15000) disconnect_client(connects[i]->clientnum, DISC_TIMEOUT);

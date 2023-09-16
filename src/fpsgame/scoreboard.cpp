@@ -383,17 +383,18 @@ namespace game
 					loopscoregroup(o, {
 						switch (o->racestate) {
 						case 0:
-							rightjustified(g.textf("%s", 0xFFFFDD, NULL, ""));
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, " "));
 							break;
 						case 1:
 						case 2:
-							rightjustified(g.textf("%02d", 0xFFFFDD, NULL, o->racerank));
+							rightjustified(g.textf("%d%s", 0xFFFFDD, NULL, o->racerank, getordinal(o->racerank)));
 							break;
 						}
 					});
 					g.poplist();
 				}
 
+				/*
 				if (showracelaps) 
 				{
 					g.space(2);
@@ -415,6 +416,7 @@ namespace game
 					});
 					g.poplist();
 				}
+				*/
 
 				if (showracecheckpoints)
 				{
@@ -423,31 +425,53 @@ namespace game
 					g.strut(5);
 					rightjustified(g.text("check", COL_GRAY))
 					loopscoregroup(o, {
+						switch (o->racestate) {
+						case 0:
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, "start"));
+							break;
+						case 1:
+							rightjustified(g.textf("%02d", 0xFFFFDD, NULL, o->racecheckpoint));
+							break;
+						case 2:
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, "finished"));
+							break;
+						}
+					});
+					/*
+					loopscoregroup(o, {
 						if (o->racestate == 1) {
 							rightjustified(g.textf("%02d", 0xFFFFDD, NULL, o->racecheckpoint));
 						}
 						else {
-							rightjustified(g.textf("%s", 0xFFFFDD, NULL, ""));
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, " "));
 						}
 					});
+					*/
 					g.poplist();
 				}
-				// why is this broken -Y
 				if (showracetime)
 				{
 					g.space(2);
 					g.pushlist();
 					g.strut(7);
+					
 					rightjustified(g.text("time", COL_GRAY))
 					loopscoregroup(o, {
 						if (o->racestate >= 1) {
-							int secs = max(o->racetime, 0) / 1000;
+							int ms = max(o->racetime, 0);
+							int secs = ms / 1000;
 							int mins = secs / 60;
+							ms %= 1000;
 							secs %= 60;
-							rightjustified(g.textf("%d:%02d", 0xFFFFDD, NULL, mins, secs));
+							if (o->racestate == 2) { 
+								rightjustified(g.textf("%d:%02d.%03d", COL_GREEN, NULL, mins, secs, ms)); 
+							}
+							else { 
+								rightjustified(g.textf("%d:%02d", 0xFFFFDD, NULL, mins, secs)); 
+							}
 						}
 						else {
-							rightjustified(g.textf("%s", 0xFFFFDD, NULL, ""));
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, " "));
 						}
 					});
 					g.poplist();
@@ -704,6 +728,29 @@ namespace game
 		{
 			score = g->score;
 			if(numgroups > 1) score2 = groups[1]->score;
+		}
+		else if (m_race) {
+			int color = hudscoreplayercolor;
+			vec2 offset = vec2(hudscorex, hudscorey).mul(vec2(w, h).div(hudscorescale));
+			defformatstring(buf, "%d%s", p->racerank, getordinal(p->racerank));
+			int tw = 0, th = 0;
+			text_bounds(buf, tw, th);
+
+			int fw = 0, fh = 0;
+			text_bounds("000nd", fw, fh);
+			fw = max(fw, tw);
+
+			offset.x -= tw / 2.0f;
+			offset.y -= th / 2.0f;
+
+			pushhudmatrix();
+			hudmatrix.scale(hudscorescale, hudscorescale, 1);
+			flushhudmatrix();
+
+			if(p->racestate == 1) draw_text(buf, int(offset.x), int(offset.y), (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, hudscorealpha);
+		
+			pophudmatrix();
+			return;
 		}
 		else
 		{

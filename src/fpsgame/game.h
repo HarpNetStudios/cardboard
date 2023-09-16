@@ -129,7 +129,7 @@ static struct gamemodeinfo
 	{ "Explosive CTF", M_INSTA | M_BOTTOMLESS | M_TEAM | M_CTF | M_NOITEMS | M_ECTF, "Rockets! Grenades! Instagib! CTF! Exciting!"}, // 22
 	{ "Test Mode", M_TEST, "It might be something stupid, or it might be cool. It also might crash your game."}, // 23
 	{ "Reverse One Flag CTF", M_CTF | M_TEAM | M_R1CTF, "Capture the center flag and return it to the enemy base to score points!"}, // 24
-	{ "Race Mode", M_RACE | M_BOTTOMLESS | M_PARKOUR, "Race: Be the first who completes 3 laps. Kill people to repulse them." }, // 25
+	{ "Race Mode", M_RACE | M_BOTTOMLESS | M_PARKOUR, "Get to the finish as fast as you can!" }, // 25
 };
 
 #define STARTGAMEMODE (-1)
@@ -776,6 +776,7 @@ namespace game
 		virtual void setup() {}
 		virtual void checkitems(fpsent *d) {}
 		virtual int respawnwait(fpsent *d, int delay = 0) { return 0; }
+		virtual void pickspawn(fpsent* d) { findplayerspawn(d); }
 		virtual int getspawngroup(fpsent *d) { return 0; }
 		virtual float ratespawn(fpsent *d, const extentity &e) { return 1.0f; }
 		virtual void senditems(packetbuf &p) {}
