@@ -268,7 +268,7 @@ namespace game
 				g.poplist();
 			}
 
-			if (!cmode || !cmode->hidefrags() || !hidefrags || m_parkour)
+			if ((!cmode || !cmode->hidefrags() || !hidefrags) && !m_parkour) // lol this still shows up in parkour ????? -Y
 			{
 				g.space(2);
 				g.pushlist();
