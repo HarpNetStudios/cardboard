@@ -50,10 +50,15 @@ namespace entities
 			NULL, NULL, // health, ammo
 			NULL, NULL, "race/gem", // race start, finish, checkpoint
 			NULL, NULL, NULL, NULL, NULL, NULL,
-			NULL, NULL, // teleport, teledest
-			NULL, // base
-			NULL, NULL, NULL, NULL, NULL,
-			NULL // flag
+			NULL, NULL,
+			NULL,
+			NULL, NULL,
+			NULL,
+			NULL, NULL,
+			NULL, NULL,
+			NULL, NULL,
+			NULL, NULL,
+			NULL // this is fucked up -Y
 		};
 		return entmdlnames[type];
 	}
