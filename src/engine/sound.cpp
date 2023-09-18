@@ -446,7 +446,7 @@ bool soundsample::load(bool msg)
 	if(chunk) return true;
 	if(!name[0]) return false;
 
-	static const char * const exts[] = { "", ".wav", ".ogg" };
+	static const char * const exts[] = { "", ".wav", ".ogg", ".opus"};
 	cbstring filename;
 	loopi(sizeof(exts)/sizeof(exts[0]))
 	{
@@ -466,7 +466,7 @@ bool soundsample::load(bool msg)
 		if(chunk) return true;
 	}
 
-	for(int i = 0; i < int(sizeof(exts)/sizeof(exts[0])); ++i)
+	loopi(sizeof(exts)/sizeof(exts[0]))
 	{
 		formatstring(filename, "packages/soundpacks/default/%s%s", name, exts[i]);
 		if(msg && !i) renderprogress(0, filename);
