@@ -97,6 +97,41 @@ HVARFR(skylight, 0, 0, 0xFFFFFF,
 	skylightcolor = bvec((skylight>>16)&0xFF, (skylight>>8)&0xFF, skylight&0xFF);
 });
 
+static void sphericalCoordinate(float x, float y, vec* out) {
+	out->x = cos(x) * cos(y);
+	out->y = sin(x) * cos(y);
+	out->z = sin(y);
+}
+
+static float signum(float f) {
+	if (f == 0) return 0;
+	if (f < 0) return -1;
+	return 1;
+}
+
+vector<vec>skyrays;
+void setskylightrays();
+FVARFR(skylightspread, 1, 37, 180, setskylightrays());
+VARFR(skylightrays, 10, 64, 10000, setskylightrays());
+void setskylightrays() {
+	skyrays.shrink(0);
+
+	// https://scholar.rose-hulman.edu/cgi/viewcontent.cgi?article=1387&context=rhumj
+	float cutoff = (1 - cosf(skylightspread * M_PI / 180.0)) / 2;
+	float n = skylightrays / cutoff;
+	float x = 0.12 + 1.2 * n;
+	float step = 2.0 / n;
+	float s = 1.0;
+
+	for (int i = 0; i < skylightrays; i++, s -= step) {
+		sphericalCoordinate(
+			s * x,
+			M_PI / 2 * signum(s) * (1 - sqrt(1 - fabs(s))),
+			&skyrays.add()
+		);
+	}
+}
+
 extern void setupsunlight();
 bvec sunlightcolor(0, 0, 0);
 HVARFR(sunlight, 0, 0, 0xFFFFFF,
@@ -633,44 +668,19 @@ static bool lumelsample(const vec &sample, int aasample, int stride)
 
 static void calcskylight(lightmapworker *w, const vec &o, const vec &normal, float tolerance, uchar *skylight, int flags = RAY_ALPHAPOLY, extentity *t = NULL)
 {
-	static const vec rays[17] =
-	{
-		vec(cosf(21*RAD)*cosf(50*RAD), sinf(21*RAD)*cosf(50*RAD), sinf(50*RAD)),
-		vec(cosf(111*RAD)*cosf(50*RAD), sinf(111*RAD)*cosf(50*RAD), sinf(50*RAD)),
-		vec(cosf(201*RAD)*cosf(50*RAD), sinf(201*RAD)*cosf(50*RAD), sinf(50*RAD)),
-		vec(cosf(291*RAD)*cosf(50*RAD), sinf(291*RAD)*cosf(50*RAD), sinf(50*RAD)),
-
-		vec(cosf(66*RAD)*cosf(70*RAD), sinf(66*RAD)*cosf(70*RAD), sinf(70*RAD)),
-		vec(cosf(156*RAD)*cosf(70*RAD), sinf(156*RAD)*cosf(70*RAD), sinf(70*RAD)),
-		vec(cosf(246*RAD)*cosf(70*RAD), sinf(246*RAD)*cosf(70*RAD), sinf(70*RAD)),
-		vec(cosf(336*RAD)*cosf(70*RAD), sinf(336*RAD)*cosf(70*RAD), sinf(70*RAD)),
-	   
-		vec(0, 0, 1),
-
-		vec(cosf(43*RAD)*cosf(60*RAD), sinf(43*RAD)*cosf(60*RAD), sinf(60*RAD)),
-		vec(cosf(133*RAD)*cosf(60*RAD), sinf(133*RAD)*cosf(60*RAD), sinf(60*RAD)),
-		vec(cosf(223*RAD)*cosf(60*RAD), sinf(223*RAD)*cosf(60*RAD), sinf(60*RAD)),
-		vec(cosf(313*RAD)*cosf(60*RAD), sinf(313*RAD)*cosf(60*RAD), sinf(60*RAD)),
-
-		vec(cosf(88*RAD)*cosf(80*RAD), sinf(88*RAD)*cosf(80*RAD), sinf(80*RAD)),
-		vec(cosf(178*RAD)*cosf(80*RAD), sinf(178*RAD)*cosf(80*RAD), sinf(80*RAD)),
-		vec(cosf(268*RAD)*cosf(80*RAD), sinf(268*RAD)*cosf(80*RAD), sinf(80*RAD)),
-		vec(cosf(358*RAD)*cosf(80*RAD), sinf(358*RAD)*cosf(80*RAD), sinf(80*RAD)),
-
-	};
 	flags |= RAY_SHADOW;
 	if(skytexturelight) flags |= RAY_SKIPSKY | (useskytexture ? RAY_SKYTEX : 0);
 	int hit = 0;
-	if(w) loopi(17) 
+	if(w) loopv(skyrays) 
 	{
-		if(normal.dot(rays[i])>=0 && shadowray(w->shadowraycache, vec(rays[i]).mul(tolerance).add(o), rays[i], 1e16f, flags, t)>1e15f) hit++;
+		if(normal.dot(skyrays[i])>=0 && shadowray(w->shadowraycache, vec(skyrays[i]).mul(tolerance).add(o), skyrays[i], 1e16f, flags, t)>1e15f) hit++;
 	}
-	else loopi(17) 
+	else loopv(skyrays) 
 	{
-		if(normal.dot(rays[i])>=0 && shadowray(vec(rays[i]).mul(tolerance).add(o), rays[i], 1e16f, flags, t)>1e15f) hit++;
+		if (normal.dot(skyrays[i]) >= 0 && shadowray(vec(skyrays[i]).mul(tolerance).add(o), skyrays[i], 1e16f, flags, t) > 1e15f) hit++;
 	}
 
-	loopk(3) skylight[k] = uchar(ambientcolor[k] + (max(skylightcolor[k], ambientcolor[k]) - ambientcolor[k])*hit/17.0f);
+	loopk(3) skylight[k] = uchar(ambientcolor[k] + (max(skylightcolor[k], ambientcolor[k]) - ambientcolor[k])*hit/(float)skyrays.length());
 }
 
 static inline bool hasskylight()
@@ -2142,6 +2152,7 @@ void calclight(int *quality)
 	if(numthreads > 1) preloadusedmapmodels(false, true);
 	resetlightmaps(false);
 	clearsurfaces(worldroot);
+	setskylightrays();
 	taskprogress = progress = 0;
 	progresstexticks = 0;
 	progresslightmap = -1;
