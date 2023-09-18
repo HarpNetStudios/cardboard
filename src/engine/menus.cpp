@@ -249,7 +249,11 @@ void guibutton(char *name, char *action, char *icon)
 {
 	if(!cgui) return;
 	bool hideicon = !strcmp(icon, "0");
-	int ret = cgui->button(name, GUI_BUTTON_COLOR, hideicon ? NULL : (icon[0] ? icon : (strstr(action, "showgui") ? "menu" : "action")));
+	int ret;
+
+	if(hideicon) ret = cgui->button(name, GUI_BUTTON_COLOR);
+	else ret = cgui->button(name, GUI_BUTTON_COLOR, icon[0] ? icon : (strstr(action, "showgui") ? "menu" : "action"));
+	
 	if(ret&G3D_UP) 
 	{
 		updatelater.add().schedule(action[0] ? action : name);
@@ -303,8 +307,11 @@ void guitextbox(char *text, int *width, int *height, int *color)
 
 void guitext(char *name, char *icon)
 {
-	bool hideicon = !strcmp(icon, "0");
-	if(cgui) cgui->text(name, !hideicon && icon[0] ? GUI_BUTTON_COLOR : GUI_TEXT_COLOR, hideicon ? NULL : (icon[0] ? icon : "info"));
+	if(cgui) 
+	{
+		if(!icon[0]) cgui->text(name, GUI_TEXT_COLOR);
+		else cgui->text(name, GUI_BUTTON_COLOR, icon);
+	}
 }
 
 void guititle(char *name)
