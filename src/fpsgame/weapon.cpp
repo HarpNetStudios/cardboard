@@ -856,7 +856,7 @@ namespace game
 				   hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
 		}
 
-		//if(d->ai) d->gunwait[d->gunselect] += int(d->gunwait[d->gunselect]*(((101-d->skill)+rnd(111-d->skill))/100.f));
+		if(d->ai) d->gunwait[d->gunselect] += int(d->gunwait[d->gunselect]*(((101-d->skill)+rnd(111-d->skill))/100.f));
 		d->totalshots += guns[d->gunselect].damage*guns[d->gunselect].rays;
 		recordpotentialdamage(d);
 
