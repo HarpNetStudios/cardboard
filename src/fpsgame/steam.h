@@ -28,11 +28,11 @@ enum EAchievements
     ACH_100_FRAGS
 };
 
-const int numPlayActions = 18;
+const int numPlayActions = 17;
 const int numMenuActions = 8;
 const int numCustomActions = 5;
 
-char *playActions[numPlayActions] = { "attack", "jump", "last_weap", "weap_cycle_up", "weap_cycle_dn", "weap_melee", "smg", "shotgun", "sniper", "chaingun", "rocket", "grenade", "taunt", "toggle_zoom", "hold_zoom", "scoreboard", "grapple", "drop_flag" };
+char *playActions[numPlayActions] = { "attack", "jump", "last_weap", "weap_cycle_up", "weap_cycle_dn", "weap_melee", "smg", "shotgun", "sniper", "chaingun", "rocket", "grenade", "taunt", "toggle_zoom", "hold_zoom", "scoreboard", "drop_flag" };
 char *menuActions[numMenuActions] = { "menu_select", "menu_cancel", "menu_up", "menu_down", "menu_left", "menu_right", "menu_tab_next", "menu_tab_prev" };
 char *customActions[numCustomActions] = { "custom_1", "custom_2", "custom_3", "custom_4", "custom_5" };
 

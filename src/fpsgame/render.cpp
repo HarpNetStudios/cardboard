@@ -267,7 +267,6 @@ namespace game
 		renderbouncers();
 		renderprojectiles();
 		if(cmode) cmode->rendergame();
-		rendergrapples();
 
 #if _DEBUG
 		if(dbgspawns) renderspawns();

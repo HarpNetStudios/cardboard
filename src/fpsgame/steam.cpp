@@ -298,7 +298,6 @@ namespace steam {
 		execute("bind SI_ZOOM_TOGGLE [togglezoom]");
 		execute("bind SI_ZOOM_HOLD [holdzoom]");
 		execute("bind SI_SCOREBOARD [showscores]");
-		execute("bind SI_GRAPPLE [usehook]");
 		execute("bind SI_DROP_FLAG [dropflag]");
 
 		/*

@@ -2121,7 +2121,6 @@ ICOMMAND(jump,   "D", (int *down), {
 ICOMMAND(hover,  "D", (int *down), { if(!*down || game::canhover()) player->hovering = *down!=0; });
 ICOMMAND(attack, "D", (int *down), { game::doattack(*down!=0); });
 ICOMMAND(secattack, "D", (int *down), { game::dosecattack(*down!=0); });
-ICOMMAND(usehook, "D", (int *down), { game::dograpple(*down!=0); });
 
 bool entinmap(dynent *d, bool avoidplayers)        // brute force but effective way to find a free spawn spot in the map
 {

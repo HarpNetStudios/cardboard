@@ -80,14 +80,6 @@ namespace server
 
 		void process(clientinfo *ci);
 	};
-
-	struct grappleevent : timedevent
-	{
-		int id;
-		float from[3], to[3];
-
-		void process(clientinfo* ci);
-	};
 	
 	struct suicideevent : gameevent
 	{
@@ -1972,8 +1964,6 @@ namespace server
 		
 	VAR(matchtime, 1, 600, 1200);
 
-	VAR(allowgrapple, 0, 0, 1);
-	
 	void changemap(const char *s, int mode)
 	{
 		stopdemo();
@@ -2360,17 +2350,6 @@ namespace server
 		gamestate &gs = ci->state;
 		if(m_mp(gamemode) && !gs.isalive(gamemillis)) return;
 		pickup(ent, ci->clientnum);
-	}
-
-	void grappleevent::process(clientinfo *ci)
-	{
-		gamestate& gs = ci->state;
-		if (!allowgrapple || !gs.isalive(gamemillis))
-			return;
-		sendf(-1, 1, "ri8x", N_GRAPPLEFX, ci->clientnum,
-			int(from[0] * DMF), int(from[1] * DMF), int(from[2] * DMF),
-			int(to[0] * DMF), int(to[1] * DMF), int(to[2] * DMF),
-			ci->clientnum);
 	}
 	
 	bool gameevent::flush(clientinfo *ci, int fmillis)
@@ -3274,54 +3253,6 @@ namespace server
 				}
 				if(cq) cq->addevent(exp);
 				else delete exp;
-				break;
-			}
-
-			case N_GRAPPLE:
-			{
-				grappleevent *grp = new grappleevent;
-				if (!allowgrapple)
-				{
-					for(int k = 0; k < 7; ++k) getint(p);
-					break;
-				}
-				
-				grp->id = getint(p); 
-				grp->millis = cq ? cq->geteventmillis(gamemillis, grp->id) : 0;
-				for(int k = 0; k < 3; ++k) grp->from[k] = getint(p) / DMF;
-				for(int k = 0; k < 3; ++k) grp->to[k] = getint(p) / DMF;
-				if (cq) cq->addevent(grp);
-				break;
-			}
-
-			case N_GRAPPLEPOS:
-			{
-				for(int k = 0; k < 3; ++k) getint(p);
-				if (allowgrapple)
-					QUEUE_MSG;
-				break;
-			}
-
-			case N_GRAPPLEHIT:
-			{
-				for(int k = 0; k < 3; ++k) getint(p);
-				if (allowgrapple)
-					QUEUE_MSG;
-				break;
-			}
-
-			case N_GRAPPLED:
-			{
-				getint(p);
-				if (allowgrapple)
-					QUEUE_MSG;
-				break;
-			}
-
-			case N_GRAPPLESTOP:
-			{
-				getint(p);
-				QUEUE_MSG;
 				break;
 			}
 

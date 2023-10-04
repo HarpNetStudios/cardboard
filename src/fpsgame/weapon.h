@@ -18,9 +18,3 @@ guns[NUMGUNS] =
 	{ S_RLFIRE,    800, 1200,    0,   0, 320, 10, 1024,  1, 160,  5,  15, 40,    0, "rocketlauncher",  "rocket", 0,  true, 10 },
 	{ S_FLAUNCH,  1000,  900,    0,   0, 200, 10, 1024,  1, 250, 10,  30, 45, 2000, "grenadelauncher", "gl",     0,  true, 10 }
 };
-
-static const int GRAPPLETHROWSPEED = 320;	// Same as rocket launcher
-static const int GRAPPLEPULLSPEED = 3;
-static const int GRAPPLEGUNDELAY = 5;
-static const int GRAPPLESEPERATION = 16;
-static const int GRAPPLEMAXLENGTH = 512;

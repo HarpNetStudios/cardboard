@@ -172,7 +172,6 @@ void toggleedit(bool force)
 	else
 	{
 		game::resetgamestate();
-		game::removegrapples(player, true);
 		player->editstate = player->state;
 		player->state = CS_EDITING;
 	}

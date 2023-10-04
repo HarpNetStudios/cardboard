@@ -1137,7 +1137,6 @@ namespace game
 		}
 		putint(q, int(d->fmove* DNF));
 		putint(q, int(d->fstrafe* DNF));
-		sendgrappleclient(d, q);
 	}
 
 	void sendposition(fpsent *d, bool reliable)
@@ -1506,53 +1505,6 @@ namespace game
 					particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
 				conoutf(CON_TEAMCHAT, "\fs\fp[team]\fr %s: \fp%s", chatcolorname(t, false), text);
 				if(chatsounds) playsound(S_TEAMCHAT);
-				break;
-			}
-			
-			case N_GRAPPLEPOS:
-			{
-				vec pos;
-				for (int k=0; k<3; k++) pos[k] = getint(p) / DMF;
-				if (!d) break;
-				setgrapplepos(d, pos);
-				break;
-			}
-
-			case N_GRAPPLEHIT:
-			{
-				vec hit;
-				for (int k=0; k<3; k++) hit[k] = getint(p) / DMF;
-				if (!d) break;
-				setgrapplehit(d, hit);
-				break;
-			}
-
-			case N_GRAPPLED:
-			{
-				int ocn = getint(p);
-				fpsent* o = ocn == player1->clientnum ? player1 : newclient(ocn);
-				if (!d || !o) break;
-				setgrappled(d, o);
-				break;
-			}
-
-			case N_GRAPPLESTOP:
-			{
-				if (!d) break;
-				bool attached = getint(p) != 0;
-				removegrapples(d, attached);
-				break;
-			}
-
-			case N_GRAPPLEFX:
-			{
-				int ocn = getint(p);
-				fpsent* o = ocn == player1->clientnum ? player1 : newclient(ocn);
-				vec from, to;
-				for (int k=0; k<3; k++) from[k] = getint(p) / DMF;
-				for (int k=0; k<3; k++) to[k] = getint(p) / DMF;
-				if (!o) break;
-				shootgrapplev(from, to, o, false);
 				break;
 			}
 

@@ -389,17 +389,10 @@ namespace game
 		if((player1->attacking = on) && attackspawn) respawn();
 	}
 
-void dosecattack(bool on)
+	void dosecattack(bool on)
 	{
 		if(!connected || intermission) return;
 		if((player1->secattacking = on) && attackspawn) respawn();
-	}
-
-	void dograpple(bool on)
-	{
-		if (!on) removegrapples(player1, false);
-		if (!connected || intermission || !m_edit) return;
-        if ((player1->grappling = on)) respawn();
 	}
 
 	VARP(jumpspawn, 0, 1, 1);
@@ -490,7 +483,6 @@ void dosecattack(bool on)
 			d->smoothmillis = 0;
 			playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel), &d->o);
 		}
-		removegrapples(d, true);
 	}
 
 	VARP(teamcolorfrags, 0, 1, 1);
@@ -654,7 +646,6 @@ void dosecattack(bool on)
 		removetrackedparticles(d);
 		removetrackeddynlights(d);
 		if(cmode) cmode->removeplayer(d);
-		removegrapples(d, true);
 		players.removeobj(d);
 		DELETEP(clients[cn]);
 		cleardynentcache();

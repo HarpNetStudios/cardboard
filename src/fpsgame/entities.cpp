@@ -247,7 +247,6 @@ namespace entities
 				else d->vel = vec(0, 0, 0);
 				entinmap(d);
 				updatedynentcache(d);
-				removegrapples(d, true);
 				ai::inferwaypoints(d, ents[n]->o, ents[e]->o, 16.f);
 				break;
 			}

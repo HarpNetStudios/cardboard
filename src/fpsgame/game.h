@@ -266,7 +266,6 @@ enum
 	N_DEMOPACKET,
 	N_SPAWNLOC,
 	N_RACESTART, N_RACEFINISH, N_RACECHECKPOINT, N_RACELAP, N_RACEINFO,
-	N_GRAPPLE, N_GRAPPLEPOS, N_GRAPPLEHIT, N_GRAPPLED, N_GRAPPLESTOP, N_GRAPPLEFX,
 	NUMMSG
 };
 
@@ -299,8 +298,6 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 	N_DEMOPACKET, 0,
 	N_SPAWNLOC, 0,
 	N_RACESTART, 0, N_RACEFINISH, 0, N_RACECHECKPOINT, 2, N_RACELAP, 2, N_RACEINFO, 7,
-
-	N_GRAPPLE, 8, N_GRAPPLEPOS, 4, N_GRAPPLEHIT, 4, N_GRAPPLED, 2, N_GRAPPLESTOP, 2, N_GRAPPLEFX, 9,
 	-1
 };
 
@@ -898,18 +895,6 @@ namespace game
 	extern void gunselect(int gun, fpsent *d);
 	extern void weaponswitch(fpsent *d);
 	extern void avoidweapons(ai::avoidset &obstacles, float radius);
-
-	// grapple
-	extern void shootgrapplev(vec& from, vec& to, fpsent* d, bool local);
-	extern void shootgrapple(fpsent* d, vec& targ);
-	extern void movegrapples(int time);
-	extern void sendgrappleclient(dynent* d, ucharbuf& p);
-	extern void setgrappled(fpsent* d, fpsent* victim);
-	extern void setgrapplehit(fpsent* d, const vec& hit);
-	extern void setgrapplepos(fpsent* d, const vec& pos);
-	extern void removegrapples(physent* d, bool attached);
-	extern bool hasgrapple(fpsent* d);
-	extern void rendergrapples();
 
 	// scoreboard
 	extern void showscores(bool on);
