@@ -1177,10 +1177,10 @@ void particle_text(const vec &s, const char *t, int type, int fade, int color, f
 	p->flags = icons<<1;
 }
 
-void particle_textcopy(const vec &s, const char *t, int type, int fade, int color, float size, int gravity)
+void particle_textcopy(const vec &s, const char *t, int type, int fade, int color, float size, int gravity, int distance)
 {
 	if(!canaddparticles()) return;
-	if(!particletext || camera1->o.dist(s) > maxparticletextdistance) return;
+	if(!particletext || camera1->o.dist(s) > maxparticletextdistance || (distance && camera1->o.dist(s) > distance)) return;
 	particle *p = newparticle(s, vec(0, 0, 1), fade, type, color, size, gravity);
 	p->text = newstring(t);
 	p->flags = 1;
@@ -1424,6 +1424,15 @@ static void makeparticles(entity &e)
 			else newparticle(e.o, offsetvec(e.o, e.attr2, max(1+e.attr3, 0)), 1, type, colorfromattr(e.attr4), size, gravity);
 			break;
 		}
+		case 8:
+		{
+			if (editmode) break;
+
+			defformatstring(aliasname, "part_text_%d", e.attr2);
+			if (identexists(aliasname))
+				particle_textcopy(e.o, getalias(aliasname), PART_TEXT, 1, colorfromattr(e.attr4), e.attr3 > 0 ? e.attr3 : 4, 0, e.attr5 > 0 ? e.attr5 : 0);
+			break;
+		}
 		case 5: // meter, metervs - <percent> <rgb> <rgb2>
 		case 6:
 		{
@@ -1448,11 +1457,9 @@ static void makeparticles(entity &e)
 			flares.addflare(e.o, e.attr2, e.attr3, e.attr4, (e.attr1&0x02)!=0, (e.attr1&0x01)!=0);
 			break;
 		default:
-			if(!editmode)
-			{
-				defformatstring(ds, "particles %d?", e.attr1);
-				particle_textcopy(e.o, ds, PART_TEXT, 1, 0x6496FF, 2.0f);
-			}
+			if(editmode) return;
+			defformatstring(ds, "particles %d?", e.attr1);
+			particle_textcopy(e.o, ds, PART_TEXT, 1, 0x6496FF, 2.0f);
 			break;
 	}
 }
