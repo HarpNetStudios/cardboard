@@ -2068,7 +2068,7 @@ bool setlightmapquality(int quality)
 	return true;
 }
 
-VARP(lightthreads, 0, 0, 16);
+VARP(lightthreads, 0, 0, numcpus);
 
 #define ALLOCLOCK(name, init) { if(lightmapping > 1) name = init(); if(!name) lightmapping = 1; }
 #define FREELOCK(name, destroy) { if(name) { destroy(name); name = NULL; } }

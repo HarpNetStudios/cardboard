@@ -1155,7 +1155,7 @@ int getclockmillis()
 	return max(millis, totalmillis);
 }
 
-VAR(numcpus, 1, 1, 64);
+VAR(numcpus, 1, 1, 128);
 
 VARFP(offline, 0, 0, 1, { getuserinfo_(false); });
 
@@ -1311,7 +1311,7 @@ int main(int argc, char **argv)
 	}
 	initing = NOT_INITING;
 
-	numcpus = clamp(SDL_GetCPUCount(), 1, 64);
+	numcpus = clamp(SDL_GetCPUCount(), 1, 128);
 
 	if(dedicated <= 1)
 	{
