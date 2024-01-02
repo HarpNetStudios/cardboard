@@ -886,15 +886,19 @@ int playsoundname(const char *s, const vec *loc, int vol, int flags, int loops, 
 
 ICOMMAND(sound, "i", (int *n), playsound(*n));
 
+ICOMMAND(entsoundname, "i", (int* id),
+	if (mapsounds.slots.inrange(*id))
+	{
+		defformatstring(s, "%s", mapsounds.slots[*id].sample->name); result(s);
+	}
+);
+
 void writemapsounds(stream* f)
 {
-	f->printf("// To-do, sound system changed\n");
-	/*
-	loopv(mapsounds)
+	loopv(mapsounds.slots)
 	{
-		f->printf("mapsound \"%s\" %d %d // %d\n", mapsounds[i].sample->name, mapsounds[i].volume, mapsounds[i].maxuses, i);
+		f->printf("mapsound \"%s\" %d // %d\n", mapsounds.slots[i].sample->name, mapsounds.slots[i].volume, i);
 	}
-	*/
 }
 
 void resetsound()

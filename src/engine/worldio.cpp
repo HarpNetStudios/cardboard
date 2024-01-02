@@ -824,7 +824,7 @@ void writemapcfg(const char* a)
 
 	writemapsounds(f);
 
-	f->printf("// Map models\n\nmapmodelreset\n\n");
+	f->printf("\n// Map models\n\nmapmodelreset\n\n");
 	extern vector<mapmodelinfo> mapmodels;
 
 	loopv(mapmodels)
