@@ -857,7 +857,7 @@ namespace game
 		}
 
 		if(d->ai) d->gunwait[d->gunselect] += int(d->gunwait[d->gunselect]*(((101-d->skill)+rnd(111-d->skill))/100.f));
-		d->totalshots += guns[d->gunselect].damage*guns[d->gunselect].rays;
+		if(d->gunselect != GUN_FIST) d->totalshots += guns[d->gunselect].damage*guns[d->gunselect].rays;
 		recordpotentialdamage(d);
 
 		if(!d->ammo[d->gunselect] && d==player1)
