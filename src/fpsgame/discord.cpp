@@ -24,20 +24,19 @@ namespace discord
 			discordCore->SetLogHook(LogLevel::Debug, discordLogging);
 			conoutf(CON_DEBUG, "\f0Discord: Successfully connected.");
 			discordCore->ActivityManager().OnActivityJoin.Connect([](const char* secret) {
-				//conoutf(CON_DEBUG, "Join: %s", secret);
+				conoutf(CON_DEBUG, "Discord: Joining from Discord invite...");
 				char* decoded = (char*)b64_decode(secret, strlen(secret));
-				defformatstring(bruh, "connect %s", decoded);
-				execute(bruh); // yo what the fuck -Y
-				//conoutf(CON_DEBUG, "Decoded: %s", decoded);
+				defformatstring(connectCommand, "connect %s", decoded);
+				execute(connectCommand);
 			});
 			discordCore->ActivityManager().OnActivitySpectate.Connect([](const char* secret) {
-				conoutf(CON_DEBUG, "Spectate: %s", secret); 
+				conoutf(CON_DEBUG, "Discord: Spectate: %s", secret); 
 			});
 			discordCore->ActivityManager().OnActivityJoinRequest.Connect([](discord::User const& user) {
-				conoutf(CON_DEBUG, "Join Request from %s", user.GetUsername());
+				conoutf(CON_DEBUG, "Discord: Join Request from %s", user.GetUsername());
 				// always accept, for testing reasons
 				discordCore->ActivityManager().SendRequestReply(user.GetId(), discord::ActivityJoinRequestReply::Yes, [](discord::Result res) {
-					if (res == discord::Result::Ok) conoutf(CON_DEBUG, "Accepted join request automatically");
+					if (res == discord::Result::Ok) conoutf(CON_DEBUG, "Discord: Accepted join request automatically");
 				});
 			});
 		} else conoutf(CON_ERROR, "\f2Discord: Failed to initialize! Status code: %d", (int)initStatus);
@@ -105,17 +104,21 @@ namespace discord
 				activity.GetAssets().SetLargeText(largeText);
 
 				if(address) {
-					if(enet_address_get_host_ip(address, serverip, strlen(serverip)) >= 0)
+					if(enet_address_get_host_ip(address, serverip, sizeof(serverip)) >= 0)
 					{
+						conoutf(CON_DEBUG, "ip: %s", serverip);
 						activity.SetState("Online");
 						defformatstring(partykey, "%s %u", serverip, address->port);
-						defformatstring(partyid, "S_%s", partyid);
+						defformatstring(partyid, "S_%s", partykey);
 						const char* b64key = b64_encode((unsigned char*)partykey, strlen(partykey));
 						activity.GetParty().SetId(partyid);
 						activity.GetParty().GetSize().SetCurrentSize(game::players.length());
 						activity.GetParty().GetSize().SetMaxSize(game::players.length() + 1);
 						activity.GetSecrets().SetJoin(b64key);
 						conoutf(CON_DEBUG, "discord join secret: %s", b64key);
+					}
+					else {
+						conoutf("address: %u, port: %u", address->host, address->port);
 					}
 				}
 			}

@@ -649,6 +649,9 @@ namespace game
 		players.removeobj(d);
 		DELETEP(clients[cn]);
 		cleardynentcache();
+		#ifdef DISCORD
+			discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode + -(STARTGAMEMODE)].name, player1, true);
+		#endif
 	}
 
 	void clearclients(bool notify)

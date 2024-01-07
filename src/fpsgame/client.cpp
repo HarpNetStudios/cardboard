@@ -1574,6 +1574,9 @@ namespace game
 				getstring(text, p);
 				filtertext(d->team, text, false, false, MAXTEAMLEN);
 				d->playermodel = getint(p);
+				#ifdef DISCORD
+					discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode + -(STARTGAMEMODE)].name, player1, true);
+				#endif
 				break;
 			}
 
