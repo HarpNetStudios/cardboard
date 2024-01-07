@@ -358,7 +358,9 @@ static struct itemstat { int add, max, sound; const char *name; int icon, info; 
 
 static const char* officialmaps[] =
 {
+	"city_block",
 	"color",
+	"concrete_hell"
 	"cosmic",
 	"duabo",
 	"flux",
@@ -368,11 +370,15 @@ static const char* officialmaps[] =
 	"indust1",
 	"neo_falls",
 	"neo_noir",
+	"pirate_ship",
 	"precipice",
+	"reactor",
 	"realm",
 	"retrograde",
 	"ruins",
 	"secondevermap",
+	"siege",
+	"wave",
 	"zigguraut",
 };
 
