@@ -1163,6 +1163,16 @@ float gatherspawninfos(dynent *d, int tag, vector<spawninfo> &spawninfos)
 		s.weight = game::ratespawn(d, e);
 		total += s.weight;
 	}
+	if (spawninfos.empty() && !ents.empty()) {
+		if (tag == 0) { // in FFA mode with team spawns
+			conoutf(CON_WARN, "\f3no spawns available for neutral players, spawning at team spawn!");
+			return gatherspawninfos(d, 1, spawninfos) + gatherspawninfos(d, 2, spawninfos);
+		}
+		else { // in team mode with FFA spawns
+			conoutf(CON_WARN, "\f3no spawns available for team players, spawning at neutral spawn!");
+			return gatherspawninfos(d, 0, spawninfos);
+		}
+	}
 	return total;
 }
 
