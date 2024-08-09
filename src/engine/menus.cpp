@@ -269,7 +269,7 @@ void guibutton(char *name, char *action, char *icon)
 void guiimage(char *path, char *action, float *scale, int *overlaid, char *alt, char *title)
 {
 	if(!cgui) return;
-	Texture *t = textureload(path, 0, true, false);
+	Texture *t = textureload(path, 3, true, false); // Set this to clamp = 3 to use GL_CLAMP_TO_EDGE -Cyn (fixes bug #58)
 	if(t==notexture)
 	{
 		if(alt[0]) t = textureload(alt, 0, true, false);
