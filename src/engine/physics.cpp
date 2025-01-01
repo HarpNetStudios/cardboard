@@ -475,7 +475,7 @@ const float FLOORZ = 0.867f;
 const float SLOPEZ = 0.5f;
 const float WALLZ = 0.2f;
 extern const float JUMPVEL = 125.0f;
-FVARR(gravity, 10, 200, 1000);
+FVARR(gravity, 10, 200, 1000); // save gravity per-map
 
 bool ellipseboxcollide(physent *d, const vec &dir, const vec &o, const vec &center, float yaw, float xr, float yr, float hi, float lo)
 {
@@ -1056,9 +1056,9 @@ bool collide(physent *d, const vec &dir, float cutoff, bool playercol, bool insi
 	return octacollide(d, dir, cutoff, bo, bs) || (playercol && plcollide(d, dir, insideplayercol));
 }
 
+// code that controls ground physics
 void recalcdir(physent *d, const vec &oldvel, vec &dir)
 {
-	// code that controls ground physics
 	float speed = oldvel.magnitude();
 	if(speed > 1e-6f)
 	{
@@ -1408,10 +1408,10 @@ bool bounce(physent *d, float secs, float elasticity, float waterfric, float gra
 	bool water = isliquid(mat);
 	if(water)
 	{
-		d->vel.z -= grav*gravity/16*secs;
+		d->vel.z -= grav * gravity / 16 * secs;
 		d->vel.mul(max(1.0f - secs/waterfric, 0.0f));
 	}
-	else d->vel.z -= grav*gravity*secs;
+	else d->vel.z -= grav * gravity * secs;
 	vec old(d->o);
 	loopi(2)
 	{
@@ -1553,6 +1553,7 @@ void vecfromyawpitch(float yaw, float pitch, int move, int strafe, int vertical,
 	m.z = move*               sinf(RAD*pitch) + vertical* cosf(RAD*pitch);
 }
 
+
 void vecfromyawpitch(float yaw, float pitch, int move, int strafe, vec &m)
 {
 	vecfromyawpitch(yaw, pitch, move, strafe, 0, m);
@@ -1568,7 +1569,7 @@ void vecfrommovement(float yaw, float pitch, float move, float strafe, int verti
 	m.z = move*               sinf(RAD*pitch) + vertical* cosf(RAD*pitch);
 
 	const float mag = m.magnitude();
-	if(mag <= joyminthreshold || joyminthreshold >= joymaxthreshold)
+	if (mag <= joyminthreshold || joyminthreshold >= joymaxthreshold)
 	{
 		m = vec(0.0f);
 		return;
@@ -1579,7 +1580,7 @@ void vecfrommovement(float yaw, float pitch, float move, float strafe, int verti
 	m.mul(min(1.0f, scaledmag) / mag);
 }
 
-void vecfrommovement(float yaw, float pitch, float move, float strafe, vec &m)
+void vecfrommovement(float yaw, float pitch, float move, float strafe, vec& m)
 {
 	vecfrommovement(yaw, pitch, move, strafe, 0, m);
 }
@@ -1601,14 +1602,10 @@ FVAR(straferoll, 0, 0.033f, 90);
 FVAR(faderoll, 0, 0.95f, 1);
 VAR(floatspeed, 1, 100, 10000);
 
-void calcfric(physent *pl, bool local, bool water, bool floating, int curtime, vec d)
+void applyfriction(physent* pl, bool local, bool water, bool floating, int curtime, vec d)
 {
 	float fric = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
-	pl->vel.lerp(d, pl->vel, pow(1 - 1/fric, curtime/20.0f)); // DISABLE WHEN SLICK MATERIAL
-// old fps friction
-	//float friction = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
-	//float fpsfric = min(curtime/(20.0f*friction), 1.0f);
-	//pl->vel.lerp(pl->vel, d, fpsfric);
+	pl->vel.lerp(d, pl->vel, pow(1 - 1 / fric, curtime / 20.0f)); // DISABLE WHEN SLICK MATERIAL
 }
 
 float waterdamp = 1.5f;
@@ -1616,43 +1613,47 @@ float waterdamp = 1.5f;
 void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curtime)
 {
 	bool allowmove = game::allowmove(pl);
-	if(pl->physstate == PHYS_FALL && pl->candouble && pl->jumpstate < 2 && !water) {
+
+	if (pl->physstate == PHYS_FALL && pl->candouble && pl->jumpstate < 2 && !water)
+	{
 		pl->jumpstate = 1;
 	}
-	else if(pl->physstate >= PHYS_SLOPE)
+	else if (pl->physstate >= PHYS_SLOPE)
 	{
 		pl->jumpstate = 0;
 	}
-	if(floating)
+
+	if (floating)
 	{
-		if(pl->jumping && allowmove)
+		if (pl->jumping && allowmove)
 		{
 			pl->jumping = false;
 			pl->vel.z = max(pl->vel.z, JUMPVEL);
 		}
 	}
-	else if(pl->physstate >= PHYS_SLOPE || water)
+	else if (pl->physstate >= PHYS_SLOPE || water)
 	{
 		//if(water && !pl->inwater) pl->vel.div(2);
-		if(pl->jumping && allowmove)
+		if (pl->jumping && allowmove)
 		{
 			pl->jumping = false;
 
 			pl->vel.z = max(pl->vel.z, JUMPVEL); // physics impulse upwards
-			if(water) { pl->vel.x /= waterdamp; pl->vel.y /= waterdamp; } // dampen velocity change even harder, gives correct water feel
+			if (water) { pl->vel.x /= waterdamp; pl->vel.y /= waterdamp; } // dampen velocity change even harder, gives correct water feel
 
 			pl->jumpstate = 1;
 
 			game::physicstrigger(pl, local, 1, 0);
 		}
-	}
-	if(pl->jumpstate == 1 && pl->candouble)
+	} 
+
+	if (pl->jumpstate == 1 && pl->candouble)
 	{
-		if(pl->jumping) {
-			
+		if (pl->jumping)
+		{
 			pl->falling.z = 10; // set back gravity to 10, so you can jump again with less down force immediately
 			pl->vel.z = max(pl->vel.z, pl->vel.z + (JUMPVEL / 2)); // physics impulse upwards
-			if(water) { pl->vel.x /= waterdamp; pl->vel.y /= waterdamp; } // dampen velocity change even harder, gives correct water feel
+			if (water) { pl->vel.x /= waterdamp; pl->vel.y /= waterdamp; } // dampen velocity change even harder, gives correct water feel
 
 			pl->jumpstate = 2;
 
@@ -1662,23 +1663,12 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 		pl->jumping = false;
 	}
 
-	if(!floating && pl->physstate == PHYS_FALL) pl->timeinair = min(pl->timeinair + curtime, 1000);
+	if (!floating && pl->physstate == PHYS_FALL) pl->timeinair = min(pl->timeinair + curtime, 1000);
 
 	vec m(0.0f, 0.0f, 0.0f);
-	if(pl->tryingtomove() && allowmove)
+	if (pl->tryingtomove() && allowmove)
 	{
-		/*
-		vecfrommovement
-		(pl->yaw
-			, floating || water || pl->type == ENT_CAMERA ? pl->pitch : 0
-			, pl->fmove
-			, pl->fstrafe
-			, m
-		);
-		*/
-
-		//vecfromyawpitch(pl->yaw, floating || water || pl->type==ENT_CAMERA ? pl->pitch : 0, pl->move, pl->strafe, m);
-		bool allowvertical = !pl->hovering && (floating || water || pl->type==ENT_CAMERA);
+		bool allowvertical = !pl->hovering && (floating || water || pl->type == ENT_CAMERA);
 		vecfrommovement(pl->yaw, allowvertical ? pl->pitch : 0, pl->fmove, pl->fstrafe, pl->vertical, m);
 
 		if(!floating && pl->physstate >= PHYS_SLOPE)
@@ -1694,39 +1684,33 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 	}
 
 	vec d(m);
-	d.mul(pl->maxspeed*min(vec2(pl->fmove, pl->fstrafe).magnitude(), 1.0f));
+	d.mul(pl->maxspeed * min(vec2(pl->fmove, pl->fstrafe).magnitude(), 1.0f));
 	int meleespeed = 10; // percentage multiplier of melee weapon movement speed
-	if(pl->candouble) d.mul(1 + (meleespeed/100.0f));
-	if(pl->type==ENT_PLAYER)
+	if (pl->candouble) d.mul(1 + (meleespeed / 100.0f));
+
+	if (pl->type==ENT_PLAYER)
 	{
-		if(floating)
+		if (floating)
 		{
-			if(pl==player) d.mul(floatspeed/100.0f);
+			if (pl==player) d.mul(floatspeed/100.0f);
 		}
 		else if (!water && allowmove) d.mul((pl->fmove && !pl->fstrafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
-		//else if(!water && allowmove) d.mul(1.3f * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
-		//else if(water && allowmove) d.mul(1.1f);
 	}
-	calcfric(pl, local, water, floating, curtime, d);
 	
-	/*
-	conoutf("jumping: %d", pl->jumping);
-	conoutf("candouble: %d", pl->candouble);
-	conoutf("jumpstate: %d", pl->jumpstate);
-	*/
+	applyfriction(pl, local, water, floating, curtime, d);
 }
 
 void modifygravity(physent *pl, bool water, int curtime)
 {
-	float secs = curtime/1000.0f;
+	float secs = curtime / 1000.0f;
 	vec g(0, 0, 0);
-	if(pl->physstate == PHYS_FALL) g.z -= gravity*secs;
+	if(pl->physstate == PHYS_FALL) g.z -= gravity * secs;
 	else if(pl->floor.z > 0 && pl->floor.z < FLOORZ)
 	{
 		g.z = -1;
 		g.project(pl->floor);
 		g.normalize();
-		g.mul(gravity*secs);
+		g.mul(gravity * secs);
 	}
 	if(!water || !game::allowmove(pl) || !pl->tryingtomove()) pl->falling.add(g);
 
@@ -1736,7 +1720,6 @@ void modifygravity(physent *pl, bool water, int curtime)
 		float c = water ? 1.0f : clamp((pl->floor.z - SLOPEZ)/(FLOORZ-SLOPEZ), 0.0f, 1.0f);
 		pl->falling.mul(pow(1 - c/fric, curtime/20.0f));
 	}
-	pl->falling.z = max(pl->falling.z, -300.0f); // limit gravity to sane amounts.
 }
 
 // main physics routine, moves a player for a curtime step
@@ -1780,9 +1763,10 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 
 		d.mul(f);
 		loopi(moveres) if(!move(pl, d) && ++collisions<5) i--; // discrete steps collision detection & sliding
-		if (!pl->timeinair) {
-			((fpsent *)pl)->lasthitpushattacker = NULL;
-			((fpsent *)pl)->lasthitpushgun = -1;
+		if (!pl->timeinair) // reset hitpush attacker when landing
+		{
+			((fpsent*)pl)->lasthitpushattacker = NULL;
+			((fpsent*)pl)->lasthitpushgun = -1;
 		}
 		if(timeinair > 800 && !pl->timeinair && !water) // if we land after long time must have been a high jump, make thud sound
 		{
@@ -1794,26 +1778,26 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 
 	// automatically apply smooth roll when strafing
 
-	if(pl->fstrafe && maxroll) pl->roll = clamp(pl->roll - pow(clamp(1.0f + pl->fstrafe*pl->roll/maxroll, 0.0f, 1.0f), 0.33f)*pl->fstrafe*curtime*straferoll, -maxroll, maxroll);
+	if(pl->fstrafe && maxroll) pl->roll = clamp(pl->roll - pow(clamp(1.0f + pl->fstrafe * pl->roll/maxroll, 0.0f, 1.0f), 0.33f) * pl->fstrafe * curtime * straferoll, -maxroll, maxroll);
 	else pl->roll *= curtime == PHYSFRAMETIME ? faderoll : pow(faderoll, curtime/float(PHYSFRAMETIME));
 
 	// play sounds on water transitions if not in edit mode
-	if(!editmode) {
-		if(pl->inwater && !water)
+	if (!editmode) {
+		if (pl->inwater && !water)
 		{
-			material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (pl->aboveeye - pl->eyeheight)/2));
-			water = isliquid(material&MATF_VOLUME);
+			material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (pl->aboveeye - pl->eyeheight) / 2));
+			water = isliquid(material & MATF_VOLUME);
 		}
-		if(!pl->inwater && water) game::physicstrigger(pl, local, 0, -1, material&MATF_VOLUME);
-		else if(pl->inwater && !water) game::physicstrigger(pl, local, 0, 1, pl->inwater);
-		pl->inwater = water ? material&MATF_VOLUME : MAT_AIR;
+		if (!pl->inwater && water) game::physicstrigger(pl, local, 0, -1, material & MATF_VOLUME);
+		else if (pl->inwater && !water) game::physicstrigger(pl, local, 0, 1, pl->inwater);
+		pl->inwater = water ? material & MATF_VOLUME : MAT_AIR;
 	}
-	
+
 	// DEATH or being under the origin (z<0) kills you
-	if(pl->state==CS_ALIVE && (pl->o.z < 0 || material&MAT_DEATH)) game::suicide(pl);
+	if(pl->state == CS_ALIVE && (pl->o.z < 0 || material & MAT_DEATH)) game::suicide(pl);
 
 	// JUMPRESET allows another double jump
-	if(pl->state==CS_ALIVE && (material&MAT_JUMPRESET)) if(pl->jumpstate >= 2) pl->jumpstate = 1;
+	if (pl->state == CS_ALIVE && (material & MAT_JUMPRESET)) if (pl->jumpstate >= 2) pl->jumpstate = 1;
 
 	return true;
 }
@@ -1826,8 +1810,8 @@ void physicsframe()          // optimally schedule physics frames inside the gra
 	if(diff <= 0) physsteps = 0;
 	else
 	{
-		physframetime = clamp(game::scaletime(PHYSFRAMETIME)/100, 1, PHYSFRAMETIME);
-		physsteps = (diff + physframetime - 1)/physframetime;
+		physframetime = clamp(game::scaletime(PHYSFRAMETIME) / 100, 1, PHYSFRAMETIME);
+		physsteps = (diff + physframetime - 1) / physframetime;
 		lastphysframe += physsteps * physframetime;
 	}
 	cleardynentcache();
@@ -1837,16 +1821,15 @@ void fakephysicsframe()      // induces fake physsteps for moving camera while p
 {
 	static int lastfakephysframe = 0;
 	int diff = totalmillis - lastfakephysframe;
-	if(diff > curtime) { diff = curtime; lastfakephysframe = totalmillis; }
-	if(diff <= 0) physsteps = 0;
+	if (diff > curtime) { diff = curtime; lastfakephysframe = totalmillis; }
+	if (diff <= 0) physsteps = 0;
 	else
 	{
-		physframetime = clamp(game::scaletime(PHYSFRAMETIME)/100, 1, PHYSFRAMETIME);
-		physsteps = (diff + physframetime - 1)/physframetime;
+		physframetime = clamp(game::scaletime(PHYSFRAMETIME) / 100, 1, PHYSFRAMETIME);
+		physsteps = (diff + physframetime - 1) / physframetime;
 		lastfakephysframe += physsteps * physframetime;
 	}
 }
-
 
 VAR(physinterp, 0, 1, 1);
 
@@ -2109,6 +2092,7 @@ dir(down,     vertical,  -1,    k_down,     k_up);
 
 VARP(scrolljump, 0, 0, 1);
 
+// TODO: clean this up, a long function shouldn't be an inline ICOMMAND
 ICOMMAND(jump,   "D", (int *down), {
 	if(!*down || game::canjump())
 	{
@@ -2118,9 +2102,9 @@ ICOMMAND(jump,   "D", (int *down), {
 		player->jumpstate = min(player->jumpstate++, 2);
 	}
 });
-ICOMMAND(hover,  "D", (int *down), { if(!*down || game::canhover()) player->hovering = *down!=0; });
+
+ICOMMAND(hover, "D", (int* down), { if (!*down || game::canhover()) player->hovering = *down != 0; });
 ICOMMAND(attack, "D", (int *down), { game::doattack(*down!=0); });
-ICOMMAND(secattack, "D", (int *down), { game::dosecattack(*down!=0); });
 
 bool entinmap(dynent *d, bool avoidplayers)        // brute force but effective way to find a free spawn spot in the map
 {

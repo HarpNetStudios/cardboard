@@ -18,8 +18,9 @@
       
         <link rel="next" href="models.html">
       
+      
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
@@ -27,14 +28,19 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.6f8fc17f.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ecc896b0.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
       
       
 
+
     
+    
+      
+        <script src="https://unpkg.com/iframe-worker/shim"></script>
+      
     
     
       
@@ -48,7 +54,7 @@
     
       <link rel="stylesheet" href="css/extra.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -65,7 +71,6 @@
     
     <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
   
-    
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -95,7 +100,8 @@
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -118,8 +124,10 @@
     
     
     
+    
       <label class="md-header__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
@@ -127,19 +135,22 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </nav>
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -156,7 +167,7 @@
         <a href="https://github.com/HarpNetStudios/cardboard" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -186,6 +197,7 @@
                     
 
 
+
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="index.html" title="Carmine Impact Docs" class="md-nav__button md-logo" aria-label="Carmine Impact Docs" data-md-component="logo">
@@ -200,7 +212,7 @@
       <a href="https://github.com/HarpNetStudios/cardboard" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -212,14 +224,19 @@
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="index.html" class="md-nav__link">
-        Home
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
       </a>
     </li>
   
@@ -227,84 +244,115 @@
     
       
       
-      
-
   
   
     
   
   
+  
+    
+    
     
       
+        
+        
+      
+    
     
     <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
-      
-      
-      
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
-          Info
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
-        <label class="md-nav__title" for="__nav_2">
-          <span class="md-nav__icon md-icon"></span>
-          Info
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
           
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Info
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Info
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="game.html" class="md-nav__link">
-        Command Reference
+        
+  
+  <span class="md-ellipsis">
+    Command Reference
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="config.html" class="md-nav__link">
-        Configuration
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="editing.html" class="md-nav__link">
-        Editing Tutorial
+        
+  
+  <span class="md-ellipsis">
+    Editing Tutorial
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
   
   
     
+  
   
   
     <li class="md-nav__item md-nav__item--active">
@@ -316,12 +364,24 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Editing Reference
+          
+  
+  <span class="md-ellipsis">
+    Editing Reference
+  </span>
+  
+
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="editref.html" class="md-nav__link md-nav__link--active">
-        Editing Reference
+        
+  
+  <span class="md-ellipsis">
+    Editing Reference
+  </span>
+  
+
       </a>
       
         
@@ -341,7 +401,9 @@
       
         <li class="md-nav__item">
   <a href="#editing" class="md-nav__link">
-    Editing
+    <span class="md-ellipsis">
+      Editing
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Editing">
@@ -349,210 +411,297 @@
         
           <li class="md-nav__item">
   <a href="#edittoggle" class="md-nav__link">
-    edittoggle
+    <span class="md-ellipsis">
+      edittoggle
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#dragging" class="md-nav__link">
-    dragging 0/1
+    <span class="md-ellipsis">
+      dragging 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editdrag" class="md-nav__link">
-    editdrag
+    <span class="md-ellipsis">
+      editdrag
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#selcorners" class="md-nav__link">
-    selcorners
+    <span class="md-ellipsis">
+      selcorners
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#moving" class="md-nav__link">
-    moving 0/1
+    <span class="md-ellipsis">
+      moving 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editmovedrag" class="md-nav__link">
-    editmovedrag
+    <span class="md-ellipsis">
+      editmovedrag
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cancelsel" class="md-nav__link">
-    cancelsel
+    <span class="md-ellipsis">
+      cancelsel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editface" class="md-nav__link">
-    editface D N
+    <span class="md-ellipsis">
+      editface D N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gridpower" class="md-nav__link">
-    gridpower N
+    <span class="md-ellipsis">
+      gridpower N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#edittex" class="md-nav__link">
-    edittex D
+    <span class="md-ellipsis">
+      edittex D
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settex" class="md-nav__link">
+    <span class="md-ellipsis">
+      settex N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gettex" class="md-nav__link">
-    gettex
+    <span class="md-ellipsis">
+      gettex
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getcurtex" class="md-nav__link">
+    <span class="md-ellipsis">
+      getcurtex
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getseltex" class="md-nav__link">
+    <span class="md-ellipsis">
+      getseltex
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#selextend" class="md-nav__link">
-    selextend
+    <span class="md-ellipsis">
+      selextend
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#passthrough" class="md-nav__link">
-    passthrough
+    <span class="md-ellipsis">
+      passthrough
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#reorient" class="md-nav__link">
-    reorient
+    <span class="md-ellipsis">
+      reorient
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#flip" class="md-nav__link">
-    flip
+    <span class="md-ellipsis">
+      flip
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#rotate" class="md-nav__link">
-    rotate D
+    <span class="md-ellipsis">
+      rotate D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#undo" class="md-nav__link">
-    undo
+    <span class="md-ellipsis">
+      undo
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#redo" class="md-nav__link">
-    redo
+    <span class="md-ellipsis">
+      redo
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#copy" class="md-nav__link">
-    copy
+    <span class="md-ellipsis">
+      copy
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#paste" class="md-nav__link">
-    paste
+    <span class="md-ellipsis">
+      paste
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editcopy" class="md-nav__link">
-    editcopy
+    <span class="md-ellipsis">
+      editcopy
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editpaste" class="md-nav__link">
-    editpaste
+    <span class="md-ellipsis">
+      editpaste
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#replace" class="md-nav__link">
-    replace
+  <a href="#replacetex-old-new-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      replacetex OLD NEW B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#replacesel" class="md-nav__link">
-    replacesel
+  <a href="#replacelasttex-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      replacelasttex B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editmat" class="md-nav__link">
-    editmat MAT [FILTER]
+    <span class="md-ellipsis">
+      editmat MAT [FILTER]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#recalc" class="md-nav__link">
-    recalc
+    <span class="md-ellipsis">
+      recalc
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#havesel" class="md-nav__link">
-    havesel
+    <span class="md-ellipsis">
+      havesel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gotosel" class="md-nav__link">
-    gotosel
+    <span class="md-ellipsis">
+      gotosel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#saveprefab" class="md-nav__link">
-    saveprefab B
+    <span class="md-ellipsis">
+      saveprefab B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#pasteprefab" class="md-nav__link">
-    pasteprefab B
+    <span class="md-ellipsis">
+      pasteprefab B
+    </span>
   </a>
   
 </li>
@@ -563,65 +712,83 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#heightfield" class="md-nav__link">
-    Heightfield
+  <a href="#heightmaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Heightmaps
+    </span>
   </a>
   
-    <nav class="md-nav" aria-label="Heightfield">
+    <nav class="md-nav" aria-label="Heightmaps">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#hmapedit" class="md-nav__link">
-    hmapedit 0/1
+    <span class="md-ellipsis">
+      hmapedit 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hmapselect" class="md-nav__link">
-    hmapselect
+    <span class="md-ellipsis">
+      hmapselect
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hmapcancel" class="md-nav__link">
-    hmapcancel
+    <span class="md-ellipsis">
+      hmapcancel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#selectbrush" class="md-nav__link">
-    selectbrush D
+    <span class="md-ellipsis">
+      selectbrush D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearbrush" class="md-nav__link">
-    clearbrush
+    <span class="md-ellipsis">
+      clearbrush
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#brushvert" class="md-nav__link">
-    brushvert x y depth
+    <span class="md-ellipsis">
+      brushvert x y depth
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#brushx" class="md-nav__link">
-    brushx
+    <span class="md-ellipsis">
+      brushx
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#brushy" class="md-nav__link">
-    brushy
+    <span class="md-ellipsis">
+      brushy
+    </span>
   </a>
   
 </li>
@@ -633,7 +800,9 @@
       
         <li class="md-nav__item">
   <a href="#entity" class="md-nav__link">
-    Entity
+    <span class="md-ellipsis">
+      Entity
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Entity">
@@ -641,168 +810,207 @@
         
           <li class="md-nav__item">
   <a href="#newent" class="md-nav__link">
-    newent type value1 value2 value3 value4
+    <span class="md-ellipsis">
+      newent type value1 value2 value3 value4
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#delent" class="md-nav__link">
-    delent
+    <span class="md-ellipsis">
+      delent
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entflip" class="md-nav__link">
-    entflip
+    <span class="md-ellipsis">
+      entflip
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entpush" class="md-nav__link">
-    entpush D
+    <span class="md-ellipsis">
+      entpush D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entrotate" class="md-nav__link">
-    entrotate D
+    <span class="md-ellipsis">
+      entrotate D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entmoving" class="md-nav__link">
-    entmoving 0/1/2
+    <span class="md-ellipsis">
+      entmoving 0/1/2
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entdrop" class="md-nav__link">
-    entdrop N
+    <span class="md-ellipsis">
+      entdrop N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#dropent" class="md-nav__link">
-    dropent
+    <span class="md-ellipsis">
+      dropent
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#trigger" class="md-nav__link">
-    trigger T N
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#platform" class="md-nav__link">
-    platform T N
+    <span class="md-ellipsis">
+      trigger T N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entselect" class="md-nav__link">
-    entselect X
+    <span class="md-ellipsis">
+      entselect X
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entloop" class="md-nav__link">
-    entloop X
+    <span class="md-ellipsis">
+      entloop X
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entcancel" class="md-nav__link">
-    entcancel
+    <span class="md-ellipsis">
+      entcancel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#enthavesel" class="md-nav__link">
-    enthavesel
+    <span class="md-ellipsis">
+      enthavesel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entget" class="md-nav__link">
-    entget
+    <span class="md-ellipsis">
+      entget
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#insel" class="md-nav__link">
-    insel
+    <span class="md-ellipsis">
+      insel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#et" class="md-nav__link">
-    et
+    <span class="md-ellipsis">
+      et
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ea" class="md-nav__link">
-    ea N
+    <span class="md-ellipsis">
+      ea N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entset" class="md-nav__link">
-    entset type value1 value2 value3 value4
+    <span class="md-ellipsis">
+      entset type value1 value2 value3 value4
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entproperty" class="md-nav__link">
-    entproperty P A
+    <span class="md-ellipsis">
+      entproperty P A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entfind" class="md-nav__link">
-    entfind type value1 value2 value3 value4
+    <span class="md-ellipsis">
+      entfind type value1 value2 value3 value4
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearents" class="md-nav__link">
-    clearents type
+    <span class="md-ellipsis">
+      clearents type
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#replaceents" class="md-nav__link">
-    replaceents type value1 value2 value3 value4
+    <span class="md-ellipsis">
+      replaceents type value1 value2 value3 value4
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entautoview" class="md-nav__link">
-    entautoview N
+    <span class="md-ellipsis">
+      entautoview N
+    </span>
   </a>
   
 </li>
@@ -814,7 +1022,9 @@
       
         <li class="md-nav__item">
   <a href="#settings" class="md-nav__link">
-    Settings
+    <span class="md-ellipsis">
+      Settings
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Settings">
@@ -822,77 +1032,99 @@
         
           <li class="md-nav__item">
   <a href="#undomegs" class="md-nav__link">
-    undomegs N
+    <span class="md-ellipsis">
+      undomegs N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#showsky" class="md-nav__link">
-    showsky B
+    <span class="md-ellipsis">
+      showsky B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#outline" class="md-nav__link">
-    outline B
+    <span class="md-ellipsis">
+      outline B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#wireframe" class="md-nav__link">
-    wireframe 0/1
+    <span class="md-ellipsis">
+      wireframe 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#allfaces" class="md-nav__link">
-    allfaces 0/1
+    <span class="md-ellipsis">
+      allfaces 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#showmat" class="md-nav__link">
-    showmat N
+    <span class="md-ellipsis">
+      showmat N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#optmats" class="md-nav__link">
-    optmats B
+    <span class="md-ellipsis">
+      optmats 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entselradius" class="md-nav__link">
-    entselradius N
+    <span class="md-ellipsis">
+      entselradius N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entselsnap" class="md-nav__link">
-    entselsnap 0/1
+    <span class="md-ellipsis">
+      entselsnap 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entitysurf" class="md-nav__link">
-    entitysurf 0/1
+    <span class="md-ellipsis">
+      entitysurf 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#selectionsurf" class="md-nav__link">
-    selectionsurf 0/1
+    <span class="md-ellipsis">
+      selectionsurf 0/1
+    </span>
   </a>
   
 </li>
@@ -904,7 +1136,9 @@
       
         <li class="md-nav__item">
   <a href="#map-and-config" class="md-nav__link">
-    Map and Config
+    <span class="md-ellipsis">
+      Map and Config
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Map and Config">
@@ -912,560 +1146,711 @@
         
           <li class="md-nav__item">
   <a href="#map" class="md-nav__link">
-    map name
+    <span class="md-ellipsis">
+      map name
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sendmap" class="md-nav__link">
-    sendmap
+    <span class="md-ellipsis">
+      sendmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getmap" class="md-nav__link">
-    getmap
+    <span class="md-ellipsis">
+      getmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#savemap" class="md-nav__link">
-    savemap name
+    <span class="md-ellipsis">
+      savemap name
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#savecurrentmap" class="md-nav__link">
-    savecurrentmap
+    <span class="md-ellipsis">
+      savecurrentmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#newmap" class="md-nav__link">
-    newmap size
+    <span class="md-ellipsis">
+      newmap size
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mapenlarge" class="md-nav__link">
-    mapenlarge
+    <span class="md-ellipsis">
+      mapenlarge
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maptitle" class="md-nav__link">
-    maptitle "Title by Author"
+    <span class="md-ellipsis">
+      maptitle "Title by Author"
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#loadsky" class="md-nav__link">
-    loadsky NAME [SPIN]
+    <span class="md-ellipsis">
+      loadsky NAME [SPIN]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texturereset" class="md-nav__link">
-    texturereset
+    <span class="md-ellipsis">
+      texturereset
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#materialreset" class="md-nav__link">
-    materialreset
+    <span class="md-ellipsis">
+      materialreset
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texture" class="md-nav__link">
-    texture TYPE FILENAME ROT X Y SCALE
+    <span class="md-ellipsis">
+      texture TYPE FILENAME ROT X Y SCALE
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#autograss" class="md-nav__link">
-    autograss FILENAME
+    <span class="md-ellipsis">
+      autograss FILENAME
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grassscale" class="md-nav__link">
-    grassscale N
+    <span class="md-ellipsis">
+      grassscale N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grasscolor" class="md-nav__link">
-    grasscolor R G B
+    <span class="md-ellipsis">
+      grasscolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grassalpha" class="md-nav__link">
-    grassalpha A
+    <span class="md-ellipsis">
+      grassalpha A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texscroll" class="md-nav__link">
-    texscroll X Y
+    <span class="md-ellipsis">
+      texscroll X Y
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texrotate" class="md-nav__link">
-    texrotate N
+    <span class="md-ellipsis">
+      texrotate N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texoffset" class="md-nav__link">
-    texoffset X Y
+    <span class="md-ellipsis">
+      texoffset X Y
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texscale" class="md-nav__link">
-    texscale N
+    <span class="md-ellipsis">
+      texscale N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texalpha" class="md-nav__link">
-    texalpha F B
+    <span class="md-ellipsis">
+      texalpha F B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texcolor" class="md-nav__link">
-    texcolor R G B
+    <span class="md-ellipsis">
+      texcolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vrotate" class="md-nav__link">
-    vrotate N
+    <span class="md-ellipsis">
+      vrotate N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#voffset" class="md-nav__link">
-    voffset X Y
+    <span class="md-ellipsis">
+      voffset X Y
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vscale" class="md-nav__link">
-    vscale N
+    <span class="md-ellipsis">
+      vscale N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#valpha" class="md-nav__link">
-    valpha F B
+    <span class="md-ellipsis">
+      valpha F B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vcolor" class="md-nav__link">
-    vcolor R G B
+    <span class="md-ellipsis">
+      vcolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vreset" class="md-nav__link">
-    vreset
+    <span class="md-ellipsis">
+      vreset
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vdelta" class="md-nav__link">
-    vdelta BODY
+    <span class="md-ellipsis">
+      vdelta BODY
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fog" class="md-nav__link">
-    fog N
+    <span class="md-ellipsis">
+      fog N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogcolor" class="md-nav__link">
-    fogcolor R G B
+    <span class="md-ellipsis">
+      fogcolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterspec" class="md-nav__link">
-    waterspec N
+    <span class="md-ellipsis">
+      waterspec N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterfog" class="md-nav__link">
-    waterfog N
+    <span class="md-ellipsis">
+      waterfog N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#watercolor" class="md-nav__link">
-    watercolor R G B
+    <span class="md-ellipsis">
+      watercolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterfallcolor" class="md-nav__link">
-    waterfallcolor R G B
+    <span class="md-ellipsis">
+      waterfallcolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lavafog" class="md-nav__link">
-    lavafog N
+    <span class="md-ellipsis">
+      lavafog N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lavacolor" class="md-nav__link">
-    lavacolor R G B
+    <span class="md-ellipsis">
+      lavacolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#shader" class="md-nav__link">
-    shader TYPE NAME VS PS
+    <span class="md-ellipsis">
+      shader TYPE NAME VS PS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fastshader" class="md-nav__link">
-    fastshader NICE FAST N
+    <span class="md-ellipsis">
+      fastshader NICE FAST N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setshader" class="md-nav__link">
-    setshader NAME
+    <span class="md-ellipsis">
+      setshader NAME
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setshaderparam" class="md-nav__link">
-    setshaderparam NAME X Y Z W
+    <span class="md-ellipsis">
+      setshaderparam NAME X Y Z W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vshaderparam" class="md-nav__link">
-    vshaderparam NAME X Y Z W
+    <span class="md-ellipsis">
+      vshaderparam NAME X Y Z W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setpixelparam" class="md-nav__link">
-    setpixelparam INDEX X Y Z W
+    <span class="md-ellipsis">
+      setpixelparam INDEX X Y Z W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setvertexparam" class="md-nav__link">
-    setvertexparam INDEX X Y Z W
+    <span class="md-ellipsis">
+      setvertexparam INDEX X Y Z W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setuniformparam" class="md-nav__link">
-    setuniformparam NAME X Y Z W
+    <span class="md-ellipsis">
+      setuniformparam NAME X Y Z W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#music" class="md-nav__link">
-    music name [ondone]
+    <span class="md-ellipsis">
+      music name [ondone]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#registersound" class="md-nav__link">
-    N = registersound name V
+    <span class="md-ellipsis">
+      N = registersound name V
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sound" class="md-nav__link">
-    sound N
+    <span class="md-ellipsis">
+      sound N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mapsound" class="md-nav__link">
-    mapsound name V N
+    <span class="md-ellipsis">
+      mapsound name V N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mmodel" class="md-nav__link">
-    mmodel N
+    <span class="md-ellipsis">
+      mmodel N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#shadowmapambient" class="md-nav__link">
-    shadowmapambient N
+    <span class="md-ellipsis">
+      shadowmapambient N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#shadowmapangle" class="md-nav__link">
-    shadowmapangle N
+    <span class="md-ellipsis">
+      shadowmapangle N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#causticscale" class="md-nav__link">
-    causticscale N
+    <span class="md-ellipsis">
+      causticscale N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#causticmillis" class="md-nav__link">
-    causticmillis N
+    <span class="md-ellipsis">
+      causticmillis N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#skybox" class="md-nav__link">
-    skybox NAME
+    <span class="md-ellipsis">
+      skybox NAME
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#spinsky" class="md-nav__link">
-    spinsky SPIN
+    <span class="md-ellipsis">
+      spinsky SPIN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#yawsky" class="md-nav__link">
-    yawsky YAW
+    <span class="md-ellipsis">
+      yawsky YAW
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudbox" class="md-nav__link">
-    cloudbox NAME
+    <span class="md-ellipsis">
+      cloudbox NAME
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#spinclouds" class="md-nav__link">
-    spinclouds SPIN
+    <span class="md-ellipsis">
+      spinclouds SPIN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#yawclouds" class="md-nav__link">
-    yawclouds YAW
+    <span class="md-ellipsis">
+      yawclouds YAW
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudclip" class="md-nav__link">
-    cloudclip CLIP
+    <span class="md-ellipsis">
+      cloudclip CLIP
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudlayer" class="md-nav__link">
-    cloudlayer NAME
+    <span class="md-ellipsis">
+      cloudlayer NAME
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudscrollx" class="md-nav__link">
-    cloudscrollx N
+    <span class="md-ellipsis">
+      cloudscrollx N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudscrolly" class="md-nav__link">
-    cloudscrolly N
+    <span class="md-ellipsis">
+      cloudscrolly N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudscale" class="md-nav__link">
-    cloudscale N
+    <span class="md-ellipsis">
+      cloudscale N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudheight" class="md-nav__link">
-    cloudheight N
+    <span class="md-ellipsis">
+      cloudheight N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudfade" class="md-nav__link">
-    cloudfade N
+    <span class="md-ellipsis">
+      cloudfade N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudcolor" class="md-nav__link">
-    cloudcolor N
+    <span class="md-ellipsis">
+      cloudcolor N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudalpha" class="md-nav__link">
-    cloudalpha A
+    <span class="md-ellipsis">
+      cloudalpha A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomeheight" class="md-nav__link">
-    fogdomeheight N
+    <span class="md-ellipsis">
+      fogdomeheight N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomemin" class="md-nav__link">
-    fogdomemin A
+    <span class="md-ellipsis">
+      fogdomemin A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomemax" class="md-nav__link">
-    fogdomemax A
+    <span class="md-ellipsis">
+      fogdomemax A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomecap" class="md-nav__link">
-    fogdomecap B
+    <span class="md-ellipsis">
+      fogdomecap B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomeclip" class="md-nav__link">
-    fogdomeclip Z
+    <span class="md-ellipsis">
+      fogdomeclip Z
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomecolor" class="md-nav__link">
-    fogdomecolor R G B
+    <span class="md-ellipsis">
+      fogdomecolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#skytexture" class="md-nav__link">
-    skytexture B
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#darkmap" class="md-nav__link">
-    darkmap 0/1
+    <span class="md-ellipsis">
+      skytexture B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#writeobj" class="md-nav__link">
-    writeobj N
+    <span class="md-ellipsis">
+      writeobj N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#flipnormalmapy" class="md-nav__link">
-    flipnormalmapy D N
+    <span class="md-ellipsis">
+      flipnormalmapy D N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mergenormalmaps" class="md-nav__link">
-    mergenormalmaps H N
+    <span class="md-ellipsis">
+      mergenormalmaps H N
+    </span>
   </a>
   
 </li>
@@ -1477,7 +1862,9 @@
       
         <li class="md-nav__item">
   <a href="#lighting" class="md-nav__link">
-    Lighting
+    <span class="md-ellipsis">
+      Lighting
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Lighting">
@@ -1485,154 +1872,198 @@
         
           <li class="md-nav__item">
   <a href="#ambient" class="md-nav__link">
-    ambient R [G B]
+    <span class="md-ellipsis">
+      ambient R [G B]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#edgetolerance" class="md-nav__link">
-    edgetolerance N
+    <span class="md-ellipsis">
+      edgetolerance N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sunlight" class="md-nav__link">
-    sunlight R [G B]
+    <span class="md-ellipsis">
+      sunlight R [G B]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sunlightyaw" class="md-nav__link">
-    sunlightyaw YAW
+    <span class="md-ellipsis">
+      sunlightyaw YAW
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sunlightpitch" class="md-nav__link">
-    sunlightpitch PITCH
+    <span class="md-ellipsis">
+      sunlightpitch PITCH
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sunlightscale" class="md-nav__link">
-    sunlightscale F
+    <span class="md-ellipsis">
+      sunlightscale F
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#skylight" class="md-nav__link">
-    skylight R [G B]
+    <span class="md-ellipsis">
+      skylight R [G B]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lmshadows" class="md-nav__link">
-    lmshadows N
+    <span class="md-ellipsis">
+      lmshadows N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lmaa" class="md-nav__link">
-    lmaa N
+    <span class="md-ellipsis">
+      lmaa N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#calclight" class="md-nav__link">
-    calclight Q
+    <span class="md-ellipsis">
+      calclight Q
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#patchlight" class="md-nav__link">
-    patchlight Q
+    <span class="md-ellipsis">
+      patchlight Q
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lightthreads" class="md-nav__link">
-    lightthreads N
+    <span class="md-ellipsis">
+      lightthreads N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fullbright" class="md-nav__link">
-    fullbright B
+    <span class="md-ellipsis">
+      fullbright B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lerpangle" class="md-nav__link">
-    lerpangle A
+    <span class="md-ellipsis">
+      lerpangle A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lerpsubdiv" class="md-nav__link">
-    lerpsubdiv N
+    <span class="md-ellipsis">
+      lerpsubdiv N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lerpsubdivsize" class="md-nav__link">
-    lerpsubdivsize N
+    <span class="md-ellipsis">
+      lerpsubdivsize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lightprecision" class="md-nav__link">
-    lightprecision P
+    <span class="md-ellipsis">
+      lightprecision P
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lighterror" class="md-nav__link">
-    lighterror E
+    <span class="md-ellipsis">
+      lighterror E
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lightlod" class="md-nav__link">
-    lightlod D
+    <span class="md-ellipsis">
+      lightlod D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#blurlms" class="md-nav__link">
-    blurlms N
+    <span class="md-ellipsis">
+      blurlms N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#blurskylight" class="md-nav__link">
-    blurskylight N
+    <span class="md-ellipsis">
+      blurskylight N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#dumplms" class="md-nav__link">
-    dumplms
+    <span class="md-ellipsis">
+      dumplms
+    </span>
   </a>
   
 </li>
@@ -1644,7 +2075,9 @@
       
         <li class="md-nav__item">
   <a href="#texture-blending" class="md-nav__link">
-    Texture Blending
+    <span class="md-ellipsis">
+      Texture Blending
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Texture Blending">
@@ -1652,77 +2085,99 @@
         
           <li class="md-nav__item">
   <a href="#texlayer" class="md-nav__link">
-    texlayer N
+    <span class="md-ellipsis">
+      texlayer N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vlayer" class="md-nav__link">
-    vlayer N
+    <span class="md-ellipsis">
+      vlayer N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#addblendbrush" class="md-nav__link">
-    addblendbrush N F
+    <span class="md-ellipsis">
+      addblendbrush N F
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setblendbrush" class="md-nav__link">
-    setblendbrush N
+    <span class="md-ellipsis">
+      setblendbrush N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#nextblendbrush" class="md-nav__link">
-    nextblendbrush N
+    <span class="md-ellipsis">
+      nextblendbrush N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#rotateblendbrush" class="md-nav__link">
-    rotateblendbrush
+    <span class="md-ellipsis">
+      rotateblendbrush
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#blendpaintmode" class="md-nav__link">
-    blendpaintmode N
+    <span class="md-ellipsis">
+      blendpaintmode N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#paintblendmap" class="md-nav__link">
-    paintblendmap
+    <span class="md-ellipsis">
+      paintblendmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#showblendmap" class="md-nav__link">
-    showblendmap
+    <span class="md-ellipsis">
+      showblendmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearblendmap" class="md-nav__link">
-    clearblendmap
+    <span class="md-ellipsis">
+      clearblendmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearblendmapsel" class="md-nav__link">
-    clearblendmapsel
+    <span class="md-ellipsis">
+      clearblendmapsel
+    </span>
   </a>
   
 </li>
@@ -1734,7 +2189,9 @@
       
         <li class="md-nav__item">
   <a href="#entity-types" class="md-nav__link">
-    Entity Types
+    <span class="md-ellipsis">
+      Entity Types
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Entity Types">
@@ -1742,133 +2199,171 @@
         
           <li class="md-nav__item">
   <a href="#ent-light" class="md-nav__link">
-    "light" radius r g b
+    <span class="md-ellipsis">
+      "light" radius r g b
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-spotlight" class="md-nav__link">
-    "spotlight" radius
+    <span class="md-ellipsis">
+      "spotlight" radius
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-envmap" class="md-nav__link">
-    "envmap" [radius]
+    <span class="md-ellipsis">
+      "envmap" [radius]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-sound" class="md-nav__link">
-    "sound" N radius [size]
+    <span class="md-ellipsis">
+      "sound" N radius [size]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-playerstart" class="md-nav__link">
-    "playerstart" [Y] [T]
+    <span class="md-ellipsis">
+      "playerstart" [Y] [T]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-flag" class="md-nav__link">
-    "flag" [Y] T
+    <span class="md-ellipsis">
+      "flag" [Y] T
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-base" class="md-nav__link">
-    "base" [ammo [N]]
+    <span class="md-ellipsis">
+      "base" [ammo [N]]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-ammo" class="md-nav__link">
-    "ammo"
+    <span class="md-ellipsis">
+      "ammo"
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-health" class="md-nav__link">
-    "health"
+    <span class="md-ellipsis">
+      "health"
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-teleport" class="md-nav__link">
-    "teleport" N [M]
+    <span class="md-ellipsis">
+      "teleport" N [M]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-teledest" class="md-nav__link">
-    "teledest" [Y] N [P]
+    <span class="md-ellipsis">
+      "teledest" [Y] N [P]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-jumppad" class="md-nav__link">
-    "jumppad" Z [Y] [X]
+    <span class="md-ellipsis">
+      "jumppad" Z [Y] [X]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-mapmodel" class="md-nav__link">
-    "mapmodel" [Y] N T R
+    <span class="md-ellipsis">
+      "mapmodel" [Y] N T R
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-box" class="md-nav__link">
-    "box" [Y] N W
+    <span class="md-ellipsis">
+      "box" [Y] N W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-barrel" class="md-nav__link">
-    "barrel" [Y] N W H
+    <span class="md-ellipsis">
+      "barrel" [Y] N W H
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-platform" class="md-nav__link">
-    "platform" [Y] N T S
+    <span class="md-ellipsis">
+      "platform" [Y] N T S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-elevator" class="md-nav__link">
-    "elevator" [Y] N T S
+    <span class="md-ellipsis">
+      "elevator" [Y] N T S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-respawnpoint" class="md-nav__link">
-    "respawnpoint"
+    <span class="md-ellipsis">
+      "respawnpoint"
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-particles" class="md-nav__link">
-    "particles" type value1 value2 value3 value4
+    <span class="md-ellipsis">
+      "particles" type value1 value2 value3 value4
+    </span>
   </a>
   
 </li>
@@ -1880,7 +2375,9 @@
       
         <li class="md-nav__item">
   <a href="#pvs-culling" class="md-nav__link">
-    PVS Culling
+    <span class="md-ellipsis">
+      PVS Culling
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="PVS Culling">
@@ -1888,49 +2385,63 @@
         
           <li class="md-nav__item">
   <a href="#pvs" class="md-nav__link">
-    pvs N
+    <span class="md-ellipsis">
+      pvs N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#pvsthreads-n" class="md-nav__link">
-    pvsthreads N
+    <span class="md-ellipsis">
+      pvsthreads N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#genpvs-n" class="md-nav__link">
-    genpvs [N]
+    <span class="md-ellipsis">
+      genpvs [N]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearpvs" class="md-nav__link">
-    clearpvs
+    <span class="md-ellipsis">
+      clearpvs
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lockpvs" class="md-nav__link">
-    lockpvs N
+    <span class="md-ellipsis">
+      lockpvs N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#testpvs" class="md-nav__link">
-    testpvs [N]
+    <span class="md-ellipsis">
+      testpvs [N]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#pvsstats" class="md-nav__link">
-    pvsstats
+    <span class="md-ellipsis">
+      pvsstats
+    </span>
   </a>
   
 </li>
@@ -1942,7 +2453,9 @@
       
         <li class="md-nav__item">
   <a href="#waypoints" class="md-nav__link">
-    Waypoints
+    <span class="md-ellipsis">
+      Waypoints
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Waypoints">
@@ -1950,42 +2463,54 @@
         
           <li class="md-nav__item">
   <a href="#showwaypoints" class="md-nav__link">
-    showwaypoints 0/1
+    <span class="md-ellipsis">
+      showwaypoints 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#dropwaypoints" class="md-nav__link">
-    dropwaypoints 0/1
+    <span class="md-ellipsis">
+      dropwaypoints 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#loadwaypoints" class="md-nav__link">
-    loadwaypoints [filename]
+    <span class="md-ellipsis">
+      loadwaypoints [filename]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#savewaypoints" class="md-nav__link">
-    savewaypoints [filename]
+    <span class="md-ellipsis">
+      savewaypoints [filename]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearwaypoints" class="md-nav__link">
-    clearwaypoints
+    <span class="md-ellipsis">
+      clearwaypoints
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#delselwaypoints" class="md-nav__link">
-    delselwaypoints
+    <span class="md-ellipsis">
+      delselwaypoints
+    </span>
   </a>
   
 </li>
@@ -1997,7 +2522,9 @@
       
         <li class="md-nav__item">
   <a href="#the-hud" class="md-nav__link">
-    The HUD
+    <span class="md-ellipsis">
+      The HUD
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="The HUD">
@@ -2005,14 +2532,69 @@
         
           <li class="md-nav__item">
   <a href="#hidestats" class="md-nav__link">
-    hidestats 0/1
+    <span class="md-ellipsis">
+      hidestats 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hidehud" class="md-nav__link">
-    hidehud 0/1
+    <span class="md-ellipsis">
+      hidehud 0/1
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shader-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shader Reference
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Shader Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stdworld" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdworld
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decalworld" class="md-nav__link">
+    <span class="md-ellipsis">
+      decalworld
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glowworld" class="md-nav__link">
+    <span class="md-ellipsis">
+      glowworld
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bumpworld" class="md-nav__link">
+    <span class="md-ellipsis">
+      bumpworld
+    </span>
   </a>
   
 </li>
@@ -2029,24 +2611,32 @@
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="models.html" class="md-nav__link">
-        Model Reference
+        
+  
+  <span class="md-ellipsis">
+    Model Reference
+  </span>
+  
+
       </a>
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2079,7 +2669,9 @@
       
         <li class="md-nav__item">
   <a href="#editing" class="md-nav__link">
-    Editing
+    <span class="md-ellipsis">
+      Editing
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Editing">
@@ -2087,210 +2679,297 @@
         
           <li class="md-nav__item">
   <a href="#edittoggle" class="md-nav__link">
-    edittoggle
+    <span class="md-ellipsis">
+      edittoggle
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#dragging" class="md-nav__link">
-    dragging 0/1
+    <span class="md-ellipsis">
+      dragging 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editdrag" class="md-nav__link">
-    editdrag
+    <span class="md-ellipsis">
+      editdrag
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#selcorners" class="md-nav__link">
-    selcorners
+    <span class="md-ellipsis">
+      selcorners
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#moving" class="md-nav__link">
-    moving 0/1
+    <span class="md-ellipsis">
+      moving 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editmovedrag" class="md-nav__link">
-    editmovedrag
+    <span class="md-ellipsis">
+      editmovedrag
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cancelsel" class="md-nav__link">
-    cancelsel
+    <span class="md-ellipsis">
+      cancelsel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editface" class="md-nav__link">
-    editface D N
+    <span class="md-ellipsis">
+      editface D N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gridpower" class="md-nav__link">
-    gridpower N
+    <span class="md-ellipsis">
+      gridpower N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#edittex" class="md-nav__link">
-    edittex D
+    <span class="md-ellipsis">
+      edittex D
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settex" class="md-nav__link">
+    <span class="md-ellipsis">
+      settex N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gettex" class="md-nav__link">
-    gettex
+    <span class="md-ellipsis">
+      gettex
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getcurtex" class="md-nav__link">
+    <span class="md-ellipsis">
+      getcurtex
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getseltex" class="md-nav__link">
+    <span class="md-ellipsis">
+      getseltex
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#selextend" class="md-nav__link">
-    selextend
+    <span class="md-ellipsis">
+      selextend
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#passthrough" class="md-nav__link">
-    passthrough
+    <span class="md-ellipsis">
+      passthrough
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#reorient" class="md-nav__link">
-    reorient
+    <span class="md-ellipsis">
+      reorient
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#flip" class="md-nav__link">
-    flip
+    <span class="md-ellipsis">
+      flip
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#rotate" class="md-nav__link">
-    rotate D
+    <span class="md-ellipsis">
+      rotate D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#undo" class="md-nav__link">
-    undo
+    <span class="md-ellipsis">
+      undo
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#redo" class="md-nav__link">
-    redo
+    <span class="md-ellipsis">
+      redo
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#copy" class="md-nav__link">
-    copy
+    <span class="md-ellipsis">
+      copy
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#paste" class="md-nav__link">
-    paste
+    <span class="md-ellipsis">
+      paste
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editcopy" class="md-nav__link">
-    editcopy
+    <span class="md-ellipsis">
+      editcopy
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editpaste" class="md-nav__link">
-    editpaste
+    <span class="md-ellipsis">
+      editpaste
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#replace" class="md-nav__link">
-    replace
+  <a href="#replacetex-old-new-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      replacetex OLD NEW B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#replacesel" class="md-nav__link">
-    replacesel
+  <a href="#replacelasttex-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      replacelasttex B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editmat" class="md-nav__link">
-    editmat MAT [FILTER]
+    <span class="md-ellipsis">
+      editmat MAT [FILTER]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#recalc" class="md-nav__link">
-    recalc
+    <span class="md-ellipsis">
+      recalc
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#havesel" class="md-nav__link">
-    havesel
+    <span class="md-ellipsis">
+      havesel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gotosel" class="md-nav__link">
-    gotosel
+    <span class="md-ellipsis">
+      gotosel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#saveprefab" class="md-nav__link">
-    saveprefab B
+    <span class="md-ellipsis">
+      saveprefab B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#pasteprefab" class="md-nav__link">
-    pasteprefab B
+    <span class="md-ellipsis">
+      pasteprefab B
+    </span>
   </a>
   
 </li>
@@ -2301,65 +2980,83 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#heightfield" class="md-nav__link">
-    Heightfield
+  <a href="#heightmaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Heightmaps
+    </span>
   </a>
   
-    <nav class="md-nav" aria-label="Heightfield">
+    <nav class="md-nav" aria-label="Heightmaps">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#hmapedit" class="md-nav__link">
-    hmapedit 0/1
+    <span class="md-ellipsis">
+      hmapedit 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hmapselect" class="md-nav__link">
-    hmapselect
+    <span class="md-ellipsis">
+      hmapselect
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hmapcancel" class="md-nav__link">
-    hmapcancel
+    <span class="md-ellipsis">
+      hmapcancel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#selectbrush" class="md-nav__link">
-    selectbrush D
+    <span class="md-ellipsis">
+      selectbrush D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearbrush" class="md-nav__link">
-    clearbrush
+    <span class="md-ellipsis">
+      clearbrush
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#brushvert" class="md-nav__link">
-    brushvert x y depth
+    <span class="md-ellipsis">
+      brushvert x y depth
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#brushx" class="md-nav__link">
-    brushx
+    <span class="md-ellipsis">
+      brushx
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#brushy" class="md-nav__link">
-    brushy
+    <span class="md-ellipsis">
+      brushy
+    </span>
   </a>
   
 </li>
@@ -2371,7 +3068,9 @@
       
         <li class="md-nav__item">
   <a href="#entity" class="md-nav__link">
-    Entity
+    <span class="md-ellipsis">
+      Entity
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Entity">
@@ -2379,168 +3078,207 @@
         
           <li class="md-nav__item">
   <a href="#newent" class="md-nav__link">
-    newent type value1 value2 value3 value4
+    <span class="md-ellipsis">
+      newent type value1 value2 value3 value4
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#delent" class="md-nav__link">
-    delent
+    <span class="md-ellipsis">
+      delent
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entflip" class="md-nav__link">
-    entflip
+    <span class="md-ellipsis">
+      entflip
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entpush" class="md-nav__link">
-    entpush D
+    <span class="md-ellipsis">
+      entpush D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entrotate" class="md-nav__link">
-    entrotate D
+    <span class="md-ellipsis">
+      entrotate D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entmoving" class="md-nav__link">
-    entmoving 0/1/2
+    <span class="md-ellipsis">
+      entmoving 0/1/2
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entdrop" class="md-nav__link">
-    entdrop N
+    <span class="md-ellipsis">
+      entdrop N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#dropent" class="md-nav__link">
-    dropent
+    <span class="md-ellipsis">
+      dropent
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#trigger" class="md-nav__link">
-    trigger T N
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#platform" class="md-nav__link">
-    platform T N
+    <span class="md-ellipsis">
+      trigger T N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entselect" class="md-nav__link">
-    entselect X
+    <span class="md-ellipsis">
+      entselect X
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entloop" class="md-nav__link">
-    entloop X
+    <span class="md-ellipsis">
+      entloop X
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entcancel" class="md-nav__link">
-    entcancel
+    <span class="md-ellipsis">
+      entcancel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#enthavesel" class="md-nav__link">
-    enthavesel
+    <span class="md-ellipsis">
+      enthavesel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entget" class="md-nav__link">
-    entget
+    <span class="md-ellipsis">
+      entget
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#insel" class="md-nav__link">
-    insel
+    <span class="md-ellipsis">
+      insel
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#et" class="md-nav__link">
-    et
+    <span class="md-ellipsis">
+      et
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ea" class="md-nav__link">
-    ea N
+    <span class="md-ellipsis">
+      ea N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entset" class="md-nav__link">
-    entset type value1 value2 value3 value4
+    <span class="md-ellipsis">
+      entset type value1 value2 value3 value4
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entproperty" class="md-nav__link">
-    entproperty P A
+    <span class="md-ellipsis">
+      entproperty P A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entfind" class="md-nav__link">
-    entfind type value1 value2 value3 value4
+    <span class="md-ellipsis">
+      entfind type value1 value2 value3 value4
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearents" class="md-nav__link">
-    clearents type
+    <span class="md-ellipsis">
+      clearents type
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#replaceents" class="md-nav__link">
-    replaceents type value1 value2 value3 value4
+    <span class="md-ellipsis">
+      replaceents type value1 value2 value3 value4
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entautoview" class="md-nav__link">
-    entautoview N
+    <span class="md-ellipsis">
+      entautoview N
+    </span>
   </a>
   
 </li>
@@ -2552,7 +3290,9 @@
       
         <li class="md-nav__item">
   <a href="#settings" class="md-nav__link">
-    Settings
+    <span class="md-ellipsis">
+      Settings
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Settings">
@@ -2560,77 +3300,99 @@
         
           <li class="md-nav__item">
   <a href="#undomegs" class="md-nav__link">
-    undomegs N
+    <span class="md-ellipsis">
+      undomegs N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#showsky" class="md-nav__link">
-    showsky B
+    <span class="md-ellipsis">
+      showsky B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#outline" class="md-nav__link">
-    outline B
+    <span class="md-ellipsis">
+      outline B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#wireframe" class="md-nav__link">
-    wireframe 0/1
+    <span class="md-ellipsis">
+      wireframe 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#allfaces" class="md-nav__link">
-    allfaces 0/1
+    <span class="md-ellipsis">
+      allfaces 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#showmat" class="md-nav__link">
-    showmat N
+    <span class="md-ellipsis">
+      showmat N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#optmats" class="md-nav__link">
-    optmats B
+    <span class="md-ellipsis">
+      optmats 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entselradius" class="md-nav__link">
-    entselradius N
+    <span class="md-ellipsis">
+      entselradius N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entselsnap" class="md-nav__link">
-    entselsnap 0/1
+    <span class="md-ellipsis">
+      entselsnap 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#entitysurf" class="md-nav__link">
-    entitysurf 0/1
+    <span class="md-ellipsis">
+      entitysurf 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#selectionsurf" class="md-nav__link">
-    selectionsurf 0/1
+    <span class="md-ellipsis">
+      selectionsurf 0/1
+    </span>
   </a>
   
 </li>
@@ -2642,7 +3404,9 @@
       
         <li class="md-nav__item">
   <a href="#map-and-config" class="md-nav__link">
-    Map and Config
+    <span class="md-ellipsis">
+      Map and Config
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Map and Config">
@@ -2650,560 +3414,711 @@
         
           <li class="md-nav__item">
   <a href="#map" class="md-nav__link">
-    map name
+    <span class="md-ellipsis">
+      map name
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sendmap" class="md-nav__link">
-    sendmap
+    <span class="md-ellipsis">
+      sendmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getmap" class="md-nav__link">
-    getmap
+    <span class="md-ellipsis">
+      getmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#savemap" class="md-nav__link">
-    savemap name
+    <span class="md-ellipsis">
+      savemap name
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#savecurrentmap" class="md-nav__link">
-    savecurrentmap
+    <span class="md-ellipsis">
+      savecurrentmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#newmap" class="md-nav__link">
-    newmap size
+    <span class="md-ellipsis">
+      newmap size
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mapenlarge" class="md-nav__link">
-    mapenlarge
+    <span class="md-ellipsis">
+      mapenlarge
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maptitle" class="md-nav__link">
-    maptitle "Title by Author"
+    <span class="md-ellipsis">
+      maptitle "Title by Author"
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#loadsky" class="md-nav__link">
-    loadsky NAME [SPIN]
+    <span class="md-ellipsis">
+      loadsky NAME [SPIN]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texturereset" class="md-nav__link">
-    texturereset
+    <span class="md-ellipsis">
+      texturereset
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#materialreset" class="md-nav__link">
-    materialreset
+    <span class="md-ellipsis">
+      materialreset
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texture" class="md-nav__link">
-    texture TYPE FILENAME ROT X Y SCALE
+    <span class="md-ellipsis">
+      texture TYPE FILENAME ROT X Y SCALE
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#autograss" class="md-nav__link">
-    autograss FILENAME
+    <span class="md-ellipsis">
+      autograss FILENAME
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grassscale" class="md-nav__link">
-    grassscale N
+    <span class="md-ellipsis">
+      grassscale N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grasscolor" class="md-nav__link">
-    grasscolor R G B
+    <span class="md-ellipsis">
+      grasscolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grassalpha" class="md-nav__link">
-    grassalpha A
+    <span class="md-ellipsis">
+      grassalpha A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texscroll" class="md-nav__link">
-    texscroll X Y
+    <span class="md-ellipsis">
+      texscroll X Y
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texrotate" class="md-nav__link">
-    texrotate N
+    <span class="md-ellipsis">
+      texrotate N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texoffset" class="md-nav__link">
-    texoffset X Y
+    <span class="md-ellipsis">
+      texoffset X Y
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texscale" class="md-nav__link">
-    texscale N
+    <span class="md-ellipsis">
+      texscale N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texalpha" class="md-nav__link">
-    texalpha F B
+    <span class="md-ellipsis">
+      texalpha F B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texcolor" class="md-nav__link">
-    texcolor R G B
+    <span class="md-ellipsis">
+      texcolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vrotate" class="md-nav__link">
-    vrotate N
+    <span class="md-ellipsis">
+      vrotate N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#voffset" class="md-nav__link">
-    voffset X Y
+    <span class="md-ellipsis">
+      voffset X Y
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vscale" class="md-nav__link">
-    vscale N
+    <span class="md-ellipsis">
+      vscale N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#valpha" class="md-nav__link">
-    valpha F B
+    <span class="md-ellipsis">
+      valpha F B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vcolor" class="md-nav__link">
-    vcolor R G B
+    <span class="md-ellipsis">
+      vcolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vreset" class="md-nav__link">
-    vreset
+    <span class="md-ellipsis">
+      vreset
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vdelta" class="md-nav__link">
-    vdelta BODY
+    <span class="md-ellipsis">
+      vdelta BODY
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fog" class="md-nav__link">
-    fog N
+    <span class="md-ellipsis">
+      fog N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogcolor" class="md-nav__link">
-    fogcolor R G B
+    <span class="md-ellipsis">
+      fogcolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterspec" class="md-nav__link">
-    waterspec N
+    <span class="md-ellipsis">
+      waterspec N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterfog" class="md-nav__link">
-    waterfog N
+    <span class="md-ellipsis">
+      waterfog N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#watercolor" class="md-nav__link">
-    watercolor R G B
+    <span class="md-ellipsis">
+      watercolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterfallcolor" class="md-nav__link">
-    waterfallcolor R G B
+    <span class="md-ellipsis">
+      waterfallcolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lavafog" class="md-nav__link">
-    lavafog N
+    <span class="md-ellipsis">
+      lavafog N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lavacolor" class="md-nav__link">
-    lavacolor R G B
+    <span class="md-ellipsis">
+      lavacolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#shader" class="md-nav__link">
-    shader TYPE NAME VS PS
+    <span class="md-ellipsis">
+      shader TYPE NAME VS PS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fastshader" class="md-nav__link">
-    fastshader NICE FAST N
+    <span class="md-ellipsis">
+      fastshader NICE FAST N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setshader" class="md-nav__link">
-    setshader NAME
+    <span class="md-ellipsis">
+      setshader NAME
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setshaderparam" class="md-nav__link">
-    setshaderparam NAME X Y Z W
+    <span class="md-ellipsis">
+      setshaderparam NAME X Y Z W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vshaderparam" class="md-nav__link">
-    vshaderparam NAME X Y Z W
+    <span class="md-ellipsis">
+      vshaderparam NAME X Y Z W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setpixelparam" class="md-nav__link">
-    setpixelparam INDEX X Y Z W
+    <span class="md-ellipsis">
+      setpixelparam INDEX X Y Z W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setvertexparam" class="md-nav__link">
-    setvertexparam INDEX X Y Z W
+    <span class="md-ellipsis">
+      setvertexparam INDEX X Y Z W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setuniformparam" class="md-nav__link">
-    setuniformparam NAME X Y Z W
+    <span class="md-ellipsis">
+      setuniformparam NAME X Y Z W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#music" class="md-nav__link">
-    music name [ondone]
+    <span class="md-ellipsis">
+      music name [ondone]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#registersound" class="md-nav__link">
-    N = registersound name V
+    <span class="md-ellipsis">
+      N = registersound name V
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sound" class="md-nav__link">
-    sound N
+    <span class="md-ellipsis">
+      sound N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mapsound" class="md-nav__link">
-    mapsound name V N
+    <span class="md-ellipsis">
+      mapsound name V N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mmodel" class="md-nav__link">
-    mmodel N
+    <span class="md-ellipsis">
+      mmodel N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#shadowmapambient" class="md-nav__link">
-    shadowmapambient N
+    <span class="md-ellipsis">
+      shadowmapambient N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#shadowmapangle" class="md-nav__link">
-    shadowmapangle N
+    <span class="md-ellipsis">
+      shadowmapangle N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#causticscale" class="md-nav__link">
-    causticscale N
+    <span class="md-ellipsis">
+      causticscale N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#causticmillis" class="md-nav__link">
-    causticmillis N
+    <span class="md-ellipsis">
+      causticmillis N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#skybox" class="md-nav__link">
-    skybox NAME
+    <span class="md-ellipsis">
+      skybox NAME
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#spinsky" class="md-nav__link">
-    spinsky SPIN
+    <span class="md-ellipsis">
+      spinsky SPIN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#yawsky" class="md-nav__link">
-    yawsky YAW
+    <span class="md-ellipsis">
+      yawsky YAW
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudbox" class="md-nav__link">
-    cloudbox NAME
+    <span class="md-ellipsis">
+      cloudbox NAME
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#spinclouds" class="md-nav__link">
-    spinclouds SPIN
+    <span class="md-ellipsis">
+      spinclouds SPIN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#yawclouds" class="md-nav__link">
-    yawclouds YAW
+    <span class="md-ellipsis">
+      yawclouds YAW
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudclip" class="md-nav__link">
-    cloudclip CLIP
+    <span class="md-ellipsis">
+      cloudclip CLIP
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudlayer" class="md-nav__link">
-    cloudlayer NAME
+    <span class="md-ellipsis">
+      cloudlayer NAME
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudscrollx" class="md-nav__link">
-    cloudscrollx N
+    <span class="md-ellipsis">
+      cloudscrollx N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudscrolly" class="md-nav__link">
-    cloudscrolly N
+    <span class="md-ellipsis">
+      cloudscrolly N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudscale" class="md-nav__link">
-    cloudscale N
+    <span class="md-ellipsis">
+      cloudscale N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudheight" class="md-nav__link">
-    cloudheight N
+    <span class="md-ellipsis">
+      cloudheight N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudfade" class="md-nav__link">
-    cloudfade N
+    <span class="md-ellipsis">
+      cloudfade N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudcolor" class="md-nav__link">
-    cloudcolor N
+    <span class="md-ellipsis">
+      cloudcolor N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cloudalpha" class="md-nav__link">
-    cloudalpha A
+    <span class="md-ellipsis">
+      cloudalpha A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomeheight" class="md-nav__link">
-    fogdomeheight N
+    <span class="md-ellipsis">
+      fogdomeheight N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomemin" class="md-nav__link">
-    fogdomemin A
+    <span class="md-ellipsis">
+      fogdomemin A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomemax" class="md-nav__link">
-    fogdomemax A
+    <span class="md-ellipsis">
+      fogdomemax A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomecap" class="md-nav__link">
-    fogdomecap B
+    <span class="md-ellipsis">
+      fogdomecap B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomeclip" class="md-nav__link">
-    fogdomeclip Z
+    <span class="md-ellipsis">
+      fogdomeclip Z
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fogdomecolor" class="md-nav__link">
-    fogdomecolor R G B
+    <span class="md-ellipsis">
+      fogdomecolor R G B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#skytexture" class="md-nav__link">
-    skytexture B
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#darkmap" class="md-nav__link">
-    darkmap 0/1
+    <span class="md-ellipsis">
+      skytexture B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#writeobj" class="md-nav__link">
-    writeobj N
+    <span class="md-ellipsis">
+      writeobj N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#flipnormalmapy" class="md-nav__link">
-    flipnormalmapy D N
+    <span class="md-ellipsis">
+      flipnormalmapy D N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mergenormalmaps" class="md-nav__link">
-    mergenormalmaps H N
+    <span class="md-ellipsis">
+      mergenormalmaps H N
+    </span>
   </a>
   
 </li>
@@ -3215,7 +4130,9 @@
       
         <li class="md-nav__item">
   <a href="#lighting" class="md-nav__link">
-    Lighting
+    <span class="md-ellipsis">
+      Lighting
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Lighting">
@@ -3223,154 +4140,198 @@
         
           <li class="md-nav__item">
   <a href="#ambient" class="md-nav__link">
-    ambient R [G B]
+    <span class="md-ellipsis">
+      ambient R [G B]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#edgetolerance" class="md-nav__link">
-    edgetolerance N
+    <span class="md-ellipsis">
+      edgetolerance N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sunlight" class="md-nav__link">
-    sunlight R [G B]
+    <span class="md-ellipsis">
+      sunlight R [G B]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sunlightyaw" class="md-nav__link">
-    sunlightyaw YAW
+    <span class="md-ellipsis">
+      sunlightyaw YAW
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sunlightpitch" class="md-nav__link">
-    sunlightpitch PITCH
+    <span class="md-ellipsis">
+      sunlightpitch PITCH
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sunlightscale" class="md-nav__link">
-    sunlightscale F
+    <span class="md-ellipsis">
+      sunlightscale F
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#skylight" class="md-nav__link">
-    skylight R [G B]
+    <span class="md-ellipsis">
+      skylight R [G B]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lmshadows" class="md-nav__link">
-    lmshadows N
+    <span class="md-ellipsis">
+      lmshadows N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lmaa" class="md-nav__link">
-    lmaa N
+    <span class="md-ellipsis">
+      lmaa N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#calclight" class="md-nav__link">
-    calclight Q
+    <span class="md-ellipsis">
+      calclight Q
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#patchlight" class="md-nav__link">
-    patchlight Q
+    <span class="md-ellipsis">
+      patchlight Q
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lightthreads" class="md-nav__link">
-    lightthreads N
+    <span class="md-ellipsis">
+      lightthreads N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fullbright" class="md-nav__link">
-    fullbright B
+    <span class="md-ellipsis">
+      fullbright B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lerpangle" class="md-nav__link">
-    lerpangle A
+    <span class="md-ellipsis">
+      lerpangle A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lerpsubdiv" class="md-nav__link">
-    lerpsubdiv N
+    <span class="md-ellipsis">
+      lerpsubdiv N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lerpsubdivsize" class="md-nav__link">
-    lerpsubdivsize N
+    <span class="md-ellipsis">
+      lerpsubdivsize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lightprecision" class="md-nav__link">
-    lightprecision P
+    <span class="md-ellipsis">
+      lightprecision P
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lighterror" class="md-nav__link">
-    lighterror E
+    <span class="md-ellipsis">
+      lighterror E
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lightlod" class="md-nav__link">
-    lightlod D
+    <span class="md-ellipsis">
+      lightlod D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#blurlms" class="md-nav__link">
-    blurlms N
+    <span class="md-ellipsis">
+      blurlms N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#blurskylight" class="md-nav__link">
-    blurskylight N
+    <span class="md-ellipsis">
+      blurskylight N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#dumplms" class="md-nav__link">
-    dumplms
+    <span class="md-ellipsis">
+      dumplms
+    </span>
   </a>
   
 </li>
@@ -3382,7 +4343,9 @@
       
         <li class="md-nav__item">
   <a href="#texture-blending" class="md-nav__link">
-    Texture Blending
+    <span class="md-ellipsis">
+      Texture Blending
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Texture Blending">
@@ -3390,77 +4353,99 @@
         
           <li class="md-nav__item">
   <a href="#texlayer" class="md-nav__link">
-    texlayer N
+    <span class="md-ellipsis">
+      texlayer N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#vlayer" class="md-nav__link">
-    vlayer N
+    <span class="md-ellipsis">
+      vlayer N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#addblendbrush" class="md-nav__link">
-    addblendbrush N F
+    <span class="md-ellipsis">
+      addblendbrush N F
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setblendbrush" class="md-nav__link">
-    setblendbrush N
+    <span class="md-ellipsis">
+      setblendbrush N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#nextblendbrush" class="md-nav__link">
-    nextblendbrush N
+    <span class="md-ellipsis">
+      nextblendbrush N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#rotateblendbrush" class="md-nav__link">
-    rotateblendbrush
+    <span class="md-ellipsis">
+      rotateblendbrush
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#blendpaintmode" class="md-nav__link">
-    blendpaintmode N
+    <span class="md-ellipsis">
+      blendpaintmode N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#paintblendmap" class="md-nav__link">
-    paintblendmap
+    <span class="md-ellipsis">
+      paintblendmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#showblendmap" class="md-nav__link">
-    showblendmap
+    <span class="md-ellipsis">
+      showblendmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearblendmap" class="md-nav__link">
-    clearblendmap
+    <span class="md-ellipsis">
+      clearblendmap
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearblendmapsel" class="md-nav__link">
-    clearblendmapsel
+    <span class="md-ellipsis">
+      clearblendmapsel
+    </span>
   </a>
   
 </li>
@@ -3472,7 +4457,9 @@
       
         <li class="md-nav__item">
   <a href="#entity-types" class="md-nav__link">
-    Entity Types
+    <span class="md-ellipsis">
+      Entity Types
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Entity Types">
@@ -3480,133 +4467,171 @@
         
           <li class="md-nav__item">
   <a href="#ent-light" class="md-nav__link">
-    "light" radius r g b
+    <span class="md-ellipsis">
+      "light" radius r g b
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-spotlight" class="md-nav__link">
-    "spotlight" radius
+    <span class="md-ellipsis">
+      "spotlight" radius
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-envmap" class="md-nav__link">
-    "envmap" [radius]
+    <span class="md-ellipsis">
+      "envmap" [radius]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-sound" class="md-nav__link">
-    "sound" N radius [size]
+    <span class="md-ellipsis">
+      "sound" N radius [size]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-playerstart" class="md-nav__link">
-    "playerstart" [Y] [T]
+    <span class="md-ellipsis">
+      "playerstart" [Y] [T]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-flag" class="md-nav__link">
-    "flag" [Y] T
+    <span class="md-ellipsis">
+      "flag" [Y] T
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-base" class="md-nav__link">
-    "base" [ammo [N]]
+    <span class="md-ellipsis">
+      "base" [ammo [N]]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-ammo" class="md-nav__link">
-    "ammo"
+    <span class="md-ellipsis">
+      "ammo"
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-health" class="md-nav__link">
-    "health"
+    <span class="md-ellipsis">
+      "health"
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-teleport" class="md-nav__link">
-    "teleport" N [M]
+    <span class="md-ellipsis">
+      "teleport" N [M]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-teledest" class="md-nav__link">
-    "teledest" [Y] N [P]
+    <span class="md-ellipsis">
+      "teledest" [Y] N [P]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-jumppad" class="md-nav__link">
-    "jumppad" Z [Y] [X]
+    <span class="md-ellipsis">
+      "jumppad" Z [Y] [X]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-mapmodel" class="md-nav__link">
-    "mapmodel" [Y] N T R
+    <span class="md-ellipsis">
+      "mapmodel" [Y] N T R
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-box" class="md-nav__link">
-    "box" [Y] N W
+    <span class="md-ellipsis">
+      "box" [Y] N W
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-barrel" class="md-nav__link">
-    "barrel" [Y] N W H
+    <span class="md-ellipsis">
+      "barrel" [Y] N W H
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-platform" class="md-nav__link">
-    "platform" [Y] N T S
+    <span class="md-ellipsis">
+      "platform" [Y] N T S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-elevator" class="md-nav__link">
-    "elevator" [Y] N T S
+    <span class="md-ellipsis">
+      "elevator" [Y] N T S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-respawnpoint" class="md-nav__link">
-    "respawnpoint"
+    <span class="md-ellipsis">
+      "respawnpoint"
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#ent-particles" class="md-nav__link">
-    "particles" type value1 value2 value3 value4
+    <span class="md-ellipsis">
+      "particles" type value1 value2 value3 value4
+    </span>
   </a>
   
 </li>
@@ -3618,7 +4643,9 @@
       
         <li class="md-nav__item">
   <a href="#pvs-culling" class="md-nav__link">
-    PVS Culling
+    <span class="md-ellipsis">
+      PVS Culling
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="PVS Culling">
@@ -3626,49 +4653,63 @@
         
           <li class="md-nav__item">
   <a href="#pvs" class="md-nav__link">
-    pvs N
+    <span class="md-ellipsis">
+      pvs N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#pvsthreads-n" class="md-nav__link">
-    pvsthreads N
+    <span class="md-ellipsis">
+      pvsthreads N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#genpvs-n" class="md-nav__link">
-    genpvs [N]
+    <span class="md-ellipsis">
+      genpvs [N]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearpvs" class="md-nav__link">
-    clearpvs
+    <span class="md-ellipsis">
+      clearpvs
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#lockpvs" class="md-nav__link">
-    lockpvs N
+    <span class="md-ellipsis">
+      lockpvs N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#testpvs" class="md-nav__link">
-    testpvs [N]
+    <span class="md-ellipsis">
+      testpvs [N]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#pvsstats" class="md-nav__link">
-    pvsstats
+    <span class="md-ellipsis">
+      pvsstats
+    </span>
   </a>
   
 </li>
@@ -3680,7 +4721,9 @@
       
         <li class="md-nav__item">
   <a href="#waypoints" class="md-nav__link">
-    Waypoints
+    <span class="md-ellipsis">
+      Waypoints
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Waypoints">
@@ -3688,42 +4731,54 @@
         
           <li class="md-nav__item">
   <a href="#showwaypoints" class="md-nav__link">
-    showwaypoints 0/1
+    <span class="md-ellipsis">
+      showwaypoints 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#dropwaypoints" class="md-nav__link">
-    dropwaypoints 0/1
+    <span class="md-ellipsis">
+      dropwaypoints 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#loadwaypoints" class="md-nav__link">
-    loadwaypoints [filename]
+    <span class="md-ellipsis">
+      loadwaypoints [filename]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#savewaypoints" class="md-nav__link">
-    savewaypoints [filename]
+    <span class="md-ellipsis">
+      savewaypoints [filename]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#clearwaypoints" class="md-nav__link">
-    clearwaypoints
+    <span class="md-ellipsis">
+      clearwaypoints
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#delselwaypoints" class="md-nav__link">
-    delselwaypoints
+    <span class="md-ellipsis">
+      delselwaypoints
+    </span>
   </a>
   
 </li>
@@ -3735,7 +4790,9 @@
       
         <li class="md-nav__item">
   <a href="#the-hud" class="md-nav__link">
-    The HUD
+    <span class="md-ellipsis">
+      The HUD
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="The HUD">
@@ -3743,14 +4800,69 @@
         
           <li class="md-nav__item">
   <a href="#hidestats" class="md-nav__link">
-    hidestats 0/1
+    <span class="md-ellipsis">
+      hidestats 0/1
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hidehud" class="md-nav__link">
-    hidehud 0/1
+    <span class="md-ellipsis">
+      hidehud 0/1
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shader-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shader Reference
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Shader Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stdworld" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdworld
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decalworld" class="md-nav__link">
+    <span class="md-ellipsis">
+      decalworld
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glowworld" class="md-nav__link">
+    <span class="md-ellipsis">
+      glowworld
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bumpworld" class="md-nav__link">
+    <span class="md-ellipsis">
+      bumpworld
+    </span>
   </a>
   
 </li>
@@ -3815,7 +4927,7 @@ create or destroy cubes (default). N=2 push or pull a corner you are pointing at
 <h3 id="gridpower"><code>gridpower N</code></h3>
 <p>Changes the size of the grid. (default: g + scrollwheel)</p>
 <h3 id="edittex"><code>edittex D</code></h3>
-<p>Changes the texture on current selection by browsing through a list of textures
+<p>Changes the texture on the current selection by browsing through a list of textures
 directly shown on the cubes. D is the direction you want to cycle the textures
 in (1 = forwards, -1 = backwards) (default: y + scrollwheel).
 The way this works is slightly strange at first, but allows for very fast
@@ -3824,9 +4936,15 @@ used, it is moved to the top of the list. So after a bit of editing, all your
 most frequently used textures will come first, and the most recently used
 texture is set immediately when you press the forward key for the type. These
 lists are saved with the map.</p>
+<h3 id="settex"><code>settex N</code></h3>
+<p>Changes the texture on the current selection to the texture ID specified by N.</p>
 <h3 id="gettex"><code>gettex</code></h3>
-<p>moves the texture on the current selection to the top of the texture list. Useful for quickly
+<p>Moves the texture on the current selection to the top of the texture list. Useful for quickly
 texturing things using already textured geometry.</p>
+<h3 id="getcurtex"><code>getcurtex</code></h3>
+<p>Returns the most recent texture in the MRU list as a texture ID.</p>
+<h3 id="getseltex"><code>getseltex</code></h3>
+<p>Returns the texture ID of the current selection.</p>
 <h3 id="selextend"><code>selextend</code></h3>
 <p>Extend current selection to include the cursor.</p>
 <h3 id="passthrough"><code>passthrough</code></h3>
@@ -3844,35 +4962,75 @@ white box. (default: x)</p>
 Automatically squares the selection if it isn't already.
 (default: r + scroll wheel)</p>
 <h3 id="undo"><code>undo</code></h3>
-<p>Multi-level undo of any of the changes caused by the above operations (default: z [or u]).</p>
+<p>Multi-level undo of the changes caused by the above operations (default: z [or u]).</p>
 <h3 id="redo"><code>redo</code></h3>
-<p>Multi-level redo of any of the changes caused by the above undo (default: i).      </p>
+<p>Multi-level redo of the changes caused by the above undo (default: i).</p>
 <h3 id="copy"><code>copy</code></h3>
 <h3 id="paste"><code>paste</code></h3>
-<p>Copy copies the current selection into a buffer. Upon pressing 'paste', a 
-selection box will be created to identify the location of the pasted cubes. 
-Releasing the 'paste' button will actually paste the cubes. So combined with
-the 'moving' command you can easily place and clone sets of cubes.
-If the current gridsize is changed from the copy,
-the pasted copy will be stretched by the same factor.</p>
+<p>Copy copies the current selection into a buffer, with the origin marked by the red square
+at the bottom of the selection box. Upon pressing 'paste', a selection box will be created
+to identify the location of the pasted cubes. Releasing the 'paste' button will actually
+paste the cubes. You can combine this with the 'moving' command to easily place and clone
+sets of cubes. If the current gridsize is different from the buffer, the pasted copy will
+be scaled by the same factor.</p>
 <h3 id="editcopy"><code>editcopy</code></h3>
 <h3 id="editpaste"><code>editpaste</code></h3>
 <p>Will copy cubes as normal copy, but also features entity copies. There are three 
 different methods of use:</p>
-<h3 id="replace"><code>replace</code></h3>
-<p>Repeats the last texture edit across the whole map. Only those faces with
-textures matching the one that was last edited will be
-replaced.        </p>
-<h3 id="replacesel"><code>replacesel</code></h3>
-<p>Repeats the last texture edit only within the currently selected region. Only those faces with
-textures matching the one that was last edited will be
-replaced.</p>
+<ul>
+<li>If no entity is explicitly selected, <code>editcopy</code> will copy the selected cube, just like 
+  normal the normal <a href="#copy"><code>copy</code></a> command.</li>
+<li>If one or more entities are selected, <code>editcopy</code> will copy the last entity selected. 
+  <code>Editpaste</code> will create a new entity using copy as the template if no entities are selected,
+  otherwise it will overwrite all selected entities with the copied ent.</li>
+<li>If there are both entity and cube selections, <code>editcopy</code> will copy the entire selection.
+  In other words, when <code>editpaste</code> is used it will paste the cube selection along with all the
+  entities that were selected.</li>
+</ul>
+<h3 id="replacetex-old-new-b"><code>replacetex OLD NEW B</code></h3>
+<p>Replaces every texture with the texture ID of OLD with NEW. B=1 to only target the current
+selection's textures, not the entire map.</p>
+<h3 id="replacelasttex-b"><code>replacelasttex B</code></h3>
+<p>Repeats the last texture edit across the whole map. Only those faces with textures matching the 
+one that was last edited will be replaced. B=1 to only target the current selection's textures, not
+the entire map.</p>
 <h3 id="editmat"><code>editmat MAT [FILTER]</code></h3>
-<p>Changes the type of material left behind when a cube is deleted to MAT. If FILTER is specified, then only cubes with that material named by FILTER are changed to MAT. MAT may also be "", indicating that only those parts of the material mask matching FILTER will be cleared, as opposed to setting MAT to "air", which would clear the entire material mask. FILTER may alternatively be one of "empty", "notempty", "solid", and "notsolid" which will then only affect cubes containing such geometry.</p>
-<p>Currently the following types of materials are supported:</p>
+<p>Changes the type of material left behind when a cube is deleted to MAT.
+If FILTER is specified, then only cubes with that material named by FILTER are changed to 
+MAT. MAT may also be blank, indicating that only those parts of the material mask matching 
+FILTER will be cleared, as opposed to setting MAT to <code>air</code>, which would clear the entire
+material mask. FILTER may alternatively be one of <code>empty</code>, <code>notempty</code>, <code>solid</code>, and 
+<code>notsolid</code> which will then only affect cubes containing such geometry.</p>
+<p>Currently, the following types of materials are supported:</p>
+<ul>
+<li><code>air</code>: the default material, has no effect. Overwrites other volume materials.</li>
+<li><code>water</code>: acts as you would expect. Renders the top as a reflection/refraction and the 
+  sides as a waterfall if it isn't contained. Should be placed with a floor at the bottom 
+  to contain it. Shows blue volume in edit mode. Overwrites other volume materials.</li>
+<li><code>glass</code>: a clip-like material with a blended/reflective surface. Glass also stops bullets.
+  Will reflect the closest <a href="#ent-envmap">envmap</a> entity, or if none is in range, the skybox. 
+  Shows cyan volume in edit mode. Overwrites other volume materials.</li>
+<li><code>lava</code>: renders the top as a glowing lava flow and the sides as lavafalls if it isn't 
+  contained. It kills any players who enter it. Shows orange volume in edit mode.
+  Overwrites other volume materials.</li>
+<li><code>clip</code>: an invisible wall that blocks players movement but not bullets. Is ideally used
+  to keep players "in bounds" in a map. Can be used sparingly to smooth out the flow around 
+  decoration. Shows red volume in edit mode. Overwrites other clip materials.</li>
+<li><code>noclip</code>: cubes with this material are always treated as empty in physics.
+  Shows green volume in edit mode. Overwrites other clip materials.</li>
+<li><code>gameclip</code>: a game mode specific clip material. Currently, it can stop flags from being 
+  picked up in areas in CTF/protect modes, and it can stop capturing of bases in areas in
+  capture modes. Overwrites other clip materials.</li>
+<li><code>death</code>: causes the player to die if they are inside the material. Shows black volume in
+  edit mode.</li>
+<li><code>alpha</code>: all faces of cubes with this material are rendered transparently. Use the <a href="#valpha"><code>valpha</code></a>
+  and <a href="#texalpha"><code>texalpha</code></a> commands to control the transparency of front and back faces.
+  Shows pink volume in edit mode.</li>
+<li><code>jumpreset</code>: causes the player's ability to double jump to be reset when inside the material.</li>
+</ul>
 <h3 id="recalc"><code>recalc</code></h3>
 <p>Recalculates scene geometry. This also will regenerate any envmaps to reflect the changed geometry,
-and fix any geometry with "bumpenv*" shaders to use the closest available envmaps. This command is also
+and fix any geometry with <code>bumpenv*</code> shaders to use the closest available envmaps. This command is also
 implicitly used by calclight.</p>
 <h3 id="havesel"><code>havesel</code></h3>
 <p>Returns the number of explicitly selected cubes for scripting purposes. 
@@ -3880,17 +5038,28 @@ Returns 0 if the cubes are only implicitly selected.</p>
 <h3 id="gotosel"><code>gotosel</code></h3>
 <p>Goes to the position of the currently selected cube or entity.</p>
 <h3 id="saveprefab"><code>saveprefab B</code></h3>
-<p>Saves the current selection as an prefab named B.</p>
+<p>Saves the current selection as a prefab named B.</p>
 <h3 id="pasteprefab"><code>pasteprefab B</code></h3>
 <p>Pastes the prefab named B.</p>
-<h2 id="heightfield">Heightfield</h2>
-<p>Heightfields are very different than what most people are probably used to; they are just normal cubes and are NOT special meshes. Really, it's just another way of editing the same geometry.
-Editing this way is a bit different from normal editing, but just as easy. First, instead of selecting cubes,
-you select a brush (B+wheel) and textures (middle mouse button while in heightmap mode to toggle). Once this is done, you can apply the brush to all cubes that match the textures you've selected. Making hills and valleys can be quite fast when using this feature. By default all textures are automatically selected. </p>
+<h2 id="heightmaps">Heightmaps</h2>
+<p>Heightmaps are very different from what most people are probably used to; they are just 
+normal cubes and are NOT special meshes. Really, it's just another way of editing the same
+geometry. First, instead of selecting cubes, you select a brush (B+wheel) and textures
+(middle mouse button while in heightmap mode to toggle). Once this is done, you can apply
+the brush to all cubes that match the textures you've selected. Making hills and valleys
+can be quite fast when using this feature. By default, all textures are automatically
+selected. </p>
 <h3 id="hmapedit"><code>hmapedit 0/1</code></h3>
-<p>Set to 1 to turn on heightmap mode (default: hold LCTRL or use H to toggle on and off). In heightmap mode the cursor will turn bright green when hilighting heightmap cubes and the editface command will now use brushes to edit heightmap cubes. In order to avoid accidental edits only heightmap cubes are editable in this mode. If a cubic selection is present, then only cubes within the column of the selection will be modifiable.</p>
+<p>Set to 1 to turn on heightmap mode (default: hold LCTRL or use H to toggle on and off). 
+In heightmap mode the cursor will turn bright green when hilighting heightmap cubes and 
+the editface command will now use brushes to edit heightmap cubes. In order to avoid 
+accidental edits only heightmap cubes are editable in this mode. If a cubic selection 
+is present, then only cubes within the column of the selection will be modifiable.</p>
 <h3 id="hmapselect"><code>hmapselect</code></h3>
-<p>Selects the texture and orientation of the hilighted cube (default: mouse buttons while in heightmap mode, or H key). If hmapselall is set to 1, then all textures are automatically selected, and this command will simply select the orientation. All cubes, of equal or larger size, that match the selection will be considered part of the heightmap.</p>
+<p>Selects the texture and orientation of the highlighted cube (default: mouse buttons while in 
+heightmap mode, or H key). If <code>hmapselall</code> is set to 1, then all textures are automatically selected,
+and this command will simply select the orientation. All cubes, of equal or larger size,
+that match the selection will be considered part of the heightmap.</p>
 <h3 id="hmapcancel"><code>hmapcancel</code></h3>
 <p>Return the heightmap texture selection to default (ie: select all textures).</p>
 <h3 id="selectbrush"><code>selectbrush D</code></h3>
@@ -3901,7 +5070,7 @@ you select a brush (B+wheel) and textures (middle mouse button while in heightma
 <p>A brush is a 2D map that describes the depth that the editface commands should
 push into the cubes at various points. The first two parameters of brushvert are the X and Y
 coordinates, respectively, of a vert on this 2D map. The last parameter
-is used to set the depth. NOTE: if all of the brush verts are 0, then a smoothing filter will be 
+is used to set the depth. NOTE: if all the brush verts are 0, then a smoothing filter will be 
 applied instead of the brush. This filter will affect the same square sized region as the brush.</p>
 <h3 id="brushx"><code>brushx</code></h3>
 <h3 id="brushy"><code>brushy</code></h3>
@@ -3913,19 +5082,18 @@ These two variables define the brush handle's coordinates.</p>
 <p>Adds a new entity where (x,y) is determined by the current selection (the red
 dot corner) and z by the camera height, of said type. Type is a string giving
 the type of entity, such as "light", and may optionally take values (depending
-on the entity). The types are defines below in the Entity
-Types section.</p>
+on the entity). The types are defines below in the <a href="#entity-types">Entity Types</a> section.</p>
 <h3 id="delent"><code>delent</code></h3>
-<p>deletes the selected entities</p>
+<p>Deletes the selected entities.</p>
 <h3 id="entflip"><code>entflip</code></h3>
-<p>flip the selected entities. cube selection serves as both reference point and 
+<p>Flip the selected entities. cube selection serves as both reference point and 
 orientation to flip around.</p>
 <h3 id="entpush"><code>entpush D</code></h3>
-<p>push the selected entities. cube selection serves as orientation to push towards.</p>
+<p>Push the selected entities. cube selection serves as orientation to push towards.</p>
 <h3 id="entrotate"><code>entrotate D</code></h3>
-<p>rotate the selected entities in relation to the cube selection.</p>
+<p>Rotate the selected entities in relation to the cube selection.</p>
 <h3 id="entmoving"><code>entmoving 0/1/2</code></h3>
-<p>set to 1 to turn on. if an entity is under the cursor when turned on, the
+<p>Set to 1 to turn on. If an entity is under the cursor when turned on, the
 entity will get toggled selected/unselected (set to 2 to add to selection instead of toggle). 
 if selected, one can move the
 entity around using the cursor. if multiple entities are selected, they will 
@@ -3933,43 +5101,38 @@ also move. the plane on which the entity will be moved is
 dependent on the orientation of the cube surrounding the entity. set to 0 to turn off moving.
 if no entity is under the cursor when turned on, it will automatically turn off.</p>
 <h3 id="entdrop"><code>entdrop N</code></h3>
-<p>variable controlling where entities created with "newent" will be placed.
-N=0 place entities at your current eye position.
-N=1 drop entities to the floor beneath you. Lights, however, will be placed at
-your current eye position as for N=0.
-N=2 place entities at the center of the currently selected cube face. If a
-corner is selected, the entity will be placed at the corner vertex.
-N=3 behaves as with N=2, except all entities, including lights, will then
-bedropped from that position to whatever floor lies beneath. This mode is
-useful for placing objects on selected floors. Lights are also dropped to the
-floor, unlike for N=1.</p>
+<p>Variable controlling where entities created with <a href="#newent"><code>newent</code></a> will be placed.
+- N=0 places entities at your current eye position.
+- N=1 drops entities to the floor beneath you. Lights, however, will be placed at your
+  current eye position as for N=0.
+- N=2 places entities at the center of the currently selected cube face. If a corner
+  is selected, the entity will be placed at the corner vertex.
+- N=3 behaves as with N=2, except all entities, including lights, will then be dropped 
+  from that position to whatever floor lies beneath. This mode is useful for placing 
+  objects on selected floors. Lights are also dropped to the floor, unlike for N=1.</p>
 <h3 id="dropent"><code>dropent</code></h3>
-<p>Positions the selected entity according to the entdrop variable.</p>
+<p>Positions the selected entity according to the <a href="#entdrop"><code>entdrop</code></a> variable.</p>
 <h3 id="trigger"><code>trigger T N</code></h3>
 <p>Sets the state of all locked triggers with tag T to N.</p>
-<h3 id="platform"><code>platform T N</code></h3>
-<p>If N = 0, stops all platforms or elevators with tag T.
-If N = 1, causes all platforms or elevators with tag T to move forwards or up, respectively.
-If N = -1, causes all platforms or elevators with tag T to move backwards or down, respectively.</p>
 <h3 id="entselect"><code>entselect X</code></h3>
 <p>Takes a boolean expression as argument. Selects all entities that evaluate to true for the given expression.</p>
-<pre><code>entselect insel // select all entities in blue selection box
-
-entselect [ strcmp (et) &quot;shells&quot; ] // select all shells in map
-</code></pre>
+<ul>
+<li><code>entselect insel</code>: select all entities in blue selection box</li>
+<li><code>entselect [ strcmp (et) "shells" ]</code>: select all shells in map</li>
+</ul>
 <h3 id="entloop"><code>entloop X</code></h3>
 <p>Loops through and executes the given expression for all selected entities.
 Note that most of the entity commands are already vector based and will 
-automatically do this. Therefore they don't need to be explicitly executed within an entloop. 
-entloop is to be used when more precise custom instructions need to be executed on a selection. </p>
-<p>Another property of entloop is that entity commands within it, that are normally executed 
+automatically do this. Therefore, they don't need to be explicitly executed within an <code>entloop</code>. 
+<code>entloop</code> is to be used when more precise custom instructions need to be executed on a selection. </p>
+<p>Another property of <code>entloop</code> is that entity commands within it, that are normally executed 
 on the entire selection, will only be done on the current entity iterator.
 In other words, the two following examples are equivalent:</p>
-<pre><code>entset light 120 0 0 0
-
-entloop [ entset light 120 0 0 0 ]
-</code></pre>
-<p>The entset in the second statement will NOT be applied n squared times. Entloops can be nested.</p>
+<ul>
+<li><code>entset light 120 0 0 0</code></li>
+<li><code>entloop [ entset light 120 0 0 0 ]</code></li>
+</ul>
+<p>The <a href="#entset"><code>entset</code></a> in the second statement will NOT be applied n squared times. An <code>entloop</code> can be nested.</p>
 <h3 id="entcancel"><code>entcancel</code></h3>
 <p>Deselect all entities.</p>
 <h3 id="enthavesel"><code>enthavesel</code></h3>
@@ -3979,68 +5142,73 @@ entloop [ entset light 120 0 0 0 ]
 This string is the definition of the current selected entity. 
 For example, the following statement will display the values of
 all the entities within the current selection:</p>
-<pre><code>entloop [ echo (entget) ]
-</code></pre>
-<p>Outside of an entloop, the last entity selected will be returned. 
+<ul>
+<li><code>entloop [ echo (entget) ]</code></li>
+</ul>
+<p>Outside an <a href="#entloop"><code>entloop</code></a>, the last entity selected will be returned. 
 Normally, if an entity is highlighted by the cursor, it will
-only be considered as in the selection if an explicit one does not exisit 
-(like cubic selections). However, entget is special in that it considers
-the highlighted entity as being the last entity in the selection.
-Entget is used to generate the default entdisplay at the bottom of the screen.</p>
+only be considered as in the selection if an explicit one does not exist 
+(like cubic selections). However, <a href="#entget"><code>entget</code></a> is special in that it considers
+the highlighted entity as being the last entity in the selection.</p>
 <h3 id="insel"><code>insel</code></h3>
 <p>Returns true if the selected entity is inside the cube selection</p>
 <h3 id="et"><code>et</code></h3>
-<p>Cuts out the 'type' field from entget.</p>
+<p>Cuts out the 'type' field from <a href="#entget"><code>entget</code></a>.</p>
 <h3 id="ea"><code>ea N</code></h3>
-<p>Cuts out the given 'value' field from entget. Attributes are numbered 0 to 3.</p>
+<p>Cuts out the given 'value' field from <a href="#entget"><code>entget</code></a>. Attributes are numbered 0 to 3.</p>
 <h3 id="entset"><code>entset type value1 value2 value3 value4</code></h3>
 <p>Change the type and attributes of the selected entity.
-To quickly bring up the entset command in the console press '.' (default: period). 
-It will come pre-filled with the values of the current entity selection (from entget).</p>
+To quickly bring up the <code>entset</code> command in the console press '.' (default: period). 
+It will come pre-filled with the values of the current entity selection (from <a href="#entget"><code>entget</code></a>).</p>
 <h3 id="entproperty"><code>entproperty P A</code></h3>
 <p>Changes property P (0..3) of the selected entities by amount A. For example
-"entproperty 0 2" when executed near a lightsource would increase its radius by
-2.</p>
+<code>entproperty 0 2</code> when executed near a light entity would increase its radius by 2.</p>
 <h3 id="entfind"><code>entfind type value1 value2 value3 value4</code></h3>
 <p>Select all entities matching given values. '*' and blanks are wildcard.
-All ents that match the pattern will be ADDED to the selection.</p>
+All entities that match the pattern will be ADDED to the selection.</p>
 <h3 id="clearents"><code>clearents type</code></h3>
 <p>Deletes all entities of said type.</p>
 <h3 id="replaceents"><code>replaceents type value1 value2 value3 value4</code></h3>
 <p>Replaces the given values for the selected entity and all entities that are
 equal to the selected entity. 
-To quickly bring up the replaceents command in the console press ',' (default: comma). It will come pre-filled with the values of the current entity selection.</p>
+To quickly bring up the <code>replaceents</code> command in the console press ',' (default: comma).
+It will come pre-filled with the values of the current entity selection.</p>
 <h3 id="entautoview"><code>entautoview N</code></h3>
-<p>Centers view on selected entity. Increment through selection by N. ex: N = 1 =&gt; next, N = -1 =&gt; previous. entautoviewdist N, sets the distance from entity.</p>
+<p>Centers view on selected entity. Increment through selection by N.</p>
+<p>For example, N = 1 =&gt; next, N = -1 =&gt; previous. </p>
+<p><code>entautoviewdist N</code> sets the distance from entity.</p>
 <h2 id="settings">Settings</h2>
 <h3 id="undomegs"><code>undomegs N</code></h3>
-<p>Sets the number of megabytes used for the undo buffer (default 8, max 100).
-Undo's work for any size areas, so the amount of undo steps per megabyte is
+<p>Sets the number of megabytes used for the undo buffer (default 8, max 1000).
+Undo works for any size areas, so the amount of undo steps per megabyte is
 more for small areas than for big ones.</p>
 <h3 id="showsky"><code>showsky B</code></h3>
-<p>This variable controls whether explicit sky polygons are outlined (in purple) in edit mode.
-Default = 1.</p>
+<p>This variable controls whether explicit sky polygons are outlined (in purple) in edit mode.</p>
+<p>Default = 1.</p>
 <h3 id="outline"><code>outline B</code></h3>
-<p>This variable controls whether geometry boundaries (outlines) are shown.
-Default = 0.</p>
+<p>This variable controls whether geometry boundaries (outlines) are shown.</p>
+<p>Default = 0.</p>
 <h3 id="wireframe"><code>wireframe 0/1</code></h3>
 <p>Turns on wireframe drawing of the map.</p>
 <h3 id="allfaces"><code>allfaces 0/1</code></h3>
-<p>When on, causes the texturing commands to apply the new texture to all sides of the selected cubes
+<p>When on, causes texture commands to apply the new texture to all sides of the selected cubes
 rather than just the selected face.</p>
 <h3 id="showmat"><code>showmat N</code></h3>
-<p>This variables whether volumes are shown for invisible material surfaces in edit mode.
-If N = 2, volumes are shown outside of edit mode, but only in editing gamemodes.
-Material volumes may also be selected while this is enabled. Default = 1.</p>
-<h3 id="optmats"><code>optmats B</code></h3>
-<p>This variables controls whether material rendering should be optimized by grouping materials
+<p>This variable controls whether volumes are shown for invisible material surfaces in edit mode.
+Material volumes may also be selected while this is enabled.</p>
+<p>If N=2, volumes are shown outside of edit mode. This feature will eventually be limited to 
+editing modes and parkour.</p>
+<p>Default = 1.</p>
+<h3 id="optmats"><code>optmats 0/1</code></h3>
+<p>This variable controls whether material rendering should be optimized by grouping materials
 into the largest possible surfaces. This will always make rendering faster, so the only reason
-to disable it is for testing. Default = 1.</p>
+to disable it is for testing.</p>
+<p>Default = 1.</p>
 <h3 id="entselradius"><code>entselradius N</code></h3>
 <p>Sets the 'handle' size of entities when trying to select them. 
 Larger sizes means it should be easier to select entities.</p>
 <h3 id="entselsnap"><code>entselsnap 0/1</code></h3>
-<p>Turns on snap-to-grid while draggin entities. (default: 6)</p>
+<p>Turns on snap-to-grid while dragging entities. (default hotkey: 6)</p>
 <h3 id="entitysurf"><code>entitysurf 0/1</code></h3>
 <p>When on, you will move with the entity as you push it with the scroll wheel. 
 Of course, in order to push an entity, you must be holding it.</p>
@@ -4049,43 +5217,34 @@ Of course, in order to push an entity, you must be holding it.</p>
 Of course, in order to push a selection box, you must be holding it.</p>
 <h2 id="map-and-config">Map and Config</h2>
 <h3 id="map"><code>map name</code></h3>
-<p>Loads up map "name" in the gamemode set previously by "mode". A map given as
+<p>Loads up map "name" in the gamemode set previously by <a href="game.html#mode"><code>mode</code></a>. A map given as
 "blah" refers to "packages/maps/blah.cmr", "mypackage/blah" refers to
 "packages/mypackage/blah.cmr". The menu has a set of maps that can be loaded.
-See also map in the gameplay docs.</p>
+See also <a href="game.html#mode"><code>map</code></a> in the gameplay reference.</p>
 <p>At every map load, "data/default_map_settings.cfg" is loaded which sets up all
-texture definitions etc. Everything defined in there can be overridden per
-package or per map by creating a "package.cfg" or "mapname.cfg" which contains
+texture definitions, map models, etc. Everything defined in there can be overridden
+per package or per map by creating or editing the "mapname.cfg" which contains
 whatever you want to do differently from the default. It can also set up
 triggers scripts per map etc.</p>
-<p>When the map finishes it will load the next map when one is defined, otherwise
-reloads the current map. You can define what map follows a particular map by
-making an alias like (in the map script): alias nextmap_blah1 blah2
-(loads "blah2" after "blah1").</p>
 <h3 id="sendmap"><code>sendmap</code></h3>
 <p>Saves the current map (without lightmaps) and sends it to the server so other clients may download it.
-Only works in coopedit game mode.</p>
+Only works in coop edit game mode.</p>
 <h3 id="getmap"><code>getmap</code></h3>
-<p>Gets a map from the server if one is available. Automatically loads the map when done. Only works in coopedit
-game mode.</p>
+<p>Gets a map from the server if one is available. Automatically loads the map when done.
+Only works in coop edit game mode.</p>
 <h3 id="savemap"><code>savemap name</code></h3>
 <h3 id="savecurrentmap"><code>savecurrentmap</code></h3>
-<p>Saves the current map, using the same naming scheme as "map". Makes a versioned
-backup to "mapname_N.BAK" if a map by that name already exists, so you can never
-lose a map. With "savemap", if you leave out the "name" argument, it is saved under the current map name.
-With "savecurrentmap", the map is saved with the name determined by the current game.</p>
-<p>Where you store a map depends on the complexity of what you are creating: if
-its a single map (maybe with its own .cfg) then the "maps" package is the best
-place. If its multiple maps or a map with new media (textures etc.) its better
-to store it in its own package (a directory under "packages"), which makes
-distributing it less messy.</p>
+<p>Saves the current map, using the same naming scheme as <a href="#map"><code>map</code></a>. Makes a versioned backup to
+"mapname_N.BAK" if a map by that name already exists, so you can never accidentally lose a map.
+With <code>savemap</code>, if you leave out the "name" argument, it is saved under the current map name.
+With <code>savecurrentmap</code>, the map is saved with the name determined by the current game.</p>
 <h3 id="newmap"><code>newmap size</code></h3>
 <p>Creates a new map of size^2 cubes (on the smallest grid size). 10 is a small
-map, 12 is a large map but it goes up to 16.</p>
+map, 12 is a large map, however it goes up to 16 (not recommended).</p>
 <h3 id="mapenlarge"><code>mapenlarge</code></h3>
 <p>Doubles the dimensions of the current map.</p>
 <h3 id="maptitle"><code>maptitle "Title by Author"</code></h3>
-<p>sets the map title, which will be displayed when the map loads. Either use the
+<p>Sets the map title, which will be displayed when the map loads. Either use the
 above format, or simply "by Author" if the map has no particular title (always
 displayed after the map load msg).</p>
 <h3 id="loadsky"><code>loadsky NAME [SPIN]</code></h3>
@@ -4106,7 +5265,8 @@ specifies, in degrees per second, the rate at which to spin/yaw the skybox.</p>
 <p>Resets the material texture slots for subsequent "texture" commands.</p>
 <h3 id="texture"><code>texture TYPE FILENAME ROT X Y SCALE</code></h3>
 <h3 id="autograss"><code>autograss FILENAME</code></h3>
-<p>Automatically generates grass for the current texture slot on any upward facing surface. The grass texture FILENAME is used to to texture the grass blades. </p>
+<p>Automatically generates grass for the current texture slot on any upward facing surface.
+The grass texture FILENAME is used to texture the grass blades.</p>
 <h3 id="grassscale"><code>grassscale N</code></h3>
 <p>Sets the scaling of all grass textures to N where N=1..64 (default: 2).</p>
 <h3 id="grasscolor"><code>grasscolor R G B</code></h3>
@@ -4116,33 +5276,44 @@ specifies, in degrees per second, the rate at which to spin/yaw the skybox.</p>
 <h3 id="texscroll"><code>texscroll X Y</code></h3>
 <p>Scrolls the current texture slot at X and Y Hz, along the X and Y axes of the texture respectively.</p>
 <h3 id="texrotate"><code>texrotate N</code></h3>
-<p>Rotates the current texture slot by N*90 degrees for N=0..3. N=4 flips along the X axis, and N=5 flips along the Y axis. </p>
+<p>Rotates the current texture slot by N*90 degrees for N=0..3.
+N=4 flips along the X axis, and N=5 flips along the Y axis. </p>
 <h3 id="texoffset"><code>texoffset X Y</code></h3>
 <p>Offsets the current texture slot by X and Y texels along the X and Y axes of the texture respectively.</p>
 <h3 id="texscale"><code>texscale N</code></h3>
 <p>Scales the current texture slot such that it is N times its normal size.</p>
 <h3 id="texalpha"><code>texalpha F B</code></h3>
-<p>Sets the alpha transparency of the front faces to F and back faces to B, where F and B are floating point values in the range 0.0 to 1.0. F defaults to 0.5, and B defaults to 0 (invisible).</p>
+<p>Sets the alpha transparency of the front faces to F and back faces to B,
+where F and B are floating point values in the range 0.0 to 1.0.
+F defaults to 0.5, and B defaults to 0 (invisible).</p>
 <h3 id="texcolor"><code>texcolor R G B</code></h3>
-<p>Sets the color multiplier of the current texture slot to the color R G B, where R, G, and B are floating point values in the range 0.0 to 1.0. The default is white, i.e. (1.0 1.0 1.0).</p>
+<p>Sets the color multiplier of the current texture slot to the color R G B,
+where R, G, and B are floating point values in the range 0.0 to 1.0.
+The default is white, i.e. (1.0 1.0 1.0).</p>
 <h3 id="vrotate"><code>vrotate N</code></h3>
-<p>Rotates all textures in the current selection as if by the "texrotate" command.</p>
+<p>Rotates all textures in the current selection as if by the <a href="#texrotate"><code>texrotate</code></a> command.</p>
 <h3 id="voffset"><code>voffset X Y</code></h3>
-<p>Offsets all textures in the current selection as if by the "texoffset" command.</p>
+<p>Offsets all textures in the current selection as if by the <a href="#texoffset"><code>texoffset</code></a> command.</p>
 <h3 id="vscale"><code>vscale N</code></h3>
-<p>Scales all textures in the current selection as if by the "texscale" command.</p>
+<p>Scales all textures in the current selection as if by the <a href="#texscale"><code>texscale</code></a> command.</p>
 <h3 id="valpha"><code>valpha F B</code></h3>
-<p>Sets the alpha transparency of all textures in the current selection as if by the "texalpha" command.</p>
+<p>Sets the alpha transparency of all textures in the current selection as if by the <a href="#texalpha"><code>texalpha</code></a> command.</p>
 <h3 id="vcolor"><code>vcolor R G B</code></h3>
-<p>Sets the color multiplier of all textures in the current selection as if by the "texcolor" command.</p>
+<p>Sets the color multiplier of all textures in the current selection as if by the <a href="#texcolor"><code>texcolor</code></a> command.</p>
 <h3 id="vreset"><code>vreset</code></h3>
 <p>Resets the texture configuration of all textures in the current selection to the defaults defined in the map cfg file.</p>
 <h3 id="vdelta"><code>vdelta BODY</code></h3>
-<p>Excutes all of the "v*" commands in BODY such that they now only add to the current values for the textures in the current selection, rather than simply setting them. For example, <code>vdelta [vrotate 1]</code> would add 1 to the current rotation value for the textures, rather than just setting their rotation value to 1. This affects the "vrotate" (adds), "voffset" (adds), "vscale" (multiplies), "vshaderparam" (overrides), and "vcolor" (multiplies) commands.</p>
+<p>Executes all the "v*" commands in BODY such that they now only add to the current values
+for the textures in the current selection, rather than simply setting them. 
+For example, <code>vdelta [vrotate 1]</code> would add 1 to the current rotation value for the textures,
+rather than just setting their rotation value to 1. This affects the <a href="#vrotate"><code>vrotate</code></a> (adds),
+<a href="#voffset"><code>voffset</code></a> (adds), <a href="#vscale"><code>vscale</code></a> (multiplies),
+<a href="#vshaderparam"><code>vshaderparam</code></a> (overrides), and <a href="#vcolor"><code>vcolor</code></a> (multiplies) commands.</p>
 <h3 id="fog"><code>fog N</code></h3>
-<p>Sets fog distance to N (default: 4000). You can do this for tweaking the visual effect of the fog, or if you are on a slow machine,
-setting the fog to a low value can also be a very effective way to increase fps (if you are geometry limited). Try out different
-values on big maps or maps which give you low fps.</p>
+<p>Sets fog distance to N (default: 4000). You can do this for tweaking the visual effect of the fog,
+or if you are on a slow machine, setting the fog to a low value can also be a very effective way
+to increase fps (if you are geometry limited). Try out different values on big maps or maps
+which give you low fps.</p>
 <h3 id="fogcolor"><code>fogcolor R G B</code></h3>
 <p>The color of the fog, specified as R G B values from 0..255 (default: 128 153 179).</p>
 <h3 id="waterspec"><code>waterspec N</code></h3>
@@ -4150,42 +5321,56 @@ values on big maps or maps which give you low fps.</p>
 <h3 id="waterfog"><code>waterfog N</code></h3>
 <p>Sets the distance beneath the surface of water at which it fogs, from 1..10000 (default: 150).</p>
 <h3 id="watercolor"><code>watercolor R G B</code></h3>
-<p>Sets the the color of fog inside the water to the specified R G B value from 0..255 (default: 20 70 80). Used to give water some color. Setting to the values 0 0 0 will cause it to reset to the default watercolor.</p>
+<p>Sets the color of fog inside the water to the specified R G B value from 0..255 (default: 20 70 80). Used to give water some color. Setting to the values 0 0 0 will cause it to reset to the default watercolor.</p>
 <h3 id="waterfallcolor"><code>waterfallcolor R G B</code></h3>
-<p>Sets the the color used for waterfall turbulence to the specified R G B value from 0..255 (default: 0 0 0). If the default of 0 0 0 is specified, waterfalls will use the color supplied via "watercolor" instead.</p>
+<p>Sets the color used for waterfall turbulence to the specified R G B value from 0..255 (default: 0 0 0). If the default of 0 0 0 is specified, waterfalls will use the color supplied via "watercolor" instead.</p>
 <h3 id="lavafog"><code>lavafog N</code></h3>
 <p>Sets the distance beneath the surface of lava at which it fogs, from 1..10000 (default: 50).</p>
 <h3 id="lavacolor"><code>lavacolor R G B</code></h3>
-<p>Sets the the color of fog inside the lava to the specified R G B value from 0..255 (default: 255 64 0). Used to give lava some color. Setting to the values 0 0 0 will cause it to reset to the default watercolor.</p>
+<p>Sets the color of fog inside the lava to the specified R G B value from 0..255 (default: 255 64 0). Used to give lava some color. Setting to the values 0 0 0 will cause it to reset to the default watercolor.</p>
 <h3 id="shader"><code>shader TYPE NAME VS PS</code></h3>
-<p>defines a shader NAME with vertex shader VS and pixel shader PS (both in ARB OpenGL 1.5 assembly format). See data/stdshader.cfg for examples.
-These definitions can be put in map cfg files or anywhere else, and will only be compiled once.
-TYPE indicates what resources the shader provides, or what backup method should be used if the graphics card does not support shaders.
-TYPE is either 0 for default shader, or 1 for normal-mapped world shaders.
-Requires DX9 / shader 2 class hardware (radeon 9500 or better, geforce 5200 or better) to run (older hardware will default to basic rendering).</p>
+<p>Defines a shader NAME with vertex shader VS and pixel shader PS (both in ARB OpenGL 1.5 assembly format).
+See data/stdshader.cfg for examples. These definitions can be put in map cfg files or anywhere else,
+and will only be compiled once. TYPE indicates what resources the shader provides, or what backup method
+should be used if the graphics card does not support shaders. TYPE is either 0 for default shader,
+or 1 for normal-mapped world shaders. Requires DX9 / shader 2 class hardware
+(Radeon 9500 or better, GeForce 5200 or better) to run (older hardware will default to basic rendering).</p>
 <h3 id="fastshader"><code>fastshader NICE FAST N</code></h3>
-<p>Associates shader FAST so that it will run in place of shader NICE if shaderdetail is less than or equal to N.</p>
+<p>Associates shader FAST so that it will run in place of shader NICE if <code>shaderdetail</code> is less than or equal to N.</p>
 <h3 id="setshader"><code>setshader NAME</code></h3>
-<p>Sets a previously defined shader as the current shader. Any following texture slots (see "texture" command) will have this shader
-attached to them. Any pixel or vertex parameters are reset to the shader's defaults when this command is used.</p>
+<p>Sets a previously defined shader as the current shader. Any following texture slots 
+(see <a href="#texture"><code>texture</code></a> command) will have this shader attached to them. Any pixel
+or vertex parameters are reset to the shader's defaults when this command is used.</p>
 <h3 id="setshaderparam"><code>setshaderparam NAME X Y Z W</code></h3>
-<p>Overrides a uniform parameter for the current shader. Any following texture slots will use this pixel parameter until its value is set/reset by subsequent commands.
-NAME is the name of a defined parameter of the current shader. It's value is set to the vector (X, Y, Z, W). Coordinates that are not specified default to 0.</p>
+<p>Overrides a uniform parameter for the current shader. Any following texture slots will
+use this pixel parameter until its value is set/reset by subsequent commands. NAME is
+the name of a defined parameter of the current shader. Its value is set to the vector
+(X, Y, Z, W). Coordinates that are not specified default to 0.</p>
 <h3 id="vshaderparam"><code>vshaderparam NAME X Y Z W</code></h3>
-<p>Overrides a uniform parameter for the shaders of all textures in the current selection, as if by the "setshaderparam" command.</p>
+<p>Overrides a uniform parameter for the shaders of all textures in the current selection,
+as if by the <a href="#setshaderparam"><code>setshaderparam</code></a> command.</p>
 <h3 id="setpixelparam"><code>setpixelparam INDEX X Y Z W</code></h3>
-<p>Overrides a pixel parameter for the current shader. Any following texture slots will use this pixel parameter until its value is set/reset by subsequent commands.
-INDEX is the index of a program environment parameter (program.env[10+INDEX]) to the pixel program of the current shader. It's value is set to the vector (X, Y, Z, W). Coordinates that are not specified default to 0.</p>
+<p>Overrides a pixel parameter for the current shader. Any following texture slots will use
+this pixel parameter until its value is set/reset by subsequent commands. INDEX is the
+index of a program environment parameter (<code>program.env[10+INDEX]</code>) to the pixel program of
+the current shader. Its value is set to the vector (X, Y, Z, W).
+Coordinates that are not specified default to 0.</p>
 <h3 id="setvertexparam"><code>setvertexparam INDEX X Y Z W</code></h3>
-<p>Overrides a vertex parameter for the current shader. Any following texture slots will use this vertex parameter until its value is set/reset by subsequent commands.
-INDEX is the index of a program environment parameter (program.env[10+INDEX]) to the vertex program of the current shader. It's value is set to the vector (X, Y, Z, W). Coordinates that are not specified default to 0.</p>
+<p>Overrides a vertex parameter for the current shader. Any following texture slots will use
+this vertex parameter until its value is set/reset by subsequent commands. INDEX is the
+index of a program environment parameter (<code>program.env[10+INDEX]</code>) to the vertex program of
+the current shader. Its value is set to the vector (X, Y, Z, W).
+Coordinates that are not specified default to 0.</p>
 <h3 id="setuniformparam"><code>setuniformparam NAME X Y Z W</code></h3>
-<p>Overrides a uniform parameter for the current shader. Any following texture slots will use this pixel parameter until its value is set/reset by subsequent commands.
-NAME is the name of a uniform variable in the current GLSL shader. It's value is set to the vector (X, Y, Z, W). Coordinates that are not specified default to 0.</p>
+<p>Overrides a uniform parameter for the current shader. Any following texture slots will use
+this pixel parameter until its value is set/reset by subsequent commands. NAME is the name
+of a uniform variable in the current GLSL shader. Its value is set to the vector
+(X, Y, Z, W). Coordinates that are not specified default to 0.</p>
 <h3 id="music"><code>music name [ondone]</code></h3>
-<p>Plays song "name" (with "packages" as base dir). This command is best used from
-map cfg files or triggers. Evaluates ondone when the song is finished, or just keeps
-looping the song if ondone is missing. Example: music "songs/music.ogg" [ echo "Song done playing!" ]</p>
+<p>Plays song <code>name</code> (with "packages" as base dir).
+This command is best used from map cfg files or triggers. Evaluates ondone 
+when the song is finished, or just keeps looping the song if ondone is missing.
+Example: music "songs/music.ogg" [ echo "Song done playing!" ]</p>
 <h3 id="registersound"><code>N = registersound name V</code></h3>
 <p>Registers sound "name" (see for example data/sounds.cfg). This
 command returns the sound number N, which is assigned from 0 onwards, and which
@@ -4294,8 +5479,6 @@ values place the fog dome at intermediate heights of those. (Default: -0.5)</p>
 allowing sky texture to be used as a "don't render this" surface. Disabling this also allows the skybox to be rendered last
 after the scene, which yields speedups on some video cards, so disable this if possible in your map, even though it defaults
 to on. (Default: 1)</p>
-<h3 id="darkmap"><code>darkmap 0/1</code></h3>
-<p>Disables rendering of textures on all models and renders them as pitch black instead. ambient 1 recommended.</p>
 <h3 id="writeobj"><code>writeobj N</code></h3>
 <p>Writes out the current map as N.obj, so you could use the engine as a generic modeller
 with any program/engine that uses meshes. The meshes aren't very optimal and don't
@@ -4569,17 +5752,159 @@ one of these they touched, otherwise they start at the playerstart entity.</p>
 <p>Turn on to hide the above stats</p>
 <h3 id="hidehud"><code>hidehud 0/1</code></h3>
 <p>Turn on to hide all HUD elements</p>
+<h2 id="shader-reference">Shader Reference</h2>
+<h3 id="stdworld"><code>stdworld</code></h3>
+<p><strong>Slots:</strong> c</p>
+<p>The default lightmapped world shader.</p>
+<h3 id="decalworld"><code>decalworld</code></h3>
+<p><strong>Slots:</strong> c, d</p>
+<p>Like <a href="#stdworld"><code>stdworld</code></a>, except alpha blends decal texture on diffuse texture.</p>
+<h3 id="glowworld"><code>glowworld</code></h3>
+<p><strong>Slots:</strong> c, g</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>glowcolor</code>: <strong>Rk</strong>, <strong>Gk</strong>, <strong>Bk</strong> - multiplies the glow map color by the factors Rk, Gk, Bk</li>
+</ul>
+<p>Like <a href="#stdworld"><code>stdworld</code></a>, except adds light from glow map.</p>
+<h3 id="bumpworld"><code>bumpworld</code></h3>
+<p><strong>Slots:</strong> c, n</p>
+<p>Normal-mapped shader without specularity (diffuse lighting only).</p>
+<table>
+<thead>
+<tr>
+<th>Shader</th>
+<th>Params</th>
+<th>Slots</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stdworld</code></td>
+<td></td>
+<td>c</td>
+<td></td>
+</tr>
+<tr>
+<td><code>decalworld</code></td>
+<td></td>
+<td>c, d</td>
+<td>Like stdworld, except alpha blends decal texture on diffuse texture.</td>
+</tr>
+<tr>
+<td><code>glowworld</code></td>
+<td><code>glowcolor</code>: Rk, Gk, Bk - multiplies the glow map color by the factors Rk, Gk, Bk</td>
+<td>c, g</td>
+<td>Like stdworld, except adds light from glow map.</td>
+</tr>
+<tr>
+<td><code>bumpworld</code></td>
+<td></td>
+<td>c, n</td>
+<td>Normal-mapped shader without specularity (diffuse lighting only).</td>
+</tr>
+<tr>
+<td><code>bumpglowworld</code></td>
+<td><code>glowcolor</code>: Rk, Gk, Bk - multiplies the glow map color by the factors Rk, Gk, Bk</td>
+<td>c, n, g</td>
+<td>Normal-mapped shader with glow map and without specularity.</td>
+</tr>
+<tr>
+<td><code>bumpspecworld</code></td>
+<td><code>specscale</code>: Rk, Gk, Bk - multiplies the specular light color by the factors Rk, Gk, Bk</td>
+<td>c, n</td>
+<td>Normal-mapped shader with constant specularity factor.</td>
+</tr>
+<tr>
+<td><code>bumpspecmapworld</code></td>
+<td>same as above</td>
+<td>c, n, s</td>
+<td>Normal-mapped shader with specularity map.</td>
+</tr>
+<tr>
+<td><code>bumpspecglowworld</code></td>
+<td><code>glowcolor</code>: Rk, Gk, Bk - multiplies the glow map color by the factors Rk, Gk, Bk<br><code>specscale</code>: Rk, Gk, Bk - multiplies the specular light color by the factors Rk, Gk, Bk</td>
+<td>c, n, g</td>
+<td>Normal-mapped shader with constant specularity factor and glow map.</td>
+</tr>
+<tr>
+<td><code>bumpspecmapglowworld</code></td>
+<td>same as above</td>
+<td>c, n, s, g</td>
+<td>Normal-mapped shader with specularity map and glow map.</td>
+</tr>
+<tr>
+<td><code>bumpparallaxworld</code></td>
+<td><code>parallaxscale</code>: Scale, Bias - Scales the heightmap offset</td>
+<td>c, n, z</td>
+<td>Normal-mapped shader with height map and without specularity.</td>
+</tr>
+<tr>
+<td><code>bumpspecparallaxworld</code></td>
+<td><code>specscale</code>: Rk, Gk, Bk - multiplies the specular light color by the factors Rk, Gk, Bk<br><code>parallaxscale</code>: Scale, Bias - Scales the heightmap offset</td>
+<td>c, n, z</td>
+<td>Normal-mapped shader with constant specularity factor and height map.</td>
+</tr>
+<tr>
+<td><code>bumpspecmapparallaxworld</code></td>
+<td>same as above</td>
+<td>c, n, s, z</td>
+<td>Normal-mapped shader with specularity map and height map.</td>
+</tr>
+<tr>
+<td><code>bumpparallaxglowworld</code></td>
+<td><code>glowcolor</code>: Rk, Gk, Bk - multiplies the glow map color by the factors Rk, Gk, Bk<br><code>parallaxscale</code>: Scale, Bias - Scales the heightmap offset</td>
+<td>c, n, z, g</td>
+<td>Normal-mapped shader with height and glow maps, and without specularity.</td>
+</tr>
+<tr>
+<td><code>bumpspecparallaxglowworld</code></td>
+<td><code>glowcolor</code>: Rk, Gk, Bk - multiplies the glow map color by the factors Rk, Gk, Bk<br><code>specscale</code>: Rk, Gk, Bk - multiplies the specular light color by the factors Rk, Gk, Bk<br><code>parallaxscale</code>: Scale, Bias - Scales the heightmap offset</td>
+<td>c, n, z, g</td>
+<td>Normal-mapped shader with constant specularity factor, and height and glow maps.</td>
+</tr>
+<tr>
+<td><code>bumpspecmapparallaxglowworld</code></td>
+<td>same as above</td>
+<td>c, n, s, z, g</td>
+<td>Normal-mapped shader with specularity, height, and glow maps.</td>
+</tr>
+<tr>
+<td><code>bumpenv*</code></td>
+<td><code>envscale</code>: Rk, Gk, Bk - multiplies the environment map color by the factors Rk, Gk, Bk</td>
+<td></td>
+<td>Any of the above bump* shader permutations may replace "bump" with "bumpenv" (i.e. bumpenvspecmapworld), and will then reflect the closest envmap entity (or the skybox if necessary). They support all their usual texture slots and pixel params, in addition to the envmap multiplier pixel param. If a specmap is present in the given shader, the raw specmap value will be scaled by the envmap multipliers (instead of the specmap ones), to determine how much of the envmap to reflect. A calclight (if it has not been done before) or recalc (thereafter) is also needed by this shader to properly setup its engine state.</td>
+</tr>
+</tbody>
+</table>
 
-  <hr>
-<div class="md-source-file">
-  <small>
+
+
+
+
+
+
+  
     
-      Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 25, 2023</span>
+  
+  
+
+
+  <aside class="md-source-file">
+    
       
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 1, 2025</span>
+  </span>
+
     
-  </small>
-</div>
+    
+    
+    
+  </aside>
 
 
 
@@ -4590,6 +5915,7 @@ one of these they touched, otherwise they start at the playerstart entity.</p>
             </div>
           
           
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
       </main>
@@ -4617,10 +5943,11 @@ one of these they touched, otherwise they start at the playerstart entity.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.sections", "navigation.tracking", "toc.follow"], "search": "assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.sections", "navigation.tracking", "toc.follow"], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.b4d07000.min.js"></script>
+      <script src="assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
     
   </body>

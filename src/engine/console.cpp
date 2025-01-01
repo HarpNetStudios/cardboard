@@ -7,7 +7,7 @@ struct cline { char *line; int type, outtime; };
 reversequeue<cline, MAXCONLINES> conlines;
 
 int commandmillis = -1;
-cbstring commandbuf;
+old_string commandbuf;
 char *commandaction = NULL, *commandprompt = NULL;
 enum { CF_COMPLETE = 1<<0, CF_EXECUTE = 1<<1 };
 int commandflags = 0, commandpos = -1;
@@ -73,6 +73,7 @@ VARP(miniconwidth, 0, 40, 100);
 VARP(confade, 0, 30, 60);
 VARP(miniconfade, 0, 30, 60);
 VARP(fullconsize, 0, 75, 100);
+VARP(fullconscroll, 0, 0, 1);
 HVARP(confilter, 0, 0x7FFFFFF, 0x7FFFFFF);
 HVARP(fullconfilter, 0, 0x7FFFFFF, 0x7FFFFFF);
 HVARP(miniconfilter, 0, 0, 0x7FFFFFF);
@@ -207,6 +208,7 @@ void searchbinds(char *action, int type)
 	vector<char> names;
 	enumerate(keyms, keym, km,
 	{
+		// TODO: make this better
 		if(!strcmp(km.actions[type], action) && !strstr(km.name, "SI_"))
 		{
 			if(names.length()) names.add(' ');
@@ -279,18 +281,6 @@ void inputcommand(char *init, char *action = NULL, char *prompt = NULL, char *fl
 
 ICOMMAND(saycommand, "C", (char *init), inputcommand(init));
 COMMAND(inputcommand, "ssss");
-
-void pasteconsole()
-{
-	if(!SDL_HasClipboardText()) return;
-	char *cb = SDL_GetClipboardText();
-	if(!cb) return;
-	size_t cblen = strlen(cb),
-		   commandlen = strlen(commandbuf),
-		   decoded = decodeutf8((uchar *)&commandbuf[commandlen], sizeof(commandbuf)-1-commandlen, (const uchar *)cb, cblen);
-	commandbuf[commandlen + decoded] = '\0';
-	SDL_free(cb);
-}
 
 struct hline
 {
@@ -402,7 +392,7 @@ void execbind(keym &k, bool isdown)
 		if(!mainmenu)
 		{
 			if(editmode) state = keym::ACTION_EDITING;
-			else if(game::spectating(player)) state = keym::ACTION_SPECTATOR;
+			else if(player->state==CS_SPECTATOR) state = keym::ACTION_SPECTATOR;
 		}
 		char *&action = k.actions[state][0] ? k.actions[state] : k.actions[keym::ACTION_DEFAULT];
 		keyaction = action;
@@ -436,6 +426,18 @@ bool consoleinput(const char *str, int len)
 	return true;
 }
 
+void pasteconsole()
+{
+	if(!SDL_HasClipboardText()) return;
+	char *cb = SDL_GetClipboardText();
+	if(!cb) return;
+	old_string paste;
+	size_t decoded = decodeutf8((uchar *)paste, sizeof(paste)-1, (const uchar *)cb, strlen(cb));
+	paste[decoded] = '\0';
+	consoleinput(paste, decoded);
+	SDL_free(cb);
+}
+
 static char *skipword(char *s)
 {
 	while(int c = *s++) if(!iscubespace(c))
@@ -458,7 +460,6 @@ static char *skipwordrev(char *s, int n = -1)
 	return e+1;
 }
 
-
 bool consolekey(int code, bool isdown)
 {
 	if(commandmillis < 0) return false;
@@ -475,88 +476,88 @@ bool consolekey(int code, bool isdown)
 	{
 		switch(code)
 		{
-		case SDLK_RETURN:
-		case SDLK_KP_ENTER:
-			break;
+			case SDLK_RETURN:
+			case SDLK_KP_ENTER:
+				break;
 
-		case SDLK_HOME:
-			if(commandbuf[0]) commandpos = 0;
-			break;
+			case SDLK_HOME:
+				if(commandbuf[0]) commandpos = 0;
+				break;
 
-		case SDLK_END:
-			commandpos = -1;
-			break;
+			case SDLK_END:
+				commandpos = -1;
+				break;
 
-		case SDLK_DELETE:
-		{
-			int len = (int)strlen(commandbuf);
-			if(commandpos<0) break;
-			int end = commandpos+1;
-			if(SDL_GetModState()&SKIP_KEYS) end = skipword(&commandbuf[commandpos]) - commandbuf;
-			memmove(&commandbuf[commandpos], &commandbuf[end], len + 1 - end);
-			resetcomplete();
-			if(commandpos>=len-1) commandpos = -1;
-			break;
-		}
-
-		case SDLK_BACKSPACE:
-		{
-			int len = (int)strlen(commandbuf), i = commandpos>=0 ? commandpos : len;
-			if(i<1) break;
-			int start = i-1;
-			if(SDL_GetModState()&SKIP_KEYS) start = skipwordrev(commandbuf, i) - commandbuf;
-			memmove(&commandbuf[start], &commandbuf[i], len - i + 1);
-			resetcomplete();
-			if(commandpos>0) commandpos = start;
-			else if(!commandpos && len<=1) commandpos = -1;
-			break;
-		}
-
-		case SDLK_LEFT:
-			if(SDL_GetModState()&SKIP_KEYS) commandpos = skipwordrev(commandbuf, commandpos) - commandbuf;
-			else if(commandpos>0) commandpos--;
-			else if(commandpos<0) commandpos = (int)strlen(commandbuf)-1;
-			break;
-
-		case SDLK_RIGHT:
-			if(commandpos>=0)
+			case SDLK_DELETE:
 			{
-				if(SDL_GetModState()&SKIP_KEYS) commandpos = skipword(&commandbuf[commandpos]) - commandbuf;
-				else ++commandpos;
-				if(commandpos>=(int)strlen(commandbuf)) commandpos = -1;
+				int len = (int)strlen(commandbuf);
+				if(commandpos<0) break;
+				int end = commandpos+1;
+				if(SDL_GetModState()&SKIP_KEYS) end = skipword(&commandbuf[commandpos]) - commandbuf;
+				memmove(&commandbuf[commandpos], &commandbuf[end], len + 1 - end);
+				resetcomplete();
+				if(commandpos>=len-1) commandpos = -1;
+				break;
 			}
-			break;
 
-		case SDLK_UP:
-			if(histpos > history.length()) histpos = history.length();
-			if(histpos > 0)
+			case SDLK_BACKSPACE:
 			{
-				if(SDL_GetModState()&SKIP_KEYS) histpos = 0;
-				else --histpos;
-				history[histpos]->restore();
-			} 
-			break;
-
-		case SDLK_DOWN:
-			if(histpos + 1 < history.length())
-			{
-				if(SDL_GetModState()&SKIP_KEYS) histpos = history.length()-1;
-				else ++histpos;
-				history[histpos]->restore();
+				int len = (int)strlen(commandbuf), i = commandpos>=0 ? commandpos : len;
+				if(i<1) break;
+				int start = i-1;
+				if(SDL_GetModState()&SKIP_KEYS) start = skipwordrev(commandbuf, i) - commandbuf;
+				memmove(&commandbuf[start], &commandbuf[i], len - i + 1);
+				resetcomplete();
+				if(commandpos>0) commandpos = start;
+				else if(!commandpos && len<=1) commandpos = -1;
+				break;
 			}
-			break;
 
-		case SDLK_TAB:
-			if(commandflags&CF_COMPLETE)
-			{
-				complete(commandbuf, sizeof(commandbuf), commandflags&CF_EXECUTE ? "/" : NULL);
-				if(commandpos>=0 && commandpos>=(int)strlen(commandbuf)) commandpos = -1;
-			}
-			break;
+			case SDLK_LEFT:
+				if(SDL_GetModState()&SKIP_KEYS) commandpos = skipwordrev(commandbuf, commandpos) - commandbuf;
+				else if(commandpos>0) commandpos--;
+				else if(commandpos<0) commandpos = (int)strlen(commandbuf)-1;
+				break;
 
-		case SDLK_v:
-			if(SDL_GetModState()&MOD_KEYS) pasteconsole();
-			break;
+			case SDLK_RIGHT:
+				if(commandpos>=0)
+				{
+					if(SDL_GetModState()&SKIP_KEYS) commandpos = skipword(&commandbuf[commandpos]) - commandbuf;
+					else ++commandpos;
+					if(commandpos>=(int)strlen(commandbuf)) commandpos = -1;
+				}
+				break;
+
+			case SDLK_UP:
+				if(histpos > history.length()) histpos = history.length();
+				if(histpos > 0)
+				{
+					if(SDL_GetModState()&SKIP_KEYS) histpos = 0;
+					else --histpos;
+					history[histpos]->restore();
+				}
+				break;
+
+			case SDLK_DOWN:
+				if(histpos + 1 < history.length())
+				{
+					if(SDL_GetModState()&SKIP_KEYS) histpos = history.length()-1;
+					else ++histpos;
+					history[histpos]->restore();
+				}
+				break;
+
+			case SDLK_TAB:
+				if(commandflags&CF_COMPLETE)
+				{
+					complete(commandbuf, sizeof(commandbuf), commandflags&CF_EXECUTE ? "/" : NULL);
+					if(commandpos>=0 && commandpos>=(int)strlen(commandbuf)) commandpos = -1;
+				}
+				break;
+
+			case SDLK_v:
+				if(SDL_GetModState()&MOD_KEYS) pasteconsole();
+				break;
 		}
 	}
 	else
@@ -599,7 +600,6 @@ void processtextinput(const char *str, int len)
 
 void processkey(int code, bool isdown, int modstate)
 {
-	//conoutf("processkey: code %d, isdown %d, modstate %d", code, isdown, modstate);
 	switch(code)
 	{
 		case SDLK_LGUI: case SDLK_RGUI:
@@ -633,7 +633,7 @@ void writebinds(stream *f)
 		loopv(binds)
 		{
 			keym &km = *binds[i];
-			if(*km.actions[j] && strstr(km.name, "SI_") == NULL)
+			if(*km.actions[j] && !strstr(km.name, "SI_"))
 			{
 				if(validateblock(km.actions[j])) f->printf("%s %s [%s]\n", cmds[j], escapestring(km.name), km.actions[j]);
 				else f->printf("%s %s %s\n", cmds[j], escapestring(km.name), escapestring(km.actions[j]));
@@ -673,14 +673,14 @@ struct filesval
 	~filesval() { DELETEA(dir); DELETEA(ext); files.deletearrays(); }
 
 	static bool comparefiles(const char* x, const char* y) { return strcmp(x, y) < 0; }
-	
+
 	void update()
 	{
 		if((type!=FILES_DIR && type!=FILES_VAR) || millis >= commandmillis) return;
 		files.deletearrays();        
 		if(type==FILES_VAR)
 		{
-			cbstring buf;
+			old_string buf;
 			buf[0] = '\0';
 			if(ident *id = readident(dir)) switch(id->type)
 			{

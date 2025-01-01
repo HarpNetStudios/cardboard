@@ -33,6 +33,7 @@ namespace game
 	extern void gameconnect(bool _remote);
 	extern bool allowedittoggle();
 	extern void edittoggled(bool on);
+	extern void writeclientinfo(stream *f);
 	extern void toserver(char *text);
 	extern void changemap(const char *name);
 	extern void forceedit(const char *name);
@@ -48,10 +49,10 @@ namespace game
 	extern const char *savedservers();
 	extern void loadconfigs();
 
-	extern char* gametitle;
-	extern char* gamestage;
-	extern char* gameversion;
-	
+	extern const char* gametitle;
+	extern const char* gamestage;
+	extern const char* gameversion;
+
 	extern void updateworld();
 	extern void initclient();
 	extern void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material = 0);
@@ -75,7 +76,6 @@ namespace game
 	extern bool canhover();
 	extern bool allowmove(physent *d);
 	extern void doattack(bool on);
-	extern void dosecattack(bool on);
 	extern dynent *iterdynents(int i);
 	extern int numdynents();
 	extern void rendergame(bool mainpass);

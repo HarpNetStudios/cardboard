@@ -41,16 +41,12 @@ namespace steam {
 		int64 m_iAppID; // Our current AppID
 		Achievement_t* m_pAchievements; // Achievements data
 		int m_iNumAchievements; // The number of Achievements
-		bool m_bInitialized; // Have we called Request stats and received the callback?
 
 	public:
 		CSteamAchievements(Achievement_t* Achievements, int NumAchievements);
 
-		bool RequestStats();
 		bool SetAchievement(const char* ID);
 
-		STEAM_CALLBACK(CSteamAchievements, OnUserStatsReceived, UserStatsReceived_t,
-			m_CallbackUserStatsReceived);
 		STEAM_CALLBACK(CSteamAchievements, OnUserStatsStored, UserStatsStored_t,
 			m_CallbackUserStatsStored);
 		STEAM_CALLBACK(CSteamAchievements, OnAchievementStored, UserAchievementStored_t,
@@ -59,73 +55,18 @@ namespace steam {
 
 	CSteamAchievements::CSteamAchievements(Achievement_t* Achievements, int NumAchievements) :
 		m_iAppID(0),
-		m_bInitialized(false),
-		m_CallbackUserStatsReceived(this, &CSteamAchievements::OnUserStatsReceived),
 		m_CallbackUserStatsStored(this, &CSteamAchievements::OnUserStatsStored),
 		m_CallbackAchievementStored(this, &CSteamAchievements::OnAchievementStored)
 	{
 		m_iAppID = SteamUtils()->GetAppID();
 		m_pAchievements = Achievements;
 		m_iNumAchievements = NumAchievements;
-		RequestStats();
-	}
-
-	bool CSteamAchievements::RequestStats()
-	{
-		// Is Steam loaded? If not we can't get stats.
-		if (NULL == SteamUserStats() || NULL == SteamUser())
-		{
-			return false;
-		}
-		// Is the user logged on?  If not we can't get stats.
-		if (!SteamUser()->BLoggedOn())
-		{
-			return false;
-		}
-		// Request user stats.
-		return SteamUserStats()->RequestCurrentStats();
 	}
 
 	bool CSteamAchievements::SetAchievement(const char* ID)
 	{
-		// Have we received a call back from Steam yet?
-		if (m_bInitialized)
-		{
-			SteamUserStats()->SetAchievement(ID);
-			return SteamUserStats()->StoreStats();
-		}
-		// If not then we can't set achievements yet
-		return false;
-	}
-
-	void CSteamAchievements::OnUserStatsReceived(UserStatsReceived_t* pCallback)
-	{
-		// we may get callbacks for other games' stats arriving, ignore them
-		if (m_iAppID == pCallback->m_nGameID)
-		{
-			if (pCallback->m_eResult == k_EResultOK)
-			{
-				m_bInitialized = true;
-
-				// load achievements
-				for (int iAch = 0; iAch < m_iNumAchievements; ++iAch)
-				{
-					Achievement_t& ach = m_pAchievements[iAch];
-
-					SteamUserStats()->GetAchievement(ach.m_pchAchievementID, &ach.m_bAchieved);
-					_snprintf(ach.m_rgchName, sizeof(ach.m_rgchName), "%s",
-						SteamUserStats()->GetAchievementDisplayAttribute(ach.m_pchAchievementID,
-							"name"));
-					_snprintf(ach.m_rgchDescription, sizeof(ach.m_rgchDescription), "%s",
-						SteamUserStats()->GetAchievementDisplayAttribute(ach.m_pchAchievementID,
-							"desc"));
-				}
-			}
-			else
-			{
-				//conoutf("RequestStats - failed, %d", pCallback->m_eResult);
-			}
-		}
+		SteamUserStats()->SetAchievement(ID);
+		return SteamUserStats()->StoreStats();
 	}
 
 	void CSteamAchievements::OnUserStatsStored(UserStatsStored_t* pCallback)
@@ -253,6 +194,106 @@ namespace steam {
 		SteamScreenshots()->AddScreenshotToLibrary(path, NULL, width, height);
 	}
 
+	/*
+	void updatePresence(int gamestate, const char* modename, physent* d, bool force)
+	{
+		if ((globalgamestate != gamestate || force) && SteamUser()->BLoggedOn()) {
+			old_string serverip;
+
+			switch (gamestate)
+			{
+			case D_MENU:
+				activity.SetState("In the menus");
+				break;
+			case D_PLAYING:
+				activity.SetState("Offline");
+				break;
+			case D_SPECTATE:
+				activity.SetState("Spectating");
+				break;
+			default:
+				activity.SetState("SOMETHING BROKE");
+				activity.SetDetails("Tell the #bugs channel about what you did!");
+				activity.GetAssets().SetLargeImage("logo-large");
+				activity.GetAssets().SetSmallImage("turkey-test");
+				break;
+			}
+			if (gamestate != D_MENU) {
+				const ENetAddress* address = connectedpeer();
+
+				defformatstring(buffer, "%s", modename);
+				activity.SetDetails(buffer);
+				if (game::maplimit >= 0) {
+					time_t curtime;
+					uint32_t endtimedelta = (game::maplimit - lastmillis) / 1000;
+					time(&curtime);
+					activity.GetTimestamps().SetStart(0);
+					activity.GetTimestamps().SetEnd((uint32_t)(curtime + endtimedelta));
+				}
+				else {
+					activity.GetTimestamps().SetStart(0);
+					activity.GetTimestamps().SetEnd(0);
+				}
+				activity.GetAssets().SetLargeImage(game::getclientmap());
+
+				const char* mapName = game::getclientmap();
+				const char* largeKey = "unknown-map";
+				int len = sizeof(officialmaps) / sizeof(officialmaps[0]);
+
+				for (int i = 0; i < len; ++i)
+				{
+					if (!strcmp(officialmaps[i], mapName)) largeKey = game::getclientmap();
+				}
+
+				activity.GetAssets().SetLargeImage(largeKey);
+
+				defformatstring(largeText, "Map: %s", game::getclientmap());
+				activity.GetAssets().SetLargeText(largeText);
+
+				if (address) {
+					if (enet_address_get_host_ip(address, serverip, sizeof(serverip)) >= 0)
+					{
+						conoutf(CON_DEBUG, "ip: %s", serverip);
+						activity.SetState("Online");
+						defformatstring(partykey, "%s %u", serverip, address->port);
+						defformatstring(partyid, "S_%s", partykey);
+						const char* b64key = b64_encode((unsigned char*)partykey, strlen(partykey));
+						activity.GetParty().SetId(partyid);
+						activity.GetParty().GetSize().SetCurrentSize(game::players.length());
+						activity.GetParty().GetSize().SetMaxSize(game::players.length() + 1);
+						activity.GetSecrets().SetJoin(b64key);
+						conoutf(CON_DEBUG, "discord join secret: %s", b64key);
+					}
+					else {
+						conoutf("address: %u, port: %u", address->host, address->port);
+					}
+				}
+			}
+			else
+			{
+				activity.GetTimestamps().SetStart(starttime);
+				activity.GetTimestamps().SetEnd(0);
+				activity.GetAssets().SetLargeImage("logo-large");
+			}
+
+			fpsent* pl = (fpsent*)d;
+
+			if (pl) // if there is actually a player involved
+			{
+				defformatstring(icon, "player-%d", pl->playermodel);
+				//conoutf("imagekey: %s, playermodel: %d", icon, playermodel);
+				activity.GetAssets().SetSmallImage(icon);
+				defformatstring(plname, "%s (%d)", pl->name, pl->frags);
+				activity.GetAssets().SetSmallText(plname);
+			}
+			discordCore->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
+				if (result != discord::Result::Ok) conoutf(CON_ERROR, "\f2Discord: Failed to update activity.");
+				});
+			globalgamestate = gamestate;
+		}
+	}
+	*/
+
 	int input_getConnectedControllers() {
 		return SteamInput()->GetConnectedControllers(inputHandles);
 	}
@@ -288,7 +329,7 @@ namespace steam {
 		execute("bind SI_WEAP_C_UP [cycleweapon 0 1 2 3 4 5 6]");
 		execute("bind SI_WEAP_C_DN [cycleweapon 6 5 4 3 2 1 0]");
 		execute("bind SI_WEAP_FI [setweapon FI]");
-		execute("bind SI_WEAP_MG [setweapon MG]");
+		execute("bind SI_WEAP_AR [setweapon AR]");
 		execute("bind SI_WEAP_SG [setweapon SG]");
 		execute("bind SI_WEAP_RI [setweapon RI]");
 		execute("bind SI_WEAP_CG [setweapon CG]");

@@ -527,7 +527,7 @@ namespace ai
 		a.links[rnd(MAXWAYPOINTLINKS)] = n;
 	}
 
-	cbstring loadedwaypoints = "";
+	old_string loadedwaypoints = "";
 
 	static inline bool shouldnavigate()
 	{
@@ -620,7 +620,7 @@ namespace ai
 					addwaypoint(e.o);
 					break;
 				default:
-					if(e.type >= I_HEALTH && e.type <= I_AMMO) addwaypoint(e.o);
+					if(e.type >= I_AMMO && e.type <= I_HEALTH) addwaypoint(e.o);
 					break;
 			}
 		}
@@ -679,7 +679,7 @@ namespace ai
 		if(!mname || !*mname) mname = getclientmap();
 		if(!*mname) return false;
 
-		cbstring pakname, mapname, cfgname;
+		old_string pakname, mapname, cfgname;
 		getmapfilenames(mname, NULL, pakname, mapname, cfgname);
 		nformatstring(wptname, MAXSTRLEN, "packages/%s.wpt", mapname);
 		path(wptname);
@@ -688,7 +688,7 @@ namespace ai
 
 	void loadwaypoints(bool force, const char *mname)
 	{
-		cbstring wptname;
+		old_string wptname;
 		if(!getwaypointfile(mname, wptname)) return;
 		if(!force && (waypoints.length() || !strcmp(loadedwaypoints, wptname))) return;
 
@@ -731,7 +731,7 @@ namespace ai
 	{
 		if((!dropwaypoints && !force) || waypoints.empty()) return;
 
-		cbstring wptname;
+		old_string wptname;
 		if(!getwaypointfile(mname, wptname)) return;
 
 		stream *f = opengzfile(wptname, "wb");

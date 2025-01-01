@@ -1,5 +1,6 @@
 #ifndef PARSEMESSAGES
 
+// TODO: rework this
 #define collectteambase(s) (!strcmp(s, "red") ? 1 : (!strcmp(s, "blue") ? 2 : 0))
 #define collectbaseteam(i) (i==1 ? "red" : (i==2 ? "blue" : NULL))
 
@@ -29,7 +30,7 @@ struct collectclientmode : clientmode
 #ifdef SERVMODE
 #else
 		vec tokenpos;
-		cbstring info;
+		old_string info;
 		entitylight light;
 #endif
 	
@@ -219,6 +220,7 @@ struct collectclientmode : clientmode
 	{
 		if(notgotbases) return;
 		int team = collectteambase(ci->team), totalenemy = penalty ? 0 : ci->state.tokens, totalfriendly = 1, expired = 0;
+		// TODO: what???
 		int enemyteam = team == collectteambase("red") ? collectteambase("blue") : collectteambase("red");
 		packetbuf p(300, ENET_PACKET_FLAG_RELIABLE);
 		loopvrev(tokens)
@@ -241,7 +243,7 @@ struct collectclientmode : clientmode
 		int numdrops = 1 + (penalty ? 0 : ci->state.tokens), yaw = rnd(360);
 		loopi(numdrops)
 		{
-			token &t = droptoken(ci->state.o, yaw + (i*360)/numdrops, !i ? team : enemyteam, lastmillis, ci->clientnum);
+			token& t = droptoken(ci->state.o, yaw + (i * 360) / numdrops, !i ? team : enemyteam, lastmillis, ci->clientnum);
 			putint(p, t.id);
 			putint(p, t.team);
 			putint(p, t.yaw);
@@ -434,7 +436,8 @@ struct collectclientmode : clientmode
 	void drawbaseblip(fpsent *d, float x, float y, float s, int i)
 	{
 		base &b = bases[i];
-		settexture(b.team==collectteambase("red") ? "packages/hud/blip_red.png" : "packages/hud/blip_blue.png", 3);
+		// TODO: rework
+		settexture(b.team == collectteambase("red") ? "packages/hud/blip_red.png" : "packages/hud/blip_blue.png", 3);
 		drawblip(d, x, y, s, b.o);
 	}
 
@@ -447,7 +450,7 @@ struct collectclientmode : clientmode
 	{
 		if(d->state == CS_ALIVE && d->tokens > 0)
 		{
-			int x = HICON_X + 2*HICON_STEP;
+			int x = HICON_X + 2 * HICON_STEP;
 			pushhudmatrix();
 			hudmatrix.scale(2, 2, 1);
 			flushhudmatrix();
@@ -483,6 +486,7 @@ struct collectclientmode : clientmode
 			drawbaseblip(d, x, y, s, i);
 		}
 		int team = collectteambase(d->team);
+		// TODO: rework
 		settexture(team == collectteambase("red") ? "packages/hud/blip_red_skull.png" : "packages/hud/blip_blue_skull.png", 3);
 		loopv(players)
 		{
@@ -516,22 +520,22 @@ struct collectclientmode : clientmode
 			const char* basename = b.team == collectteambase("red") ? "base/red" : "base/blue";
 			rendermodel(&b.light, basename, ANIM_MAPMODEL|ANIM_LOOP, b.o, 0, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED);
 			float fradius = 1.0f, fheight = 0.5f;
-			regular_particle_flame(PART_FLAME, vec(b.tokenpos.x, b.tokenpos.y, b.tokenpos.z - 4.5f), fradius, fheight, b.team==collectteambase("red") ? 0x802020 : 0x2020FF, 3, 2.0f);
+			regular_particle_flame(PART_FLAME, vec(b.tokenpos.x, b.tokenpos.y, b.tokenpos.z - 4.5f), fradius, fheight, b.team == collectteambase("red") ? 0x802020 : 0x2020FF, 3, 2.0f);
 			vec tokenpos(b.tokenpos);
 			tokenpos.z -= theight.z/2 + sinf(lastmillis/100.0f)/20;
 			float alpha = player1->state == CS_ALIVE && player1->tokens <= 0 && lastmillis < b.laststeal + STEALTOKENTIME ? 0.5f : 1.0f; 
-			rendermodel(&b.light, b.team==collectteambase("red") ? "skull/red" : "skull/blue", ANIM_MAPMODEL|ANIM_LOOP, tokenpos, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED, NULL, NULL, 0, 0, alpha);
+			rendermodel(&b.light, b.team == collectteambase("red") ? "skull/red" : "skull/blue", ANIM_MAPMODEL | ANIM_LOOP, tokenpos, lastmillis / 10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED, NULL, NULL, 0, 0, alpha);
 			formatstring(b.info, "%d", totalscore(b.team));
 			vec above(b.tokenpos);
 			above.z += TOKENHEIGHT;
-			if(b.info[0]) particle_text(above, b.info, PART_TEXT, 1, b.team== collectteambase("red") ? 0xFF4B19 : 0x6496FF, 2.0f);
+			if (b.info[0]) particle_text(above, b.info, PART_TEXT, 1, b.team == collectteambase("red") ? 0xFF4B19 : 0x6496FF, 2.0f);
 		}
 		loopv(tokens)
 		{
 			token &t = tokens[i];
 			vec p = t.o;
 			p.z += 1+sinf(lastmillis/100.0+t.o.x+t.o.y)/20;
-			rendermodel(&t.light, t.team == collectteambase("red") ? "skull/red" : "skull/blue", ANIM_MAPMODEL|ANIM_LOOP, p, lastmillis/10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED);
+			rendermodel(&t.light, t.team == collectteambase("red") ? "skull/red" : "skull/blue", ANIM_MAPMODEL | ANIM_LOOP, p, lastmillis / 10.0f, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED);
 		}
 		fpsent *exclude = isthirdperson() ? NULL : hudplayer();
 		loopv(players)
@@ -544,7 +548,7 @@ struct collectclientmode : clientmode
 			int dteam = collectteambase(d->team);
 			loopj(d->tokens)
 			{
-				rendermodel(&light, dteam != collectteambase("red") ? "skull/red" : "skull/blue", ANIM_MAPMODEL|ANIM_LOOP, pos, d->yaw+90, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED);
+				rendermodel(&light, dteam != collectteambase("red") ? "skull/red" : "skull/blue", ANIM_MAPMODEL | ANIM_LOOP, pos, d->yaw + 90, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_DIST | MDL_CULL_OCCLUDED);
 				pos.z += TOKENHEIGHT + 1;
 			}
 		}        
@@ -663,7 +667,7 @@ struct collectclientmode : clientmode
 		if(t) 
 		{
 			// TODO: I don't know if this logic makes sense, revisit -Y
-			playsound(t->team == team ? S_ITEMAMMO : S_ITEMHEALTH, d!=player1 ? &d->o : NULL);
+			playsound(t->team == team ? S_ITEMAMMO : S_ITEMHEALTH, d != player1 ? &d->o : NULL);
 			removetoken(id);
 		}
 		d->tokens = total;
@@ -725,10 +729,10 @@ struct collectclientmode : clientmode
 		setscore(team, score);
 		
 		defformatstring(depositteam, "the %s team", collectbaseteam(team));
-		conoutf(CON_GAMEINFO, "%s collected %d %s for %s", teamcolorname(d), deposited, deposited==1 ? "skull" : "skulls", teamcolor(depositteam, collectbaseteam(team)));
+		conoutf(CON_GAMEINFO, "%s collected %d %s for %s", teamcolorname(d), deposited, deposited == 1 ? "skull" : "skulls", teamcolor(depositteam, collectbaseteam(team)));
 		playsound(team==collectteambase(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
 
-		if(score >= SCORELIMIT) conoutf(CON_GAMEINFO, "%s collected %d skulls", teamcolor(depositteam, collectbaseteam(team)), score);
+		if (score >= SCORELIMIT) conoutf(CON_GAMEINFO, "%s collected %d skulls", teamcolor(depositteam, collectbaseteam(team)), score);
 	}
 
 	void checkitems(fpsent *d)

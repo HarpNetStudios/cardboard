@@ -1,16 +1,14 @@
 
 #include "engine.h"
 
-SVARFP(language, "en_US", {
-	defformatstring(translationFile, "packages/lang/%s.cfg", language);
-	execfile(translationFile);
-});
-VAR(translationCapture, 0, 0, 1);
-
-void reloadlanguage(int ok) {
-	defformatstring(translationFile, "packages/lang/%s.cfg", language);
-	execfile(translationFile);
+void reloadlanguage(char* lang) {
+    defformatstring(translationFile, "packages/lang/%s.cfg", lang);
+    execfile(translationFile);
 }
+
+SVARFP(language, "en_US", reloadlanguage(language));
+
+VAR(translationCapture, 0, 0, 1);
 
 struct Translation
 {
@@ -68,4 +66,4 @@ ICOMMAND(translate, "sss", (const char* stringLanguage, const char* name, const 
     strings[trans->key] = trans;
 });
 
-ICOMMAND(reloadlanguage, "", (), reloadlanguage(0));
+ICOMMAND(reloadlanguage, "", (), reloadlanguage(language));

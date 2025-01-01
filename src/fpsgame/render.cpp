@@ -11,7 +11,7 @@ namespace game
 	VARP(ragdoll, 0, 1, 1);
 	VARP(ragdollmillis, 0, 10000, 300000);
 	VARP(ragdollfade, 0, 1000, 300000);
-	VARFP(playermodel, 0, 0, 5, changedplayermodel()); // new player
+	VARFP(playermodel, 0, 0, 5, changedplayermodel()); // change for new playermodel
 	VARP(forceplayermodels, 0, 0, 1);
 	VARP(hidedead, 0, 0, 2);
 
@@ -79,7 +79,7 @@ namespace game
 
 	void changedplayermodel()
 	{
-		player1->playermodel = playermodel;
+		if(player1->clientnum < 0) player1->playermodel = playermodel;
 		if(player1->ragdoll) cleanragdoll(player1);
 		loopv(ragdolls) 
 		{
@@ -121,12 +121,12 @@ namespace game
 			if(mdl->vwep) preloadmodel(mdl->vwep);
 		}
 	}
-	
+
 	VAR(testteam, 0, 0, 3);
 
 	void renderplayer(fpsent *d, const playermodelinfo &mdl, int team, float fade, bool mainpass)
 	{
-		int lastaction = d->lastaction[d->gunselect], hold = mdl.vwep || d->gunselect==GUN_GL ? 0 : (ANIM_HOLD1+d->gunselect)|ANIM_LOOP, attack = ANIM_ATTACK1+d->gunselect, delay = mdl.vwep ? 300 : guns[d->gunselect].attackdelay+50;
+		int lastaction = d->lastaction[d->gunselect], hold = mdl.vwep || d->gunselect==GUN_ARIFLE ? 0 : (ANIM_HOLD1+d->gunselect)|ANIM_LOOP, attack = ANIM_ATTACK1+d->gunselect, delay = mdl.vwep ? 300 : guns[d->gunselect].attackdelay+50;
 		if(intermission && d->state!=CS_DEAD)
 		{
 			lastaction = 0;
@@ -134,14 +134,14 @@ namespace game
 			delay = 0;
 			if(m_teammode ? bestteams.htfind(d->team)>=0 : bestplayers.find(d)>=0) hold = attack = ANIM_WIN|ANIM_LOOP;
 		}
-		else if(d->state==CS_ALIVE && d->lasttaunt && lastmillis-d->lasttaunt<1000 && lastmillis-d->lastaction[d->gunselect]>delay)
+		else if(d->state==CS_ALIVE && d->lasttaunt && lastmillis-d->lasttaunt < 1000 && lastmillis-d->lastaction[d->gunselect] > delay)
 		{
 			lastaction = d->lasttaunt;
 			hold = attack = ANIM_TAUNT;
 			delay = 1000;
 		}
 		modelattach a[5];
-		static const char * const vweps[] = {"vwep/fist", "vwep/smg", "vwep/shotg", "vwep/rifle", "vwep/chaing", "vwep/rocket", "vwep/gl"};
+		static const char* const vweps[] = { "vwep/fist", "vwep/arifle", "vwep/shotg", "vwep/rifle", "vwep/chaing", "vwep/rocket", "vwep/gl" };
 		int ai = 0;
 		if((!mdl.vwep || d->gunselect!=GUN_FIST) && d->gunselect<=GUN_GL)
 		{
@@ -168,9 +168,7 @@ namespace game
 	}
 
 	VARP(teamskins, 0, 0, 1);
-	VARP(shownames, 0, 1, 1);
 
-#if 1
 	// for testing spawns
 
 	VAR(dbgspawns, 0, 0, 2);
@@ -208,7 +206,25 @@ namespace game
 			loopv(spawninfos) renderspawn(spawninfos[i].e->o, spawninfos[i].weight * 100, spawninfos[i].weight / ratingsum);
 		}
 	}
-#endif
+
+	VARP(statusbars, 0, 1, 2);
+	FVARP(statusbarscale, 0, 1, 2);
+
+	float renderstatusbars(fpsent *d, int team)
+	{
+		if(!statusbars || m_insta || (spectating(player1) ? statusbars <= 1 : team != 1) || (d->state != CS_ALIVE && d->state != CS_LAGGED)) return 0;
+		vec p = d->abovehead().msub(camdir, 50/80.0f).msub(camup, 2.0f);
+		float offset = 0;
+		float scale = statusbarscale;
+		int color = d->health<=250 ? 0xFF0000 : (d->health<=500 ? 0xFF8000 : (d->health<=1000 ? 0x40FF80 : 0x40C0FF));
+		float size = scale*sqrtf(max(d->health, d->maxhealth)/100.0f);
+		float fill = float(d->health)/d->maxhealth;
+		offset += size;
+		particle_meter(vec(p).madd(camup, offset), fill, PART_METER, 1, color, 0, size);
+		return offset;
+	}
+
+	VARP(shownames, 0, 1, 1);
 
 	void rendergame(bool mainpass)
 	{
@@ -242,36 +258,46 @@ namespace game
 				continue;
 			}
 
-			if(shownames)
+			if (shownames)
 			{
 				copystring(d->info, colorname(d));
-				if(d->maxhealth > 1000) { defformatstring(sn, " +%d", d->maxhealth - 1000); concatstring(d->info, sn); }
-				if(d->state != CS_DEAD) particle_text(d->abovehead(), d->info, PART_TEXT, 1, team ? (team == 1 ? 0x6496FF : 0xFF4B19) : 0x1EC850, 2.0f);
+				if (d->state != CS_DEAD)
+				{
+					float offset = renderstatusbars(d, team);
+					if (d->state != CS_DEAD)
+					{
+						vec p = d->abovehead().madd(camup, offset);
+						particle_text(p, d->info, PART_TEXT, 1, team ? (team == 1 ? 0x6496FF : 0xFF4B19) : 0x1EC850, 2.0f);
+					}
+				}
 			}
 		}
+
 		loopv(ragdolls)
 		{
 			fpsent *d = ragdolls[i];
 			int team = 0;
-			if(teamskins || m_teammode) team = strcmp(d->team, "red") ? 1 : 2;
+			if (teamskins || m_teammode) team = strcmp(d->team, "red") ? 1 : 2;
 			float fade = 1.0f;
 			if(ragdollmillis && ragdollfade) 
 				fade -= clamp(float(lastmillis - (d->lastupdate + max(ragdollmillis - ragdollfade, 0)))/min(ragdollmillis, ragdollfade), 0.0f, 1.0f);
 			renderplayer(d, getplayermodelinfo(d), team, fade, mainpass);
-		} 
-		if(isthirdperson() && !followingplayer() && (player1->state!=CS_DEAD || hidedead != 1))
+		}
+
+		if (isthirdperson() && !followingplayer() && (player1->state != CS_DEAD || hidedead != 1))
 		{
 			renderplayer(player1, getplayermodelinfo(player1), teamskins || m_teammode ? (strcmp(player1->team, "red") ? 1 : 2) : 0, 1, mainpass);
 		}
+
 		entities::renderentities();
 		renderbouncers();
 		renderprojectiles();
 		if(cmode) cmode->rendergame();
 
 #if _DEBUG
-		if(dbgspawns) renderspawns();
+		if (dbgspawns) renderspawns();
 #else
-		if(dbgspawns && m_edit) renderspawns();
+		if (dbgspawns && m_edit) renderspawns();
 #endif
 
 		endmodelbatches();
@@ -325,7 +351,7 @@ namespace game
 
 	void drawhudmodel(fpsent *d, int anim, float speed = 0, int base = 0)
 	{
-		if(d->gunselect>GUN_GL) return;
+		if (d->gunselect > GUN_GL) return;
 
 		vec sway;
 		vecfromyawpitch(d->yaw, 0, 0, 1, sway);
@@ -334,12 +360,17 @@ namespace game
 		sway.z = swayup*(fabs(sinf(steps)) - 1);
 		sway.add(swaydir).add(d->o);
 		if(!hudgunsway) sway = d->o;
+
 		const playermodelinfo &mdl = getplayermodelinfo(d);
 		defformatstring(gunname, "%s/%s", hudgunsdir[0] ? hudgunsdir : mdl.hudguns, guns[d->gunselect].file);
-		if((m_teammode || teamskins) && teamhudguns)
+		if ((m_teammode || teamskins) && teamhudguns)
+		{
 			concatstring(gunname, strcmp(d->team, "red") ? "/blue" : "/red");
-		else if(testteam > 1)
-			concatstring(gunname, testteam==2 ? "/blue" : "/red");
+		}
+		else if (testteam > 1)
+		{
+			concatstring(gunname, testteam == 2 ? "/blue" : "/red");
+		}
 		modelattach a[2];
 		d->muzzle = vec(-1, -1, -1);
 		a[0] = modelattach("tag_muzzle", &d->muzzle);
@@ -364,13 +395,13 @@ namespace game
 		}
 
 		int rtime = guns[d->gunselect].attackdelay;
-		if(d->lastaction && d->lastattackgun==d->gunselect && lastmillis-d->lastaction[d->gunselect] <rtime)
+		if(d->lastaction && d->lastattackgun==d->gunselect && lastmillis - d->lastaction[d->gunselect] < rtime)
 		{
-			drawhudmodel(d, ANIM_GUN_SHOOT|ANIM_SETSPEED, rtime/17.0f, d->lastaction[d->gunselect]);
+			drawhudmodel(d, ANIM_GUN_SHOOT | ANIM_SETSPEED, rtime/17.0f, d->lastaction[d->gunselect]);
 		}
 		else
 		{
-			drawhudmodel(d, ANIM_GUN_IDLE|ANIM_LOOP);
+			drawhudmodel(d, ANIM_GUN_IDLE | ANIM_LOOP);
 		}
 	}
 
@@ -387,7 +418,7 @@ namespace game
 			previewent = new fpsent;
 			previewent->light.color = vec(1, 1, 1);
 			previewent->light.dir = vec(0, -1, 2).normalize();
-			loopi(GUN_GL-GUN_FIST) previewent->ammo[GUN_FIST+1+i] = 1;
+			loopi(NUMGUNS - 1) previewent->ammo[i + 1] = 1;
 		}
 		float height = previewent->eyeheight + previewent->aboveeye,
 			  zrad = height/2;
@@ -435,7 +466,7 @@ namespace game
 		{
 			const char *file = guns[i].file;
 			if(!file) continue;
-			cbstring fname;
+			old_string fname;
 			if((m_teammode || teamskins) && teamhudguns)
 			{
 				formatstring(fname, "%s/%s/blue", hudgunsdir[0] ? hudgunsdir : mdl.hudguns, file);
@@ -453,16 +484,10 @@ namespace game
 		}
 	}
 
-	void preloadsounds() // why aren't all sounds preloaded??? -Y 10/10/2020
+	void preloadsounds()
 	{
-		/*
-		for(int i = S_JUMP; i <= S_SPLASH2; i++) preloadsound(i);
-		for(int i = S_JUMPPAD; i <= S_ARIFLE; i++) preloadsound(i);
-		for(int i = S_V_BOOST; i <= S_V_QUAD10; i++) preloadsound(i);
-		for(int i = S_BURN; i <= S_HIT; i++) preloadsound(i);
-		*/
-
-		for(int i = S_JUMP; i <= S_SRV_DISCONNECT; i++) preloadsound(i);
+		// preload all sounds, we aren't in 2003 anymore
+		for (int i = S_JUMP; i <= S_SRV_DISCONNECT; i++) preloadsound(i);
 	}
 
 	void preload()
@@ -473,6 +498,4 @@ namespace game
 		preloadsounds();
 		entities::preloadentities();
 	}
-
 }
-

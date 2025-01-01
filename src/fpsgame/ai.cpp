@@ -81,6 +81,7 @@ namespace ai
 		return false;
 	}
 
+	// TODO: look into this, i feel like this could be improved
 	bool canshoot(fpsent *d, fpsent *e)
 	{
 		if(weaprange(d, d->gunselect, e->o.squaredist(d->o)) && targetable(d, e))
@@ -144,6 +145,7 @@ namespace ai
 		fpsent *o = newclient(ocn);
 
 		d->aitype = at;
+		d->skill = sk; // moved this line up here, hopefully won't cause any issues? -Y
 
 		bool resetthisguy = false;
 		if(!d->name[0])
@@ -167,7 +169,7 @@ namespace ai
 		copystring(d->team, team, MAXTEAMLEN+1);
 		d->ownernum = ocn;
 		d->plag = 0;
-		d->skill = sk;
+		// ai skill used to be here
 		d->playermodel = chooserandomplayermodel(pm);
 
 		if(resetthisguy) removeweapons(d);
@@ -266,7 +268,8 @@ namespace ai
 
 	bool badhealth(fpsent *d)
 	{
-		if(d->skill*10 <= 1000) return d->health <= (1110-(d->skill*10))/4;
+		// TODO: this is a bit messy, i don't like this
+		if (d->skill * 10 <= 1000) return d->health <= (1110 - (d->skill * 10)) / 4;
 		return false;
 	}
 
@@ -416,7 +419,8 @@ namespace ai
 				break;
 			default:
 			{
-				if(e.type == I_AMMO && !d->hasmaxammo(e.type)) // clean up, AI target ammo always when low
+				// TODO: what is this trying to do?
+				if(e.type == I_AMMO && !d->hasmaxammo(e.type))
 				{
 					int gun = e.type;
 					// go get a weapon upgrade
@@ -482,7 +486,7 @@ namespace ai
 		interests.setsize(0);
 		if(!m_noitems)
 		{
-			if((!m_noammo && !hasgoodammo(d)) || d->health < min((d->skill*10) - 150, 750))
+			if((!m_noammo && !hasgoodammo(d)) || d->health < min((d->skill * 10) - 150, 750))
 				items(d, b, interests);
 			else
 			{
@@ -595,10 +599,18 @@ namespace ai
 				bool wantsitem = false;
 				switch(entities::ents[ent]->type)
 				{
-					case I_HEALTH: wantsitem = badhealth(d); break;
+					case I_HEALTH:
+					{
+						wantsitem = badhealth(d);
+						break;
+					}
 					default:
 					{
-						for(int i = 0; i < 6; ++i) wantsitem = !wantsitem && d->ammo[i+1] <= (d->ai->weappref == i+1 ? guns[i+1].ammoadd : guns[i+1].ammoadd / 2);
+						loopj(NUMGUNS-1) {
+							wantsitem = d->ammo[j+1] <= (d->ai->weappref == j+1 ? guns[j+1].ammoadd : guns[j + 1].ammoadd / 2);
+
+							if (wantsitem) break; // don't need to go through the entire loop
+						}
 						break;
 					}
 				}
@@ -1094,7 +1106,9 @@ namespace ai
 
 		if(d->ai->dontmove) d->fmove = d->fstrafe = 0.0f;
 		else
-		{ // our guys move one way.. but turn another?! :)
+		{ 
+			// our guys move one way.. but turn another?! :)
+			// TODO: make this work with floats instead, to prevent unnecessary casting
 			const struct aimdir { int move, strafe, offset; } aimdirs[8] =
 			{
 				{  1,  0,   0 },
@@ -1135,7 +1149,7 @@ namespace ai
 		fpsent *e = getclient(d->ai->enemy);
 		if(!d->hasammo(d->gunselect) || !hasrange(d, e, d->gunselect) || (d->gunselect != d->ai->weappref && (!isgoodammo(d->gunselect) || d->hasammo(d->ai->weappref))))
 		{
-			static const int gunprefs[] = { GUN_CG, GUN_RL, GUN_SG, GUN_RIFLE, GUN_GL, GUN_SMG, GUN_FIST };
+			static const int gunprefs[] = { GUN_CG, GUN_ARIFLE, GUN_RL, GUN_SG, GUN_RIFLE, GUN_GL, GUN_FIST };
 			int gun = -1;
 			if(d->hasammo(d->ai->weappref) && hasrange(d, e, d->ai->weappref)) gun = d->ai->weappref;
 			else
@@ -1223,7 +1237,7 @@ namespace ai
 			if(allowmove)
 			{
 				if(!request(d, b)) target(d, b, d->gunselect == GUN_FIST ? 1 : 0, b.idle ? true : false);
-				shoot(d, d->ai->target, false);
+				shoot(d, d->ai->target);
 			}
 			if(!intermission)
 			{
@@ -1350,7 +1364,7 @@ namespace ai
 	}
 
 	VAR(showwaypoints, 0, 0, 1);
-	VAR(showwaypointsradius, 0, 200, 10000);
+	VAR(showwaypointsradius, 0, 256, 8192);
 	HVARP(waypointcolor, 0, 0x0000FF, 0xFFFFFF);
 
 	const char *stnames[AI_S_MAX] = {
@@ -1433,7 +1447,7 @@ namespace ai
 		}
 		if(showwaypoints || aidebug >= 6)
 		{
-			if(dropwaypoints) particle_flare(camera1->feetpos(), camera1->feetpos(), 1, PART_SPARK, 0x00FFFF, 0.5f, camera1);
+			if (dropwaypoints) particle_flare(camera1->feetpos(), camera1->feetpos(), 1, PART_SPARK, 0x00FFFF, 0.5f, camera1);
 			vector<int> close;
 			int len = waypoints.length();
 			if(showwaypointsradius)
@@ -1454,4 +1468,3 @@ namespace ai
 		}
 	}
 }
-

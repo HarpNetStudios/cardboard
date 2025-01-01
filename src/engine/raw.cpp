@@ -168,7 +168,7 @@ namespace rawinput
 	{
 		HANDLE device;
 		DWORD type;
-		cbstring name;
+		old_string name;
 	};
 	// open registry key corresponding to device name as returned from GetRawInputDeviceInfo
 	// return true on successful open
@@ -207,7 +207,7 @@ namespace rawinput
 	void loadregistryinfo(windev &dev)
 	{
 		*dev.name = '\0';
-		static cbstring rawname;
+		static old_string rawname;
 		UINT rawlen = sizeof(rawname);
 		UINT tryinfo = GetRawInputDeviceInfo(dev.device, RIDI_DEVICENAME, &rawname, &rawlen);
 		if(tryinfo == (UINT)-1) return;
@@ -534,8 +534,8 @@ namespace rawinput
 	}
 	void searchdevs(bool (*handle)(int, const char *))
 	{
-		cbstring path;
-		cbstring name;
+		old_string path;
+		old_string name;
 		for(int i = 0; i < 32; ++i)
 		{
 			formatstring(path, "/dev/input/event%d", i);

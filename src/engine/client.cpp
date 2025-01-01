@@ -1,7 +1,5 @@
 // client.cpp, mostly network related client game code
 
-// "a maybe is good enough for me" -Coal 02/12/2020
-
 #include "engine.h"
 
 ENetHost *clienthost = NULL;
@@ -51,7 +49,7 @@ const ENetAddress *connectedpeer()
 ICOMMAND(connectedip, "", (),
 {
 	const ENetAddress *address = connectedpeer();
-	cbstring hostname;
+	old_string hostname;
 	result(address && enet_address_get_host_ip(address, hostname, sizeof(hostname)) >= 0 ? hostname : "");
 });
 
@@ -77,9 +75,10 @@ VARP(connectport, 0, 0, 0xFFFF);
 
 void connectserv(const char *servername, int serverport, const char *serverpassword)
 {   
+	// TODO: this needs to change to allow LAN play without network connection.
 	getuserinfo_(false);
 	if (offline == 1) { conoutf(CON_ERROR, "\f3cannot connect to servers in offline mode!"); return; }
-	
+
 	globalgamestate = -1;
 
 	if(connpeer)

@@ -857,24 +857,19 @@ const GLint *swizzlemask(GLenum format)
 	return NULL;
 }
 
-VARFP(crispy, 0, 0, 1, initwarning("texture filtering", INIT_LOAD));
-
 void setuptexparameters(int tnum, void *pixels, int clamp, int filter, GLenum format, GLenum target, bool swizzle)
 {
-	bool crispytex = crispy && clamp == 0; // definitely a bit of a hack, but it works! -Y
-
 	glBindTexture(target, tnum);
 	glTexParameteri(target, GL_TEXTURE_WRAP_S, clamp&1 ? GL_CLAMP_TO_EDGE : (clamp&0x100 ? GL_MIRRORED_REPEAT : GL_REPEAT));
 	glTexParameteri(target, GL_TEXTURE_WRAP_T, clamp&2 ? GL_CLAMP_TO_EDGE : (clamp&0x200 ? GL_MIRRORED_REPEAT : GL_REPEAT));
 	if(target==GL_TEXTURE_2D && hasAF && min(aniso, hwmaxaniso) > 0 && filter > 1) glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, min(aniso, hwmaxaniso));
-	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter && (bilinear && !crispytex) ? GL_LINEAR : GL_NEAREST);
+	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter && bilinear ? GL_LINEAR : GL_NEAREST);
 	glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
 		filter > 1 ?
-		((trilinear && !crispytex) ?
-			((bilinear && !crispytex) ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_LINEAR) :
-			((bilinear && !crispytex) ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST)) :
-		(filter && (bilinear && !crispytex) ? GL_LINEAR : GL_NEAREST));
-	
+			(trilinear ?
+				(bilinear ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_LINEAR) :
+				(bilinear ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST)) :
+			(filter && bilinear ? GL_LINEAR : GL_NEAREST));
 	if(swizzle && hasTRG && hasTSW)
 	{
 		const GLint *mask = swizzlemask(format);
@@ -1401,7 +1396,7 @@ static bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, 
 		}
 		else file = tex->name;
 		
-		static cbstring pname;
+		static old_string pname;
 		formatstring(pname, "packages/%s", file);
 		file = path(pname);
 	}
@@ -1444,7 +1439,7 @@ static bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, 
 
 	if(flen >= 4 && (!strcasecmp(file + flen - 4, ".dds") || (dds && !raw)))
 	{
-		cbstring dfile;
+		old_string dfile;
 		copystring(dfile, file);
 		memcpy(dfile + flen - 4, ".dds", 4);
 		if(!loaddds(dfile, d, raw ? 1 : (dds ? 0 : -1)) && (!dds || raw))
@@ -1461,7 +1456,7 @@ static bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, 
 		if(guess)
 		{
 			static const char *exts[] = {".jpg", ".png"};
-			cbstring ext;
+			old_string ext;
 			loopi(sizeof(exts)/sizeof(exts[0]))
 			{
 				copystring(ext, file);
@@ -1560,7 +1555,7 @@ uchar *loadalphamask(Texture *t)
 
 Texture *textureload(const char *name, int clamp, bool mipit, bool msg)
 {
-	cbstring tname;
+	old_string tname;
 	copystring(tname, name);
 	Texture *t = textures.access(path(tname));
 	if(t) return t;
@@ -1596,7 +1591,7 @@ const char* textypename(int i)
 
 void enabletexture(const bool on)
 {
-	if(on) hudshader->set();
+	if (on) hudshader->set();
 	else hudnotextureshader->set();
 }
 
@@ -1987,7 +1982,7 @@ bool unpackvslot(ucharbuf &buf, VSlot &dst, bool delta)
 		{
 			case VSLOT_SHPARAM:
 			{
-				cbstring name;
+				old_string name;
 				getstring(name, buf);
 				SlotShaderParam p = { name[0] ? getshaderparamname(name) : NULL, -1, { 0, 0, 0, 0 } };
 				loopi(4) p.val[i] = getfloat(buf);
@@ -2207,12 +2202,15 @@ void texlayer(int *layer, char *name, int *mode, float *scale)
 	if(slots.empty()) return;
 	Slot &s = *slots.last();
 	s.variants->layer = *layer < 0 ? max(slots.length()-1+*layer, 0) : *layer;
-	s.layermaskname = name[0] ? newstring(path(makerelpath("packages", name))) : NULL; 
+	s.layermaskname = name[0] ? newstring(path(makerelpath("packages", name))) : NULL;
 	s.layermaskmode = *mode;
 	s.layermaskscale = *scale <= 0 ? 1 : *scale;
 	propagatevslot(s.variants, 1<<VSLOT_LAYER);
 }
 COMMAND(texlayer, "isif");
+ICOMMAND(getvlayermaskname, "i", (int *tex), { if(char *name = lookupvslot(*tex, false).slot->layermaskname) result(name); });
+ICOMMAND(getvlayermaskmode, "i", (int *tex), intret(lookupvslot(*tex, false).slot->layermaskmode));
+ICOMMAND(getvlayermaskscale, "i", (int *tex), floatret(lookupvslot(*tex, false).slot->layermaskscale));
 
 void texalpha(float *front, float *back)
 {
@@ -2232,6 +2230,15 @@ void texcolor(float *r, float *g, float *b)
 	propagatevslot(s.variants, 1<<VSLOT_COLOR);
 }
 COMMAND(texcolor, "fff");
+
+void texsmooth(int *id, int *angle)
+{
+	if(slots.empty()) return;
+	Slot &s = *slots.last();
+	s.smooth = smoothangle(*id, *angle);
+}
+COMMAND(texsmooth, "ib");
+ICOMMAND(getvsmooth, "i", (int *tex), intret(lookupvslot(*tex, false).slot->smooth));
 
 static int findtextype(Slot &s, int type, int last = -1)
 {
@@ -2560,7 +2567,7 @@ VARFP(envmapsize, 4, 7, 10, setupmaterials());
 
 Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg, bool transient = false)
 {
-	cbstring tname;
+	old_string tname;
 	if(!name) copystring(tname, t->name);
 	else
 	{
@@ -2574,7 +2581,7 @@ Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg,
 	}
 	char *wildcard = strchr(tname, '*');
 	ImageData surface[6];
-	cbstring sname;
+	old_string sname;
 	if(!wildcard) copystring(sname, tname);
 	int tsize = 0, compress = 0;
 	loopi(6)
@@ -2671,7 +2678,7 @@ Texture *cubemaploadwildcard(Texture *t, const char *name, bool mipit, bool msg,
 
 Texture *cubemapload(const char *name, bool mipit, bool msg, bool transient)
 {
-	cbstring pname;
+	old_string pname;
 	copystring(pname, makerelpath("packages", name));
 	path(pname);
 	Texture *t = NULL;
@@ -3267,7 +3274,7 @@ void gendds(char *infile, char *outfile)
 
 	if(!outfile[0])
 	{
-		static cbstring buf;
+		static old_string buf;
 		copystring(buf, infile);
 		int len = strlen(buf);
 		if(len > 4 && buf[len-4]=='.') memcpy(&buf[len-4], ".dds", 4);
@@ -3340,7 +3347,7 @@ void writepngchunk(stream *f, const char *type, uchar *data = NULL, uint len = 0
 	f->putbig<uint>(crc);
 }
 
-VARP(compresspng, 0, 0, 9);
+VARP(compresspng, 0, 9, 9);
 
 void savepng(const char *filename, ImageData &image, bool flip)
 {
@@ -3452,7 +3459,7 @@ struct tgaheader
 	uchar  descbyte;
 };
 
-VARP(compresstga, 0, 0, 1);
+VARP(compresstga, 0, 1, 1);
 
 void savetga(const char *filename, ImageData &image, bool flip)
 {
@@ -3595,7 +3602,7 @@ SVARP(screenshotdir, "screenshots/");
 
 void screenshot(char *filename)
 {
-	static cbstring buf;
+	static old_string buf;
 	int format = -1, dirlen = 0;
 	copystring(buf, screenshotdir);
 	if(screenshotdir[0])
@@ -3612,7 +3619,7 @@ void screenshot(char *filename)
 	}
 	else
 	{
-		cbstring sstime;
+		old_string sstime;
 		time_t t = time(NULL);
 		size_t len = strftime(sstime, sizeof(sstime), "%Y-%m-%d_%H.%M.%S", localtime(&t));
 		sstime[min(len, sizeof(sstime)-1)] = '\0';
@@ -3643,7 +3650,7 @@ void screenshot(char *filename)
 	glReadPixels(0, 0, screenw, screenh, GL_RGB, GL_UNSIGNED_BYTE, image.data);
 	saveimage(path(buf), format, image, true);
 	#if STEAM
-	steam::addScreenshot(path(buf), screenw, screenh);
+		steam::addScreenshot(path(buf), screenw, screenh);
 	#endif
 }
 

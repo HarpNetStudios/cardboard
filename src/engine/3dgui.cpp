@@ -15,7 +15,7 @@ static float firstx, firsty;
 
 enum {FIELDCOMMIT, FIELDABORT, FIELDEDIT, FIELDSHOW, FIELDKEY};
 
-static int fieldmode = FIELDSHOW;
+static int fieldmode = FIELDSHOW; 
 static bool fieldsactive = false;
 
 static bool hascursor;
@@ -73,8 +73,8 @@ struct gui : g3d_gui
 		return oldval;
 	}
 
-	void autotab()
-	{
+	void autotab() 
+	{ 
 		if(tcurrent)
 		{
 			if(layoutpass && !tpos) tcurrent = NULL; //disable tabs because you didn't start with one
@@ -116,27 +116,27 @@ struct gui : g3d_gui
 	bool visible() { return (!tcurrent || tpos==*tcurrent) && !layoutpass; }
 
 	//tab is always at top of page
-	void tab(const char *rawName, int color)
+	void tab(const char *rawName, int color) 
 	{
 		if(curdepth != 0) return;
 		if(color) tcolor = color;
-		tpos++;
+		tpos++; 
 		if(!rawName) rawName = intstr(tpos);
 
 		const char* name = (rawName[0] == 't' && rawName[1] == ':') ? getTranslation((rawName + 2)) : rawName;
-		if(name == noTranslation)
+		if (name == noTranslation)
 		{
 			name = rawName;
 		}
-		
+
 		int w = max(text_width(name) - 2*INSERT, 0);
-		if(layoutpass)
-		{
-			ty = max(ty, ysize);
+		if(layoutpass) 
+		{  
+			ty = max(ty, ysize); 
 			ysize = 0;
 		}
-		else
-		{
+		else 
+		{	
 			cury = -ysize;
 			int h = FONTH-2*INSERT,
 				x1 = curx + tx,
@@ -144,13 +144,13 @@ struct gui : g3d_gui
 				y1 = cury - ((skiny[6]-skiny[1])-(skiny[3]-skiny[2]))*SKIN_SCALE-h,
 				y2 = cury;
 			bool hit = tcurrent && windowhit==this && hitx>=x1 && hity>=y1 && hitx<x2 && hity<y2;
-			if(hit && (!guiclicktab || mousebuttons&G3D_DOWN))
+			if(hit && (!guiclicktab || mousebuttons&G3D_DOWN)) 
 				*tcurrent = tpos; //roll-over to switch tab
-
+			
 			drawskin(x1-skinx[visible()?2:6]*SKIN_SCALE, y1-skiny[1]*SKIN_SCALE, w, h, visible()?10:19, 9, gui2d ? 1 : 2, light, alpha);
 			text_(name, x1 + (skinx[3]-skinx[2])*SKIN_SCALE - (w ? INSERT : INSERT/2), y1 + (skiny[2]-skiny[1])*SKIN_SCALE - INSERT, tcolor, visible());
 		}
-		tx += w + ((skinx[5]-skinx[4]) + (skinx[3]-skinx[2]))*SKIN_SCALE;
+		tx += w + ((skinx[5]-skinx[4]) + (skinx[3]-skinx[2]))*SKIN_SCALE; 
 	}
 
 	bool ishorizontal() const { return curdepth&1; }
@@ -195,7 +195,7 @@ struct gui : g3d_gui
 				ysize = l.h;
 			}
 		}
-		curdepth++;
+		curdepth++;	
 	}
 
 	void poplist()
@@ -221,7 +221,7 @@ struct gui : g3d_gui
 			{
 				list &s = lists[p.parent];
 				if(ishorizontal()) xsize = s.w; else ysize = s.h;
-			}
+			} 
 			layout(w, h);
 		}
 	}
@@ -238,8 +238,8 @@ struct gui : g3d_gui
 	//add space between list items
 	void space(float size) { layout(isvertical() ? 0 : int(size*FONTW), isvertical() ? int(size*FONTH) : 0); }
 
-	void spring(int weight)
-	{
+	void spring(int weight) 
+	{ 
 		if(curlist < 0) return;
 		list &l = lists[curlist];
 		if(layoutpass) { if(l.parent >= 0) l.springs += weight; return; }
@@ -290,10 +290,10 @@ struct gui : g3d_gui
 		}
 	}
 
-	bool mergehits(bool on)
-	{
+	bool mergehits(bool on) 
+	{ 
 		bool oldval = shouldmergehits;
-		shouldmergehits = on;
+		shouldmergehits = on; 
 		return oldval;
 	}
 
@@ -425,7 +425,7 @@ struct gui : g3d_gui
 		}
 		return layout(size+SHADOW, size+SHADOW);
 	}
-
+#ifndef NO_EDITOR
 	int prefabpreview(const char *prefab, const vec &color, float sizescale, const char *overlaid, bool throttle)
 	{
 		autotab();
@@ -471,6 +471,7 @@ struct gui : g3d_gui
 		}
 		return layout(size+SHADOW, size+SHADOW);
 	}
+#endif
  
 	void slider(int &val, int vmin, int vmax, int color, const char *label)
 	{
@@ -541,7 +542,7 @@ struct gui : g3d_gui
 				text_bounds(e->lines[0].text, temp, e->pixelheight, e->pixelwidth); //only single line editors can have variable height
 			}
 			else 
-				e->pixelheight = FONTH*max(height, 1);
+				e->pixelheight = FONTH*max(height, 1); 
 		}
 		int h = e->pixelheight;
 		int w = e->pixelwidth + FONTW;
@@ -627,14 +628,14 @@ struct gui : g3d_gui
 		xtraverts += gle::end();
 	}
 
-	void text_(const char *rawText, int x, int y, int color, bool shadow, bool force = false)
+	void text_(const char *rawText, int x, int y, int color, bool shadow, bool force = false) 
 	{
 		const char* text = (rawText[0] == 't' && rawText[1] == ':') ? getTranslation((rawText + 2)) : rawText;
-		if(text == noTranslation)
+		if (text == noTranslation)
 		{
 			text = rawText;
 		}
-		
+
 		if(shadow) draw_text(text, x+SHADOW, y+SHADOW, 0x00, 0x00, 0x00, -0xC0);
 		draw_text(text, x, y, color>>16, (color>>8)&0xFF, color&0xFF, force ? -0xFF : 0xFF);
 	}
@@ -815,7 +816,7 @@ struct gui : g3d_gui
 	int button_(const char *rawText, int color, const char *icon, bool clickable, bool center)
 	{
 		const char* text = (rawText[0] == 't' && rawText[1] == ':') ? getTranslation((rawText + 2)) : rawText;
-		if(text == noTranslation)
+		if (text == noTranslation)
 		{
 			text = rawText;
 		}
@@ -939,7 +940,7 @@ struct gui : g3d_gui
 	} 
 
 	vec origin, scale, *savedorigin;
-	float dist;
+	float dist, modscale;
 	g3d_callback *cb;
 	bool gui2d;
 
@@ -947,6 +948,17 @@ struct gui : g3d_gui
 	static bool passthrough;
 	static float alpha;
 	static vec light;
+	static ivec2 align;
+
+	void setalign(int x, int y)
+	{
+		align = ivec2(clamp(x, -1, 1), clamp(y, -1, 1));
+	}
+
+	void setscale(float k)
+	{
+		modscale = k > 0 ? k : 1.0f;
+	}
 
 	void adjustscale()
 	{
@@ -955,9 +967,12 @@ struct gui : g3d_gui
 		else h += (skiny[6]-skiny[3])*SKIN_SCALE;
 
 		float aspect = forceaspect ? 1.0f/forceaspect : float(screenh)/float(screenw), fit = 1.0f;
+		basescale *= modscale;
+		scale.mul(modscale);
 		if(w*aspect*basescale>1.0f) fit = 1.0f/(w*aspect*basescale);
 		if(h*basescale*fit>maxscale) fit *= maxscale/(h*basescale*fit);
-		origin = vec(0.5f-((w-xsize)/2 - (skinx[2]-skinx[1])*SKIN_SCALE)*aspect*scale.x*fit, 0.5f + (0.5f*h-(skiny[9]-skiny[7])*SKIN_SCALE)*scale.y*fit, 0);
+		origin = vec(0.5f*(align.x+1)-((w*(align.x+1)-xsize)/2 - (skinx[2]-skinx[1])*SKIN_SCALE)*aspect*scale.x*fit,
+					 0.5f*(align.y+1) + (0.5f*h*(2-(align.y+1)) - (align.y < 0 ? 0.5f : 1.0f)*(skiny[9]-skiny[7])*SKIN_SCALE)*scale.y*fit, 0);
 		scale = vec(aspect*scale.x*fit, scale.y*fit, 1);
 	}
 
@@ -970,6 +985,7 @@ struct gui : g3d_gui
 		}
 		basescale = initscale;
 		if(layoutpass) scale.x = scale.y = scale.z = guifadein ? basescale*min((totalmillis-starttime)/300.0f, 1.0f) : basescale;
+		else basescale *= modscale;
 		alpha = allowinput ? 0.80f : 0.60f;
 		passthrough = scale.x<basescale || !allowinput;
 		curdepth = -1;
@@ -984,6 +1000,8 @@ struct gui : g3d_gui
 		{
 			firstlist = nextlist = curlist;
 			memset(columns, 0, sizeof(columns));
+			align = ivec2(0, 0);
+			modscale = 1.0f;
 		}
 		else
 		{
@@ -1175,20 +1193,24 @@ vector<gui::list> gui::lists;
 float gui::basescale, gui::maxscale = 1, gui::hitx, gui::hity, gui::alpha;
 bool gui::passthrough, gui::shouldmergehits = false, gui::shouldautotab = true;
 vec gui::light;
+ivec2 gui::align(0, 0);
 int gui::curdepth, gui::curlist, gui::xsize, gui::ysize, gui::curx, gui::cury;
 int gui::ty, gui::tx, gui::tpos, *gui::tcurrent, gui::tcolor;
 static vector<gui> guis2d, guis3d;
 
 VARP(guipushdist, 1, 4, 64);
 
-void pastegui() // this code might cause a memory leak, idk -Y
+void pastegui()
 {
-	if(!SDL_HasClipboardText()) return;
+	if (!SDL_HasClipboardText()) return;
 	char* cb = SDL_GetClipboardText();
-	if(!cb) return;
-	size_t cblen = strlen(cb);
+	if (!cb) return;
+	old_string paste;
+	size_t decoded = decodeutf8((uchar*)paste, sizeof(paste) - 1, (const uchar*)cb, strlen(cb));
+	paste[decoded] = '\0';
 	editor* e = currentfocus();
-	e->input(cb, cblen);
+	e->input(cb, decoded);
+	SDL_free(cb);
 }
 
 bool g3d_input(const char *str, int len)
@@ -1285,11 +1307,9 @@ bool g3d_key(int code, bool isdown)
 		case SDLK_KP_ENTER:
 			if(isdown) fieldmode = FIELDCOMMIT; //signal field commit (handled when drawing field)
 			return true;
-		case SDLK_v:
-			if(isdown) if(SDL_GetModState() & MOD_KEYS) pastegui(); // paste into editable field -Y
-			return true;
 	}
 	if(isdown) e->key(code);
+
 	return true;
 }
 
@@ -1306,11 +1326,12 @@ void g3d_resetcursor()
 
 bool g3d_movecursor(int x, int y)
 {
-	if(!guis2d.length() || !hascursor) return false;
+	if (!guis2d.length() || !hascursor) return false;
 	SDL_SetWindowGrab(screen, SDL_FALSE);
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 	cursorx = max(0.0f, min(1.0f, x / (float)screenw));
 	cursory = max(0.0f, min(1.0f, y / (float)screenh));
+
 	return true;
 }
 
@@ -1347,6 +1368,7 @@ bool g3d_windowhit(bool on, bool act)
 			mousebuttons |= (actionon=on) ? G3D_DOWN : G3D_UP;
 		}
 	} else if(!on && windowhit) cleargui(1);
+
 	return (guis2d.length() && hascursor) || (windowhit && !windowhit->gui2d);
 }
 
@@ -1358,11 +1380,14 @@ void g3d_render()
 	gui::reset(); 
 	guis2d.shrink(0);
 	guis3d.shrink(0);
- 
+
+#ifndef NO_EDITOR
 	// call all places in the engine that may want to render a gui from here, they call g3d_addgui()
 	extern void g3d_texturemenu();
 	
 	if(!mainmenu) g3d_texturemenu();
+#endif
+
 	g3d_mainmenu();
 	if(!mainmenu) game::g3d_gamemenus();
 

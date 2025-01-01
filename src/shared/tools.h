@@ -37,6 +37,14 @@ typedef unsigned long long int ullong;
 void *operator new(size_t, bool);
 void *operator new[](size_t, bool);
 
+// TODO: this no longer works because of new C++ standards, not sure if it's needed at all?
+/*
+inline void *operator new(size_t, void *p) { return p; }
+inline void *operator new[](size_t, void *p) { return p; }
+inline void operator delete(void *, void *) {}
+inline void operator delete[](void *, void *) {}
+*/
+
 #ifdef swap
 #undef swap
 #endif
@@ -152,7 +160,7 @@ static inline int bitscan(uint mask)
 // easy safe strings
 
 #define MAXSTRLEN 260
-typedef char cbstring[MAXSTRLEN];
+typedef char old_string[MAXSTRLEN];
 
 inline void vformatstring(char *d, const char *fmt, va_list v, int len) { _vsnprintf(d, len, fmt, v); d[len-1] = 0; }
 template<size_t N> inline void vformatstring(char (&d)[N], const char *fmt, va_list v) { vformatstring(d, fmt, v, N); }
@@ -207,12 +215,19 @@ template<size_t N> inline void concformatstring(char (&d)[N], const char *fmt, .
 	va_end(v);
 }
 
-#define defformatstring(d,...) cbstring d; formatstring(d, __VA_ARGS__)
-#define defvformatstring(d,last,fmt) cbstring d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
+extern char *tempformatstring(const char *fmt, ...) PRINTFARGS(1, 2);
+
+#define defformatstring(d,...) old_string d; formatstring(d, __VA_ARGS__)
+#define defvformatstring(d,last,fmt) old_string d; { va_list ap; va_start(ap, last); vformatstring(d, fmt, ap); va_end(ap); }
 
 template<size_t N> inline bool matchstring(const char *s, size_t len, const char (&d)[N])
 {
 	return len == N-1 && !memcmp(s, d, N-1);
+}
+
+inline bool matchstring(const char *s, size_t len, const char *d, size_t len2)
+{
+	return len == len2 && !memcmp(s, d, len);
 }
 
 inline char *newstring(size_t l)                { return new char[l+1]; }
@@ -508,7 +523,8 @@ static inline bool htcmp(const char *x, const char *y)
 	return !strcmp(x, y);
 }
 
-static inline const char *getordinal(int num) {
+// TODO: this is kinda stupid, languages other than english do ordinals differently
+static inline const char* getordinal(int num) {
 	// this code has no reason to be this robust, but it is, because why not -Y
 	const char* ordinal;
 	if (num % 100 >= 11 && num % 100 <= 19) ordinal = "th";
@@ -656,7 +672,7 @@ template <class T> struct vector
 
 	int capacity() const { return alen; }
 	int length() const { return ulen; }
-	T &operator[](int i) { ASSERT(i>=0 && i<ulen); return buf[i]; }
+	T &operator[](int i) { ASSERT(i >= 0 && i<ulen); return buf[i]; }
 	const T &operator[](int i) const { ASSERT(i >= 0 && i<ulen); return buf[i]; }
 
 	void disown() { buf = NULL; alen = ulen = 0; }
@@ -771,26 +787,26 @@ template <class T> struct vector
 		if(find(o) < 0) add(o);
 	}
 
-	void removeobj(const T &o)
+	bool removeobj(const T &o)
 	{
 		loopi(ulen) if(buf[i] == o)
 		{
 			int dst = i;
 			for(int j = i+1; j < ulen; j++) if(!(buf[j] == o)) buf[dst++] = buf[j];
 			setsize(dst);
-			break;
+			return true;
 		}
+		return false;
 	}
 
-	void replacewithlast(const T &o)
+	bool replacewithlast(const T &o)
 	{
-		if(!ulen) return;
-		loopi(ulen-1) if(buf[i]==o)
+		loopi(ulen) if(buf[i]==o)
 		{
-			buf[i] = buf[ulen-1];
-			break;
+			buf[i] = buf[--ulen];
+			return true;
 		}
-		ulen--;
+		return false;
 	}
 
 	T &insert(int i, const T &e)
@@ -1369,7 +1385,7 @@ extern int cubecasecmp(const char *s1, const char *s2, int n = INT_MAX);
 static inline bool cubecaseequal(const char *s1, const char *s2, int n = INT_MAX) { return !cubecasecmp(s1, s2, n); }
 extern char *cubecasefind(const char *haystack, const char *needle);
 
-extern cbstring homedir;
+extern old_string homedir;
 
 extern char *makerelpath(const char *dir, const char *file, const char *prefix = NULL, const char *cmd = NULL);
 extern char *path(char *s);
@@ -1387,7 +1403,7 @@ extern stream *openzipfile(const char *filename, const char *mode);
 extern stream *openfile(const char *filename, const char *mode);
 extern stream *opentempfile(const char *filename, const char *mode);
 extern stream *opengzfile(const char *filename, const char *mode, stream *file = NULL, int level = Z_BEST_COMPRESSION);
-extern stream *opentargzfile(const char *filename, const char *tarfn, const char *mode, stream *file = NULL, int level = Z_BEST_COMPRESSION);
+extern stream* opentargzfile(const char* filename, const char* tarfn, const char* mode, stream* file = NULL, int level = Z_BEST_COMPRESSION);
 extern stream *openutf8file(const char *filename, const char *mode, stream *file = NULL);
 extern char *loadfile(const char *fn, size_t *size, bool utf8 = true);
 extern bool listdir(const char *dir, bool rel, const char *ext, vector<char *> &files);
@@ -1427,13 +1443,13 @@ struct ipmask
 
 extern char* pmodeltoname(int model);
 
-extern cbstring gametoken;
+extern old_string gametoken;
 
 // cURL stuff
 
-extern char* web_get(char* targetUrl, bool debug = false);
-extern char* web_post(char* targetUrl, char* postFields, bool debug = false);
-extern char* web_auth(char* targetUrl, cbstring gametoken, bool debug = false);
+extern const char* web_get(char* targetUrl, bool debug = false);
+extern const char* web_post(char* targetUrl, char* postFields, bool debug = false);
+extern const char* web_auth(char* targetUrl, old_string gametoken, bool debug = false);
 extern void  web_download(char* targetUrl, char* filename, bool debug = false);
 extern int offline;
 

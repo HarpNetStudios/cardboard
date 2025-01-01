@@ -268,7 +268,7 @@ struct serverinfo : pingattempts
 		MAXPINGS = 3
 	};
 
-	cbstring name, map, sdesc;
+	old_string name, map, sdesc;
 	int port, numplayers, resolved, ping, lastping, nextping;
 	int pings[MAXPINGS];
 	vector<int> attr;
@@ -599,9 +599,11 @@ const char *showservers(g3d_gui *cgui, uint *header, int pagemin, int pagemax)
 		if(header) execute(header);
 		int end = servers.length();
 		cgui->pushlist();
-		loopi(11)
+		loopi(10)
 		{
-			if(!serverlistshowhost && (i==7||i==8)) continue;
+			// filter out host information
+			if (!serverlistshowhost && (i == 6 || i == 7)) continue;
+
 			if(!game::serverinfostartcolumn(cgui, i)) break;
 			for(int j = start; j < end; j++)
 			{
@@ -624,8 +626,8 @@ const char *showservers(g3d_gui *cgui, uint *header, int pagemin, int pagemax)
 }
 
 void showserverpreview() {
-	if(!selectedserver) return;
-//	defformatstring(cmd)("requestall %s %d; serverpreview (getextservidx %s %d)", selectedserver->name, selectedserver->port, selectedserver->name, selectedserver->port);
+	if (!selectedserver) return;
+	//defformatstring(cmd)("requestall %s %d; serverpreview (getextservidx %s %d)", selectedserver->name, selectedserver->port, selectedserver->name, selectedserver->port);
 	defformatstring(cmd, "requestall %s %d; showservprev %s %d", selectedserver->name, selectedserver->port, selectedserver->name, selectedserver->port);
 	execute(cmd);
 	selectedserver = NULL;
@@ -727,7 +729,7 @@ void updatefrommaster()
 
 			if(matchstring(line, cmdlen, "addserver"))
 			{
-				cbstring ip;
+				old_string ip;
 				int port;
 				if(sscanf(args, "%100s %d", ip, &port) == 2) addserver(ip, port);
 			}

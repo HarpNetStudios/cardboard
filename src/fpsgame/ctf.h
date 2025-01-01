@@ -532,6 +532,8 @@ struct ctfclientmode : clientmode
 	void drawblip(fpsent *d, float x, float y, float s, int i, bool flagblip)
 	{
 		flag &f = flags[i];
+
+		// TODO: team rework
 		settexture(m_hold && (!flagblip || !f.owner || lastmillis%1000 < 500) ? (flagblip ? "packages/hud/blip_neutral_flag.png" : "packages/hud/blip_neutral.png") :
 					((m_hold ? ctfteamflag(f.owner->team) : f.team)==ctfteamflag("red") ?
 						(flagblip ? "packages/hud/blip_red_flag.png" : "packages/hud/blip_red.png") :
@@ -546,14 +548,15 @@ struct ctfclientmode : clientmode
 
 	void drawhud(fpsent *d, int w, int h)
 	{
+		// TODO: why is this here
 		gle::colorf(1, 1, 1);
 		if(d->state == CS_ALIVE)
 		{
 			loopv(flags) if(flags[i].owner == d)
 			{
 				flag &f = flags[i];
-				int x = HICON_X + 2*HICON_STEP;
-				drawicon(m_hold ? HICON_NEUTRAL_FLAG : (f.team==ctfteamflag("red") ? HICON_RED_FLAG : HICON_BLUE_FLAG), x, HICON_Y);
+				int x = HICON_X + 2 * HICON_STEP;
+				drawicon(m_hold ? HICON_NEUTRAL_FLAG : (f.team == ctfteamflag("red") ? HICON_RED_FLAG : HICON_BLUE_FLAG), x, HICON_Y);
 				if(m_hold)
 				{
 					pushhudmatrix();
@@ -665,7 +668,7 @@ struct ctfclientmode : clientmode
 			flag &f = flags[i];
 			if(!f.owner && f.droptime && f.droploc.x < 0) continue;
 			if(m_hold && f.spawnindex < 0) continue;
-			const char *flagname = m_hold && (!f.owner || lastmillis%1000 < 500) ? "flags/neutral" : (m_hold ? ctfteamflag(f.owner->team) : f.team)==ctfteamflag("red") ? "flags/red" : "flags/blue";
+			const char* flagname = m_hold && (!f.owner || lastmillis % 1000 < 500) ? "flags/neutral" : (m_hold ? ctfteamflag(f.owner->team) : f.team) == ctfteamflag("red") ? "flags/red" : "flags/blue";
 			float angle;
 			vec pos = interpflagpos(f, angle);
 			if(m_hold)
@@ -859,7 +862,7 @@ struct ctfclientmode : clientmode
 		int fcolor;
 		vec color;
 		if(!team) { fcolor = 0xFF8080; color = vec(1, 0.75f, 0.5f); }
-		else if(team==ctfteamflag("red")) { fcolor = 0x802020; color = vec(1, 0.25f, 0.25f); }
+		else if (team == ctfteamflag("red")) { fcolor = 0x802020; color = vec(1, 0.25f, 0.25f); }
 		else { fcolor = 0x2020FF; color = vec(0.25f, 0.25f, 1); }
 		particle_fireball(loc, 30, PART_EXPLOSION, -1, fcolor, 4.8f);
 		adddynlight(loc, 35, color, 900, 100);
@@ -881,7 +884,7 @@ struct ctfclientmode : clientmode
 			flagexplosion(i, team, toexp);
 		}
 		if(from.x >= 0 && to.x >= 0)
-			particle_flare(fromexp, toexp, 600, PART_LIGHTNING, !team ? 0xFFC0A0 : (team==ctfteamflag("red") ? 0xFF2222 : 0x2222FF), 1.0f);
+			particle_flare(fromexp, toexp, 600, PART_LIGHTNING, !team ? 0xFFC0A0 : (team == ctfteamflag("red") ? 0xFF2222 : 0x2222FF), 1.0f);
 	}
 
 	void returnflag(fpsent *d, int i, int version)
@@ -965,7 +968,7 @@ struct ctfclientmode : clientmode
 		conoutf(CON_GAMEINFO, "%s scored for %s", teamcolorname(d), teamcolor(scoredteam, ctfflagteam(team)));
 		playsound(team==ctfteamflag(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
 
-		if(score >= FLAGLIMIT) conoutf(CON_GAMEINFO, "%s captured %d flags", teamcolor(scoredteam, ctfflagteam(team)), score);
+		if (score >= FLAGLIMIT) conoutf(CON_GAMEINFO, "%s captured %d flags", teamcolor(scoredteam, ctfflagteam(team)), score);
 	}
 
 	void takeflag(fpsent *d, int i, int version)
@@ -976,8 +979,8 @@ struct ctfclientmode : clientmode
 		f.interploc = interpflagpos(f, f.interpangle);
 		f.interptime = lastmillis;
 		defformatstring(scoredteam, "the %s team", ctfflagteam(f.team));
-		if(m_hold) conoutf(CON_GAMEINFO, "%s picked up the flag for %s", teamcolorname(d), teamcolor(scoredteam, ctfflagteam(f.team)));
-		else if(m_protect || f.droptime) conoutf(CON_GAMEINFO, "%s picked up %s", teamcolorname(d), teamcolorflag(f));
+		if (m_hold) conoutf(CON_GAMEINFO, "%s picked up the flag for %s", teamcolorname(d), teamcolor(scoredteam, ctfflagteam(f.team)));
+		else if (m_protect || f.droptime) conoutf(CON_GAMEINFO, "%s picked up %s", teamcolorname(d), teamcolorflag(f));
 		else conoutf(CON_GAMEINFO, "%s stole %s", teamcolorname(d), teamcolorflag(f));
 		ownflag(i, d, lastmillis, m_hold ? ctfteamflag(d->team) : -1);
 		playsound(S_FLAGPICKUP);
@@ -1160,7 +1163,7 @@ struct ctfclientmode : clientmode
 						fpsent *t;
 						loopvk(targets) if((t = getclient(targets[k])))
 						{
-							if((t->ai && !t->hasammo(t->ai->weappref)) || (!t->ai && (t->gunselect == GUN_FIST || t->gunselect == GUN_SMG)))
+							if ((t->ai && !t->hasammo(t->ai->weappref)) || (!t->ai && (t->gunselect == GUN_FIST || t->gunselect == GUN_ARIFLE)))
 							{
 								guard = true;
 								break;

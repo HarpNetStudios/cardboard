@@ -3,13 +3,13 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="cardboard" />
-		<Option default_target="client64" />
+		<Option default_target="client" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="client64">
-				<Option output="../../bin64/cardboard_mingw.exe" prefix_auto="0" extension_auto="0" />
+			<Target title="client">
+				<Option output="../../bin/cardboard_mingw.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="../../" />
-				<Option object_output="../../.trash/.objs/client64" />
+				<Option object_output="../../.trash/.objs/client" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option parameters="-t0 -w640 -h480 -qhome -caaa" />
@@ -54,7 +54,7 @@
 				</Environment>
 			</Target>
 			<Target title="client32">
-				<Option output="../../bin/cardboard_mingw.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="../../bin32/cardboard_mingw.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="../../" />
 				<Option object_output="../../.trash/.objs/client32" />
 				<Option type="0" />
@@ -93,8 +93,8 @@
 					<Add library="winmm" />
 					<Add library="discord_game_sdk" />
 					<Add library="libcurl" />
-					<Add directory="../../bin" />
-					<Add directory="../lib" />
+					<Add directory="../../bin32" />
+					<Add directory="../lib32" />
 				</Linker>
 				<Environment>
 					<Variable name="WINDRES_TARGET" value="pe-i386" />
@@ -102,7 +102,7 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="client32;client64;" />
+			<Add alias="All" targets="client;client32;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-std=c++14" />

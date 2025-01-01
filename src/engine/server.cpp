@@ -52,16 +52,16 @@ static void writelog(FILE *file, const char *buf)
 {
 	static uchar ubuf[512];
 	size_t len = strlen(buf), carry = 0;
-	if(isdedicatedserver() && logtime)
+	if (isdedicatedserver() && logtime)
 	{
-		if(!walltime) { walltime = time(NULL); walltime -= totalmillis/1000; if(!walltime) walltime++; }
-		time_t walloffset = walltime + totalmillis/1000;
-		struct tm *localvals = localtime(&walloffset);
-		static cbstring ts;
-		if(localvals)
+		if (!walltime) { walltime = time(NULL); walltime -= totalmillis / 1000; if (!walltime) walltime++; }
+		time_t walloffset = walltime + totalmillis / 1000;
+		struct tm* localvals = localtime(&walloffset);
+		static old_string ts;
+		if (localvals)
 		{
 			int tslen = strftime(ts, sizeof(ts), "[%Y-%m-%d %H:%M:%S] ", localvals);
-			if(tslen) fwrite(ts, 1, tslen, file);
+			if (tslen) fwrite(ts, 1, tslen, file);
 		}
 	}
 	while(carry < len)
@@ -110,7 +110,7 @@ struct client                   // server side version of "dynent" type
 	int type;
 	int num;
 	ENetPeer *peer;
-	cbstring hostname;
+	old_string hostname;
 	void *info;
 };
 
@@ -327,7 +327,7 @@ void disconnect_client(int n, int reason)
 	server::clientdisconnect(n);
 	delclient(clients[n]);
 	const char *msg = disconnectreason(reason);
-	cbstring s;
+	old_string s;
 	if(msg) formatstring(s, "client (%s) disconnected because: %s", clients[n]->hostname, msg);
 	else formatstring(s, "client (%s) disconnected", clients[n]->hostname);
 	logoutf("%s", s);
@@ -673,7 +673,7 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
 				client &c = addclient(ST_TCPIP);
 				c.peer = event.peer;
 				c.peer->data = &c;
-				cbstring hn;
+				old_string hn;
 				copystring(c.hostname, (enet_address_get_host_ip(&c.peer->address, hn, sizeof(hn))==0) ? hn : "unknown");
 				logoutf("connected: %s (cn %d)", c.hostname, c.num);
 				int reason = server::clientconnect(c.num, c.peer->address.host);
@@ -737,274 +737,276 @@ void localconnect()
 #endif
 
 #ifdef WIN32
-#include "shellapi.h"
 
-#define IDI_ICON1 1
+	#include "shellapi.h"
 
-static cbstring apptip = "";
-static HINSTANCE appinstance = NULL;
-static ATOM wndclass = 0;
-static HWND appwindow = NULL, conwindow = NULL;
-static HICON appicon = NULL;
-static HMENU appmenu = NULL;
-static HANDLE outhandle = NULL;
-static const int MAXLOGLINES = 200;
-struct logline { int len; char buf[LOGSTRLEN]; };
-static queue<logline, MAXLOGLINES> loglines;
+	#define IDI_ICON1 1
 
-static void cleanupsystemtray()
-{
-	NOTIFYICONDATA nid;
-	memset(&nid, 0, sizeof(nid));
-	nid.cbSize = sizeof(nid);
-	nid.hWnd = appwindow;
-	nid.uID = IDI_ICON1;
-	Shell_NotifyIcon(NIM_DELETE, &nid);
-}
+	static old_string apptip = "";
+	static HINSTANCE appinstance = NULL;
+	static ATOM wndclass = 0;
+	static HWND appwindow = NULL, conwindow = NULL;
+	static HICON appicon = NULL;
+	static HMENU appmenu = NULL;
+	static HANDLE outhandle = NULL;
+	static const int MAXLOGLINES = 200;
+	struct logline { int len; char buf[LOGSTRLEN]; };
+	static queue<logline, MAXLOGLINES> loglines;
 
-static bool setupsystemtray(UINT uCallbackMessage)
-{
-	NOTIFYICONDATA nid;
-	memset(&nid, 0, sizeof(nid));
-	nid.cbSize = sizeof(nid);
-	nid.hWnd = appwindow;
-	nid.uID = IDI_ICON1;
-	nid.uCallbackMessage = uCallbackMessage;
-	nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
-	nid.hIcon = appicon;
-	strcpy(nid.szTip, apptip);
-	if(Shell_NotifyIcon(NIM_ADD, &nid) != TRUE)
-		return false;
-	atexit(cleanupsystemtray);
-	return true;
-}
-
-#if 0
-static bool modifysystemtray()
-{
-	NOTIFYICONDATA nid;
-	memset(&nid, 0, sizeof(nid));
-	nid.cbSize = sizeof(nid);
-	nid.hWnd = appwindow;
-	nid.uID = IDI_ICON1;
-	nid.uFlags = NIF_TIP;
-	strcpy(nid.szTip, apptip);
-	return Shell_NotifyIcon(NIM_MODIFY, &nid) == TRUE;
-}
-#endif
-
-static void cleanupwindow()
-{
-	if(!appinstance) return;
-	if(appmenu)
+	static void cleanupsystemtray()
 	{
-		DestroyMenu(appmenu);
-		appmenu = NULL;
+		NOTIFYICONDATA nid;
+		memset(&nid, 0, sizeof(nid));
+		nid.cbSize = sizeof(nid);
+		nid.hWnd = appwindow;
+		nid.uID = IDI_ICON1;
+		Shell_NotifyIcon(NIM_DELETE, &nid);
 	}
-	if(wndclass)
+
+	static bool setupsystemtray(UINT uCallbackMessage)
 	{
-		UnregisterClass(MAKEINTATOM(wndclass), appinstance);
-		wndclass = 0;
+		NOTIFYICONDATA nid;
+		memset(&nid, 0, sizeof(nid));
+		nid.cbSize = sizeof(nid);
+		nid.hWnd = appwindow;
+		nid.uID = IDI_ICON1;
+		nid.uCallbackMessage = uCallbackMessage;
+		nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
+		nid.hIcon = appicon;
+		strcpy(nid.szTip, apptip);
+		if(Shell_NotifyIcon(NIM_ADD, &nid) != TRUE)
+			return false;
+		atexit(cleanupsystemtray);
+		return true;
 	}
-}
 
-static BOOL WINAPI consolehandler(DWORD dwCtrlType)
-{
-	switch(dwCtrlType)
+	#if 0
+	static bool modifysystemtray()
 	{
-		case CTRL_C_EVENT:
-		case CTRL_BREAK_EVENT:
-		case CTRL_CLOSE_EVENT:
-			exit(EXIT_SUCCESS);
-			return TRUE;
+		NOTIFYICONDATA nid;
+		memset(&nid, 0, sizeof(nid));
+		nid.cbSize = sizeof(nid);
+		nid.hWnd = appwindow;
+		nid.uID = IDI_ICON1;
+		nid.uFlags = NIF_TIP;
+		strcpy(nid.szTip, apptip);
+		return Shell_NotifyIcon(NIM_MODIFY, &nid) == TRUE;
 	}
-	return FALSE;
-}
+	#endif
 
-static void writeline(logline &line)
-{
-	static uchar ubuf[512];
-	size_t len = strlen(line.buf), carry = 0;
-	while(carry < len)
+	static void cleanupwindow()
 	{
-		size_t numu = encodeutf8(ubuf, sizeof(ubuf), &((uchar *)line.buf)[carry], len - carry, &carry);
-		DWORD written = 0;
-		WriteConsole(outhandle, ubuf, numu, &written, NULL);
-	}     
-}
-
-static void setupconsole()
-{
-	if(conwindow) return;
-	if(!AllocConsole()) return;
-	SetConsoleCtrlHandler(consolehandler, TRUE);
-	conwindow = GetConsoleWindow();
-	SetConsoleTitle(apptip);
-	//SendMessage(conwindow, WM_SETICON, ICON_SMALL, (LPARAM)appicon);
-	SendMessage(conwindow, WM_SETICON, ICON_BIG, (LPARAM)appicon);
-	outhandle = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_SCREEN_BUFFER_INFO coninfo;
-	GetConsoleScreenBufferInfo(outhandle, &coninfo);
-	coninfo.dwSize.Y = MAXLOGLINES;
-	SetConsoleScreenBufferSize(outhandle, coninfo.dwSize);
-	SetConsoleCP(CP_UTF8);
-	SetConsoleOutputCP(CP_UTF8);
-	loopv(loglines) writeline(loglines[i]);
-}
-
-enum
-{
-	MENU_OPENCONSOLE = 0,
-	MENU_SHOWCONSOLE,
-	MENU_HIDECONSOLE,
-	MENU_EXIT
-};
-
-static LRESULT CALLBACK handlemessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	switch(uMsg)
-	{
-		case WM_APP:
-			SetForegroundWindow(hWnd);
-			switch(lParam)
-			{
-				//case WM_MOUSEMOVE: break;
-				case WM_LBUTTONUP:
-				case WM_RBUTTONUP:
-				{
-					POINT pos;
-					GetCursorPos(&pos);
-					TrackPopupMenu(appmenu, TPM_CENTERALIGN|TPM_BOTTOMALIGN|TPM_RIGHTBUTTON, pos.x, pos.y, 0, hWnd, NULL);
-					PostMessage(hWnd, WM_NULL, 0, 0);
-					break;
-				}
-			}
-			return 0;
-		case WM_COMMAND:
-			switch(LOWORD(wParam))
-			{
-				case MENU_OPENCONSOLE:
-					setupconsole();
-					if(conwindow) ModifyMenu(appmenu, 0, MF_BYPOSITION|MF_STRING, MENU_HIDECONSOLE, "Hide Console");
-					break;
-				case MENU_SHOWCONSOLE:
-					ShowWindow(conwindow, SW_SHOWNORMAL);
-					ModifyMenu(appmenu, 0, MF_BYPOSITION|MF_STRING, MENU_HIDECONSOLE, "Hide Console"); 
-					break;
-				case MENU_HIDECONSOLE:
-					ShowWindow(conwindow, SW_HIDE);
-					ModifyMenu(appmenu, 0, MF_BYPOSITION|MF_STRING, MENU_SHOWCONSOLE, "Show Console");
-					break;
-				case MENU_EXIT:
-					PostMessage(hWnd, WM_CLOSE, 0, 0);
-					break;
-			}
-			return 0;
-		case WM_CLOSE:
-			PostQuitMessage(0);
-			return 0;
-	}
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
-static void setupwindow(const char *title)
-{
-	copystring(apptip, title);
-	//appinstance = GetModuleHandle(NULL);
-	if(!appinstance) fatal("failed getting application instance");
-	appicon = LoadIcon(appinstance, MAKEINTRESOURCE(IDI_ICON1));//(HICON)LoadImage(appinstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
-	if(!appicon) fatal("failed loading icon");
-
-	appmenu = CreatePopupMenu();
-	if(!appmenu) fatal("failed creating popup menu");
-	AppendMenu(appmenu, MF_STRING, MENU_OPENCONSOLE, "Open Console");
-	AppendMenu(appmenu, MF_SEPARATOR, 0, NULL);
-	AppendMenu(appmenu, MF_STRING, MENU_EXIT, "Exit");
-	//SetMenuDefaultItem(appmenu, 0, FALSE);
-
-	WNDCLASS wc;
-	memset(&wc, 0, sizeof(wc));
-	wc.hCursor = NULL; //LoadCursor(NULL, IDC_ARROW);
-	wc.hIcon = appicon;
-	wc.lpszMenuName = NULL;
-	wc.lpszClassName = title;
-	wc.style = 0;
-	wc.hInstance = appinstance;
-	wc.lpfnWndProc = handlemessages;
-	wc.cbWndExtra = 0;
-	wc.cbClsExtra = 0;
-	wndclass = RegisterClass(&wc);
-	if(!wndclass) fatal("failed registering window class");
-	
-	appwindow = CreateWindow(MAKEINTATOM(wndclass), title, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, HWND_MESSAGE, NULL, appinstance, NULL);
-	if(!appwindow) fatal("failed creating window");
-
-	atexit(cleanupwindow);
-
-	if(!setupsystemtray(WM_APP)) fatal("failed adding to system tray");
-}
-
-static char *parsecommandline(const char *src, vector<char *> &args)
-{
-	char *buf = new char[strlen(src) + 1], *dst = buf;
-	for(;;)
-	{
-		while(isspace(*src)) src++;
-		if(!*src) break;
-		args.add(dst);
-		for(bool quoted = false; *src && (quoted || !isspace(*src)); src++)
+		if(!appinstance) return;
+		if(appmenu)
 		{
-			if(*src != '"') *dst++ = *src;
-			else if(dst > buf && src[-1] == '\\') dst[-1] = '"';
-			else quoted = !quoted;
+			DestroyMenu(appmenu);
+			appmenu = NULL;
 		}
-		*dst++ = '\0';
+		if(wndclass)
+		{
+			UnregisterClass(MAKEINTATOM(wndclass), appinstance);
+			wndclass = 0;
+		}
 	}
-	args.add(NULL);
-	return buf;
-}
+
+	static BOOL WINAPI consolehandler(DWORD dwCtrlType)
+	{
+		switch(dwCtrlType)
+		{
+			case CTRL_C_EVENT:
+			case CTRL_BREAK_EVENT:
+			case CTRL_CLOSE_EVENT:
+				exit(EXIT_SUCCESS);
+				return TRUE;
+		}
+		return FALSE;
+	}
+
+	static void writeline(logline &line)
+	{
+		static uchar ubuf[512];
+		size_t len = strlen(line.buf), carry = 0;
+		while(carry < len)
+		{
+			size_t numu = encodeutf8(ubuf, sizeof(ubuf), &((uchar *)line.buf)[carry], len - carry, &carry);
+			DWORD written = 0;
+			WriteConsole(outhandle, ubuf, numu, &written, NULL);
+		}     
+	}
+
+	static void setupconsole()
+	{
+		if(conwindow) return;
+		if(!AllocConsole()) return;
+		SetConsoleCtrlHandler(consolehandler, TRUE);
+		conwindow = GetConsoleWindow();
+		SetConsoleTitle(apptip);
+		//SendMessage(conwindow, WM_SETICON, ICON_SMALL, (LPARAM)appicon);
+		SendMessage(conwindow, WM_SETICON, ICON_BIG, (LPARAM)appicon);
+		outhandle = GetStdHandle(STD_OUTPUT_HANDLE);
+		CONSOLE_SCREEN_BUFFER_INFO coninfo;
+		GetConsoleScreenBufferInfo(outhandle, &coninfo);
+		coninfo.dwSize.Y = MAXLOGLINES;
+		SetConsoleScreenBufferSize(outhandle, coninfo.dwSize);
+		SetConsoleCP(CP_UTF8);
+		SetConsoleOutputCP(CP_UTF8);
+		loopv(loglines) writeline(loglines[i]);
+	}
+
+	enum
+	{
+		MENU_OPENCONSOLE = 0,
+		MENU_SHOWCONSOLE,
+		MENU_HIDECONSOLE,
+		MENU_EXIT
+	};
+
+	static LRESULT CALLBACK handlemessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	{
+		switch(uMsg)
+		{
+			case WM_APP:
+				SetForegroundWindow(hWnd);
+				switch(lParam)
+				{
+					//case WM_MOUSEMOVE:
+					//	break;
+					case WM_LBUTTONUP:
+					case WM_RBUTTONUP:
+					{
+						POINT pos;
+						GetCursorPos(&pos);
+						TrackPopupMenu(appmenu, TPM_CENTERALIGN|TPM_BOTTOMALIGN|TPM_RIGHTBUTTON, pos.x, pos.y, 0, hWnd, NULL);
+						PostMessage(hWnd, WM_NULL, 0, 0);
+						break;
+					}
+				}
+				return 0;
+			case WM_COMMAND:
+				switch(LOWORD(wParam))
+				{
+					case MENU_OPENCONSOLE:
+						setupconsole();
+						if(conwindow) ModifyMenu(appmenu, 0, MF_BYPOSITION|MF_STRING, MENU_HIDECONSOLE, "Hide Console");
+						break;
+					case MENU_SHOWCONSOLE:
+						ShowWindow(conwindow, SW_SHOWNORMAL);
+						ModifyMenu(appmenu, 0, MF_BYPOSITION|MF_STRING, MENU_HIDECONSOLE, "Hide Console"); 
+						break;
+					case MENU_HIDECONSOLE:
+						ShowWindow(conwindow, SW_HIDE);
+						ModifyMenu(appmenu, 0, MF_BYPOSITION|MF_STRING, MENU_SHOWCONSOLE, "Show Console");
+						break;
+					case MENU_EXIT:
+						PostMessage(hWnd, WM_CLOSE, 0, 0);
+						break;
+				}
+				return 0;
+			case WM_CLOSE:
+				PostQuitMessage(0);
+				return 0;
+		}
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	}
+
+	static void setupwindow(const char *title)
+	{
+		copystring(apptip, title);
+		//appinstance = GetModuleHandle(NULL);
+		if(!appinstance) fatal("failed getting application instance");
+		appicon = LoadIcon(appinstance, MAKEINTRESOURCE(IDI_ICON1));//(HICON)LoadImage(appinstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
+		if(!appicon) fatal("failed loading icon");
+
+		appmenu = CreatePopupMenu();
+		if(!appmenu) fatal("failed creating popup menu");
+		AppendMenu(appmenu, MF_STRING, MENU_OPENCONSOLE, "Open Console");
+		AppendMenu(appmenu, MF_SEPARATOR, 0, NULL);
+		AppendMenu(appmenu, MF_STRING, MENU_EXIT, "Exit");
+		//SetMenuDefaultItem(appmenu, 0, FALSE);
+
+		WNDCLASS wc;
+		memset(&wc, 0, sizeof(wc));
+		wc.hCursor = NULL; //LoadCursor(NULL, IDC_ARROW);
+		wc.hIcon = appicon;
+		wc.lpszMenuName = NULL;
+		wc.lpszClassName = title;
+		wc.style = 0;
+		wc.hInstance = appinstance;
+		wc.lpfnWndProc = handlemessages;
+		wc.cbWndExtra = 0;
+		wc.cbClsExtra = 0;
+		wndclass = RegisterClass(&wc);
+		if(!wndclass) fatal("failed registering window class");
+	
+		appwindow = CreateWindow(MAKEINTATOM(wndclass), title, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, HWND_MESSAGE, NULL, appinstance, NULL);
+		if(!appwindow) fatal("failed creating window");
+
+		atexit(cleanupwindow);
+
+		if(!setupsystemtray(WM_APP)) fatal("failed adding to system tray");
+	}
+
+	static char *parsecommandline(const char *src, vector<char *> &args)
+	{
+		char *buf = new char[strlen(src) + 1], *dst = buf;
+		for(;;)
+		{
+			while(isspace(*src)) src++;
+			if(!*src) break;
+			args.add(dst);
+			for(bool quoted = false; *src && (quoted || !isspace(*src)); src++)
+			{
+				if(*src != '"') *dst++ = *src;
+				else if(dst > buf && src[-1] == '\\') dst[-1] = '"';
+				else quoted = !quoted;
+			}
+			*dst++ = '\0';
+		}
+		args.add(NULL);
+		return buf;
+	}
 				
 
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
-{
-	vector<char *> args;
-	char *buf = parsecommandline(GetCommandLine(), args);
-	appinstance = hInst;
-#ifdef STANDALONE
-	int standalonemain(int argc, char **argv);
-	int status = standalonemain(args.length()-1, args.getbuf());
-	#define main standalonemain
-#else
-	SDL_SetMainReady();
-	int status = SDL_main(args.length()-1, args.getbuf());
-#endif
-	delete[] buf;
-	exit(status);
-	return 0;
-}
-
-void logoutfv(const char *fmt, va_list args)
-{
-	if(appwindow)
+	int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
 	{
-		logline &line = loglines.add();
-		vformatstring(line.buf, fmt, args, sizeof(line.buf));
-		if(logfile) writelog(logfile, line.buf);
-		line.len = min(strlen(line.buf), sizeof(line.buf)-2);
-		line.buf[line.len++] = '\n';
-		line.buf[line.len] = '\0';
-		if(outhandle) writeline(line);
+		vector<char *> args;
+		char *buf = parsecommandline(GetCommandLine(), args);
+		appinstance = hInst;
+	#ifdef STANDALONE
+		int standalonemain(int argc, char **argv);
+		int status = standalonemain(args.length()-1, args.getbuf());
+		#define main standalonemain
+	#else
+		SDL_SetMainReady();
+		int status = SDL_main(args.length()-1, args.getbuf());
+	#endif
+		delete[] buf;
+		exit(status);
+		return 0;
 	}
-	else if(logfile) writelogv(logfile, fmt, args);
-}
+
+	void logoutfv(const char *fmt, va_list args)
+	{
+		if(appwindow)
+		{
+			logline &line = loglines.add();
+			vformatstring(line.buf, fmt, args, sizeof(line.buf));
+			if(logfile) writelog(logfile, line.buf);
+			line.len = min(strlen(line.buf), sizeof(line.buf)-2);
+			line.buf[line.len++] = '\n';
+			line.buf[line.len] = '\0';
+			if(outhandle) writeline(line);
+		}
+		else if(logfile) writelogv(logfile, fmt, args);
+	}
 
 #else
 
-void logoutfv(const char *fmt, va_list args)
-{
-	FILE *f = getlogfile();
-	if(f) writelogv(f, fmt, args);
-}
+	void logoutfv(const char *fmt, va_list args)
+	{
+		FILE *f = getlogfile();
+		if(f) writelogv(f, fmt, args);
+	}
 
 #endif
 
@@ -1148,7 +1150,7 @@ bool serveroption(char *opt)
 		case 'q': logoutf("Using home directory: %s", opt); sethomedir(opt+2); return true;
 		case 'k': logoutf("Adding package directory: %s", opt); addpackagedir(opt+2); return true;
 		case 'g': logoutf("Setting log file: %s", opt); setlogfile(opt+2); return true;
-		case 'O': setvar("offline", atoi(opt+2)); return true;
+		case 'O': setvar("offline", atoi(opt + 2)); return true; // TODO: make this do something useful
 #endif
 		default: return false;
 	}

@@ -18,8 +18,9 @@
       
         <link rel="next" href="editing.html">
       
+      
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
@@ -27,14 +28,19 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.6f8fc17f.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ecc896b0.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
       
       
 
+
     
+    
+      
+        <script src="https://unpkg.com/iframe-worker/shim"></script>
+      
     
     
       
@@ -48,7 +54,7 @@
     
       <link rel="stylesheet" href="css/extra.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -65,7 +71,6 @@
     
     <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
   
-    
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -95,7 +100,8 @@
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -118,8 +124,10 @@
     
     
     
+    
       <label class="md-header__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
@@ -127,19 +135,22 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </nav>
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -156,7 +167,7 @@
         <a href="https://github.com/HarpNetStudios/cardboard" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -186,6 +197,7 @@
                     
 
 
+
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="index.html" title="Carmine Impact Docs" class="md-nav__button md-logo" aria-label="Carmine Impact Docs" data-md-component="logo">
@@ -200,7 +212,7 @@
       <a href="https://github.com/HarpNetStudios/cardboard" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -212,14 +224,19 @@
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="index.html" class="md-nav__link">
-        Home
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
       </a>
     </li>
   
@@ -227,56 +244,73 @@
     
       
       
-      
-
   
   
     
   
   
+  
+    
+    
     
       
+        
+        
+      
+    
     
     <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
-      
-      
-      
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
-          Info
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
-        <label class="md-nav__title" for="__nav_2">
-          <span class="md-nav__icon md-icon"></span>
-          Info
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
           
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Info
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Info
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="game.html" class="md-nav__link">
-        Command Reference
+        
+  
+  <span class="md-ellipsis">
+    Command Reference
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
   
   
     
+  
   
   
     <li class="md-nav__item md-nav__item--active">
@@ -286,12 +320,24 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Configuration
+          
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="config.html" class="md-nav__link md-nav__link--active">
-        Configuration
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
       </a>
       
         
@@ -309,21 +355,27 @@
       
         <li class="md-nav__item">
   <a href="#before-you-start" class="md-nav__link">
-    Before You Start
+    <span class="md-ellipsis">
+      Before You Start
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#running-carmine" class="md-nav__link">
-    Running Carmine
+    <span class="md-ellipsis">
+      Running Carmine
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#command-line-options" class="md-nav__link">
-    Command Line Options
+    <span class="md-ellipsis">
+      Command Line Options
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Command Line Options">
@@ -331,147 +383,189 @@
         
           <li class="md-nav__item">
   <a href="#-d" class="md-nav__link">
-    -d
+    <span class="md-ellipsis">
+      -d
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-dn" class="md-nav__link">
-    -dN
+    <span class="md-ellipsis">
+      -dN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-wn" class="md-nav__link">
-    -wN
+    <span class="md-ellipsis">
+      -wN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-hn" class="md-nav__link">
-    -hN
+    <span class="md-ellipsis">
+      -hN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-zn" class="md-nav__link">
-    -zN
+    <span class="md-ellipsis">
+      -zN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-an" class="md-nav__link">
-    -aN
+    <span class="md-ellipsis">
+      -aN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-t" class="md-nav__link">
-    -t
+    <span class="md-ellipsis">
+      -t
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-qs" class="md-nav__link">
-    -qS
+    <span class="md-ellipsis">
+      -qS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-ks" class="md-nav__link">
-    -kS
+    <span class="md-ellipsis">
+      -kS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-gs" class="md-nav__link">
-    -gS
+    <span class="md-ellipsis">
+      -gS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-ls" class="md-nav__link">
-    -lS
+    <span class="md-ellipsis">
+      -lS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-xs" class="md-nav__link">
-    -xS
+    <span class="md-ellipsis">
+      -xS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-un" class="md-nav__link">
-    -uN
+    <span class="md-ellipsis">
+      -uN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-nn" class="md-nav__link">
-    -nN
+    <span class="md-ellipsis">
+      -nN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-cn" class="md-nav__link">
-    -cN
+    <span class="md-ellipsis">
+      -cN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-is" class="md-nav__link">
-    -iS
+    <span class="md-ellipsis">
+      -iS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-jn" class="md-nav__link">
-    -jN
+    <span class="md-ellipsis">
+      -jN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-ms" class="md-nav__link">
-    -mS
+    <span class="md-ellipsis">
+      -mS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-ps" class="md-nav__link">
-    -pS
+    <span class="md-ellipsis">
+      -pS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-ys" class="md-nav__link">
-    -yS
+    <span class="md-ellipsis">
+      -yS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-on" class="md-nav__link">
-    -oN
+    <span class="md-ellipsis">
+      -oN
+    </span>
   </a>
   
 </li>
@@ -483,7 +577,9 @@
       
         <li class="md-nav__item">
   <a href="#console-commands" class="md-nav__link">
-    Console Commands
+    <span class="md-ellipsis">
+      Console Commands
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Console Commands">
@@ -491,483 +587,621 @@
         
           <li class="md-nav__item">
   <a href="#bind" class="md-nav__link">
-    bind K A
+    <span class="md-ellipsis">
+      bind K A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editbind" class="md-nav__link">
-    editbind K A
+    <span class="md-ellipsis">
+      editbind K A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#alias" class="md-nav__link">
-    alias N A
+    <span class="md-ellipsis">
+      alias N A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#push" class="md-nav__link">
-    push N A B
+    <span class="md-ellipsis">
+      push N A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#local" class="md-nav__link">
-    local N1 [N2...]
+    <span class="md-ellipsis">
+      local N1 [N2...]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quit" class="md-nav__link">
-    quit
+    <span class="md-ellipsis">
+      quit
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#forward" class="md-nav__link">
-    forward
+    <span class="md-ellipsis">
+      forward
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#backward" class="md-nav__link">
-    backward
+    <span class="md-ellipsis">
+      backward
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#left" class="md-nav__link">
-    left
+    <span class="md-ellipsis">
+      left
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#right" class="md-nav__link">
-    right
+    <span class="md-ellipsis">
+      right
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#attack" class="md-nav__link">
-    attack
+    <span class="md-ellipsis">
+      attack
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#jump" class="md-nav__link">
-    jump
+    <span class="md-ellipsis">
+      jump
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoom" class="md-nav__link">
-    zoom N
+    <span class="md-ellipsis">
+      zoom N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#taunt" class="md-nav__link">
-    taunt
+    <span class="md-ellipsis">
+      taunt
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#floatspeed" class="md-nav__link">
-    floatspeed N
+    <span class="md-ellipsis">
+      floatspeed N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#invmouse" class="md-nav__link">
-    invmouse B
+    <span class="md-ellipsis">
+      invmouse B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sensitivity" class="md-nav__link">
-    sensitivity S
+    <span class="md-ellipsis">
+      sensitivity S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sensitivityscale" class="md-nav__link">
-    sensitivityscale S
+    <span class="md-ellipsis">
+      sensitivityscale S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxfps" class="md-nav__link">
-    maxfps N
+    <span class="md-ellipsis">
+      maxfps N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fov" class="md-nav__link">
-    fov N
+    <span class="md-ellipsis">
+      fov N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoomfov" class="md-nav__link">
-    zoomfov N
+    <span class="md-ellipsis">
+      zoomfov N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoominvel" class="md-nav__link">
-    zoominvel N
+    <span class="md-ellipsis">
+      zoominvel N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoomoutvel" class="md-nav__link">
-    zoomoutvel N
+    <span class="md-ellipsis">
+      zoomoutvel N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoomsens" class="md-nav__link">
-    zoomsens S
+    <span class="md-ellipsis">
+      zoomsens S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoomautosens" class="md-nav__link">
-    zoomautosens B
+    <span class="md-ellipsis">
+      zoomautosens B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hudgun" class="md-nav__link">
-    hudgun N
+    <span class="md-ellipsis">
+      hudgun N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hudgunsway" class="md-nav__link">
-    hudgunsway N
+    <span class="md-ellipsis">
+      hudgunsway N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grass" class="md-nav__link">
-    grass N
+    <span class="md-ellipsis">
+      grass N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grassdist" class="md-nav__link">
-    grassdist N
+    <span class="md-ellipsis">
+      grassdist N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grassstep" class="md-nav__link">
-    grassstep N
+    <span class="md-ellipsis">
+      grassstep N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#shaderdetail" class="md-nav__link">
-    shaderdetail N
+    <span class="md-ellipsis">
+      shaderdetail N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxtexsize" class="md-nav__link">
-    maxtexsize N
+    <span class="md-ellipsis">
+      maxtexsize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texcompress" class="md-nav__link">
-    texcompress N
+    <span class="md-ellipsis">
+      texcompress N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#watersubdiv" class="md-nav__link">
-    watersubdiv N
+    <span class="md-ellipsis">
+      watersubdiv N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterlod" class="md-nav__link">
-    waterlod N
+    <span class="md-ellipsis">
+      waterlod N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterreflect" class="md-nav__link">
-    waterreflect B
+    <span class="md-ellipsis">
+      waterreflect B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterenvmap" class="md-nav__link">
-    waterenvmap B
+    <span class="md-ellipsis">
+      waterenvmap B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterrefract" class="md-nav__link">
-    waterrefract B
+    <span class="md-ellipsis">
+      waterrefract B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterfade" class="md-nav__link">
-    waterfade B
+    <span class="md-ellipsis">
+      waterfade B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterfallrefract" class="md-nav__link">
-    waterfallrefract B
+    <span class="md-ellipsis">
+      waterfallrefract B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterfallenv" class="md-nav__link">
-    waterfallenv B
+    <span class="md-ellipsis">
+      waterfallenv B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#reflectdist" class="md-nav__link">
-    reflectdist N
+    <span class="md-ellipsis">
+      reflectdist N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#reflectsize" class="md-nav__link">
-    reflectsize N
+    <span class="md-ellipsis">
+      reflectsize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxreflect" class="md-nav__link">
-    maxreflect N
+    <span class="md-ellipsis">
+      maxreflect N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#reflectmms" class="md-nav__link">
-    reflectmms B
+    <span class="md-ellipsis">
+      reflectmms B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#envmapsize" class="md-nav__link">
-    envmapsize N
+    <span class="md-ellipsis">
+      envmapsize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxparticledistance" class="md-nav__link">
-    maxparticledistance N
+    <span class="md-ellipsis">
+      maxparticledistance N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#particlesize" class="md-nav__link">
-    particlesize N
+    <span class="md-ellipsis">
+      particlesize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#emitfps" class="md-nav__link">
-    emitfps N
+    <span class="md-ellipsis">
+      emitfps N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#flarelights" class="md-nav__link">
-    flarelights B
+    <span class="md-ellipsis">
+      flarelights B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#flarecutoff" class="md-nav__link">
-    flarecutoff N
+    <span class="md-ellipsis">
+      flarecutoff N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#flaresize" class="md-nav__link">
-    flaresize N
+    <span class="md-ellipsis">
+      flaresize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setpostfx" class="md-nav__link">
-    setpostfx [N [P]]
+    <span class="md-ellipsis">
+      setpostfx [N [P]]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#screenshot" class="md-nav__link">
-    screenshot
+    <span class="md-ellipsis">
+      screenshot
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#musicvol" class="md-nav__link">
-    musicvol N
+    <span class="md-ellipsis">
+      musicvol N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#soundvol" class="md-nav__link">
-    soundvol N
+    <span class="md-ellipsis">
+      soundvol N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#soundbufferlen" class="md-nav__link">
-    soundbufferlen N
+    <span class="md-ellipsis">
+      soundbufferlen N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#scr_w" class="md-nav__link">
-    scr_w N
+    <span class="md-ellipsis">
+      scr_w N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#scr_h" class="md-nav__link">
-    scr_h N
+    <span class="md-ellipsis">
+      scr_h N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#screenres" class="md-nav__link">
-    screenres W H
+    <span class="md-ellipsis">
+      screenres W H
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gamma" class="md-nav__link">
-    gamma N
+    <span class="md-ellipsis">
+      gamma N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hidestats" class="md-nav__link">
-    hidestats B
+    <span class="md-ellipsis">
+      hidestats B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hidehud" class="md-nav__link">
-    hidehud B
+    <span class="md-ellipsis">
+      hidehud B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxroll" class="md-nav__link">
-    maxroll N
+    <span class="md-ellipsis">
+      maxroll N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#crosshairsize" class="md-nav__link">
-    crosshairsize N
+    <span class="md-ellipsis">
+      crosshairsize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#crosshairfx" class="md-nav__link">
-    crosshairfx B
+    <span class="md-ellipsis">
+      crosshairfx B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#exec" class="md-nav__link">
-    exec S
+    <span class="md-ellipsis">
+      exec S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#history" class="md-nav__link">
-    history N
+    <span class="md-ellipsis">
+      history N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#keymap" class="md-nav__link">
-    keymap K N A
+    <span class="md-ellipsis">
+      keymap K N A
+    </span>
   </a>
   
 </li>
@@ -979,7 +1213,9 @@
       
         <li class="md-nav__item">
   <a href="#gui-commands" class="md-nav__link">
-    GUI Commands
+    <span class="md-ellipsis">
+      GUI Commands
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="GUI Commands">
@@ -987,140 +1223,180 @@
         
           <li class="md-nav__item">
   <a href="#gui2d" class="md-nav__link">
-    gui2d B
+    <span class="md-ellipsis">
+      gui2d B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#menudistance" class="md-nav__link">
-    menudistance D
+    <span class="md-ellipsis">
+      menudistance D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#menuautoclose" class="md-nav__link">
-    menuautoclose D
+    <span class="md-ellipsis">
+      menuautoclose D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guiautotab" class="md-nav__link">
-    guiautotab H
+    <span class="md-ellipsis">
+      guiautotab H
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cleargui" class="md-nav__link">
-    cleargui
+    <span class="md-ellipsis">
+      cleargui
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#showgui" class="md-nav__link">
-    showgui N
+    <span class="md-ellipsis">
+      showgui N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#newgui" class="md-nav__link">
-    newgui S
+    <span class="md-ellipsis">
+      newgui S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guilist" class="md-nav__link">
-    guilist '[' ... ']'
+    <span class="md-ellipsis">
+      guilist '[' ... ']'
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guispring" class="md-nav__link">
-    guispring [W]
+    <span class="md-ellipsis">
+      guispring [W]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guititle" class="md-nav__link">
-    guititle S
+    <span class="md-ellipsis">
+      guititle S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guibutton" class="md-nav__link">
-    guibutton [S] A [I]
+    <span class="md-ellipsis">
+      guibutton [S] A [I]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guiimage" class="md-nav__link">
-    guiimage P A S [O]
+    <span class="md-ellipsis">
+      guiimage P A S [O]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guitext" class="md-nav__link">
-    guitext S
+    <span class="md-ellipsis">
+      guitext S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guitextbox" class="md-nav__link">
-    guitextbox S W [H] [C]
+    <span class="md-ellipsis">
+      guitextbox S W [H] [C]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guibar" class="md-nav__link">
-    guibar
+    <span class="md-ellipsis">
+      guibar
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guislider" class="md-nav__link">
-    guislider V [MIN MAX A]
+    <span class="md-ellipsis">
+      guislider V [MIN MAX A]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guicheckbox" class="md-nav__link">
-    guicheckbox N V [ON OFF A]
+    <span class="md-ellipsis">
+      guicheckbox N V [ON OFF A]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guiradio" class="md-nav__link">
-    guiradio N V VAL [A]
+    <span class="md-ellipsis">
+      guiradio N V VAL [A]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guitab" class="md-nav__link">
-    guitab S
+    <span class="md-ellipsis">
+      guitab S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guifield" class="md-nav__link">
-    guifield A N [O [U]]
+    <span class="md-ellipsis">
+      guifield A N [O [U]]
+    </span>
   </a>
   
 </li>
@@ -1132,7 +1408,9 @@
       
         <li class="md-nav__item">
   <a href="#server-configuration-commands" class="md-nav__link">
-    Server Configuration Commands
+    <span class="md-ellipsis">
+      Server Configuration Commands
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Server Configuration Commands">
@@ -1140,119 +1418,144 @@
         
           <li class="md-nav__item">
   <a href="#startlistenserver" class="md-nav__link">
-    startlistenserver [MASTER]
+    <span class="md-ellipsis">
+      startlistenserver [MASTER]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#stoplistenserver" class="md-nav__link">
-    stoplistenserver
+    <span class="md-ellipsis">
+      stoplistenserver
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#serverip" class="md-nav__link">
-    serverip S
+    <span class="md-ellipsis">
+      serverip S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#serverport" class="md-nav__link">
-    serverport N
+    <span class="md-ellipsis">
+      serverport N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxclients" class="md-nav__link">
-    maxclients N
+    <span class="md-ellipsis">
+      maxclients N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#serverbotlimit" class="md-nav__link">
-    serverbotlimit N
+    <span class="md-ellipsis">
+      serverbotlimit N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#publicserver" class="md-nav__link">
-    publicserver B
+    <span class="md-ellipsis">
+      publicserver B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#serverdesc" class="md-nav__link">
-    serverdesc S
+    <span class="md-ellipsis">
+      serverdesc S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#serverpass" class="md-nav__link">
-    serverpass S
+    <span class="md-ellipsis">
+      serverpass S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#adminpass" class="md-nav__link">
-    adminpass S
+    <span class="md-ellipsis">
+      adminpass S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#servermotd" class="md-nav__link">
-    servermotd S
+    <span class="md-ellipsis">
+      servermotd S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#updatemaster" class="md-nav__link">
-    updatemaster B
+    <span class="md-ellipsis">
+      updatemaster B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mastername" class="md-nav__link">
-    mastername S
+    <span class="md-ellipsis">
+      mastername S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#restrictdemos" class="md-nav__link">
-    restrictdemos B
+    <span class="md-ellipsis">
+      restrictdemos B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxdemos" class="md-nav__link">
-    maxdemos N
+    <span class="md-ellipsis">
+      maxdemos N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxdemosize" class="md-nav__link">
-    maxdemosize N
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ctftkpenalty" class="md-nav__link">
-    ctftkpenalty B
+    <span class="md-ellipsis">
+      maxdemosize N
+    </span>
   </a>
   
 </li>
@@ -1264,7 +1567,9 @@
       
         <li class="md-nav__item">
   <a href="#cubescript" class="md-nav__link">
-    CubeScript
+    <span class="md-ellipsis">
+      CubeScript
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="CubeScript">
@@ -1272,217 +1577,279 @@
         
           <li class="md-nav__item">
   <a href="#op-add" class="md-nav__link">
-    + A B
+    <span class="md-ellipsis">
+      + A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-sub" class="md-nav__link">
-    - A B
+    <span class="md-ellipsis">
+      - A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-mul" class="md-nav__link">
-    * A B
+    <span class="md-ellipsis">
+      * A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-div" class="md-nav__link">
-    div A B
+    <span class="md-ellipsis">
+      div A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-mod" class="md-nav__link">
-    mod A B
+    <span class="md-ellipsis">
+      mod A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-eql" class="md-nav__link">
-    = A B
+    <span class="md-ellipsis">
+      = A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-lt" class="md-nav__link">
-    &lt; A B
+    <span class="md-ellipsis">
+      &lt; A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-gt" class="md-nav__link">
-    &gt; A B
+    <span class="md-ellipsis">
+      &gt; A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#strcmp" class="md-nav__link">
-    strcmp A B
+    <span class="md-ellipsis">
+      strcmp A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-not" class="md-nav__link">
-    ! A
+    <span class="md-ellipsis">
+      ! A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-and" class="md-nav__link">
-    &amp;&amp; A B
+    <span class="md-ellipsis">
+      &amp;&amp; A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-or" class="md-nav__link">
-    || A B
+    <span class="md-ellipsis">
+      || A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-xor" class="md-nav__link">
-    ^ A B
+    <span class="md-ellipsis">
+      ^ A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#strstr" class="md-nav__link">
-    strstr S N
+    <span class="md-ellipsis">
+      strstr S N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#substr" class="md-nav__link">
-    substr S A B
+    <span class="md-ellipsis">
+      substr S A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#strreplace" class="md-nav__link">
-    strreplace S A B
+    <span class="md-ellipsis">
+      strreplace S A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#strlen" class="md-nav__link">
-    strlen S
+    <span class="md-ellipsis">
+      strlen S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#min" class="md-nav__link">
-    min A B
+    <span class="md-ellipsis">
+      min A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#max" class="md-nav__link">
-    max A B
+    <span class="md-ellipsis">
+      max A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#rnd" class="md-nav__link">
-    rnd N
+    <span class="md-ellipsis">
+      rnd N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#if" class="md-nav__link">
-    if cond true false
+    <span class="md-ellipsis">
+      if cond true false
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#loop" class="md-nav__link">
-    loop I N body
+    <span class="md-ellipsis">
+      loop I N body
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#while" class="md-nav__link">
-    while cond body
+    <span class="md-ellipsis">
+      while cond body
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#concat" class="md-nav__link">
-    concat S...
+    <span class="md-ellipsis">
+      concat S...
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#concatword" class="md-nav__link">
-    concatword S...
+    <span class="md-ellipsis">
+      concatword S...
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#format" class="md-nav__link">
-    format F V1..Vn
+    <span class="md-ellipsis">
+      format F V1..Vn
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#at" class="md-nav__link">
-    at S N
+    <span class="md-ellipsis">
+      at S N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#listlen" class="md-nav__link">
-    listlen L
+    <span class="md-ellipsis">
+      listlen L
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#listclients" class="md-nav__link">
-    listclients N
+    <span class="md-ellipsis">
+      listclients N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#onrelease" class="md-nav__link">
-    onrelease A
+    <span class="md-ellipsis">
+      onrelease A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#result" class="md-nav__link">
-    result V
+    <span class="md-ellipsis">
+      result V
+    </span>
   </a>
   
 </li>
@@ -1494,7 +1861,9 @@
       
         <li class="md-nav__item">
   <a href="#variables-that-are-only-really-useful-when-used-as-value" class="md-nav__link">
-    Variables that are only really useful when used as value:
+    <span class="md-ellipsis">
+      Variables that are only really useful when used as value:
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Variables that are only really useful when used as value:">
@@ -1502,112 +1871,144 @@
         
           <li class="md-nav__item">
   <a href="#editing" class="md-nav__link">
-    $editing
+    <span class="md-ellipsis">
+      $editing
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getalias" class="md-nav__link">
-    getalias V
+    <span class="md-ellipsis">
+      getalias V
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getbind" class="md-nav__link">
-    getbind B
+    <span class="md-ellipsis">
+      getbind B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#geteditbind" class="md-nav__link">
-    geteditbind B
+    <span class="md-ellipsis">
+      geteditbind B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getspecbind" class="md-nav__link">
-    getspecbind B
+    <span class="md-ellipsis">
+      getspecbind B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getclientnum" class="md-nav__link">
-    getclientnum N
+    <span class="md-ellipsis">
+      getclientnum N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getclientname" class="md-nav__link">
-    getclientname N
+    <span class="md-ellipsis">
+      getclientname N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getclientteam" class="md-nav__link">
-    getclientteam N
+    <span class="md-ellipsis">
+      getclientteam N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getname" class="md-nav__link">
-    getname
+    <span class="md-ellipsis">
+      getname
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getteam" class="md-nav__link">
-    getteam
+    <span class="md-ellipsis">
+      getteam
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getweapon" class="md-nav__link">
-    getweapon
+    <span class="md-ellipsis">
+      getweapon
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getfps" class="md-nav__link">
-    getfps
+    <span class="md-ellipsis">
+      getfps
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gettex" class="md-nav__link">
-    gettex
+    <span class="md-ellipsis">
+      gettex
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gettexname" class="md-nav__link">
-    gettexname
+    <span class="md-ellipsis">
+      gettexname
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#isconnected" class="md-nav__link">
-    isconnected N
+    <span class="md-ellipsis">
+      isconnected N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#isspectator" class="md-nav__link">
-    isspectator N
+    <span class="md-ellipsis">
+      isspectator N
+    </span>
   </a>
   
 </li>
@@ -1624,52 +2025,74 @@
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="editing.html" class="md-nav__link">
-        Editing Tutorial
+        
+  
+  <span class="md-ellipsis">
+    Editing Tutorial
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="editref.html" class="md-nav__link">
-        Editing Reference
+        
+  
+  <span class="md-ellipsis">
+    Editing Reference
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="models.html" class="md-nav__link">
-        Model Reference
+        
+  
+  <span class="md-ellipsis">
+    Model Reference
+  </span>
+  
+
       </a>
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1700,21 +2123,27 @@
       
         <li class="md-nav__item">
   <a href="#before-you-start" class="md-nav__link">
-    Before You Start
+    <span class="md-ellipsis">
+      Before You Start
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#running-carmine" class="md-nav__link">
-    Running Carmine
+    <span class="md-ellipsis">
+      Running Carmine
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#command-line-options" class="md-nav__link">
-    Command Line Options
+    <span class="md-ellipsis">
+      Command Line Options
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Command Line Options">
@@ -1722,147 +2151,189 @@
         
           <li class="md-nav__item">
   <a href="#-d" class="md-nav__link">
-    -d
+    <span class="md-ellipsis">
+      -d
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-dn" class="md-nav__link">
-    -dN
+    <span class="md-ellipsis">
+      -dN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-wn" class="md-nav__link">
-    -wN
+    <span class="md-ellipsis">
+      -wN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-hn" class="md-nav__link">
-    -hN
+    <span class="md-ellipsis">
+      -hN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-zn" class="md-nav__link">
-    -zN
+    <span class="md-ellipsis">
+      -zN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-an" class="md-nav__link">
-    -aN
+    <span class="md-ellipsis">
+      -aN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-t" class="md-nav__link">
-    -t
+    <span class="md-ellipsis">
+      -t
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-qs" class="md-nav__link">
-    -qS
+    <span class="md-ellipsis">
+      -qS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-ks" class="md-nav__link">
-    -kS
+    <span class="md-ellipsis">
+      -kS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-gs" class="md-nav__link">
-    -gS
+    <span class="md-ellipsis">
+      -gS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-ls" class="md-nav__link">
-    -lS
+    <span class="md-ellipsis">
+      -lS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-xs" class="md-nav__link">
-    -xS
+    <span class="md-ellipsis">
+      -xS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-un" class="md-nav__link">
-    -uN
+    <span class="md-ellipsis">
+      -uN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-nn" class="md-nav__link">
-    -nN
+    <span class="md-ellipsis">
+      -nN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-cn" class="md-nav__link">
-    -cN
+    <span class="md-ellipsis">
+      -cN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-is" class="md-nav__link">
-    -iS
+    <span class="md-ellipsis">
+      -iS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-jn" class="md-nav__link">
-    -jN
+    <span class="md-ellipsis">
+      -jN
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-ms" class="md-nav__link">
-    -mS
+    <span class="md-ellipsis">
+      -mS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-ps" class="md-nav__link">
-    -pS
+    <span class="md-ellipsis">
+      -pS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-ys" class="md-nav__link">
-    -yS
+    <span class="md-ellipsis">
+      -yS
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#-on" class="md-nav__link">
-    -oN
+    <span class="md-ellipsis">
+      -oN
+    </span>
   </a>
   
 </li>
@@ -1874,7 +2345,9 @@
       
         <li class="md-nav__item">
   <a href="#console-commands" class="md-nav__link">
-    Console Commands
+    <span class="md-ellipsis">
+      Console Commands
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Console Commands">
@@ -1882,483 +2355,621 @@
         
           <li class="md-nav__item">
   <a href="#bind" class="md-nav__link">
-    bind K A
+    <span class="md-ellipsis">
+      bind K A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#editbind" class="md-nav__link">
-    editbind K A
+    <span class="md-ellipsis">
+      editbind K A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#alias" class="md-nav__link">
-    alias N A
+    <span class="md-ellipsis">
+      alias N A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#push" class="md-nav__link">
-    push N A B
+    <span class="md-ellipsis">
+      push N A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#local" class="md-nav__link">
-    local N1 [N2...]
+    <span class="md-ellipsis">
+      local N1 [N2...]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quit" class="md-nav__link">
-    quit
+    <span class="md-ellipsis">
+      quit
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#forward" class="md-nav__link">
-    forward
+    <span class="md-ellipsis">
+      forward
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#backward" class="md-nav__link">
-    backward
+    <span class="md-ellipsis">
+      backward
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#left" class="md-nav__link">
-    left
+    <span class="md-ellipsis">
+      left
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#right" class="md-nav__link">
-    right
+    <span class="md-ellipsis">
+      right
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#attack" class="md-nav__link">
-    attack
+    <span class="md-ellipsis">
+      attack
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#jump" class="md-nav__link">
-    jump
+    <span class="md-ellipsis">
+      jump
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoom" class="md-nav__link">
-    zoom N
+    <span class="md-ellipsis">
+      zoom N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#taunt" class="md-nav__link">
-    taunt
+    <span class="md-ellipsis">
+      taunt
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#floatspeed" class="md-nav__link">
-    floatspeed N
+    <span class="md-ellipsis">
+      floatspeed N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#invmouse" class="md-nav__link">
-    invmouse B
+    <span class="md-ellipsis">
+      invmouse B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sensitivity" class="md-nav__link">
-    sensitivity S
+    <span class="md-ellipsis">
+      sensitivity S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#sensitivityscale" class="md-nav__link">
-    sensitivityscale S
+    <span class="md-ellipsis">
+      sensitivityscale S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxfps" class="md-nav__link">
-    maxfps N
+    <span class="md-ellipsis">
+      maxfps N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#fov" class="md-nav__link">
-    fov N
+    <span class="md-ellipsis">
+      fov N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoomfov" class="md-nav__link">
-    zoomfov N
+    <span class="md-ellipsis">
+      zoomfov N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoominvel" class="md-nav__link">
-    zoominvel N
+    <span class="md-ellipsis">
+      zoominvel N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoomoutvel" class="md-nav__link">
-    zoomoutvel N
+    <span class="md-ellipsis">
+      zoomoutvel N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoomsens" class="md-nav__link">
-    zoomsens S
+    <span class="md-ellipsis">
+      zoomsens S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#zoomautosens" class="md-nav__link">
-    zoomautosens B
+    <span class="md-ellipsis">
+      zoomautosens B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hudgun" class="md-nav__link">
-    hudgun N
+    <span class="md-ellipsis">
+      hudgun N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hudgunsway" class="md-nav__link">
-    hudgunsway N
+    <span class="md-ellipsis">
+      hudgunsway N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grass" class="md-nav__link">
-    grass N
+    <span class="md-ellipsis">
+      grass N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grassdist" class="md-nav__link">
-    grassdist N
+    <span class="md-ellipsis">
+      grassdist N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#grassstep" class="md-nav__link">
-    grassstep N
+    <span class="md-ellipsis">
+      grassstep N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#shaderdetail" class="md-nav__link">
-    shaderdetail N
+    <span class="md-ellipsis">
+      shaderdetail N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxtexsize" class="md-nav__link">
-    maxtexsize N
+    <span class="md-ellipsis">
+      maxtexsize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#texcompress" class="md-nav__link">
-    texcompress N
+    <span class="md-ellipsis">
+      texcompress N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#watersubdiv" class="md-nav__link">
-    watersubdiv N
+    <span class="md-ellipsis">
+      watersubdiv N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterlod" class="md-nav__link">
-    waterlod N
+    <span class="md-ellipsis">
+      waterlod N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterreflect" class="md-nav__link">
-    waterreflect B
+    <span class="md-ellipsis">
+      waterreflect B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterenvmap" class="md-nav__link">
-    waterenvmap B
+    <span class="md-ellipsis">
+      waterenvmap B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterrefract" class="md-nav__link">
-    waterrefract B
+    <span class="md-ellipsis">
+      waterrefract B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterfade" class="md-nav__link">
-    waterfade B
+    <span class="md-ellipsis">
+      waterfade B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterfallrefract" class="md-nav__link">
-    waterfallrefract B
+    <span class="md-ellipsis">
+      waterfallrefract B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#waterfallenv" class="md-nav__link">
-    waterfallenv B
+    <span class="md-ellipsis">
+      waterfallenv B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#reflectdist" class="md-nav__link">
-    reflectdist N
+    <span class="md-ellipsis">
+      reflectdist N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#reflectsize" class="md-nav__link">
-    reflectsize N
+    <span class="md-ellipsis">
+      reflectsize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxreflect" class="md-nav__link">
-    maxreflect N
+    <span class="md-ellipsis">
+      maxreflect N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#reflectmms" class="md-nav__link">
-    reflectmms B
+    <span class="md-ellipsis">
+      reflectmms B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#envmapsize" class="md-nav__link">
-    envmapsize N
+    <span class="md-ellipsis">
+      envmapsize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxparticledistance" class="md-nav__link">
-    maxparticledistance N
+    <span class="md-ellipsis">
+      maxparticledistance N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#particlesize" class="md-nav__link">
-    particlesize N
+    <span class="md-ellipsis">
+      particlesize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#emitfps" class="md-nav__link">
-    emitfps N
+    <span class="md-ellipsis">
+      emitfps N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#flarelights" class="md-nav__link">
-    flarelights B
+    <span class="md-ellipsis">
+      flarelights B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#flarecutoff" class="md-nav__link">
-    flarecutoff N
+    <span class="md-ellipsis">
+      flarecutoff N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#flaresize" class="md-nav__link">
-    flaresize N
+    <span class="md-ellipsis">
+      flaresize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#setpostfx" class="md-nav__link">
-    setpostfx [N [P]]
+    <span class="md-ellipsis">
+      setpostfx [N [P]]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#screenshot" class="md-nav__link">
-    screenshot
+    <span class="md-ellipsis">
+      screenshot
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#musicvol" class="md-nav__link">
-    musicvol N
+    <span class="md-ellipsis">
+      musicvol N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#soundvol" class="md-nav__link">
-    soundvol N
+    <span class="md-ellipsis">
+      soundvol N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#soundbufferlen" class="md-nav__link">
-    soundbufferlen N
+    <span class="md-ellipsis">
+      soundbufferlen N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#scr_w" class="md-nav__link">
-    scr_w N
+    <span class="md-ellipsis">
+      scr_w N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#scr_h" class="md-nav__link">
-    scr_h N
+    <span class="md-ellipsis">
+      scr_h N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#screenres" class="md-nav__link">
-    screenres W H
+    <span class="md-ellipsis">
+      screenres W H
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gamma" class="md-nav__link">
-    gamma N
+    <span class="md-ellipsis">
+      gamma N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hidestats" class="md-nav__link">
-    hidestats B
+    <span class="md-ellipsis">
+      hidestats B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#hidehud" class="md-nav__link">
-    hidehud B
+    <span class="md-ellipsis">
+      hidehud B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxroll" class="md-nav__link">
-    maxroll N
+    <span class="md-ellipsis">
+      maxroll N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#crosshairsize" class="md-nav__link">
-    crosshairsize N
+    <span class="md-ellipsis">
+      crosshairsize N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#crosshairfx" class="md-nav__link">
-    crosshairfx B
+    <span class="md-ellipsis">
+      crosshairfx B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#exec" class="md-nav__link">
-    exec S
+    <span class="md-ellipsis">
+      exec S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#history" class="md-nav__link">
-    history N
+    <span class="md-ellipsis">
+      history N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#keymap" class="md-nav__link">
-    keymap K N A
+    <span class="md-ellipsis">
+      keymap K N A
+    </span>
   </a>
   
 </li>
@@ -2370,7 +2981,9 @@
       
         <li class="md-nav__item">
   <a href="#gui-commands" class="md-nav__link">
-    GUI Commands
+    <span class="md-ellipsis">
+      GUI Commands
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="GUI Commands">
@@ -2378,140 +2991,180 @@
         
           <li class="md-nav__item">
   <a href="#gui2d" class="md-nav__link">
-    gui2d B
+    <span class="md-ellipsis">
+      gui2d B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#menudistance" class="md-nav__link">
-    menudistance D
+    <span class="md-ellipsis">
+      menudistance D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#menuautoclose" class="md-nav__link">
-    menuautoclose D
+    <span class="md-ellipsis">
+      menuautoclose D
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guiautotab" class="md-nav__link">
-    guiautotab H
+    <span class="md-ellipsis">
+      guiautotab H
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#cleargui" class="md-nav__link">
-    cleargui
+    <span class="md-ellipsis">
+      cleargui
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#showgui" class="md-nav__link">
-    showgui N
+    <span class="md-ellipsis">
+      showgui N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#newgui" class="md-nav__link">
-    newgui S
+    <span class="md-ellipsis">
+      newgui S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guilist" class="md-nav__link">
-    guilist '[' ... ']'
+    <span class="md-ellipsis">
+      guilist '[' ... ']'
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guispring" class="md-nav__link">
-    guispring [W]
+    <span class="md-ellipsis">
+      guispring [W]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guititle" class="md-nav__link">
-    guititle S
+    <span class="md-ellipsis">
+      guititle S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guibutton" class="md-nav__link">
-    guibutton [S] A [I]
+    <span class="md-ellipsis">
+      guibutton [S] A [I]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guiimage" class="md-nav__link">
-    guiimage P A S [O]
+    <span class="md-ellipsis">
+      guiimage P A S [O]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guitext" class="md-nav__link">
-    guitext S
+    <span class="md-ellipsis">
+      guitext S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guitextbox" class="md-nav__link">
-    guitextbox S W [H] [C]
+    <span class="md-ellipsis">
+      guitextbox S W [H] [C]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guibar" class="md-nav__link">
-    guibar
+    <span class="md-ellipsis">
+      guibar
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guislider" class="md-nav__link">
-    guislider V [MIN MAX A]
+    <span class="md-ellipsis">
+      guislider V [MIN MAX A]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guicheckbox" class="md-nav__link">
-    guicheckbox N V [ON OFF A]
+    <span class="md-ellipsis">
+      guicheckbox N V [ON OFF A]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guiradio" class="md-nav__link">
-    guiradio N V VAL [A]
+    <span class="md-ellipsis">
+      guiradio N V VAL [A]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guitab" class="md-nav__link">
-    guitab S
+    <span class="md-ellipsis">
+      guitab S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#guifield" class="md-nav__link">
-    guifield A N [O [U]]
+    <span class="md-ellipsis">
+      guifield A N [O [U]]
+    </span>
   </a>
   
 </li>
@@ -2523,7 +3176,9 @@
       
         <li class="md-nav__item">
   <a href="#server-configuration-commands" class="md-nav__link">
-    Server Configuration Commands
+    <span class="md-ellipsis">
+      Server Configuration Commands
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Server Configuration Commands">
@@ -2531,119 +3186,144 @@
         
           <li class="md-nav__item">
   <a href="#startlistenserver" class="md-nav__link">
-    startlistenserver [MASTER]
+    <span class="md-ellipsis">
+      startlistenserver [MASTER]
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#stoplistenserver" class="md-nav__link">
-    stoplistenserver
+    <span class="md-ellipsis">
+      stoplistenserver
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#serverip" class="md-nav__link">
-    serverip S
+    <span class="md-ellipsis">
+      serverip S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#serverport" class="md-nav__link">
-    serverport N
+    <span class="md-ellipsis">
+      serverport N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxclients" class="md-nav__link">
-    maxclients N
+    <span class="md-ellipsis">
+      maxclients N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#serverbotlimit" class="md-nav__link">
-    serverbotlimit N
+    <span class="md-ellipsis">
+      serverbotlimit N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#publicserver" class="md-nav__link">
-    publicserver B
+    <span class="md-ellipsis">
+      publicserver B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#serverdesc" class="md-nav__link">
-    serverdesc S
+    <span class="md-ellipsis">
+      serverdesc S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#serverpass" class="md-nav__link">
-    serverpass S
+    <span class="md-ellipsis">
+      serverpass S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#adminpass" class="md-nav__link">
-    adminpass S
+    <span class="md-ellipsis">
+      adminpass S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#servermotd" class="md-nav__link">
-    servermotd S
+    <span class="md-ellipsis">
+      servermotd S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#updatemaster" class="md-nav__link">
-    updatemaster B
+    <span class="md-ellipsis">
+      updatemaster B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mastername" class="md-nav__link">
-    mastername S
+    <span class="md-ellipsis">
+      mastername S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#restrictdemos" class="md-nav__link">
-    restrictdemos B
+    <span class="md-ellipsis">
+      restrictdemos B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxdemos" class="md-nav__link">
-    maxdemos N
+    <span class="md-ellipsis">
+      maxdemos N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#maxdemosize" class="md-nav__link">
-    maxdemosize N
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ctftkpenalty" class="md-nav__link">
-    ctftkpenalty B
+    <span class="md-ellipsis">
+      maxdemosize N
+    </span>
   </a>
   
 </li>
@@ -2655,7 +3335,9 @@
       
         <li class="md-nav__item">
   <a href="#cubescript" class="md-nav__link">
-    CubeScript
+    <span class="md-ellipsis">
+      CubeScript
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="CubeScript">
@@ -2663,217 +3345,279 @@
         
           <li class="md-nav__item">
   <a href="#op-add" class="md-nav__link">
-    + A B
+    <span class="md-ellipsis">
+      + A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-sub" class="md-nav__link">
-    - A B
+    <span class="md-ellipsis">
+      - A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-mul" class="md-nav__link">
-    * A B
+    <span class="md-ellipsis">
+      * A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-div" class="md-nav__link">
-    div A B
+    <span class="md-ellipsis">
+      div A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-mod" class="md-nav__link">
-    mod A B
+    <span class="md-ellipsis">
+      mod A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-eql" class="md-nav__link">
-    = A B
+    <span class="md-ellipsis">
+      = A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-lt" class="md-nav__link">
-    &lt; A B
+    <span class="md-ellipsis">
+      &lt; A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-gt" class="md-nav__link">
-    &gt; A B
+    <span class="md-ellipsis">
+      &gt; A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#strcmp" class="md-nav__link">
-    strcmp A B
+    <span class="md-ellipsis">
+      strcmp A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-not" class="md-nav__link">
-    ! A
+    <span class="md-ellipsis">
+      ! A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-and" class="md-nav__link">
-    &amp;&amp; A B
+    <span class="md-ellipsis">
+      &amp;&amp; A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-or" class="md-nav__link">
-    || A B
+    <span class="md-ellipsis">
+      || A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#op-xor" class="md-nav__link">
-    ^ A B
+    <span class="md-ellipsis">
+      ^ A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#strstr" class="md-nav__link">
-    strstr S N
+    <span class="md-ellipsis">
+      strstr S N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#substr" class="md-nav__link">
-    substr S A B
+    <span class="md-ellipsis">
+      substr S A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#strreplace" class="md-nav__link">
-    strreplace S A B
+    <span class="md-ellipsis">
+      strreplace S A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#strlen" class="md-nav__link">
-    strlen S
+    <span class="md-ellipsis">
+      strlen S
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#min" class="md-nav__link">
-    min A B
+    <span class="md-ellipsis">
+      min A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#max" class="md-nav__link">
-    max A B
+    <span class="md-ellipsis">
+      max A B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#rnd" class="md-nav__link">
-    rnd N
+    <span class="md-ellipsis">
+      rnd N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#if" class="md-nav__link">
-    if cond true false
+    <span class="md-ellipsis">
+      if cond true false
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#loop" class="md-nav__link">
-    loop I N body
+    <span class="md-ellipsis">
+      loop I N body
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#while" class="md-nav__link">
-    while cond body
+    <span class="md-ellipsis">
+      while cond body
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#concat" class="md-nav__link">
-    concat S...
+    <span class="md-ellipsis">
+      concat S...
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#concatword" class="md-nav__link">
-    concatword S...
+    <span class="md-ellipsis">
+      concatword S...
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#format" class="md-nav__link">
-    format F V1..Vn
+    <span class="md-ellipsis">
+      format F V1..Vn
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#at" class="md-nav__link">
-    at S N
+    <span class="md-ellipsis">
+      at S N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#listlen" class="md-nav__link">
-    listlen L
+    <span class="md-ellipsis">
+      listlen L
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#listclients" class="md-nav__link">
-    listclients N
+    <span class="md-ellipsis">
+      listclients N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#onrelease" class="md-nav__link">
-    onrelease A
+    <span class="md-ellipsis">
+      onrelease A
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#result" class="md-nav__link">
-    result V
+    <span class="md-ellipsis">
+      result V
+    </span>
   </a>
   
 </li>
@@ -2885,7 +3629,9 @@
       
         <li class="md-nav__item">
   <a href="#variables-that-are-only-really-useful-when-used-as-value" class="md-nav__link">
-    Variables that are only really useful when used as value:
+    <span class="md-ellipsis">
+      Variables that are only really useful when used as value:
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Variables that are only really useful when used as value:">
@@ -2893,112 +3639,144 @@
         
           <li class="md-nav__item">
   <a href="#editing" class="md-nav__link">
-    $editing
+    <span class="md-ellipsis">
+      $editing
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getalias" class="md-nav__link">
-    getalias V
+    <span class="md-ellipsis">
+      getalias V
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getbind" class="md-nav__link">
-    getbind B
+    <span class="md-ellipsis">
+      getbind B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#geteditbind" class="md-nav__link">
-    geteditbind B
+    <span class="md-ellipsis">
+      geteditbind B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getspecbind" class="md-nav__link">
-    getspecbind B
+    <span class="md-ellipsis">
+      getspecbind B
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getclientnum" class="md-nav__link">
-    getclientnum N
+    <span class="md-ellipsis">
+      getclientnum N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getclientname" class="md-nav__link">
-    getclientname N
+    <span class="md-ellipsis">
+      getclientname N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getclientteam" class="md-nav__link">
-    getclientteam N
+    <span class="md-ellipsis">
+      getclientteam N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getname" class="md-nav__link">
-    getname
+    <span class="md-ellipsis">
+      getname
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getteam" class="md-nav__link">
-    getteam
+    <span class="md-ellipsis">
+      getteam
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getweapon" class="md-nav__link">
-    getweapon
+    <span class="md-ellipsis">
+      getweapon
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#getfps" class="md-nav__link">
-    getfps
+    <span class="md-ellipsis">
+      getfps
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gettex" class="md-nav__link">
-    gettex
+    <span class="md-ellipsis">
+      gettex
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#gettexname" class="md-nav__link">
-    gettexname
+    <span class="md-ellipsis">
+      gettexname
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#isconnected" class="md-nav__link">
-    isconnected N
+    <span class="md-ellipsis">
+      isconnected N
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#isspectator" class="md-nav__link">
-    isspectator N
+    <span class="md-ellipsis">
+      isspectator N
+    </span>
   </a>
   
 </li>
@@ -3339,8 +4117,6 @@ ure a listen server:</p>
 <p>The maximum number of demos the server will store (default: 5).</p>
 <h3 id="maxdemosize"><code>maxdemosize N</code></h3>
 <p>The maximum size a demo is allowed to grow to in megabytes (default: 16).</p>
-<h3 id="ctftkpenalty"><code>ctftkpenalty B</code></h3>
-<p>Toggles whether teamkilling the flag runner in CTF modes should disallow the teamkiller from stealing the flag (default: 1).</p>
 <h2 id="cubescript">CubeScript</h2>
 <p>Cube's console language is similar to console languages of other games (e.g. Quake), but is a bit more powerful in that it is a
 full programming language.</p>
@@ -3465,16 +4241,33 @@ Needs Allfaces set to 0 so it works.</p>
 <h3 id="isspectator"><code>isspectator N</code></h3>
 <p>If the Player N is spectator this is 1 (true)</p>
 
-  <hr>
-<div class="md-source-file">
-  <small>
+
+
+
+
+
+
+  
     
-      Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 25, 2023</span>
+  
+  
+
+
+  <aside class="md-source-file">
+    
       
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 1, 2025</span>
+  </span>
+
     
-  </small>
-</div>
+    
+    
+    
+  </aside>
 
 
 
@@ -3485,6 +4278,7 @@ Needs Allfaces set to 0 so it works.</p>
             </div>
           
           
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
       </main>
@@ -3512,10 +4306,11 @@ Needs Allfaces set to 0 so it works.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.sections", "navigation.tracking", "toc.follow"], "search": "assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.sections", "navigation.tracking", "toc.follow"], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.b4d07000.min.js"></script>
+      <script src="assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
     
   </body>

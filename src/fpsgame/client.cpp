@@ -68,6 +68,7 @@ namespace game
 		if(!radarteammates) return;
 		float scale = calcradarscale();
 		int alive = 0, dead = 0;
+		old_string teammate_blip;
 		loopv(players) 
 		{
 			fpsent *o = players[i];
@@ -75,7 +76,9 @@ namespace game
 			{
 				if(!alive++) 
 				{
-					settexture(!strcmp(o->team, "red") ? "packages/hud/blip_red_alive.png" : "packages/hud/blip_blue_alive.png");
+					// TODO: this doesn't compensate for other possible team colors, make a function to make this cleaner
+					formatstring(teammate_blip, "packages/hud/blip_%s_alive.png", d->team);
+					settexture(teammate_blip);
 					gle::defvertex(2);
 					gle::deftexcoord0();
 					gle::begin(GL_QUADS);
@@ -91,7 +94,8 @@ namespace game
 			{
 				if(!dead++) 
 				{
-					settexture(!strcmp(o->team, "red") ? "packages/hud/blip_red_dead.png" : "packages/hud/blip_blue_dead.png");
+					formatstring(teammate_blip, "packages/hud/blip_%s_dead.png", d->team);
+					settexture(teammate_blip);
 					gle::defvertex(2);
 					gle::deftexcoord0();
 					gle::begin(GL_QUADS);
@@ -101,7 +105,7 @@ namespace game
 		}
 		if(dead) gle::end();
 	}
-		
+
 	#include "capture.h"
 	#include "ctf.h"
 	#include "collect.h"
@@ -115,10 +119,10 @@ namespace game
 
 	void setclientmode()
 	{
-		if(m_capture) cmode = &capturemode;
-		else if(m_ctf) cmode = &ctfmode;
-		else if(m_collect) cmode = &collectmode;
-		else if(m_race) cmode = &racemode;
+		if (m_capture) cmode = &capturemode;
+		else if (m_ctf) cmode = &ctfmode;
+		else if (m_collect) cmode = &collectmode;
+		else if (m_race) cmode = &racemode;
 		else cmode = NULL;
 	}
 
@@ -133,7 +137,7 @@ namespace game
 
 	bool connected = false, remote = false, demoplayback = false, gamepaused = false;
 	int sessionid = 0, mastermode = MM_OPEN, gamespeed = 100;
-	cbstring servinfo = "", servauth = "", connectpass = "";
+	old_string servdesc = "", servauth = "", connectpass = "";
 
 	VARP(deadpush, 1, 2, 20);
 
@@ -147,11 +151,16 @@ namespace game
 	{
 		conoutf("your name is: %s", colorname(player1));
 	}
-	ICOMMAND(name, "", (), result(colorname(player1)));
 
+	ICOMMAND(name, "sN", (char* s, int* numargs),
+	{
+		// this uses a hack, we don't know offline status before name set
+		if(*numargs > 0 && (offline || !strcmp(player1->name, "CardboardPlayer"))) switchname(s);
+		else if(!*numargs) printname();
+		else result(colorname(player1));
+	});
 	ICOMMAND(getname, "", (), result(player1->name));
-
-	ICOMMAND(gettags, "", (), result(player1->pinfo->tags));
+	ICOMMAND(gettags, "", (), result(player1->user->tags));
 
 	void switchteam(const char *team)
 	{
@@ -162,12 +171,13 @@ namespace game
 	{
 		conoutf("your team is: %s", player1->team);
 	}
+
 	ICOMMAND(team, "sN", (char *s, int *numargs),
 	{
 		if(*numargs > 0)
 		{
-			if(!strcmp(s,"blue") || !strcmp(s,"red")) switchteam(s);
-			else conoutf("invalid team: %s", s);
+			if(strcmp(s,"red") && strcmp(s,"blue")) conoutf(CON_WARN, "unsupported team \"%s\", you may run into issues.", s);
+			switchteam(s);
 		}
 		else if(!*numargs) printteam();
 		else result(player1->team);
@@ -264,20 +274,26 @@ namespace game
 	{
 		if(!connected) return;
 		sendcrc = true;
-		if(player1->state!=CS_SPECTATOR || player1->privilege || !remote) senditemstoserver = true;
+		if(!spectating(player1) || player1->privilege || !remote) senditemstoserver = true;
 	}
 
+	void writeclientinfo(stream *f)
+	{
+		f->printf("name %s\n", escapestring(player1->name));
+	}
+
+#ifndef NO_EDITOR
 	VAR(allowedit, 0, 0, 1);
-	
+
 	bool allowedittoggle()
 	{
-		if(editmode) return true;
-		if(isconnected() && multiplayer(false) && !m_edit)
+		if (editmode) return true;
+		if (isconnected() && multiplayer(false) && !m_edit)
 		{
 			conoutf(CON_ERROR, "editing in multiplayer requires coop edit mode (1)");
 			return false;
 		}
-		if(!allowedit && !m_edit)
+		if (!allowedit && !m_edit)
 		{
 			conoutf(CON_ERROR, "editing requires \"allowedit\" to be set to 1 to prevent accidental editing");
 			return false;
@@ -293,6 +309,18 @@ namespace game
 		disablezoom();
 		player1->suicided = player1->respawned = -2;
 	}
+#else
+	// editing not supported
+	VAR(allowedit, 1, 0, 0);
+
+	bool allowedittoggle() {
+		return false;
+	}
+
+	void edittoggled(bool on) {
+		return;
+	}
+#endif
 
 	const char *getclientname(int cn)
 	{
@@ -320,6 +348,7 @@ namespace game
 		fpsent *d = getclient(cn);
 		if(!d || d->state==CS_SPECTATOR) return "spectator";
 		const playermodelinfo &mdl = getplayermodelinfo(d);
+		// TODO: rework this to supported recolorable player icons
 		return m_teammode ? (strcmp(d->team, "red") ? mdl.blueicon : mdl.redicon) : mdl.ffaicon;
 	}
 	ICOMMAND(getclienticon, "i", (int *cn), result(getclienticon(*cn)));
@@ -350,10 +379,10 @@ namespace game
 
 	bool isspectator(int cn)
 	{
-		fpsent *d = getclient(cn);
+		fpsent *d = cn<0 ? player1 : getclient(cn);
 		return d && d->state==CS_SPECTATOR;
 	}
-	ICOMMAND(isspectator, "i", (int *cn), intret(isspectator(*cn) ? 1 : 0));
+	ICOMMAND(isspectator, "b", (int *cn), intret(isspectator(*cn) ? 1 : 0));
 
 	bool isai(int cn, int type)
 	{
@@ -363,7 +392,8 @@ namespace game
 	}
 	ICOMMAND(isai, "ii", (int *cn, int *type), intret(isai(*cn, *type) ? 1 : 0));
 
-#include "extserver.h"
+	#include "extserver.h"
+
 	vector<extclient*> extclients;
 	extclient* getextclient(int clientnum) {
 		loopv(extclients) {
@@ -513,7 +543,7 @@ namespace game
 	void listclients(bool local, bool bots)
 	{
 		vector<char> buf;
-		cbstring cn;
+		old_string cn;
 		int numclients = 0;
 		if(local && connected)
 		{
@@ -593,7 +623,7 @@ namespace game
 	void hashpwd(const char *pwd)
 	{
 		if(player1->clientnum<0) return;
-		cbstring hash;
+		old_string hash;
 		server::hashpassword(player1->clientnum, sessionid, pwd, hash);
 		result(hash);
 	}
@@ -608,7 +638,7 @@ namespace game
 			cn = parseplayer(who);
 			if(cn < 0) return;
 		}
-		cbstring hash = "";
+		old_string hash = "";
 		if(!arg[1] && isdigit(arg[0])) val = parseint(arg);
 		else 
 		{
@@ -632,6 +662,7 @@ namespace game
 	ICOMMAND(sauth, "", (), if(servauth[0]) tryauth(servauth));
 	ICOMMAND(dauth, "s", (char *desc), if(desc[0]) tryauth(desc));
 
+	ICOMMAND(getservdesc, "", (), result(servdesc));
 	ICOMMAND(getservauth, "", (), result(servauth));
 
 	void togglespectator(int val, const char *who)
@@ -645,7 +676,7 @@ namespace game
 	ICOMMAND(checkmaps, "", (), addmsg(N_CHECKMAPS, "r"));
 
 	int gamemode = INT_MAX, nextmode = INT_MAX;
-	cbstring clientmap = "";
+	old_string clientmap = "";
 
 	void changemapserv(const char *name, int mode)        // forced map change from the server
 	{
@@ -655,7 +686,7 @@ namespace game
 			loopi(NUMGAMEMODES) if(m_mp(STARTGAMEMODE + i)) { mode = STARTGAMEMODE + i; break; }
 		}
 
-		// TODO: map download code here
+		// TODO: map download code here??
 
 		gamemode = mode;
 		nextmode = mode;
@@ -667,6 +698,7 @@ namespace game
 			senditemstoserver = false;
 		}
 		startgame();
+
 		#ifdef DISCORD
 			discord::updatePresence((player1->state == CS_SPECTATOR ? discord::D_SPECTATE : discord::D_PLAYING), gamemodes[gamemode + -(STARTGAMEMODE)].name, player1, true);
 		#endif
@@ -709,9 +741,9 @@ namespace game
 	ICOMMANDS("m_demo", "i", (int *mode), { int gamemode = *mode; intret(m_demo); });
 	ICOMMANDS("m_edit", "i", (int *mode), { int gamemode = *mode; intret(m_edit); });
 	ICOMMANDS("m_lobby", "i", (int *mode), { int gamemode = *mode; intret(m_lobby); });
-	ICOMMANDS("m_parkour", "i", (int *mode), { int gamemode = *mode; intret(m_parkour); });
-	ICOMMANDS("m_grenade", "i", (int *mode), { int gamemode = *mode; intret(m_grenade); });
-	ICOMMANDS("m_lms", "i", (int *mode), { int gamemode = *mode; intret(m_lms); });
+	ICOMMANDS("m_parkour", "i", (int* mode), { int gamemode = *mode; intret(m_parkour); });
+	ICOMMANDS("m_grenade", "i", (int* mode), { int gamemode = *mode; intret(m_grenade); });
+	ICOMMANDS("m_lms", "i", (int* mode), { int gamemode = *mode; intret(m_lms); });
 	ICOMMANDS("m_ectf", "i", (int* mode), { int gamemode = *mode; intret(m_ectf); });
 	ICOMMANDS("m_bottomless", "i", (int* mode), { int gamemode = *mode; intret(m_bottomless); });
 	ICOMMANDS("m_test", "i", (int* mode), { int gamemode = *mode; intret(m_test); });
@@ -725,7 +757,7 @@ namespace game
 			server::forcemap(name, mode);
 			if(!isconnected()) localconnect();
 		}
-		else if(player1->state!=CS_SPECTATOR || player1->privilege) addmsg(N_MAPVOTE, "rsi", name, mode);
+		else if(!spectating(player1) || player1->privilege) addmsg(N_MAPVOTE, "rsi", name, mode);
 	}
 	void changemap(const char *name)
 	{
@@ -883,7 +915,7 @@ namespace game
 			case ID_VAR:
 			{
 				int val = *id->storage.i;
-				cbstring str;
+				old_string str;
 				if(val < 0)
 					formatstring(str, "%d", val); 
 				else if(id->flags&IDF_HEX && id->maxval==0xFFFFFF)
@@ -939,7 +971,7 @@ namespace game
 
 	bool ispaused() { return gamepaused; }
 
-	bool allowmouselook() { return player1->state==CS_SPECTATOR || !gamepaused || !remote || m_edit; }
+	bool allowmouselook() { return spectating(player1) || !gamepaused || !remote || m_edit; }
 
 	void changegamespeed(int val)
 	{
@@ -1047,6 +1079,8 @@ namespace game
 		if(remote) stopfollowing();
 		ignores.setsize(0);
 		connected = remote = false;
+		servdesc[0] = '\0';
+		servauth[0] = '\0';
 		player1->clientnum = -1;
 		sessionid = 0;
 		mastermode = MM_OPEN;
@@ -1071,13 +1105,19 @@ namespace game
 
 	VARP(teamcolorchat, 0, 1, 1);
 	const char *chatcolorname(fpsent *d, bool tags) { 
-		return teamcolorchat ? teamcolorname(d, NULL, tags) : colorname(d, NULL, "", "", NULL, tags);
+		return teamcolorchat && !spectating(player1) ? teamcolorname(d, NULL, tags) : colorname(d, NULL, "", "", NULL, tags);
 	}
 
-	void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(player1, true), text); addmsg(N_TEXT, "rcs", player1, text); }
+	void toserver(char *text) { 
+		conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(player1, true), text);
+		addmsg(N_TEXT, "rcs", player1, text); 
+	}
 	COMMANDN(say, toserver, "C");
 
-	void sayteam(char *text) { conoutf(CON_TEAMCHAT, "\fs\fp[team]\fr %s: \fp%s", chatcolorname(player1, false), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
+	void sayteam(char *text) { 
+		conoutf(CON_TEAMCHAT, "\fs\fp[%s]\fr %s: \fp%s", spectating(player1) ? "spec" : "team", chatcolorname(player1, false), text);
+		addmsg(N_SAYTEAM, "rcs", player1, text); 
+	}
 	COMMAND(sayteam, "C");
 
 	ICOMMAND(servcmd, "C", (char *cmd), addmsg(N_SERVCMD, "rs", cmd));
@@ -1087,7 +1127,7 @@ namespace game
 		putint(q, N_POS);
 		putuint(q, d->clientnum);
 		// 3 bits phys state, 1 bit life sequence, 4 bits unused
-		uchar physstate = d->physstate | ((d->lifesequence&1)<<3);
+		uchar physstate = d->physstate | ((d->lifesequence & 1) << 3);
 		q.put(physstate);
 		ivec o = ivec(vec(d->o.x, d->o.y, d->o.z-d->eyeheight).mul(DMF));
 		uint vel = min(int(d->vel.magnitude()*DVELF), 0xFFFF), fall = min(int(d->falling.magnitude()*DVELF), 0xFFFF);
@@ -1207,7 +1247,7 @@ namespace game
 	void c2sinfo(bool force) // send update to the server
 	{
 		static int lastupdate = -1000;
-		if(totalmillis - lastupdate < 10 && !force) return; // don't update faster than 100fps, 33=30fps, 15=~66.67fps
+		if(totalmillis - lastupdate < 10 && !force) return; // don't update faster than 100fps
 		lastupdate = totalmillis;
 		sendpositions();
 		sendmessages();
@@ -1218,7 +1258,7 @@ namespace game
 	{
 		filtertext(player1->pubtoken, pubtoken, false, false, 32);
 	}
-	
+
 	void sendintro()
 	{
 		packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
@@ -1226,7 +1266,7 @@ namespace game
 		sendstring(player1->name, p);
 		sendstring(player1->pubtoken, p);
 		putint(p, player1->playermodel);
-		cbstring hash = "";
+		old_string hash = "";
 		if(connectpass[0])
 		{
 			server::hashpassword(player1->clientnum, sessionid, connectpass, hash);
@@ -1383,11 +1423,11 @@ namespace game
 			if(d==player1) getint(p);
 			else d->state = getint(p);
 			d->frags = getint(p);
-			if(-(d->frags)>d->suicides) d->suicides = -(d->frags); // best effort suicides initialization when joining a running game
+			// TODO: actually send this data in the packet?
+			if (-(d->frags) > d->suicides) d->suicides = -(d->frags); // best effort suicides initialization when joining a running game
 			d->flags = getint(p);
 			d->deaths = getint(p);
-			//if(d==player1) getint(p); // this shit is fucked
-			getint(p); // quad
+			// quad removed
 		}
 		d->lifesequence = getint(p);
 		d->health = getint(p);
@@ -1395,13 +1435,13 @@ namespace game
 		if(resume && d==player1)
 		{
 			getint(p);
-			loopi(GUN_GL-GUN_SMG+1) getint(p);
+			loopi(GUN_GL-GUN_ARIFLE+1) getint(p);
 		}
 		else
 		{
 			int gun = getint(p);
 			d->gunselect = clamp(gun, int(GUN_FIST), int(GUN_GL));
-			loopi(GUN_GL-GUN_SMG+1) d->ammo[GUN_SMG+i] = getint(p);
+			loopi(GUN_GL-GUN_ARIFLE+1) d->ammo[GUN_ARIFLE+i] = getint(p);
 		}
 	}
 
@@ -1429,7 +1469,7 @@ namespace game
 				sessionid = getint(p);
 				player1->clientnum = mycn;      // we are now connected
 				if(getint(p) > 0) conoutf("this server is password protected");
-				getstring(servinfo, p, sizeof(servinfo));
+				getstring(servdesc, p, sizeof(servdesc));
 				getstring(servauth, p, sizeof(servauth));
 				sendintro();
 				break;
@@ -1451,7 +1491,6 @@ namespace game
 				{
 					gamepaused = val;
 					player1->attacking = false;
-					player1->secattacking = false;
 				}
 				if(a) conoutf("%s %s the game", colorname(a), val ? "paused" : "resumed"); 
 				else conoutf("game is %s", val ? "paused" : "resumed");
@@ -1490,7 +1529,7 @@ namespace game
 				if(d->state!=CS_DEAD && d->state!=CS_SPECTATOR)
 					particle_textcopy(d->abovehead(), text, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
 				conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(d, true), text);
-				if(chatsounds) playsound(S_ALLCHAT);
+				if (chatsounds) playsound(S_ALLCHAT);
 				break;
 			}
 
@@ -1503,8 +1542,8 @@ namespace game
 				if(!t || isignored(t->clientnum)) break;
 				if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
 					particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
-				conoutf(CON_TEAMCHAT, "\fs\fp[team]\fr %s: \fp%s", chatcolorname(t, false), text);
-				if(chatsounds) playsound(S_TEAMCHAT);
+				conoutf(CON_TEAMCHAT, "\fs\f8[%s]\fr %s: \f8%s", t->state==CS_SPECTATOR ? "spec" : "team", chatcolorname(t, false), text);
+				if (chatsounds) playsound(S_TEAMCHAT);
 				break;
 			}
 
@@ -1683,13 +1722,14 @@ namespace game
 					acn = getint(p),
 					damage = getint(p),
 					health = getint(p),
-					gun = getint(p);
+					gun = getint(p),
+					headshot = getint(p);
 				fpsent *target = getclient(tcn),
 					   *actor = getclient(acn);
 				if(!target || !actor) break;
 				target->health = health;
 				if(target->state == CS_ALIVE && actor != player1) target->lastpain = lastmillis;
-				damaged(damage, target, actor, gun, false);
+				damaged(damage, target, actor, gun, headshot, false);
 				break;
 			}
 
@@ -1705,7 +1745,7 @@ namespace game
 
 			case N_DIED:
 			{
-				int vcn = getint(p), acn = getint(p), frags = getint(p), tfrags = getint(p), gun = getint(p), hs = getint(p);
+				int vcn = getint(p), acn = getint(p), frags = getint(p), tfrags = getint(p), gun = getint(p), headshot = getint(p);
 				fpsent *victim = getclient(vcn),
 					   *actor = getclient(acn);
 				if(!actor) break;
@@ -1718,7 +1758,7 @@ namespace game
 					particle_textcopy(actor->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
 				}
 				if(!victim) break;
-				killed(victim, actor, gun, hs);
+				killed(victim, actor, gun, headshot);
 				break;
 			}
 
@@ -1895,7 +1935,7 @@ namespace game
 				if(!d) return;
 				int type = getint(p);
 				getstring(text, p);
-				cbstring name;
+				old_string name;
 				filtertext(name, text, false);
 				ident *id = getident(name);
 				switch(type)
@@ -2058,6 +2098,30 @@ namespace game
 			#include "race.h"
 			#undef PARSEMESSAGES
 
+			case N_ANNOUNCE:
+			{
+				int t = getint(p);
+				// TODO: this could be useful in the future?
+				/*
+				// is this valid, i've never used a nested switch in c++
+				switch (t) {
+					case I_QUAD:
+					{
+						playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);
+						conoutf(CON_GAMEINFO, "\f2quad damage will spawn in 10 seconds!");
+						break;
+					}
+					case I_BOOST:
+					{
+						playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000);
+						conoutf(CON_GAMEINFO, "\f2health boost will spawn in 10 seconds!");
+						break;
+					}
+				}
+				*/
+				break;
+			}
+
 			case N_NEWMAP:
 			{
 				int size = getint(p);
@@ -2102,7 +2166,7 @@ namespace game
 			case N_INITAI:
 			{
 				int bn = getint(p), on = getint(p), at = getint(p), sk = clamp(getint(p), 1, 101), pm = getint(p);
-				cbstring name, team;
+				old_string name, team;
 				getstring(text, p);
 				filtertext(name, text, false, false, MAXNAMELEN);
 				getstring(text, p);
@@ -2126,7 +2190,7 @@ namespace game
 	struct demoreq
 	{
 		int tag;
-		cbstring name;
+		old_string name;
 	};
 	vector<demoreq> demoreqs;
 	enum { MAXDEMOREQS = 7 };
@@ -2140,7 +2204,7 @@ namespace game
 			case N_DEMOPACKET: return;
 			case N_SENDDEMO:
 			{
-				cbstring fname;
+				old_string fname;
 				fname[0] = '\0';
 				int tag = getint(p);
 				loopv(demoreqs) if(demoreqs[i].tag == tag)
@@ -2171,7 +2235,7 @@ namespace game
 			case N_SENDMAP:
 			{
 				if(!m_edit) return;
-				cbstring oldname;
+				old_string oldname;
 				copystring(oldname, getclientmap());
 				defformatstring(mname, "getmap_%d", lastmillis);
 				defformatstring(fname, "packages/maps/%s.cmr", mname);
@@ -2269,7 +2333,7 @@ namespace game
 
 	void sendmap()
 	{
-		if(!m_edit || (player1->state==CS_SPECTATOR && remote && !player1->privilege)) { conoutf(CON_ERROR, "\"sendmap\" only works in Cooperative Edit mode"); return; }
+		if(!m_edit || (spectating(player1) && remote && !player1->privilege)) { conoutf(CON_ERROR, "\"sendmap\" only works in Cooperative Edit mode"); return; }
 		conoutf("sending map...");
 		defformatstring(mname, "sendmap_%d", lastmillis);
 		save_world(mname, true);
@@ -2294,7 +2358,7 @@ namespace game
 
 	void gotoplayer(const char *arg)
 	{
-		if(player1->state!=CS_SPECTATOR && player1->state!=CS_EDITING) return;
+		if(!spectating(player1) && player1->state != CS_EDITING) return;
 		int i = parseplayer(arg);
 		if(i>=0)
 		{

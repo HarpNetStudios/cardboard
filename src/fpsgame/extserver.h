@@ -10,16 +10,16 @@
 #define EXT_PLAYERSTATS                 1
 #define EXT_TEAMSCORE                   2
 struct tscore {
-	cbstring team;
+	old_string team;
 	int score;
 	tscore() : score(0) {}
 };
 struct extserver {
 	uint ip;
 	int port;
-	cbstring name;
+	old_string name;
 	int clients, maxclients, gamemode;
-	cbstring map;
+	old_string map;
 	int gametime, mastermode, gamespeed;
 	bool gamepaused;
 	int protocol, uptime;
@@ -324,7 +324,7 @@ void processservinfo()
 						es->extclients.add(ec);
 					}
 					ec->ping = getint(p);
-					cbstring strdata;
+					old_string strdata;
 					getstring(strdata, p);
 					strncpy(ec->name, strdata, MAXNAMELEN + 1);
 					getstring(strdata, p);
@@ -354,7 +354,7 @@ void processservinfo()
 					getint(p); // gamemode
 					while (p.remaining()) {
 						tscore* score = new tscore;
-						cbstring t;
+						old_string t;
 						getstring(t, p);
 						filtertext(score->team, t, false);
 						score->score = getint(p);
@@ -388,7 +388,7 @@ void processservinfo()
 				es->gamepaused = getint(p);
 				es->gamespeed = getint(p);
 			}
-			cbstring map, name;
+			old_string map, name;
 			getstring(map, p);
 			getstring(name, p);
 			filtertext(es->map, map, false);
@@ -537,7 +537,7 @@ bool sortteams(tscore* a, tscore* b) {
 void extservclients(int i)
 {
 	vector<char> buf;
-	cbstring cn;
+	old_string cn;
 	int numclients = 0;
 	if (!extservers.inrange(i) || !extservers[i]) return;
 	extserver* es = extservers[i];
@@ -555,7 +555,7 @@ ICOMMAND(extservclients, "i", (int* i), extservclients(*i));
 void extservteams(int i)
 {
 	vector<char> buf;
-	cbstring cn;
+	old_string cn;
 	int numclients = 0;
 	if (!extservers.inrange(i) || !extservers[i]) return;
 	extserver* es = extservers[i];

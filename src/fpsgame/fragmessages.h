@@ -5,7 +5,7 @@
 
 namespace game {
 	struct fragmessage {
-		cbstring attackername, victimname;
+		old_string attackername, victimname;
 		int weapon;
 		int fragtime;
 		bool headshot;

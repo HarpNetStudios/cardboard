@@ -28,6 +28,10 @@ else()
     set(BUILD_TARGET_X86 1)
 endif()
 
+if(NO_EDITOR)
+    set(BUILD_FLAGS "${BUILD_FLAGS} -DNO_EDITOR")
+endif()
+
 set(BUILD_DEBUG_FLAGS   "${BUILD_FLAGS} -D_DEBUG -DBUILD_DEBUG -DCLIENT")
 set(BUILD_RELEASE_FLAGS "${BUILD_FLAGS} -DNDEBUG -DBUILD_NO_DEBUG")
 
@@ -44,8 +48,6 @@ message(STATUS "Set debug mode flags (${BUILD_DEBUG_FLAGS}) (Current mode: ${CMA
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${BUILD_C_RELEASE_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${BUILD_CXX_RELEASE_FLAGS}")
 message(STATUS "Set release mode flags (${BUILD_RELEASE_FLAGS}) (Current mode: ${CMAKE_BUILD_TYPE}, compiler: ${CMAKE_CXX_COMPILER_ID})")
-
-
 
 ################ Files ################
 
@@ -164,5 +166,4 @@ target_link_libraries(native_master ${cardboard_link_libraries_master})
 
 ################ Install targets ################
 set(cardboard_dir "${PROJECT_SOURCE_DIR}/bin_unix")
-
 install(TARGETS native_client native_server native_master RUNTIME DESTINATION ${cardboard_dir})

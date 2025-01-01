@@ -2,3 +2,9 @@
 name = "play"
 path = "launcher.exe"
 platform = "windows"
+
+[[prereqs]]
+name = "vcredist-2019-x86"
+
+[[prereqs]]
+name = "vcredist-2019-x64"

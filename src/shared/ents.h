@@ -84,12 +84,12 @@ struct physent                                  // base entity type, can be affe
 	schar vertical;
 	float camx, camy;                           // used by the joystick for constant camera updates
 
+	bool racing;                                // used to disable player collisions while racing
+
 	uchar physstate;                            // one of PHYS_* above
 	uchar state, editstate;                     // one of CS_* above
 	uchar type;                                 // one of ENT_* above
-	uchar collidetype;                          // one of COLLIDE_* above
-
-	bool racing;                                // used to disable player collisions in racing modes
+	uchar collidetype;                          // one of COLLIDE_* above           
 
 	bool blocked;                               // used by physics to signal ai
 
@@ -97,8 +97,7 @@ struct physent                                  // base entity type, can be affe
 			   radius(4.1f), eyeheight(14), aboveeye(1), xradius(4.1f), yradius(4.1f), zmargin(0),
 			   state(CS_ALIVE), editstate(CS_ALIVE), type(ENT_PLAYER),
 			   collidetype(COLLIDE_ELLIPSE),
-			   racing(false),
-			   blocked(false)
+			   blocked(false), racing(false)
 			   { reset(); }
 			  
 	void resetinterp()
@@ -126,8 +125,15 @@ struct physent                                  // base entity type, can be affe
 	vec feetpos(float offset = 0) const { return vec(o).add(vec(0, 0, offset - eyeheight)); }
 	vec headpos(float offset = 0) const { return vec(o).add(vec(0, 0, offset)); }
 
-	bool maymove() const { return timeinair || physstate < PHYS_FLOOR || vel.squaredlen() > 1e-4f || deltapos.squaredlen() > 1e-4f; } 
-	bool tryingtomove() const { return fmove != 0.0f || fstrafe != 0.0f || vertical != 0; }
+	bool maymove() const
+	{ 
+		return timeinair || physstate < PHYS_FLOOR || vel.squaredlen() > 1e-4f || deltapos.squaredlen() > 1e-4f; 
+	}
+
+	bool tryingtomove() const
+	{
+		return fmove != 0.0f || fstrafe != 0.0f || vertical != 0; 
+	}
 };
 
 enum
@@ -187,8 +193,23 @@ struct animinfo // description of a character's animation
 
 	animinfo() : anim(0), frame(0), range(0), basetime(0), speed(100.0f), varseed(0) { }
 
-	bool operator==(const animinfo &o) const { return frame==o.frame && range==o.range && (anim&(ANIM_SETTIME|ANIM_DIR))==(o.anim&(ANIM_SETTIME|ANIM_DIR)) && (anim&ANIM_SETTIME || basetime==o.basetime) && speed==o.speed; }
-	bool operator!=(const animinfo &o) const { return frame!=o.frame || range!=o.range || (anim&(ANIM_SETTIME|ANIM_DIR))!=(o.anim&(ANIM_SETTIME|ANIM_DIR)) || (!(anim&ANIM_SETTIME) && basetime!=o.basetime) || speed!=o.speed; }
+	bool operator==(const animinfo &o) const
+	{ 
+		return frame==o.frame && 
+			range==o.range && 
+			(anim&(ANIM_SETTIME|ANIM_DIR))==(o.anim&(ANIM_SETTIME|ANIM_DIR)) &&
+			(anim&ANIM_SETTIME || basetime==o.basetime) && 
+			speed==o.speed; 
+	}
+
+	bool operator!=(const animinfo &o) const
+	{ 
+		return frame!=o.frame ||
+			range!=o.range ||
+			(anim&(ANIM_SETTIME|ANIM_DIR))!=(o.anim&(ANIM_SETTIME|ANIM_DIR)) ||
+			(!(anim&ANIM_SETTIME) && basetime!=o.basetime) ||
+			speed!=o.speed;
+	}
 };
 
 struct animinterpinfo // used for animation blending of animated characters

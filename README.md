@@ -8,13 +8,18 @@ Based on the fantastic Cube 2 game engine.
 It currently also houses the source for Carmine Impact,
 as it's deeply rooted within the engine itself.
 
-## Supported Platforms
+## Officially Supported Platforms
 ### Desktop
-- Windows 10+: ✅
+- Windows 10+:
+	- x86: ✅
+	- x86_64: ✅
+	- ARM64: ❌
 - OSX 10.9+:
 	- x86_64: ⚠️
 	- ARM64: ❌
 - Linux: ✅
+
+It might build on other platforms with a bit of tweaking, but these are the ones that have been tested to work.
 
 ## Build instructions
 ### Windows
@@ -66,5 +71,7 @@ Github Issues is the best way to report bugs,
 as well as reporting them in the [official Discord server](https://discord.gg/zsUak4D).
 
 ## License
-The Cardboard engine is licensed under the zlib license.
+The Cardboard engine (excluding assets) is licensed under the zlib license.
 Please refer to the [`license`](https://github.com/HarpNetStudios/cardboard/tree/master/license) folder for more info.
+
+Assets are licensed as stated their respective folder in `packages` states in the included README or LICENSE file.

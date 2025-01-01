@@ -137,7 +137,7 @@ extern int drawtex;
 extern bool renderedgame;
 extern const matrix4 viewmatrix;
 extern matrix4 cammatrix, projmatrix, camprojmatrix, invcammatrix, invcamprojmatrix;
-extern bvec fogcolorvec;
+extern bvec fogcolor_i;
 extern vec curfogcolor;
 extern int fog;
 extern float curfogstart, curfogend;
@@ -153,7 +153,7 @@ extern void gl_drawframe();
 extern void gl_drawmainmenu();
 extern void drawminimap();
 extern void drawtextures();
-extern void enablepolygonoffset(GLenum type);
+extern void enablepolygonoffset(GLenum type, float scale = 1.0f);
 extern void disablepolygonoffset(GLenum type);
 extern void calcspherescissor(const vec &center, float size, float &sx1, float &sy1, float &sx2, float &sy2);
 extern int pushscissor(float sx1, float sy1, float sx2, float sy2);
@@ -222,7 +222,7 @@ extern int genclipplane(const cube &c, int i, vec *v, plane *clip);
 extern void genclipplanes(const cube &c, const ivec &co, int size, clipplanes &p, bool collide = true);
 extern bool visibleface(const cube &c, int orient, const ivec &co, int size, ushort mat = MAT_AIR, ushort nmat = MAT_AIR, ushort matmask = MATF_VOLUME);
 extern int classifyface(const cube &c, int orient, const ivec &co, int size);
-extern int visibletris(const cube &c, int orient, const ivec &co, int size, ushort nmat = MAT_ALPHA, ushort matmask = MAT_ALPHA);
+extern int visibletris(const cube &c, int orient, const ivec &co, int size, ushort nmat = MAT_ALPHA, ushort matmask = MAT_ALPHA, bool showoutside = false);
 extern int visibleorient(const cube &c, int orient);
 extern void genfaceverts(const cube &c, int orient, ivec v[4]);
 extern int calcmergedsize(int orient, const ivec &co, int size, const vertinfo *verts, int numverts);
@@ -237,6 +237,7 @@ static inline cubeext &ext(cube &c)
 	return *(c.ext ? c.ext : newcubeext(c));
 }
 
+#ifndef NO_EDITOR
 // ents
 extern char *entname(entity &e);
 extern bool haveselent();
@@ -255,6 +256,7 @@ extern void tryedit();
 extern bool prefabloaded(const char *name);
 extern void renderprefab(const char *name, const vec &o, float yaw, float pitch, float roll, float size = 1, const vec &color = vec(1, 1, 1));
 extern void previewprefab(const char *name, const vec &color);
+#endif
 
 // octarender
 extern vector<tjoint> tjoints;
@@ -344,12 +346,12 @@ extern int reflectdist, vertwater, waterrefract, waterreflect, waterfade, causti
 		} \
 	}
 
-extern const bvec &getwatercolorvec(int mat);
-extern const bvec &getwaterfallcolorvec(int mat);
+extern const bvec &getwatercolor_i(int mat);
+extern const bvec &getwaterfallcolor_i(int mat);
 extern int getwaterfog(int mat);
-extern const bvec &getlavacolorvec(int mat);
+extern const bvec &getlavacolor_i(int mat);
 extern int getlavafog(int mat);
-extern const bvec &getglasscolorvec(int mat);
+extern const bvec &getglasscolor_i(int mat);
 
 extern void cleanreflections();
 extern void queryreflections();
@@ -505,7 +507,7 @@ extern void resetmap();
 extern void startmap(const char *name);
 
 // rendermodel
-struct mapmodelinfo { cbstring name; model *m; };
+struct mapmodelinfo { old_string name; model *m; };
 
 extern bool modelloaded(const char *name);
 extern void findanims(const char *pattern, vector<int> &anims);
@@ -573,7 +575,6 @@ extern void g3d_render2d();
 extern bool g3d_windowhit(bool on, bool act);
 extern bool g3d_key(int code, bool isdown);
 extern bool g3d_input(const char *str, int len);
-
 // menus
 extern int mainmenu;
 

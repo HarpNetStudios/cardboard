@@ -12,12 +12,7 @@ namespace entities
 
 	void readent(entity &e, char *buf, int ver)     // read from disk, and init
 	{
-		if(ver <= 30) switch(e.type)
-		{
-			case FLAG:
-			case TELEDEST:
-				break;
-		}
+		// ent fixes not needed, we are not backwards compatible with sauer
 	}
 
 #ifndef STANDALONE
@@ -28,6 +23,7 @@ namespace entities
 	bool mayattach(extentity &e) { return false; }
 	bool attachent(extentity &e, extentity &a) { return false; }
 
+	// TODO: rework this, get rid of itemstats
 	const char *itemname(int i)
 	{
 		int t = ents[i]->type;
@@ -44,21 +40,18 @@ namespace entities
 
 	const char *entmdlname(int type)
 	{
+		// TODO: models for ammo and health
 		static const char * const entmdlnames[] =
 		{
 			NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-			NULL, NULL, // health, ammo
+			NULL, NULL, // ammo, health
 			NULL, NULL, "race/gem", // race start, finish, checkpoint
-			NULL, NULL, NULL, NULL, NULL, NULL,
+			NULL, NULL, NULL, NULL, NULL, NULL, 
+			"teleporter", NULL, // teleporter, teledest
 			NULL, NULL,
-			NULL,
-			NULL, NULL,
-			NULL,
-			NULL, NULL,
-			NULL, NULL,
-			NULL, NULL,
-			NULL, NULL,
-			NULL // this is fucked up -Y
+			NULL, NULL, // jumppad, base
+			NULL, NULL, NULL, NULL, NULL,
+			NULL, // flag
 		};
 		return entmdlnames[type];
 	}
@@ -80,9 +73,10 @@ namespace entities
 			switch(i)
 			{
 				case I_AMMO: case I_HEALTH:
+					if(m_noammo) continue;
 					break;
 				case RACE_START: case RACE_FINISH: case RACE_CHECKPOINT:
-					if (!m_race || !m_edit) continue;
+					if(!m_race || !m_edit) continue;
 					break;
 			}
 			const char *mdl = entmdlname(i);
@@ -131,13 +125,12 @@ namespace entities
 
 	void addammo(int *v, bool local)
 	{
-		itemstat &is = itemstats[I_AMMO];
-		loopi(6)
-		{	
-			v[i+1] += guns[i+1].ammoadd;
-			if(v[i+1]>is.max) v[i+1] = guns[i+1].ammomax;
+		// give ammo for each gun, cap to max
+		loopi(NUMGUNS - 1) {
+			v[i + 1] += guns[i + 1].ammoadd;
+			v[i + 1] = min(v[i + 1], guns[i + 1].ammomax);
 		}
-		if(local) msgsound(is.sound);
+		if(local) msgsound(S_ITEMAMMO);
 	}
 
 	void repammo(fpsent *d, bool local)
@@ -157,15 +150,34 @@ namespace entities
 		e->clearspawned();
 		e->clearnopickup();
 		if(!d) return;
-		itemstat &is = itemstats[type-I_HEALTH];
 		fpsent *h = followingplayer(player1);
 		if(d!=h || isthirdperson())
 		{
+			// TODO: item pickup icon
 			//particle_text(d->abovehead(), is.name, PART_TEXT, 2000, 0xFFC864, 4.0f, -8);
-			particle_icon(d->abovehead(), is.icon%4, is.icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
+			//particle_icon(d->abovehead(), is.icon%4, is.icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
 		}
-		playsound(itemstats[type-I_HEALTH].sound, d!=h ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
+		// TODO: make pickup sound based on item type
+		playsound(S_ITEMPUP, d!=h ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
 		d->pickup(type);
+		// TODO: might be useful
+		/*
+		if (d == h)
+		{
+			switch (type)
+			{
+				case I_BOOST:
+					conoutf(CON_GAMEINFO, "\f2you got the health boost!");
+					playsound(S_V_BOOST, NULL, NULL, 0, 0, 0, -1, 0, 3000);
+					break;
+
+				case I_QUAD:
+					conoutf(CON_GAMEINFO, "\f2you got the quad!");
+					playsound(S_V_QUAD, NULL, NULL, 0, 0, 0, -1, 0, 3000);
+					break;
+			}
+		}
+		*/
 	}
 
 	// these functions are called when the client touches the item
@@ -212,7 +224,7 @@ namespace entities
 		if(local && d->clientnum >= 0)
 		{
 			// act like the jump pad lets you touch the ground
-			if(!d->jumpstate || (d->jumpstate == 2)) d->jumpstate = 1;
+			if (!d->jumpstate || (d->jumpstate == 2)) d->jumpstate = 1;
 			sendposition(d);
 			packetbuf p(16, ENET_PACKET_FLAG_RELIABLE);
 			putint(p, N_JUMPPAD);
@@ -326,22 +338,30 @@ namespace entities
 
 	void checkitems(fpsent *d)
 	{
-		if(d->state!=CS_ALIVE) return;
 		vec o = d->feetpos();
+		if (d->state == CS_SPECTATOR) {
+			loopv(ents)
+			{
+				extentity& e = *ents[i];
+				if(e.type == TELEPORT && e.o.dist(o) < 16) trypickup(i, d);
+			}
+		}
+		if(d->state!=CS_ALIVE) return;
 		loopv(ents)
 		{
 			extentity &e = *ents[i];
 			if(e.type==NOTUSED) continue;
-			if((!e.spawned() || e.nopickup()) && e.type!=TELEPORT && e.type!=JUMPPAD && (m_race && e.type!=RACE_START && e.type!=RACE_FINISH && e.type!=RACE_CHECKPOINT)) continue;
+			if((!e.spawned() || e.nopickup()) && e.type!=TELEPORT && e.type!=JUMPPAD && (m_race && e.type != RACE_START && e.type != RACE_FINISH && e.type != RACE_CHECKPOINT)) continue;
 			float dist = e.o.dist(o);
 			if(dist<(e.type==TELEPORT ? 16 : 12)) trypickup(i, d);
 		}
 	}
 
+	// TODO: check if we can make race entities not show up in race mode here
 	void putitems(packetbuf &p)            // puts items in network stream and also spawns them locally
 	{
 		putint(p, N_ITEMLIST);
-		loopv(ents) if(ents[i]->type>=I_AMMO && (!m_noammo || ents[i]->type!=I_AMMO))
+		loopv(ents) if(ents[i]->type >= I_AMMO && (!m_noammo || ents[i]->type != I_AMMO))
 		{
 			putint(p, i);
 			putint(p, ents[i]->type);
@@ -357,9 +377,10 @@ namespace entities
 		loopv(ents)
 		{
 			extentity *e = ents[i];
-			if(e->type>=I_AMMO && (!m_noammo || e->type!=I_AMMO))
+			if(e->type >= I_AMMO && (!m_noammo || e->type != I_AMMO))
 			{
-				e->setspawned(force || !server::delayspawn(e->type));
+				// do not initially spawn items unless forced
+				e->setspawned(force);
 				e->clearnopickup();
 			}
 		}
@@ -588,12 +609,16 @@ namespace entities
 		switch(e.type)
 		{
 			case FLAG:
+				e.attr5 = e.attr4;
+				e.attr4 = e.attr3;
 			case TELEDEST:
 				e.attr3 = e.attr2;
+			// TODO: is this correct??? idk what this is for
 			case RACE_START:
 			case RACE_FINISH:
 			case RACE_CHECKPOINT:
 				e.attr2 = e.attr1;
+				e.attr1 = (int)player1->yaw;
 				break;
 		}
 	}
@@ -628,7 +653,7 @@ namespace entities
 				gle::colorf(1, 0, 0);
 				loopv(ents) {
 					// successor
-					if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == 1) {
+					if (ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == 1) {
 						renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
 					}
 					// precessor
@@ -645,11 +670,11 @@ namespace entities
 				gle::colorf(1, 0, 0);
 				loopv(ents) {
 					// successor
-					if(ents[i]->type == RACE_CHECKPOINT && (e.attr2+1) == ents[i]->attr2) {
+					if (ents[i]->type == RACE_CHECKPOINT && (e.attr2 + 1) == ents[i]->attr2) {
 						renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
 					}
 					// precessor
-					if(ents[i]->type == RACE_CHECKPOINT && (e.attr2-1) == ents[i]->attr2) {
+					if (ents[i]->type == RACE_CHECKPOINT && (e.attr2 - 1) == ents[i]->attr2) {
 						renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
 					}
 					else if (ents[i]->type == RACE_START && e.attr2 == 1) {
@@ -661,7 +686,7 @@ namespace entities
 
 			case RACE_FINISH:
 				gle::colorf(1, 0, 0);
-				loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 > maxcheckpoints) {
+				loopv(ents) if (ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 > maxcheckpoints) {
 					maxcheckpoints = ents[i]->attr2;
 				}
 				// successor
@@ -671,7 +696,7 @@ namespace entities
 				}
 				*/
 				// precessor
-				loopv(ents) if(ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == maxcheckpoints) {
+				loopv(ents) if (ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == maxcheckpoints) {
 					renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
 				}
 				raceyaw(e);
@@ -702,14 +727,16 @@ namespace entities
 		static const char * const entnames[] =
 		{
 			"none?", "light", "mapmodel", "playerstart", "envmap", "particles", "sound", "spotlight",
-			"health", "ammo", "start", "finish", "checkpoint", "placeholder4",
-			"placeholder5", "placeholder6", "placeholder7", "placeholder8", "placeholder9",
+			"ammo", "health",
+			"start", "finish", "checkpoint",
+			"placeholder1", "placeholder2", "placeholder3", "placeholder4", "placeholder5", "placeholder6",
 			"teleport", "teledest",
-			"placeholder10", "placeholder11", "jumppad",
-			"base", "placeholder12",
-			"placeholder13", "placeholder14",
-			"placeholder15", "placeholder16",
+			"placeholder7", "placeholder8", 
+			"jumppad", "base",
+			"placeholder9", "placeholder10", "placeholder11", "placeholder12", "placeholder13",
 			"flag",
+			// TODO: what is this
+			//"", "", "", "", 
 		};
 		return i>=0 && size_t(i)<sizeof(entnames)/sizeof(entnames[0]) ? entnames[i] : "";
 	}

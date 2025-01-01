@@ -21,23 +21,10 @@
 *.pch
 
 # Visual Studio trash
-*.map
-*.ilk
-*.exp
-
-*msvc.lib
-
-# Directories that aren't public
-/res/_Private
-
-# No launcher specific files, different repo for that.
-launcher.json
-Newtonsoft.Json.dll
-Facepunch.Steamworks.Win64.dll
-Microsoft.Web.WebView2.Core.dll
-Microsoft.Web.WebView2.WinForms.dll
-steam_api64.dll
-/*.WebView2
+/bin*/*.map
+/bin*/*.ilk
+/bin*/*.exp
+/bin*/*.lib
 
 # Update temp files
 update.cfg
@@ -45,9 +32,6 @@ update.cfg
 # No no Steamworks API files
 /src/shared/steam
 /bin*/steam_appid.txt
-
-# Ignore bundled font creation utility
-/packages/fonts/cube2font
 
 # macOS/Xcode files
 .DS_Store

@@ -238,7 +238,7 @@ static const char *debugline(const char *p, const char *fmt)
 		if(!end) end = line + strlen(line);
 		if(p >= line && p <= end)
 		{
-			static cbstring buf;
+			static old_string buf;
 			if(sourcefile) formatstring(buf, "%s:%d: %s", sourcefile, num, fmt);
 			else formatstring(buf, "%d: %s", num, fmt);
 			return buf;
@@ -484,21 +484,70 @@ ICOMMAND(alias, "st", (const char *name, tagval *v),
 
 int variable(const char *name, int min, int cur, int max, int *storage, identfun fun, int flags)
 {
-	addident(ident(ID_VAR, name, min, max, storage, (void *)fun, flags));
+	addident(ident(ID_VAR, name, min, max, storage, fun, flags));
 	return cur;
 }
 
 float fvariable(const char *name, float min, float cur, float max, float *storage, identfun fun, int flags)
 {
-	addident(ident(ID_FVAR, name, min, max, storage, (void *)fun, flags));
+	addident(ident(ID_FVAR, name, min, max, storage, fun, flags));
 	return cur;
 }
 
 char *svariable(const char *name, const char *cur, char **storage, identfun fun, int flags)
 {
-	addident(ident(ID_SVAR, name, storage, (void *)fun, flags));
+	addident(ident(ID_SVAR, name, storage, fun, flags));
 	return newstring(cur);
 }
+
+struct defvar : identval
+{
+	char *name;
+	uint *onchange;
+
+	defvar() : name(NULL), onchange(NULL) {}
+
+	~defvar()
+	{
+		DELETEA(name);
+		if(onchange) freecode(onchange);
+	}
+
+	static void changed(ident *id)
+	{
+		defvar *v = (defvar *)id->storage.p;
+		if(v->onchange) execute(v->onchange);
+	}
+};
+
+hashnameset<defvar> defvars;
+
+#define DEFVAR(cmdname, fmt, args, body) \
+	ICOMMAND(cmdname, fmt, args, \
+	{ \
+		if(idents.access(name)) { debugcode("cannot redefine %s as a variable", name); return; } \
+		name = newstring(name); \
+		defvar &def = defvars[name]; \
+		def.name = name; \
+		body; \
+		def.onchange = onchange[0] ? compilecode(onchange) : NULL; \
+	});
+#define DEFIVAR(cmdname, flags) \
+	DEFVAR(cmdname, "siiis", (char *name, int *min, int *cur, int *max, char *onchange), \
+		def.i = variable(name, *min, *cur, *max, &def.i, defvar::changed, flags))
+#define DEFFVAR(cmdname, flags) \
+	DEFVAR(cmdname, "sfffs", (char *name, float *min, float *cur, float *max, char *onchange), \
+		def.f = fvariable(name, *min, *cur, *max, &def.f, defvar::changed, flags))
+#define DEFSVAR(cmdname, flags) \
+	DEFVAR(cmdname, "sss", (char *name, char *cur, char *onchange), \
+		def.s = svariable(name, cur, &def.s, defvar::changed, flags))
+
+DEFIVAR(defvar, 0);
+DEFIVAR(defvarp, IDF_PERSIST);
+DEFFVAR(deffvar, 0);
+DEFFVAR(deffvarp, IDF_PERSIST);
+DEFSVAR(defsvar, 0);
+DEFSVAR(defsvarp, IDF_PERSIST);
 
 #define _GETVAR(id, vartype, name, retval) \
 	ident *id = idents.access(name); \
@@ -733,7 +782,7 @@ bool addcommand(const char *name, identfun fun, const char *args)
 		default: fatal("builtin %s declared with illegal type: %s", name, args); break;
 	}
 	if(limit && numargs > MAXCOMARGS) fatal("builtin %s declared with too many args: %d", name, numargs);
-	addident(ident(ID_COMMAND, name, args, argmask, numargs, (void *)fun, flags));
+	addident(ident(ID_COMMAND, name, args, argmask, numargs, fun, flags));
 	return false;
 }
 
@@ -1145,7 +1194,7 @@ static bool compileblockstr(vector<uint> &code, const char *str, const char *end
 				if(str[1] == '/')
 				{
 					size_t comment = strcspn(str, "\n\0");
-					if(iscubepunct(str[2]))
+					if (iscubepunct(str[2]))
 					{
 						memcpy(&buf[len], str, comment);
 						len += comment;
@@ -1617,7 +1666,6 @@ static void printvar(ident *id, int type, V &val)
 		default: printsvar(id, val.getstr()); break;
 	}
 }
-
 
 void printvar(ident *id)
 {
@@ -2364,7 +2412,7 @@ bool execidentbool(const char *name, bool noid, bool lookup)
 
 bool execfile(const char *cfgfile, bool msg)
 {
-	cbstring s;
+	old_string s;
 	copystring(s, cfgfile);
 	char *buf = loadfile(path(s), NULL, true);
 	if(!buf)
@@ -2408,7 +2456,6 @@ int sortidents(ident** x, ident** y)
 {
 	return strcmp((*x)->name, (*y)->name);
 }
-
 
 void writeescapedstring(stream* f, const char* s)
 {
@@ -2463,6 +2510,7 @@ void writecfg(const char *name)
 	stream *f = openutf8file(path(name && name[0] ? name : game::savedconfig(), true), "w");
 	if(!f) return;
 	f->printf("// automatically written on exit, DO NOT MODIFY\n// delete this file to have %s overwrite these settings\n// modify settings in game, or put settings in %s to override anything\n\n", game::defaultconfig(), game::autoexec());
+	game::writeclientinfo(f);
 	f->printf("\n");
 	writecrosshairs(f);
 	vector<ident *> ids;
@@ -2514,7 +2562,7 @@ COMMAND(changedvars, "");
 // below the commands that implement a small imperative language. thanks to the semantics of
 // () and [] expressions, any control construct can be defined trivially.
 
-static cbstring retbuf[4];
+static old_string retbuf[4];
 static int retidx = 0;
 
 const char *intstr(int v)
@@ -2915,41 +2963,42 @@ void looplist(ident *id, const char *list, const uint *body)
 	int n = 0;
 	for(const char *s = list, *start, *end; parselist(s, start, end); n++)
 	{
-		setiter(*id, newstring(start, end-start), stack);
+		char *val = newstring(start, end-start);
+		setiter(*id, val, stack);
 		execute(body);
 	}
 	if(n) poparg(*id);
 }
 COMMAND(looplist, "rse");
 
-void looplist2(ident *id, ident *id2, const char *list, const uint *body)
+void looplist2(ident* id, ident* id2, const char* list, const uint* body)
 {
-	if(id->type!=ID_ALIAS || id2->type!=ID_ALIAS) return;
+	if (id->type != ID_ALIAS || id2->type != ID_ALIAS) return;
 	identstack stack, stack2;
 	int n = 0;
-	for(const char *s = list, *start, *end; parselist(s, start, end); n += 2)
+	for (const char* s = list, *start, *end; parselist(s, start, end); n += 2)
 	{
 		setiter(*id, newstring(start, end - start), stack);
 		setiter(*id2, parselist(s, start, end) ? newstring(start, end - start) : newstring(""), stack2);
 		execute(body);
 	}
-	if(n) { poparg(*id); poparg(*id2); }
+	if (n) { poparg(*id); poparg(*id2); }
 }
 COMMAND(looplist2, "rrse");
 
-void looplist3(ident *id, ident *id2, ident *id3, const char *list, const uint *body)
+void looplist3(ident* id, ident* id2, ident* id3, const char* list, const uint* body)
 {
-	if(id->type!=ID_ALIAS || id2->type!=ID_ALIAS || id3->type!=ID_ALIAS) return;
+	if (id->type != ID_ALIAS || id2->type != ID_ALIAS || id3->type != ID_ALIAS) return;
 	identstack stack, stack2, stack3;
 	int n = 0;
-	for(const char *s = list, *start, *end; parselist(s, start, end); n += 3)
+	for (const char* s = list, *start, *end; parselist(s, start, end); n += 3)
 	{
 		setiter(*id, newstring(start, end - start), stack);
 		setiter(*id2, parselist(s, start, end) ? newstring(start, end - start) : newstring(""), stack2);
 		setiter(*id3, parselist(s, start, end) ? newstring(start, end - start) : newstring(""), stack3);
 		execute(body);
 	}
-	if(n) { poparg(*id); poparg(*id2); poparg(*id3); }
+	if (n) { poparg(*id); poparg(*id2); poparg(*id3); }
 }
 COMMAND(looplist3, "rrrse");
 
@@ -3173,7 +3222,7 @@ ICOMMAND(loopdir, "rse", (ident *id, char *dir, uint *body),
 
 void findfile_(char *name)
 { 
-	cbstring fname;
+	old_string fname;
 	copystring(fname, name);
 	path(fname);
 	intret(
@@ -3325,25 +3374,25 @@ ICOMMAND(exp, "f", (float *a), floatret(exp(*a)));
 ICOMMAND(min, "V", (tagval *args, int numargs),
 {
 	int val = numargs > 0 ? args[numargs - 1].getint() : 0;
-	loopi(numargs-1) val = min(val, args[i].getint());
+	loopi(numargs - 1) val = min(val, args[i].getint());
 	intret(val);
 });
 ICOMMAND(max, "V", (tagval *args, int numargs),
 {
 	int val = numargs > 0 ? args[numargs - 1].getint() : 0;
-	loopi(numargs-1) val = max(val, args[i].getint());
+	loopi(numargs - 1) val = max(val, args[i].getint());
 	intret(val);
 });
 ICOMMAND(minf, "V", (tagval *args, int numargs),
 {
 	float val = numargs > 0 ? args[numargs - 1].getfloat() : 0.0f;
-	loopi(numargs-1) val = min(val, args[i].getfloat());
+	loopi(numargs - 1) val = min(val, args[i].getfloat());
 	floatret(val);
 });
 ICOMMAND(maxf, "V", (tagval *args, int numargs),
 {
 	float val = numargs > 0 ? args[numargs - 1].getfloat() : 0.0f;
-	loopi(numargs-1) val = max(val, args[i].getfloat());
+	loopi(numargs - 1) val = max(val, args[i].getfloat());
 	floatret(val);
 });
 ICOMMAND(abs, "i", (int *n), intret(abs(*n)));
@@ -3429,6 +3478,16 @@ ICOMMAND(>=s, "ss", (char *a, char *b), intret(strcmp(a,b)>=0));
 ICOMMAND(echo, "C", (char *s), conoutf(CON_ECHO, "\f1%s", s));
 ICOMMAND(error, "C", (char *s), conoutf(CON_ERROR, "%s", s));
 ICOMMAND(strstr, "ss", (char *a, char *b), { char *s = strstr(a, b); intret(s ? s-a : -1); });
+ICOMMAND(strrstr, "ss", (char *a, char *b),
+{
+	if(!b[0]) intret(strlen(a));
+	else
+	{
+		char *last = NULL;
+		for(char *cur = a; char *s = strstr(cur, b); last = s, cur = s+1);
+		intret(last ? last-a : -1);
+	}
+});
 ICOMMAND(strlen, "s", (char *s), intret(strlen(s)));
 ICOMMAND(strcode, "si", (char *s, int *i), intret(*i > 0 ? (memchr(s, 0, *i) ? 0 : uchar(s[*i])) : uchar(s[0])));
 ICOMMAND(codestr, "i", (int *i), { char *s = newstring(1); s[0] = char(*i); s[1] = '\0'; stringret(s); });

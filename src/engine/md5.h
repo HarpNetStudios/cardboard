@@ -21,7 +21,6 @@ struct md5vert
 
 struct md5hierarchy
 {
-	cbstring name;
 	int parent, flags, start, bone;
 };
 
@@ -183,7 +182,7 @@ struct md5 : skelloader<md5>
 				}
 				else if(strstr(buf, "joints {"))
 				{
-					cbstring name;
+					old_string name;
 					int parent;
 					md5joint j;
 					while(f->getline(buf, sizeof(buf)) && buf[0]!='}')
@@ -302,7 +301,7 @@ struct md5 : skelloader<md5>
 				{
 					while(f->getline(buf, sizeof(buf)) && buf[0]!='}')
 					{
-						cbstring name;
+						old_string name;
 						md5hierarchy h;
 						if(sscanf(buf, " %100s %d %d %d", name, &h.parent, &h.flags, &h.start)==4)
 						{

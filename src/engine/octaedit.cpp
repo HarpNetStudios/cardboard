@@ -1,10 +1,24 @@
 #include "engine.h"
 
+#ifdef NO_EDITOR
+bool editmode = false;
+
+VARP(nompedit, 1, 0, 0);
+
+bool noedit(bool view, bool msg) {
+	if (msg) conoutf(CON_ERROR, "The editor is not available on this platform.");
+	return true;
+}
+
+void tryedit() {}
+
+selinfo sel;
+#else
 extern int outline;
 
 bool boxoutline = false;
 
-void boxs(int orient, vec o, const vec &s, float size) 
+void boxs(int orient, vec o, const vec &s, float size)
 {
 	int d = dimension(orient), dc = dimcoord(orient);
 	float f = boxoutline ? (dc>0 ? 0.2f : -0.2f) : 0;
@@ -178,7 +192,7 @@ void toggleedit(bool force)
 	cancelsel();
 	stoppaintblendmap();
 	keyrepeat(editmode);
-	editing = entediting = editmode;
+	editing = editmode;
 	extern int fullbright;
 	if(fullbright) { initlights(); lightents(); }
 	if(!force) game::edittoggled(editmode);
@@ -239,10 +253,25 @@ ICOMMAND(selsave, "", (), { if(noedit(true)) return; savedsel = sel; });
 ICOMMAND(selrestore, "", (), { if(noedit(true)) return; sel = savedsel; });
 ICOMMAND(selswap, "", (), { if(noedit(true)) return; swap(sel, savedsel); });
 
+ICOMMAND(clearselsaved, "", (), { if(noedit(true)) return; savedsel = selinfo(); });
+
+ICOMMAND(getselsavedpos, "", (),
+{
+	if(noedit(true)) return;
+	defformatstring(pos, "%d %d %d", savedsel.o.x, savedsel.o.y, savedsel.o.z);
+	result(pos);
+});
+ICOMMAND(getselsavedsize, "", (),
+{
+	if(noedit(true)) return;
+	defformatstring(size, "%d %d %d", savedsel.s.x, savedsel.s.y, savedsel.s.z);
+	result(size);
+});
+
 ICOMMAND(getselpos, "", (),
 {
 	if(noedit(true)) return;
-	defformatstring(pos, "%s %s %s", floatstr(sel.o.x), floatstr(sel.o.y), floatstr(sel.o.z));
+	defformatstring(pos, "%d %d %d", sel.o.x, sel.o.y, sel.o.z);
 	result(pos);
 });
 
@@ -283,6 +312,8 @@ cube &blockcube(int x, int y, int z, const block3 &b, int rgrid) // looks up a w
 int selchildcount = 0, selchildmat = -1;
 
 ICOMMAND(havesel, "", (), intret(havesel ? selchildcount : 0));
+ICOMMAND(selchildcount, "", (), { if(selchildcount < 0) result(tempformatstring("1/%d", -selchildcount)); else intret(selchildcount); });
+ICOMMAND(selchildmat, "s", (char *prefix), { if(selchildmat > 0) result(getmaterialdesc(selchildmat, prefix)); });
 
 void countselchild(cube *c, const ivec &cor, int size)
 {
@@ -291,7 +322,7 @@ void countselchild(cube *c, const ivec &cor, int size)
 	{
 		ivec o(i, cor, size);
 		if(c[i].children) countselchild(c[i].children, o, size/2);
-		else 
+		else
 		{
 			selchildcount++;
 			if(c[i].material != MAT_AIR && selchildmat != MAT_AIR)
@@ -353,6 +384,7 @@ VAR(gridlookup, 0, 0, 1);
 VAR(passthroughcube, 0, 1, 1);
 VAR(passthroughent, 0, 1, 1);
 VARF(passthrough, 0, 0, 1, { passthroughsel = passthrough; entcancel(); });
+VARP(selectionoffset, 0, 1, 1);
 
 void rendereditcursor()
 {
@@ -488,7 +520,7 @@ void rendereditcursor()
 			selchildcount = 0;
 			selchildmat = -1;
 			countselchild(worldroot, ivec(0, 0, 0), worldsize/2);
-			if(mag>=1 && selchildcount==1) 
+			if(mag>=1 && selchildcount==1)
 			{
 				selchildmat = c->material;
 				if(mag>1) selchildcount = -mag;
@@ -505,9 +537,15 @@ void rendereditcursor()
 
 	renderentselection(player->o, camdir, entmoving!=0);
 
-	boxoutline = outline!=0;
-
-	enablepolygonoffset(GL_POLYGON_OFFSET_LINE);
+	float offset = 1.0f;
+	if (outline!=0) {
+	  if (selectionoffset) {
+		boxoutline = true;
+	  } else {
+		offset = 2.0f;
+	  }
+	}
+	enablepolygonoffset(GL_POLYGON_OFFSET_LINE, offset);
 
 	if(!moving && !hovering && !hidecursor)
 	{
@@ -735,7 +773,7 @@ struct undolist
 };
 
 undolist undos, redos;
-VARP(undomegs, 0, 8, 100);                              // bounded by n megs
+VARP(undomegs, 0, 8, 1000);                              // bounded by n megs
 int totalundos = 0;
 
 void pruneundos(int maxremain)                          // bound memory
@@ -981,7 +1019,7 @@ static bool unpackblock(block3 *&b, B &buf)
 }
 
 struct vslotmap
-{   
+{
 	int index;
 	VSlot *vslot;
 
@@ -1362,8 +1400,8 @@ static void genprefabmesh(prefabmesh &r, cube &c, const ivec &co, int size)
 	}
 	else if(!isempty(c))
 	{
-		int vis; 
-		loopi(6) if((vis = visibletris(c, i, co, size)))
+		int vis;
+		loopi(6) if((vis = visibletris(c, i, co, size, MAT_ALPHA, MAT_ALPHA, true)))
 		{
 			ivec v[4];
 			genfaceverts(c, i, v);
@@ -2472,7 +2510,7 @@ void edittex_(int *dir)
 
 void settex(int* tex)
 {
-	if(noedit()) return;
+	if (noedit()) return;
 	filltexlist();
 	edittex(*tex, true);
 }
@@ -2525,13 +2563,13 @@ void getslottex(int *idx)
 }
 
 void getalltexname() {
-	if(noedit(true)) return;
+	if (noedit(true)) return;
 	filltexlist();
 	int j = 0;
 	loopvrev(texmru)
 	{
-		VSlot &vslot = lookupvslot(i, false);
-		Slot &slot = *vslot.slot;
+		VSlot& vslot = lookupvslot(i, false);
+		Slot& slot = *vslot.slot;
 		loopvj(slot.sts)
 		{
 			conoutf("%s", slot.sts[j].name);
@@ -2583,16 +2621,17 @@ bool mpreplacetex(int oldtex, int newtex, bool insel, selinfo &sel, ucharbuf &bu
 	return true;
 }
 
-ICOMMAND(replacetex, "iii", (int *oldtex, int *newtex, int *insel), {
+void replace(bool insel, int oldtex, int newtex, const char *err)
+{
 	if(noedit()) return;
-	mpreplacetex(*oldtex, *newtex, *insel!=0, sel, true);
-});
+	if(!vslots.inrange(oldtex) || !vslots.inrange(newtex)) { conoutf(CON_ERROR, "%s", err); return; }
+	mpreplacetex(oldtex, newtex, insel, sel, true);
+}
 
-ICOMMAND(replacelasttex, "i", (int *insel), {
-	if(noedit()) return;
-	if(reptex < 0) { conoutf(CON_ERROR, "can only replace after a texture edit"); return; }
-	mpreplacetex(reptex, lasttex, *insel!=0, sel, true);
-});
+ICOMMAND(replace, "", (), replace(false, reptex, lasttex, "can only replace after a texture edit"));
+ICOMMAND(replacesel, "", (), replace(true, reptex, lasttex, "can only replace after a texture edit"));
+ICOMMAND(replacetex, "bb", (int *n, int *o), replace(false, *o, *n, "can only replace valid texture"));
+ICOMMAND(replacetexsel, "bb", (int *n, int *o), replace(true, *o, *n, "can only replace valid texture"));
 
 ////////// flip and rotate ///////////////
 uint dflip(uint face) { return face==F_EMPTY ? face : 0x88888888 - (((face&0xF0F0F0F0)>>4) | ((face&0x0F0F0F0F)<<4)); }
@@ -2646,8 +2685,8 @@ void rotatecube(cube &c, int d)   // rotates cube clockwise. see pics in cvs for
 
 void mpflip(selinfo &sel, bool local)
 {
-	if(local) 
-	{ 
+	if(local)
+	{
 		game::edittrigger(sel, EDIT_FLIP);
 		makeundo();
 	}
@@ -2703,8 +2742,8 @@ COMMAND(flip, "");
 COMMAND(rotate, "i");
 
 enum { EDITMATF_EMPTY = 0x10000, EDITMATF_NOTEMPTY = 0x20000, EDITMATF_SOLID = 0x30000, EDITMATF_NOTSOLID = 0x40000 };
-static const struct { const char *name; int filter; } editmatfilters[] = 
-{ 
+static const struct { const char *name; int filter; } editmatfilters[] =
+{
 	{ "empty", EDITMATF_EMPTY },
 	{ "notempty", EDITMATF_NOTEMPTY },
 	{ "solid", EDITMATF_SOLID },
@@ -2771,8 +2810,8 @@ void editmat(char *name, char *filtername)
 		if(filter < 0) filter = findmaterial(filtername);
 		if(filter < 0)
 		{
-			conoutf(CON_ERROR, "unknown material \"%s\"", filtername); 
-			return; 
+			conoutf(CON_ERROR, "unknown material \"%s\"", filtername);
+			return;
 		}
 	}
 	int id = -1;
@@ -2817,7 +2856,7 @@ struct texturegui : g3d_callback
 		loopi(numtabs)
 		{
 			g.tab(!i ? getTranslation("gui.texgui.textures") : NULL, 0xAAFFAA);
-			if(i+1 != origtab && !texguiloadall) continue; //don't load textures on non-visible tabs!
+			if (i+1 != origtab && !texguiloadall) continue; //don't load textures on non-visible tabs!
 			Slot *rollover = NULL;
 			loop(h, texguiheight)
 			{
@@ -3003,3 +3042,4 @@ void rendertexturepanel(int w, int h)
 		hudshader->set();
 	}
 }
+#endif

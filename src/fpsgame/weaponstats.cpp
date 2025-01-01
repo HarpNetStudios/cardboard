@@ -14,12 +14,14 @@ namespace game {
         return (attacker != target) && !isteam(attacker->team, target->team);
     }
 
-    void recorddamage(fpsent *attacker, fpsent *target, int damage)
+    void recorddamage(fpsent *attacker, fpsent *target, int damage, bool headshot)
     {
         if(!shouldcountdamage(attacker, target)) return;
         int gun = attacker->gunselect;
         // try to fix gun used to deal the damage
-        if((gun != GUN_SG && damage != guns[gun].damage) || (gun == GUN_SG && damage%10 != 0))
+        if((gun != GUN_SG && damage != guns[gun].damage) ||
+            (damage != (guns[gun].damage * 1.25f) && headshot) ||
+            (gun == GUN_SG && damage % 10 != 0))
         {
             gun = attacker->stats.lastprojectile;
         }

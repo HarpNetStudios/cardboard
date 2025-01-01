@@ -24,7 +24,7 @@ void fixmapname(char *name)
 void getmapfilenames(const char *fname, const char *cname, char *pakname, char *mapname, char *cfgname)
 {
 	if(!cname) cname = fname;
-	cbstring name;
+	old_string name;
 	validmapname(name, cname);
 	char *slash = strpbrk(name, "/\\");
 	if(slash)
@@ -59,7 +59,7 @@ static void fixent(entity &e, int version)
 
 bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 {
-	cbstring pakname, mapname, mcfgname, cmrname;
+	old_string pakname, mapname, mcfgname, cmrname;
 	getmapfilenames(fname, NULL, pakname, mapname, mcfgname);
 	formatstring(cmrname, "packages/%s.cmr", mapname);
 	path(cmrname);
@@ -108,7 +108,7 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 		}
 	}
 
-	cbstring gametype;
+	old_string gametype;
 	copystring(gametype, "fps");
 	bool samegame = true;
 	int eif = 0;
@@ -170,13 +170,13 @@ bool loadents(const char *fname, vector<entity> &ents, uint *crc)
 }
 
 #ifndef STANDALONE
-cbstring cmrname, bakname, cfgname, bcfgname, picname, loadname;
+old_string cmrname, bakname, cfgname, bcfgname, picname, loadname;
 
 VARP(savebak, 0, 2, 2);
 
 void setmapfilenames(const char *fname, const char *cname = NULL)
 {
-	cbstring pakname, mapname, mcfgname;
+	old_string pakname, mapname, mcfgname;
 	getmapfilenames(fname, cname, pakname, mapname, mcfgname);
 
 	formatstring(cmrname, "packages/%s.cmr", mapname);
@@ -190,6 +190,7 @@ void setmapfilenames(const char *fname, const char *cname = NULL)
 	path(cmrname);
 	path(bakname);
 	path(cfgname);
+	path(bcfgname);
 	path(picname);
 	path(loadname);
 }
@@ -197,7 +198,7 @@ void setmapfilenames(const char *fname, const char *cname = NULL)
 void mapcfgname()
 {
 	const char *mname = game::getclientmap();
-	cbstring pakname, mapname, mcfgname;
+	old_string pakname, mapname, mcfgname;
 	getmapfilenames(mname, NULL, pakname, mapname, mcfgname);
 	defformatstring(cfgname, "packages/%s/%s.cfg", pakname, mcfgname);
 	path(cfgname);
@@ -208,7 +209,7 @@ COMMAND(mapcfgname, "");
 
 void backup(char *name, char *backupname)
 {   
-	cbstring backupfile;
+	old_string backupfile;
 	copystring(backupfile, findfile(backupname, "wb"));
 	remove(backupfile);
 	rename(findfile(name, "wb"), backupfile);
@@ -746,18 +747,18 @@ void saveslotconfig(stream* h, Slot& s, int index)
 {
 	VSlot& vs = *s.variants;
 
-	if(index >= 0)
+	if (index >= 0)
 	{
-		if(s.shader)
+		if (s.shader)
 		{
 			h->printf("setshader %s\n", s.shader->name);
-		
+
 			// this code does not account for uniform, pixel or vertex params. fix eventually. -Y 2023-09-11
-			
+
 			loopvj(s.params)
 			{
 				h->printf("setshaderparam \"%s\"", s.params[j].name);
-				for(int k = 0; k < 4; ++k) h->printf(" %f", s.params[j].val[k]);
+				for (int k = 0; k < 4; ++k) h->printf(" %f", s.params[j].val[k]);
 				h->printf("\n");
 			}
 		}
@@ -765,37 +766,37 @@ void saveslotconfig(stream* h, Slot& s, int index)
 	loopvj(s.sts)
 	{
 		h->printf("texture");
-		if(index >= 0) h->printf(" %s ", textypename(s.sts[j].type));
+		if (index >= 0) h->printf(" %s ", textypename(s.sts[j].type));
 		else h->printf(" 1 ");
 		writeescapedstring(h, s.sts[j].name);
-		if(!j)
+		if (!j)
 		{
 			h->printf(" %d %d %d %f",
 				vs.rotation, vs.offset.x, vs.offset.y, vs.scale);
-			if(index >= 0) h->printf(" // %d", index);
+			if (index >= 0) h->printf(" // %d", index);
 		}
 		h->printf("\n");
 	}
-	if(index >= 0)
+	if (index >= 0)
 	{
-		if(vs.scroll.x != 0.f || vs.scroll.y != 0.f)
+		if (vs.scroll.x != 0.f || vs.scroll.y != 0.f)
 			h->printf("texscroll %f %f\n", vs.scroll.x * 1000.0f, vs.scroll.y * 1000.0f);
-		if(vs.layer != 0)
+		if (vs.layer != 0)
 		{
-			if(s.layermaskname) h->printf("texlayer %d \"%s\" %d %f\n", vs.layer, s.layermaskname, s.layermaskmode, s.layermaskscale);
+			if (s.layermaskname) h->printf("texlayer %d \"%s\" %d %f\n", vs.layer, s.layermaskname, s.layermaskmode, s.layermaskscale);
 			else h->printf("texlayer %d\n", vs.layer);
 		}
-		if(s.autograss) h->printf("autograss \"%s\"\n", s.autograss);
+		if (s.autograss) h->printf("autograss \"%s\"\n", s.autograss);
 	}
 	h->printf("\n");
 }
 
 void writemapcfg(const char* a)
 {
-	if(!*a) a = game::getclientmap();
+	if (!*a) a = game::getclientmap();
 	setmapfilenames(a);
 
-	if(savebak) backup(cfgname, bcfgname);
+	if (savebak) backup(cfgname, bcfgname);
 
 	stream* f = openfile(path(cfgname, true), "w");
 
@@ -811,12 +812,12 @@ void writemapcfg(const char* a)
 	loopv(ids)
 	{
 		ident& id = *ids[i];
-		if(!(id.flags & IDF_OVERRIDDEN) || id.flags & IDF_READONLY) continue;
+		if (!(id.flags & IDF_OVERRIDDEN) || id.flags & IDF_READONLY) continue;
 		switch (id.type)
 		{
-			case ID_VAR: f->printf(id.flags & IDF_HEX ? "%s 0x%.6X\n" : "%s %d\n", id.name, *id.storage.i); break;
-			case ID_FVAR: f->printf("%s %s\n", id.name, floatstr(*id.storage.f)); break;
-			case ID_SVAR: f->printf("%s ", id.name); writeescapedstring(f, *id.storage.s); f->putchar('\n'); break;
+		case ID_VAR: f->printf(id.flags & IDF_HEX ? "%s 0x%.6X\n" : "%s %d\n", id.name, *id.storage.i); break;
+		case ID_FVAR: f->printf("%s %s\n", id.name, floatstr(*id.storage.f)); break;
+		case ID_SVAR: f->printf("%s ", id.name); writeescapedstring(f, *id.storage.s); f->putchar('\n'); break;
 		}
 	}
 
@@ -927,7 +928,7 @@ void loadvslot(stream *f, VSlot &vs, int changed)
 	if(vs.changed & (1<<VSLOT_SHPARAM))
 	{
 		int numparams = f->getlil<ushort>();
-		cbstring name;
+		old_string name;
 		loopi(numparams)
 		{
 			SlotShaderParam &p = vs.params.add();
@@ -993,6 +994,7 @@ VAR(forcesavemap, 0, 0, 1);
 bool save_world(const char *mname, bool nolms)
 {
 	if(!*mname) mname = game::getclientmap();
+
 	if (!forcesavemap)
 	{
 		int mapslen = sizeof(officialmaps) / sizeof(officialmaps[0]);
@@ -1002,7 +1004,9 @@ bool save_world(const char *mname, bool nolms)
 			if (!strcmp(officialmaps[i], mname)) { conoutf(CON_ERROR, "\f3could not override official map \f4%s\f3! please choose another name!", mname); return false; }
 		}
 	}
+
 	setmapfilenames(mname);
+
 	if(savebak) backup(cmrname, bakname);
 	stream *f = opengzfile(cmrname, "wb");
 	if(!f) { conoutf(CON_WARN, "could not write map to %s", cmrname); return false; }
@@ -1125,15 +1129,11 @@ static uint mapcrc = 0;
 uint getmapcrc() { return mapcrc; }
 void clearmapcrc() { mapcrc = 0; }
 
-VAR(loadcubelms, 0, 0, 1);
-
 bool load_world(const char *mname, const char *cname)        // still supports all map formats that have existed since the earliest cube betas!
 {
 	int loadingstart = SDL_GetTicks();
 	setmapfilenames(mname, cname);
-	stream *f = opengzfile(cmrname, "rb"); // change for cmz
-	//cbstring blah; formatstring(blah, "%s.cmr", mname);
-	//stream* f = opentargzfile(cmrname, blah, "rb");
+	stream *f = opengzfile(cmrname, "rb");
 	if(!f) { conoutf(CON_ERROR, "could not read map %s", cmrname); return false; }
 	octaheader hdr;
 	if(f->read(&hdr, 7*sizeof(int)) != 7*sizeof(int)) { conoutf(CON_ERROR, "map %s has malformatted header", cmrname); delete f; return false; }
@@ -1210,7 +1210,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 	loopi(hdr.numvars)
 	{
 		int type = f->getchar(), ilen = f->getlil<ushort>();
-		cbstring name;
+		old_string name;
 		f->read(name, min(ilen, MAXSTRLEN-1));
 		name[min(ilen, MAXSTRLEN-1)] = '\0';
 		if(ilen >= MAXSTRLEN) f->seek(ilen - (MAXSTRLEN-1), SEEK_CUR);
@@ -1237,7 +1237,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 			case ID_SVAR:
 			{
 				int slen = f->getlil<ushort>();
-				cbstring val;
+				old_string val;
 				f->read(val, min(slen, MAXSTRLEN-1));
 				val[min(slen, MAXSTRLEN-1)] = '\0';
 				if(slen >= MAXSTRLEN) f->seek(slen - (MAXSTRLEN-1), SEEK_CUR);
@@ -1249,7 +1249,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 	}
 	if(dbgvars) conoutf(CON_DEBUG, "read %d vars", hdr.numvars);
 
-	cbstring gametype;
+	old_string gametype;
 	copystring(gametype, "fps");
 	bool samegame = true;
 	int eif = 0;
@@ -1514,8 +1514,7 @@ void writeobj(char *name)
 	} 
 	delete f;
 }  
-	
+
 COMMAND(writeobj, "s"); 
 
 #endif
-

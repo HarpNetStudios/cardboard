@@ -639,11 +639,11 @@ struct Slot
 	{
 		int type;
 		Texture *t;
-		cbstring name;
+		old_string name;
 		int combined;
 	};
 
-	int index;
+	int index, smooth;
 	vector<Tex> sts;
 	Shader *shader;
 	vector<SlotShaderParam> params;
@@ -661,6 +661,7 @@ struct Slot
 	
 	void reset()
 	{
+		smooth = -1;
 		sts.shrink(0);
 		shader = NULL;
 		params.shrink(0);
@@ -762,7 +763,7 @@ extern void savepng(const char *filename, ImageData &image, bool flip = false);
 extern void savetga(const char *filename, ImageData &image, bool flip = false);
 extern bool loaddds(const char *filename, ImageData &image, int force = 0);
 extern bool loadimage(const char *filename, ImageData &image);
-extern void screenshot(char *filename);
+extern void screenshot(char* filename);
 
 extern MSlot &lookupmaterialslot(int slot, bool load = true);
 extern Slot &lookupslot(int slot, bool load = true);

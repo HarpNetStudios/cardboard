@@ -4,7 +4,7 @@
 
 #define GUI_TITLE_COLOR  0xFFDD88
 #define GUI_BUTTON_COLOR 0xFFFFFF
-#define GUI_TEXT_COLOR   0xDDFFDD
+#define GUI_TEXT_COLOR   0xFFFFFF
 
 static vec menupos;
 static int menustart = 0;
@@ -251,9 +251,9 @@ void guibutton(char *name, char *action, char *icon)
 	bool hideicon = !strcmp(icon, "0");
 	int ret;
 
-	if(hideicon) ret = cgui->button(name, GUI_BUTTON_COLOR);
+	if (hideicon) ret = cgui->button(name, GUI_BUTTON_COLOR);
 	else ret = cgui->button(name, GUI_BUTTON_COLOR, icon[0] ? icon : (strstr(action, "showgui") ? "menu" : "action"));
-	
+
 	if(ret&G3D_UP) 
 	{
 		updatelater.add().schedule(action[0] ? action : name);
@@ -269,10 +269,10 @@ void guibutton(char *name, char *action, char *icon)
 void guiimage(char *path, char *action, float *scale, int *overlaid, char *alt, char *title)
 {
 	if(!cgui) return;
-	Texture *t = textureload(path, 0, true, false);
+	Texture *t = textureload(path, 3, true, false);
 	if(t==notexture)
 	{
-		if(alt[0]) t = textureload(alt, 0, true, false);
+		if(alt[0]) t = textureload(alt, 3, true, false);
 		if(t==notexture) return;
 	}
 	int ret = cgui->image(t, *scale, *overlaid!=0 ? title : NULL);
@@ -307,11 +307,21 @@ void guitextbox(char *text, int *width, int *height, int *color)
 
 void guitext(char *name, char *icon)
 {
-	if(cgui) 
+	if (cgui)
 	{
-		if(!icon[0]) cgui->text(name, GUI_TEXT_COLOR);
+		if (!icon[0]) cgui->text(name, GUI_TEXT_COLOR);
 		else cgui->text(name, GUI_BUTTON_COLOR, icon);
 	}
+}
+
+void guiposition(int *x, int *y)
+{
+	if(cgui) cgui->setalign(*x, *y);
+}
+
+void guiscale(float *k)
+{
+	if(cgui) cgui->setscale(*k);
 }
 
 void guititle(char *name)
@@ -596,6 +606,8 @@ COMMAND(guimerge, "e");
 ICOMMAND(guikeeptab, "b", (int *keeptab), if(guistack.length()) guistack.last()->keeptab = *keeptab!=0);
 COMMAND(guilist, "e");
 COMMAND(guialign, "ie");
+COMMAND(guiposition, "ii");
+COMMAND(guiscale, "f");
 COMMAND(guititle, "s");
 COMMAND(guibar,"");
 COMMAND(guistrut,"fi");

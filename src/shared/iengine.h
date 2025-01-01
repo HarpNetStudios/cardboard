@@ -33,19 +33,19 @@ enum // cube empty-space materials
 	MAT_LAVA      = 2 << MATF_VOLUME_SHIFT, // fill with lava
 	MAT_GLASS     = 3 << MATF_VOLUME_SHIFT, // behaves like clip but is blended blueish
 
-	MAT_NOCLIP    = 1 << MATF_CLIP_SHIFT,  // collisions always treat cube as empty
-	MAT_CLIP      = 2 << MATF_CLIP_SHIFT,  // collisions always treat cube as solid
-	MAT_GAMECLIP  = 3 << MATF_CLIP_SHIFT,  // game specific clip material
+	MAT_NOCLIP    = 1 << MATF_CLIP_SHIFT,   // collisions always treat cube as empty
+	MAT_CLIP      = 2 << MATF_CLIP_SHIFT,   // collisions always treat cube as solid
+	MAT_GAMECLIP  = 3 << MATF_CLIP_SHIFT,   // game specific clip material
 
-	MAT_DEATH     = 1 << MATF_FLAG_SHIFT,  // force player suicide
-	MAT_ALPHA     = 4 << MATF_FLAG_SHIFT,  // alpha blended
-	MAT_JUMPRESET = 8 << MATF_FLAG_SHIFT,  // resets double jump
+	MAT_DEATH     = 1 << MATF_FLAG_SHIFT,   // force player suicide
+	MAT_ALPHA     = 4 << MATF_FLAG_SHIFT,   // alpha blended
+	MAT_JUMPRESET = 8 << MATF_FLAG_SHIFT,   // resets double jump
 };
 
-#define isliquid(mat) (((mat)>=MAT_WATER && (mat)<MAT_WATER+4) || ((mat)>=MAT_LAVA && (mat)<MAT_LAVA+4))
-#define isclipped(mat) ((mat)==MAT_GLASS)
-#define isdeadly(mat) ((mat)==MAT_LAVA)
-#define isjumpreset(mat) ((mat)==MAT_JUMPRESET)
+// TODO: why is this specifically required, are the other 3 types of liquids not considered their parent type?
+#define isliquid(mat) (((mat) >= MAT_WATER && (mat) < MAT_WATER+4) || ((mat) >= MAT_LAVA && (mat) < MAT_LAVA+4))
+#define isclipped(mat) ((mat) == MAT_GLASS)
+#define isdeadly(mat) ((mat) == MAT_LAVA)
 
 extern void lightent(extentity &e, float height = 8.0f);
 extern void lightreaching(const vec &target, vec &color, vec &dir, bool fast = false, extentity *e = 0, float ambient = 0.4f);
@@ -148,6 +148,7 @@ extern ident *newident(const char *name, int flags = 0);
 extern ident *readident(const char *name);
 extern ident *writeident(const char *name, int flags = 0);
 extern bool addcommand(const char *name, identfun fun, const char *narg);
+template<class F> static inline bool addcommand(const char *name, F *fun, const char *narg) { return ::addcommand(name, (identfun)fun, narg); }
 extern bool addkeyword(int type, const char *name);
 extern uint *compilecode(const char *p);
 extern void keepcode(uint *p);
@@ -350,7 +351,6 @@ enum
 	PART_TEXT,
 	PART_TEXT_ICON,
 	PART_METER, PART_METER_VS,
-	PART_CHAIN,
 	PART_LENS_FLARE
 };
 
@@ -431,9 +431,6 @@ extern bool stopsound(int n, int chanid, int fade = 0);
 extern void stopsounds();
 extern void initsound();
 extern void resetsound();
-
-// lightmap 
-extern int darkmap;
 
 // rendermodel
 enum { MDL_CULL_VFC = 1<<0, MDL_CULL_DIST = 1<<1, MDL_CULL_OCCLUDED = 1<<2, MDL_CULL_QUERY = 1<<3, MDL_SHADOW = 1<<4, MDL_DYNSHADOW = 1<<5, MDL_LIGHT = 1<<6, MDL_DYNLIGHT = 1<<7, MDL_FULLBRIGHT = 1<<8, MDL_NORENDER = 1<<9, MDL_LIGHT_FAST = 1<<10, MDL_HUD = 1<<11, MDL_GHOST = 1<<12 };
@@ -564,6 +561,8 @@ struct g3d_gui
 	virtual bool allowautotab(bool on) = 0;
 	virtual bool shouldtab() { return false; }
 	virtual void tab(const char *name = NULL, int color = 0) = 0;
+	virtual void setalign(int x, int y) = 0;
+	virtual void setscale(float k) = 0;
 	virtual int image(Texture *t, float scale, const char *overlaid = NULL) = 0;
 	virtual int texture(VSlot &vslot, float scale, bool overlaid = true) = 0;
 	virtual int playerpreview(int model, int team, int weap, float scale, const char *overlaid = NULL) { return 0; }
@@ -658,11 +657,11 @@ extern int ext_discord_enabled;
 extern int ext_steam_enabled;
 
 // zip 
-extern bool addzip(const char* name, const char* mount, const char* strip, bool internal);
+extern bool addzip(const char* name, const char* mount, const char* strip, bool quiet);
 extern bool removezip(const char* name);
 
 #ifndef STANDALONE
-// idk bro
+// engine stuff
 extern float loadprogress;
 extern void renderbackground(const char* caption = NULL, Texture* mapshot = NULL, const char* mapname = NULL, const char* mapinfo = NULL, bool restore = false, bool force = false, bool splash = false);
 extern void renderprogress(float bar, const char* text, GLuint tex = 0, bool background = false);

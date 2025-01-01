@@ -170,8 +170,8 @@ const char *findmaterialname(int mat)
    
 const char *getmaterialdesc(int mat, const char *prefix)
 {
-	static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA };
-	static cbstring desc;
+	static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA, MAT_JUMPRESET };
+	static old_string desc;
 	desc[0] = '\0';
 	loopi(sizeof(matmasks)/sizeof(matmasks[0])) if(mat&matmasks[i])
 	{
@@ -216,7 +216,7 @@ void genmatsurfs(const cube &c, const ivec &co, int size, vector<materialsurface
 {
 	loopi(6)
 	{
-		static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA };
+		static const ushort matmasks[] = { MATF_VOLUME|MATF_INDEX, MATF_CLIP, MAT_DEATH, MAT_ALPHA, MAT_JUMPRESET };
 		loopj(sizeof(matmasks)/sizeof(matmasks[0]))
 		{
 			int matmask = matmasks[j];
@@ -462,7 +462,9 @@ void setupmaterials(int start, int len)
 	if(hasmat&(0xF<<MAT_GLASS)) useshaderbyname("glass");
 }
 
-VARP(showmat, 0, 1, 2);
+VARP(showmat, 0, 1, 1);
+VARP(editmatoffset, 0, 1, 1);
+VAR(forceshowmat, 0, 0, 1);
 
 static int sortdim[3];
 static ivec sortorigin;
@@ -520,7 +522,7 @@ void sortmaterials(vector<materialsurface *> &vismats)
 		loopi(va->matsurfs)
 		{
 			materialsurface &m = va->matbuf[i];
-			if((!editmode && ((!showmat) == 1)) || drawtex) // this logic is confusing at best, clean up -Y
+			if(!(editmode || forceshowmat) || !showmat || drawtex)
 			{
 				int matvol = m.material&MATF_VOLUME;
 				if(matvol==MAT_WATER && (m.orient==O_TOP || (refracting<0 && reflectz>worldsize))) { i += m.skip; continue; }
@@ -531,13 +533,13 @@ void sortmaterials(vector<materialsurface *> &vismats)
 			vismats.add(&m);
 		}
 	}
-	sortedit = editmode && showmat && !drawtex;
+	sortedit = (editmode || forceshowmat) && showmat && !drawtex;
 	vismats.sort(vismatcmp);
 }
 
 void rendermatgrid(vector<materialsurface *> &vismats)
 {
-	enablepolygonoffset(GL_POLYGON_OFFSET_LINE);
+	enablepolygonoffset(GL_POLYGON_OFFSET_LINE, editmatoffset ? 1.0f : 2.0f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	int lastmat = -1;
 	bvec4 color(0, 0, 0, 0);
@@ -561,7 +563,7 @@ void rendermatgrid(vector<materialsurface *> &vismats)
 			}
 			lastmat = m.material;
 		}
-		drawmaterial(m, -0.1f, color);
+		drawmaterial(m, editmatoffset ? -0.1f : 0.0f, color);
 	}
 	xtraverts += gle::end();
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -569,11 +571,11 @@ void rendermatgrid(vector<materialsurface *> &vismats)
 }
 
 #define GLASSVARS(name) \
-	bvec name##colorvec(0x20, 0x80, 0xC0); \
+	bvec name##color_i(0x20, 0x80, 0xC0); \
 	HVARFR(name##color, 0, 0x2080C0, 0xFFFFFF, \
 	{ \
 		if(!name##color) name##color = 0x2080C0; \
-		name##colorvec = bvec((name##color>>16)&0xFF, (name##color>>8)&0xFF, name##color&0xFF); \
+		name##color_i = bvec((name##color>>16)&0xFF, (name##color>>8)&0xFF, name##color&0xFF); \
 	});
 
 GLASSVARS(glass)
@@ -582,7 +584,7 @@ GLASSVARS(glass3)
 GLASSVARS(glass4)
 
 GETMATIDXVAR(glass, color, int)
-GETMATIDXVAR(glass, colorvec, const bvec &)
+GETMATIDXVAR(glass, color_i, const bvec &)
 
 VARP(glassenv, 0, 1, 1);
 
@@ -626,7 +628,8 @@ static inline void changematerial(int mat, int orient)
 	}
 }
 
-VARP(classiclava, 0, 0, 1);
+// disable vibrant colored lava
+VARP(lavacolorclassic, 0, 0, 1);
 
 void rendermaterials()
 {
@@ -644,8 +647,10 @@ void rendermaterials()
 	GLOBALPARAM(camera, camera1->o);
 
 	int lastfogtype = 1;
-	if(((editmode && showmat == 1) || (showmat == 2)) && !drawtex) // confusing logic, clean up -Y
+
+	if ((editmode || forceshowmat) && showmat && !drawtex)
 	{
+		if(!editmatoffset) enablepolygonoffset(GL_POLYGON_OFFSET_FILL);
 		glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 		glEnable(GL_BLEND); blended = true;
 		foggednotextureshader->set();
@@ -671,9 +676,10 @@ void rendermaterials()
 				}
 				lastmat = m.material;
 			}
-			drawmaterial(m, -0.1f, color);
+			drawmaterial(m, editmatoffset ? -0.1f : 0.0f, color);
 		}
 		xtraverts += gle::end();
+		if(!editmatoffset) disablepolygonoffset(GL_POLYGON_OFFSET_FILL);
 	}
 	else loopv(vismats)
 	{
@@ -694,8 +700,8 @@ void rendermaterials()
 						changematerial(lastmat, lastorient);
 						glBindTexture(GL_TEXTURE_2D, mslot->sts[1].t->id);
 
-						bvec wfcol = getwaterfallcolorvec(m.material);
-						if(wfcol.iszero()) wfcol = getwatercolorvec(m.material);
+						bvec wfcol = getwaterfallcolor_i(m.material);
+						if(wfcol.iszero()) wfcol = getwatercolor_i(m.material);
 						gle::color(wfcol, 192);
 
 						int wfog = getwaterfog(m.material);
@@ -793,16 +799,17 @@ void rendermaterials()
 					{
 						if(!depth) { glDepthMask(GL_TRUE); depth = true; }
 						if(blended) { glDisable(GL_BLEND); blended = false; }
-						if(classiclava) {
-							float t = lastmillis/2000.0f;
+						if (lavacolorclassic) {
+							float t = lastmillis / 2000.0f;
 							t -= floor(t);
-							t = 1.0f - 2*fabs(t-0.5f);
+							t = 1.0f - 2 * fabs(t - 0.5f);
 							extern int glare;
-							if(glare) t = 0.625f + 0.075f*t;
-							else t = 0.5f + 0.5f*t;
+							if (glare) t = 0.625f + 0.075f * t;
+							else t = 0.5f + 0.5f * t;
 							gle::colorf(t, t, t);
-						} else {
-							bvec lfcol = getlavacolorvec(m.material); // colorful lava -Y
+						}
+						else {
+							bvec lfcol = getlavacolor_i(m.material); // colorful lava -Y
 							gle::color(lfcol, 192);
 						}
 						if(glaring) SETSHADER(lavaglare); else SETSHADER(lava);
@@ -834,7 +841,7 @@ void rendermaterials()
 					{
 						if(!blended) { glEnable(GL_BLEND); blended = true; }
 						if(depth) { glDepthMask(GL_FALSE); depth = false; }
-						const bvec &gcol = getglasscolorvec(m.material);         
+						const bvec &gcol = getglasscolor_i(m.material);         
 						if(m.envmap!=EMID_NONE && glassenv)
 						{
 							glBlendFunc(GL_ONE, GL_SRC_ALPHA);
@@ -885,7 +892,8 @@ void rendermaterials()
 	if(blended) glDisable(GL_BLEND);
 	if(!lastfogtype) resetfogcolor();
 	extern int wireframe;
-	if(((editmode && showmat == 1) || (showmat == 2)) && !drawtex && !wireframe) // confusing logic, clean up -Y
+
+	if ((editmode || forceshowmat) && showmat && !drawtex && !wireframe)
 	{
 		foggednotextureshader->set();
 		rendermatgrid(vismats);
@@ -893,4 +901,3 @@ void rendermaterials()
 
 	glEnable(GL_CULL_FACE);
 }
-

@@ -84,13 +84,6 @@ HVARFR(ambient, 1, 0x191919, 0xFFFFFF,
 	if(ambient <= 255) ambient |= (ambient<<8) | (ambient<<16);
 	ambientcolor = bvec((ambient>>16)&0xFF, (ambient>>8)&0xFF, ambient&0xFF);
 });
-
-VARFR(darkmap, 0, 0, 1, {
-	/*if((darkmap == 1) && (ambient != 0) && (ambient > 0x010101)) {
-		conoutf(CON_WARN, "ambient 0x010101 is recommended for darkmap");
-	}*/ // commented out because ambient is set after darkmap on map load -Y
-});
-
 HVARFR(skylight, 0, 0, 0xFFFFFF, 
 {
 	if(skylight <= 255) skylight |= (skylight<<8) | (skylight<<16);
@@ -677,7 +670,7 @@ static void calcskylight(lightmapworker *w, const vec &o, const vec &normal, flo
 	}
 	else loopv(skyrays) 
 	{
-		if (normal.dot(skyrays[i]) >= 0 && shadowray(vec(skyrays[i]).mul(tolerance).add(o), skyrays[i], 1e16f, flags, t) > 1e15f) hit++;
+		if(normal.dot(skyrays[i])>=0 && shadowray(vec(skyrays[i]).mul(tolerance).add(o), skyrays[i], 1e16f, flags, t)>1e15f) hit++;
 	}
 
 	loopk(3) skylight[k] = uchar(ambientcolor[k] + (max(skylightcolor[k], ambientcolor[k]) - ambientcolor[k])*hit/(float)skyrays.length());
@@ -1529,18 +1522,19 @@ static lightmapinfo *setupsurfaces(lightmapworker *w, lightmaptask &task)
 		vec pos[MAXFACEVERTS], n[MAXFACEVERTS], po(ivec(co).mask(~0xFFF));
 		loopj(numverts) pos[j] = vec(curlitverts[j].getxyz()).mul(1.0f/8).add(po);
 
+		int smooth = vslot.slot->smooth;
 		plane planes[2];
 		int numplanes = 0;
 		planes[numplanes++].toplane(pos[0], pos[1], pos[2]);
-		if(numverts < 4 || !convex) loopk(numverts) findnormal(pos[k], planes[0], n[k]);
+		if(numverts < 4 || !convex) loopk(numverts) findnormal(pos[k], smooth, planes[0], n[k]);
 		else
 		{
 			planes[numplanes++].toplane(pos[0], pos[2], pos[3]);
 			vec avg = vec(planes[0]).add(planes[1]).normalize();
-			findnormal(pos[0], avg, n[0]);
-			findnormal(pos[1], planes[0], n[1]);
-			findnormal(pos[2], avg, n[2]);
-			for(int k = 3; k < numverts; k++) findnormal(pos[k], planes[1], n[k]);
+			findnormal(pos[0], smooth, avg, n[0]);
+			findnormal(pos[1], smooth, planes[0], n[1]);
+			findnormal(pos[2], smooth, avg, n[2]);
+			for(int k = 3; k < numverts; k++) findnormal(pos[k], smooth, planes[1], n[k]);
 		}
 
 		if(shadertype&(SHADER_NORMALSLMS | SHADER_ENVMAP))
@@ -1942,6 +1936,7 @@ static bool previewblends(lightmapworker *w, cube &c, const ivec &co, int size)
 	return true;
 }
 
+#ifndef NO_EDITOR
 static bool previewblends(lightmapworker *w, cube *c, const ivec &co, int size, const ivec &bo, const ivec &bs)
 {
 	bool changed = false;
@@ -1978,7 +1973,8 @@ void previewblends(const ivec &bo, const ivec &bs)
 	if(previewblends(lightmapworkers[0], worldroot, ivec(0, 0, 0), worldsize/2, bo, bs))
 		commitchanges(true);
 }
-							
+#endif
+
 void cleanuplightmaps()
 {
 	loopv(lightmaps)
@@ -1997,7 +1993,11 @@ void resetlightmaps(bool fullclean)
 	lightmaps.shrink(0);
 	compressed.clear();
 	clearlightcache();
-	if(fullclean) while(lightmapworkers.length()) delete lightmapworkers.pop();
+	if(fullclean)
+	{
+		while(lightmapworkers.length()) delete lightmapworkers.pop();
+		resetsmoothgroups();
+	}
 }
 
 lightmapworker::lightmapworker()
@@ -2669,13 +2669,13 @@ void lightreaching(const vec &target, vec &color, vec &dir, bool fast, extentity
  
 		vec lightcol = vec(e.attr2, e.attr3, e.attr4).mul(1.0f/255);
 		color.add(vec(lightcol).mul(intensity));
-		dir.add(vec(ray).mul(-intensity*lightcol.x*lightcol.y*lightcol.z));
+		dir.add(vec(ray).mul(-intensity*(lightcol.x+lightcol.y+lightcol.z)*(1.0f/3)));
 	}
 	if(sunlight && shadowray(target, sunlightdir, 1e16f, RAY_SHADOW | RAY_POLY | (skytexturelight ? RAY_SKIPSKY | (useskytexture ? RAY_SKYTEX : 0) : 0), t) > 1e15f) 
 	{
 		vec lightcol = vec(sunlightcolor.x, sunlightcolor.y, sunlightcolor.z).mul(sunlightscale/255);
 		color.add(lightcol);
-		dir.add(vec(sunlightdir).mul(lightcol.x*lightcol.y*lightcol.z));
+		dir.add(vec(sunlightdir).mul((lightcol.x+lightcol.y+lightcol.z)*(1.0f/3)));
 	}
 	if(hasskylight())
 	{

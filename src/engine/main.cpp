@@ -1,20 +1,19 @@
 // main.cpp: initialisation & main loop
 
-#include <engine.h>
-#include <game.h>
-#include <icon.h>
-
-cbstring gametoken = "OFFLINE";
-
-ICOMMAND(help, "", (), { conoutf(CON_INFO, "you have been helped."); });
-
-#ifndef STANDALONE
-SVARF(__hnapi, HNAPI, if(strcmp(__hnapi, HNAPI)) { offline = 1; conoutf("\f3You are using the UNOFFICIAL API server \fo\"%s\"\f3. Proceed at your own risk.", __hnapi); });
-ICOMMAND(resethnapi, "", (), __hnapi = HNAPI);
-#endif
+#include "engine.h"
+#include "icon.h"
 
 #ifdef SDL_VIDEO_DRIVER_X11
 #include "SDL_syswm.h"
+#endif
+
+old_string gametoken = "OFFLINE";
+
+ICOMMAND(help, "", (), conoutf(CON_INFO, "you have been helped."));
+
+#ifndef STANDALONE
+SVARF(__hnapi, HNAPI, if (strcmp(__hnapi, HNAPI)) { offline = 1; conoutf("\f3You are using the UNOFFICIAL API server \fo\"%s\"\f3. Proceed at your own risk.", __hnapi); });
+ICOMMAND(resethnapi, "", (), __hnapi = (char *)HNAPI);
 #endif
 
 extern void cleargamma();
@@ -157,9 +156,9 @@ static void getbackgroundres(int &w, int &h)
 	h = int(ceil(h*hk));
 }
 
-cbstring backgroundcaption = "";
+old_string backgroundcaption = "";
 Texture *backgroundmapshot = NULL;
-cbstring backgroundmapname = "";
+old_string backgroundmapname = "";
 char *backgroundmapinfo = NULL;
 
 void setbackgroundinfo(const char *caption = NULL, Texture *mapshot = NULL, const char *mapname = NULL, const char *mapinfo = NULL)
@@ -230,27 +229,27 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 		gle::defvertex(2);
 		gle::deftexcoord0();
 
-		if(!(mapshot || mapname)) {
+		if (!(mapshot || mapname)) {
 			// background and logo
-			float bu = w*0.67f/256.0f + backgroundu, bv = h*0.67f/256.0f + backgroundv;
-			if(splash) settexture("data/splash.png", 0);
+			float bu = w * 0.67f / 256.0f + backgroundu, bv = h * 0.67f / 256.0f + backgroundv;
+			if (splash) settexture("data/splash.png", 0);
 			else settexture("data/background.png", 0);
-			
-			if(splash) bgquad(0, 0, w, h);
+
+			if (splash) bgquad(0, 0, w, h);
 			else bgquad(0, 0, w, h, 0, 0, bu, bv);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
 			float lh = 0.5f * min(w, h), lw = lh * 2,
 				lx = 0.5f * (w - lw), ly = 0.5f * (h * 0.5f - lh);
-			if(!splash)   
+			if (!splash)
 			{
 				settexture((maxtexsize ? min(maxtexsize, hwtexsize) : hwtexsize) >= 1024 && (screenw > 1280 || screenh > 800) ? "data/logo_1024.png" : "data/logo.png", 3);
 				bgquad(lx, ly, lw, lh);
 			}
-		
+
 			// cardboard badge
-			float badgeh = 0.12f*min(w, h), badgew = badgeh, badgex = 20, badgey = (h - badgeh - 20);
-			if(!splash)
+			float badgeh = 0.12f * min(w, h), badgew = badgeh, badgex = 20, badgey = (h - badgeh - 20);
+			if (!splash)
 			{
 				settexture("data/cardboard.png", 3);
 				bgquad(badgex, badgey, badgew, badgeh);
@@ -258,7 +257,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
 			// cube 2 badge
 			badgex = (w - badgew - 20);
-			if(!splash && mainmenu)
+			if (!splash && mainmenu)
 			{
 				settexture("data/cube.png", 3);
 				bgquad(badgex, badgey, badgew, badgeh);
@@ -266,7 +265,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 		}
 		else {
 			// blank black box, used for map load
-			gle::colorf(0,0,0);
+			gle::colorf(0, 0, 0);
 			bgquad(0, 0, w, h);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
@@ -284,6 +283,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 			draw_text(caption, 0, 0);
 			pophudmatrix();
 		}
+
 		if(mapshot || mapname)
 		{
 			int infowidth = 12*FONTH;
@@ -292,30 +292,30 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 			{
 				int mw, mh;
 				text_bounds(mapinfo, mw, mh, infowidth);
-				//int tw = text_width(mapinfo);
+				// TODO: this seems wrong, look into it
 				float tsz = sz / (8 * FONTH),
 					tx = (w / 2) - (mw / 3),
 					ty = 0.125f * sz - FONTH * tsz;
 				pushhudmatrix();
-				//hudmatrix.translate(x+sz+FONTH*msz, y, 0);
-				//hudmatrix.translate((0.5f * w) - (infowidth / 2), 0, 0);
 				hudmatrix.translate(tx, ty, 0);
 				hudmatrix.scale(tsz, tsz, 1);
 				flushhudmatrix();
 				draw_text(mapinfo, 0, 0, 0xFF, 0xFF, 0xFF);
 				pophudmatrix();
 			}
+
 			if(mapshot && mapshot!=notexture)
 			{
 				glBindTexture(GL_TEXTURE_2D, mapshot->id);
-				bgquad(0, h/10, w, h-(h/10));
+				bgquad(0, h / 10, w, h - (h / 10));
 			}
+
 			if(mapname)
 			{
 				int tw = text_width(mapname);
+				// TODO: this seems wrong, look into it
 				float tsz = sz / (7 * FONTH),
-					//tx = (0.5f * w) - (tw/2),
-					tx = (w/2) - (tw/2),
+					tx = (w / 2) - (tw / 2),
 					ty = 0.275f * sz - FONTH * tsz;
 				pushhudmatrix();
 				hudmatrix.translate(tx, ty, 0);
@@ -324,6 +324,19 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 				draw_text(mapname, 0, 0, 0xFF, 0x24, 0x00);
 				pophudmatrix();
 			}
+			
+			// TODO: implement map info?
+			/*
+			if(mapinfo)
+			{
+				pushhudmatrix();
+				hudmatrix.translate(x+sz+FONTH*msz, y, 0);
+				hudmatrix.scale(msz, msz, 1);
+				flushhudmatrix();
+				draw_text(mapinfo, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, -1, infowidth);
+				pophudmatrix();
+			}
+			*/
 		}
 		glDisable(GL_BLEND);
 		if(!restore) swapbuffers(false);
@@ -331,7 +344,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 
 	if(!restore) setbackgroundinfo(caption, mapshot, mapname, mapinfo);
 
-	if(splash) playsound(S_LOGO);  // sound for splash screen
+	if (splash) playsound(S_LOGO);  // sound for splash screen
 }
 
 VAR(progressbackground, 0, 0, 1);
@@ -374,9 +387,9 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
 	gle::defvertex(2);
 	gle::deftexcoord0();
 
-	float fh = h/30, fw = w,
+	float fh = h / 30, fw = w,
 		fx = 0,
-		fy = h-(h / 30),
+		fy = h - (h / 30),
 		fu1 = 0 / 512.0f, fu2 = 511 / 512.0f,
 		fv1 = 0 / 64.0f, fv2 = 52 / 64.0f;
 	settexture("data/loading_frame.png", 3);
@@ -474,17 +487,14 @@ void textinput(bool on, int mask)
 
 bool minimized = false, initwindowpos = false;
 
-void setfullscreen(int enable)
+void setfullscreen(int mode)
 {
 	if(!screen) return;
-	//initwarning(enable ? "fullscreen" : "windowed");
-	extern int fullscreen, fullscreendesktop;
-	if(fullscreendesktop && enable) {
-		enable = fullscreen = 2;
-		fullscreendesktop = 0;
-	}
-	SDL_SetWindowFullscreen(screen, enable ? ((enable == 2) ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_FULLSCREEN) : 0);
-	if(!enable)
+
+	int fullscreen_mode = (mode == 2 ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_FULLSCREEN);
+
+	SDL_SetWindowFullscreen(screen, mode ? fullscreen_mode : 0);
+	if(!mode) // if windowed
 	{
 		SDL_SetWindowSize(screen, scr_w, scr_h);
 		if(initwindowpos)
@@ -500,11 +510,9 @@ VARF(fullscreen, 0, 0, 2, setfullscreen(fullscreen));
 
 void resetfullscreen()
 {
-	setfullscreen(false);
-	setfullscreen(true);
+	setfullscreen(0);
+	setfullscreen(1);
 }
-
-VARF(fullscreendesktop, 0, 0, 1, if(fullscreen) resetfullscreen());
 
 void screenres(int w, int h)
 {               
@@ -575,23 +583,23 @@ void restorevsync()
 VARFP(vsync, 0, 0, 1, restorevsync());
 VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
 
-static void SetSDLIcon(SDL_Window* window)
+static void seticon(SDL_Window* window)
 {
-// these masks are needed to tell SDL_CreateRGBSurface(From)
-// to assume the data it gets is byte-wise RGB(A) data
+	// these masks are needed to tell SDL_CreateRGBSurface(From)
+	// to assume the data it gets is byte-wise RGB(A) data
 	Uint32 rmask, gmask, bmask, amask;
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	int shift = (my_icon.bytes_per_pixel == 3) ? 8 : 0;
-	rmask = 0xff000000 >> shift;
-	gmask = 0x00ff0000 >> shift;
-	bmask = 0x0000ff00 >> shift;
-	amask = 0x000000ff >> shift;
-#else // little endian, like x86
-	rmask = 0x000000ff;
-	gmask = 0x0000ff00;
-	bmask = 0x00ff0000;
-	amask = (cardboard_icon.bytes_per_pixel == 3) ? 0 : 0xff000000;
-#endif
+	#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+		int shift = (my_icon.bytes_per_pixel == 3) ? 8 : 0;
+		rmask = 0xff000000 >> shift;
+		gmask = 0x00ff0000 >> shift;
+		bmask = 0x0000ff00 >> shift;
+		amask = 0x000000ff >> shift;
+	#else // little endian, like x86
+		rmask = 0x000000ff;
+		gmask = 0x0000ff00;
+		bmask = 0x00ff0000;
+		amask = (cardboard_icon.bytes_per_pixel == 3) ? 0 : 0xff000000;
+	#endif
 	SDL_Surface* icon = SDL_CreateRGBSurfaceFrom((void*)cardboard_icon.pixel_data,
 		cardboard_icon.width, cardboard_icon.height, cardboard_icon.bytes_per_pixel * 8,
 		cardboard_icon.bytes_per_pixel * cardboard_icon.width, rmask, gmask, bmask, amask);
@@ -674,10 +682,13 @@ void setupscreen()
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, config&2 ? 1 : 0);
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&2 ? fsaa : 0);
 		}
-		defformatstring(vers, "%s %s %s (Cardboard Engine)", game::gametitle, game::gamestage, game::gameversion);
-		screen = SDL_CreateWindow(vers, winx, winy, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
-		SetSDLIcon(screen);
+		defformatstring(window_title, "%s %s %s (Cardboard Engine)", game::gametitle, game::gamestage, game::gameversion);
+		screen = SDL_CreateWindow(window_title, winx, winy, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
+		
+		// we couldn't create the window, something went horribly wrong
 		if(!screen) continue;
+
+		seticon(screen);
 
 	#ifdef __APPLE__
 		static const int glversions[] = { 32, 20 };
@@ -749,16 +760,19 @@ void resetgl()
 	gl_init();
 
 	inbetweenframes = false;
-	if(!reloadtexture(*notexture) ||
-	   !reloadtexture("data/logo.png") ||
-	   !reloadtexture("data/logo_1024.png") || 
-	   !reloadtexture("data/background.png") ||
-	   !reloadtexture("data/mapshot_frame.png") ||
-	   !reloadtexture("data/loading_frame.png") ||
-	   !reloadtexture("data/loading_bar.png") ||
-	   !reloadtexture("data/cardboard.png") ||
-	   !reloadtexture("data/cube.png"))
+	if (!reloadtexture(*notexture) ||
+		!reloadtexture("data/logo.png") ||
+		!reloadtexture("data/logo_1024.png") ||
+		!reloadtexture("data/background.png") ||
+		!reloadtexture("data/mapshot_frame.png") ||
+		!reloadtexture("data/loading_frame.png") ||
+		!reloadtexture("data/loading_bar.png") ||
+		!reloadtexture("data/cardboard.png") ||
+		!reloadtexture("data/cube.png"))
+	{
 		fatal("failed to reload core texture");
+	}
+
 	reloadfonts();
 	inbetweenframes = true;
 	renderbackground("initializing...");
@@ -786,6 +800,10 @@ static inline bool filterevent(const SDL_Event &event)
 			{
 				if(event.motion.x == screenw / 2 && event.motion.y == screenh / 2)
 					return false;  // ignore any motion events generated by SDL_WarpMouse
+				#ifdef __APPLE__
+				if(event.motion.y == 0)
+					return false;  // let mac users drag windows via the title bar
+				#endif
 			}
 			break;
 	}
@@ -880,10 +898,13 @@ void checkinput()
 	//int lasttype = 0, lastbut = 0;
 	bool mousemoved = false;
 	int focused = 0;
-	if(rawinput::enabled) rawinput::flush();
+
+	if (rawinput::enabled) rawinput::flush();
+
 	while(pumpevents(events))
 	{
 		SDL_Event &event = events.remove();
+
 		switch(event.type)
 		{
 			case SDL_QUIT:
@@ -936,6 +957,7 @@ void checkinput()
 					case SDL_WINDOWEVENT_SIZE_CHANGED:
 					{
 						SDL_GetWindowSize(screen, &screenw, &screenh);
+						// TODO: this seems weird, take a look
 						if(fullscreen != 2 || !(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
 						{
 							scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
@@ -949,16 +971,16 @@ void checkinput()
 				break;
 
 			case SDL_MOUSEMOTION:
-				if(rawinput::debugrawmouse)
+				if (rawinput::debugrawmouse)
 				{
 					conoutf("%d sdl mouse motion (%d, %d) [%d, %d]",
 						lastmillis, event.motion.xrel, event.motion.yrel, event.motion.x, event.motion.y);
 				}
-				if(!rawinput::enabled)
+				if (!rawinput::enabled)
 				{
 					int dx = event.motion.xrel, dy = event.motion.yrel;
 					checkmousemotion(dx, dy);
-					if(!g3d_movecursor(event.motion.x, event.motion.y)) {
+					if (!g3d_movecursor(event.motion.x, event.motion.y)) {
 						mousemove(dx, dy);
 						mousemoved = true;
 					}
@@ -967,8 +989,8 @@ void checkinput()
 
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
-				if(rawinput::enabled) break;
-				//if(lasttype==event.type && lastbut==event.button.button) break; // why?? get event twice without it
+				if (rawinput::enabled) break;
+
 				switch(event.button.button)
 				{
 					case SDL_BUTTON_LEFT: processkey(-1, event.button.state==SDL_PRESSED); break;
@@ -1011,39 +1033,39 @@ void swapbuffers(bool overlay)
  
 VARP(menufps, 0, 60, 1000);
 VARP(maxfps, 0, 200, 1000);
-VARFP(maxtps, 0, 0, 1000, { if(maxtps && maxtps<60) {conoutf("Can't set maxtps < 60"); maxtps = 60;} });
+VARFP(maxtps, 0, 0, 1000, { if (maxtps && maxtps < 60) { conoutf("Can't set maxtps < 60"); maxtps = 60; } });
 
 void ratelimit(int& millis, int lastdrawmillis, bool& draw)
 {
 	int fpslimit = (mainmenu || minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
-	if(!fpslimit) draw = true;
+	if (!fpslimit) draw = true;
 	int tpslimit = minimized ? 100 : (maxtps ? max(maxtps, fpslimit) : 0);
-	if(!fpslimit && !tpslimit) return;
+	if (!fpslimit && !tpslimit) return;
 	int delay = 1;
-	if(tpslimit) delay = max(1000/tpslimit - (millis-totalmillis), 0);
+	if (tpslimit) delay = max(1000 / tpslimit - (millis - totalmillis), 0);
 	// should we draw?
 	int fpsdelay = INT_MAX;
-	if(!minimized && fpslimit)
+	if (!minimized && fpslimit)
 	{
 		static int fpserror = 0;
-		fpsdelay = 1000/fpslimit - (millis-lastdrawmillis);
-		if(fpsdelay < 0)
+		fpsdelay = 1000 / fpslimit - (millis - lastdrawmillis);
+		if (fpsdelay < 0)
 		{
 			draw = true;
 		}
 		else
 		{
-			if(fpserror >= fpslimit) fpsdelay++;
-			if(fpsdelay <= delay)
+			if (fpserror >= fpslimit) fpsdelay++;
+			if (fpsdelay <= delay)
 			{
 				draw = true;
-				if(fpserror >= fpslimit) fpserror -= fpslimit;
-				fpserror += 1000%fpslimit;
+				if (fpserror >= fpslimit) fpserror -= fpslimit;
+				fpserror += 1000 % fpslimit;
 			}
 		}
 	}
 	delay = min(delay, fpsdelay);
-	if(delay > 0)
+	if (delay > 0)
 	{
 		SDL_Delay(delay);
 		millis += delay;
@@ -1059,11 +1081,12 @@ void stackdumper(unsigned int type, EXCEPTION_POINTERS *ep)
 	char out[512];
 	formatstring(out, "Cardboard Engine Win32 Exception: 0x%x [0x%x]\n\n", er->ExceptionCode, er->ExceptionCode==EXCEPTION_ACCESS_VIOLATION ? er->ExceptionInformation[1] : -1);
 	SymInitialize(GetCurrentProcess(), NULL, TRUE);
+	// TODO: this ifdef can be removed when we drop 32-bit support
 #ifdef _AMD64_
 	STACKFRAME64 sf = {{context->Rip, 0, AddrModeFlat}, {}, {context->Rbp, 0, AddrModeFlat}, {context->Rsp, 0, AddrModeFlat}, 0};
 	while(::StackWalk64(IMAGE_FILE_MACHINE_AMD64, GetCurrentProcess(), GetCurrentThread(), &sf, context, NULL, ::SymFunctionTableAccess, ::SymGetModuleBase, NULL))
 	{
-		union { IMAGEHLP_SYMBOL64 sym; char symext[sizeof(IMAGEHLP_SYMBOL64) + sizeof(cbstring)]; };
+		union { IMAGEHLP_SYMBOL64 sym; char symext[sizeof(IMAGEHLP_SYMBOL64) + sizeof(old_string)]; };
 		sym.SizeOfStruct = sizeof(sym);
 		sym.MaxNameLength = sizeof(symext) - sizeof(sym);
 		IMAGEHLP_LINE64 line;
@@ -1075,7 +1098,7 @@ void stackdumper(unsigned int type, EXCEPTION_POINTERS *ep)
 	STACKFRAME sf = {{context->Eip, 0, AddrModeFlat}, {}, {context->Ebp, 0, AddrModeFlat}, {context->Esp, 0, AddrModeFlat}, 0};
 	while(::StackWalk(IMAGE_FILE_MACHINE_I386, GetCurrentProcess(), GetCurrentThread(), &sf, context, NULL, ::SymFunctionTableAccess, ::SymGetModuleBase, NULL))
 	{
-		union { IMAGEHLP_SYMBOL sym; char symext[sizeof(IMAGEHLP_SYMBOL) + sizeof(cbstring)]; };
+		union { IMAGEHLP_SYMBOL sym; char symext[sizeof(IMAGEHLP_SYMBOL) + sizeof(old_string)]; };
 		sym.SizeOfStruct = sizeof(sym);
 		sym.MaxNameLength = sizeof(symext) - sizeof(sym);
 		IMAGEHLP_LINE line;
@@ -1160,16 +1183,20 @@ VAR(numcpus, 1, 1, 128);
 VARFP(offline, 0, 0, 1, { getuserinfo_(false); });
 
 bool getuserinfo_(bool debug, bool first) {
-	if(offline) return false; // don't waste time trying to check everything if we are offline.
+	if(offline) // don't waste time trying to check everything if we are offline.
+	{
+		if(isconnected()) disconnect();
+		return false;
+	}
 	if(!strcmp(gametoken, "OFFLINE")) // check if playing without logging into launcher
 	{
 		if(!first) conoutf(CON_ERROR, "\f3[HNID] Please restart the game and log in with your HNID to play online!");
 		offline = 1;
 		return false;
 	}
-	cbstring apiurl;
+	old_string apiurl;
 	formatstring(apiurl, "%s/game/login?game=1", __hnapi);
-	char* thing = web_auth(apiurl, gametoken, debug);
+	const char* thing = web_auth(apiurl, gametoken, debug);
 	if(!thing[0]) {
 		conoutf(CON_ERROR, "\f3[HNID] No data recieved from server, switching to offline mode!");
 		offline = 1;
@@ -1265,10 +1292,10 @@ int main(int argc, char **argv)
 		break;
 	}
 
-	// get gametoken, you son of a bitch
-	for (int i = 1; i < argc; i++) if(argv[i][0] == '-' && argv[i][1] == 'c') { setgametoken(&argv[i][2]); break; }
-	if(!gametoken[0]) strcpy(gametoken, "OFFLINE");
-	if(!strcmp(gametoken, "OFFLINE")) offline = 1;
+	// get gametoken, we need that
+	for (int i = 1; i < argc; i++) if (argv[i][0] == '-' && argv[i][1] == 'c') { setgametoken(&argv[i][2]); break; }
+	if (!gametoken[0]) strcpy(gametoken, "OFFLINE");
+	if (!strcmp(gametoken, "OFFLINE")) offline = 1;
 
 	execfile("init.cfg", false);
 	for(int i = 1; i<argc; i++)
@@ -1338,7 +1365,7 @@ int main(int argc, char **argv)
 	ASSERT(dedicated <= 1);
 	game::initclient();
 
-	// moved this above video so we don't get a blank window if steam fails init. -Y
+	// this is before video so we can cleanly catch a steam init failure.
 	#ifdef STEAM
 		logoutf("init: steam");
 		steam::initSteam();
@@ -1358,13 +1385,13 @@ int main(int argc, char **argv)
 	gl_checkextensions();
 	gl_init();
 	notexture = textureload("packages/textures/notexture.png");
-	if(!notexture) fatal("could not find core textures (are you using the launcher?)");
+	if (!notexture) fatal("could not find core textures (are you using the launcher?)");
 
 	logoutf("init: console");
-	if(!execfile("data/stdlib.cfg", false)) fatal("cannot find data files (are you using the launcher?)"); // this is the first config file we load.
-	if(!execfile("data/lang.cfg", false)) fatal("cannot find lang config"); // after this point in execution, translations are safe to use.
-	if(!execfile("data/font.cfg", false)) fatal("cannot find font definitions");
-	if(!setfont("default")) fatal("no default font specified");
+	if (!execfile("data/stdlib.cfg", false)) fatal("cannot find data files (you are running from the wrong folder, try .bat file in the main folder)"); // this is the first file we load.
+	if (!execfile("data/lang.cfg", false)) fatal("cannot find lang config"); // after this point in execution, translations are safe to use.
+	if (!execfile("data/font.cfg", false)) fatal("cannot find font definitions");
+	if (!setfont("default")) fatal("no default font specified");
 
 	logoutf("init: sound");
 	execfile("data/sounds.cfg"); // load sounds early
@@ -1404,8 +1431,9 @@ int main(int argc, char **argv)
 
 	initing = NOT_INITING;
 
+	// TODO: improve the UX of this, game just appears to freeze if it can't connect quickly
 	logoutf("init: auth");
-	if(strcmp(__hnapi, HNAPI)) renderprogress(0.0f, "connecting to UNOFFICIAL auth server...");
+	if (strcmp(__hnapi, HNAPI)) renderprogress(0.0f, "connecting to UNOFFICIAL auth server...");
 	else renderprogress(0.0f, "connecting to auth server...");
 	getuserinfo_(false, true);
 	if (strcmp(__hnapi, HNAPI)) renderprogress(1.0f, "connected to UNOFFICIAL auth server");
@@ -1419,11 +1447,12 @@ int main(int argc, char **argv)
 	initdecals();
 
 	#ifdef STEAM
-		logoutf("init: steam");
+		logoutf("init: steam input");
 		steam::input_registerBinds();
 	#endif
 
-	identflags |= IDF_PERSIST;
+	identflags |= IDF_PERSIST; // anything executed past here save to save to config
+
 	#ifdef DISCORD
 		logoutf("init: discord");
 		discord::initDiscord();
@@ -1436,10 +1465,10 @@ int main(int argc, char **argv)
 
 	logoutf("init: mainloop");
 
-	if(execfile("once.cfg", false)) remove(findfile("once.cfg", "rb"));
-	if(execfile("update.cfg", false)) remove(findfile("update.cfg", "rb"));
+	if (execfile("once.cfg", false)) remove(findfile("once.cfg", "rb"));
+	if (execfile("update.cfg", false)) remove(findfile("update.cfg", "rb"));
 
-	if(load)
+	if (load)
 	{
 		logoutf("init: localconnect");
 		//localconnect();
@@ -1451,9 +1480,11 @@ int main(int argc, char **argv)
 	initmumble();
 	resetfpshistory();
 
+	// TODO: is this still needed?
 	ignoremousemotion();
 
 	#ifdef STEAM
+		steam::steamCallbacks();
 		steam::setAchievement("ACH_FIRST_LAUNCH");
 	#endif
 
@@ -1463,12 +1494,12 @@ int main(int argc, char **argv)
 		int millis = getclockmillis();
 		bool draw = false;
 		ratelimit(millis, lastdrawmillis, draw);
-		if(draw)
+		if (draw)
 		{
 			static int frametimeerr = 0;
-			int scaledframetime = game::scaletime(millis-lastdrawmillis) + frametimeerr;
-			curframetime = scaledframetime/100;
-			frametimeerr = scaledframetime%100;
+			int scaledframetime = game::scaletime(millis - lastdrawmillis) + frametimeerr;
+			curframetime = scaledframetime / 100;
+			frametimeerr = scaledframetime % 100;
 		}
 		elapsedtime = millis - totalmillis;
 		static int timeerr = 0;
@@ -1482,7 +1513,9 @@ int main(int argc, char **argv)
  
 		checkinput();
 		menuprocess();
+#ifndef NO_EDITOR
 		tryedit();
+#endif
 
 		if(lastmillis) game::updateworld();
 
@@ -1490,9 +1523,9 @@ int main(int argc, char **argv)
 
 		serverslice(false, 0);
 
-		if(draw)
+		if (draw)
 		{
-			if(frames) updatefpshistory(millis-lastdrawmillis);
+			if (frames) updatefpshistory(millis - lastdrawmillis);
 			frames++;
 		}
 
@@ -1503,10 +1536,10 @@ int main(int argc, char **argv)
 
 		if(minimized) continue;
 
-		if(draw)
-		{
+		if (draw) {
 			inbetweenframes = false;
-			if(mainmenu) {
+			if (mainmenu)
+			{
 				gl_drawmainmenu();
 				#ifdef DISCORD
 					discord::updatePresence(discord::D_MENU);
@@ -1515,16 +1548,18 @@ int main(int argc, char **argv)
 					steam::input_updateActions(steam::ST_MENU);
 				#endif
 			}
-			else {
+			else
+			{ 
 				#ifdef STEAM
 					steam::input_updateActions(steam::ST_PLAYING);
 				#endif
 				gl_drawframe();
-			}
+			} 
 			swapbuffers();
 			renderedframe = inbetweenframes = true;
 			lastdrawmillis = millis;
 		}
+
 		#ifdef STEAM
 			steam::steamCallbacks();
 			if(steam::input_getConnectedControllers()) steam::input_checkController();

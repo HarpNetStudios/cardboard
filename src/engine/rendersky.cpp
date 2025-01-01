@@ -8,13 +8,13 @@ void loadsky(const char *basename, Texture *texs[6])
 	loopi(6)
 	{
 		const char *side = cubemapsides[i].name;
-		cbstring name;
+		old_string name;
 		copystring(name, makerelpath("packages", basename));
 		if(wildcard)
 		{
 			char *chop = strchr(name, '*');
 			if(chop) { *chop = '\0'; concatstring(name, side); concatstring(name, wildcard+1); }
-			texs[i] = textureload(name, 3, true, false); 
+			texs[i] = textureload(name, 3, true, false);
 		}
 		else
 		{
@@ -34,8 +34,8 @@ Texture *cloudoverlay = NULL;
 
 Texture *loadskyoverlay(const char *basename)
 {
-	const char *ext = strrchr(basename, '.'); 
-	cbstring name;
+	const char *ext = strrchr(basename, '.');
+	old_string name;
 	copystring(name, makerelpath("packages", basename));
 	Texture *t = notexture;
 	if(ext) t = textureload(name, 0, true, false);
@@ -52,7 +52,7 @@ Texture *loadskyoverlay(const char *basename)
 	return t;
 }
 
-SVARFR(skybox, "", { if(skybox[0]) loadsky(skybox, sky); }); 
+SVARFR(skybox, "", { if(skybox[0]) loadsky(skybox, sky); });
 HVARR(skyboxcolor, 0, 0xFFFFFF, 0xFFFFFF);
 FVARR(spinsky, -720, 0, 720);
 VARR(yawsky, 0, 0, 360);
@@ -61,7 +61,7 @@ HVARR(cloudboxcolor, 0, 0xFFFFFF, 0xFFFFFF);
 FVARR(cloudboxalpha, 0, 1, 1);
 FVARR(spinclouds, -720, 0, 720);
 VARR(yawclouds, 0, 0, 360);
-FVARR(cloudclip, 0, 0.5f, 1);
+FVARR(cloudclip, 0, 0, 1);
 SVARFR(cloudlayer, "", { if(cloudlayer[0]) cloudoverlay = loadskyoverlay(cloudlayer); });
 FVARR(cloudoffsetx, 0, 0, 1);
 FVARR(cloudoffsety, 0, 0, 1);
@@ -179,12 +179,13 @@ FVARR(fogdomemin, 0, 0, 1);
 FVARR(fogdomemax, 0, 0, 1);
 VARR(fogdomecap, 0, 1, 1);
 FVARR(fogdomeclip, 0, 1, 1);
-bvec fogdomecolorvec(0, 0, 0);
+bvec fogdomecolor_i(0, 0, 0);
 HVARFR(fogdomecolor, 0, 0, 0xFFFFFF,
 {
-	fogdomecolorvec = bvec((fogdomecolor>>16)&0xFF, (fogdomecolor>>8)&0xFF, fogdomecolor&0xFF);
+	fogdomecolor_i = bvec((fogdomecolor>>16)&0xFF, (fogdomecolor>>8)&0xFF, fogdomecolor&0xFF);
 });
 VARR(fogdomeclouds, 0, 1, 1);
+VARR(fogdomesquare, 0, 0, 1);
 
 namespace fogdome
 {
@@ -192,7 +193,7 @@ namespace fogdome
 	{
 		vec pos;
 		bvec4 color;
-	
+
 		vert() {}
 		vert(const vec &pos, const bvec &fcolor, float alpha) : pos(pos), color(fcolor, uchar(alpha*255))
 		{
@@ -207,9 +208,9 @@ namespace fogdome
 	GLuint vbuf = 0, ebuf = 0;
 	bvec lastcolor(0, 0, 0);
 	float lastminalpha = 0, lastmaxalpha = 0, lastcapsize = -1, lastclipz = 1;
-	
+
 	void subdivide(int depth, int face);
-	
+
 	void genface(int depth, int i1, int i2, int i3)
 	{
 		int face = numindices; numindices += 3;
@@ -218,7 +219,7 @@ namespace fogdome
 		indices[face+2] = i1;
 		subdivide(depth, face);
 	}
-	
+
 	void subdivide(int depth, int face)
 	{
 		if(depth-- <= 0) return;
@@ -234,13 +235,13 @@ namespace fogdome
 		subdivide(depth, face);
 		loopi(3) genface(depth, idx[i], idx[3+i], idx[3+(i+2)%3]);
 	}
-	
+
 	int sortcap(GLushort x, GLushort y)
 	{
 		const vec &xv = verts[x].pos, &yv = verts[y].pos;
 		return xv.y < 0 ? yv.y >= 0 || xv.x < yv.x : yv.y >= 0 && xv.x > yv.x;
 	}
-	
+
 	void init(const bvec &color, float minalpha = 0.0f, float maxalpha = 1.0f, float capsize = -1, float clipz = 1, int hres = 16, int depth = 2)
 	{
 		const int tris = hres << (2*depth);
@@ -275,14 +276,14 @@ namespace fogdome
 				genface(depth-1, 3*i+2, 3*((i+1)%hres)+1, 3*((i+1)%hres));
 			}
 		}
-	
+
 		if(capsize >= 0)
 		{
 			GLushort *cap = &indices[numindices];
 			int capverts = 0;
 			loopi(numverts) if(!verts[i].pos.z) cap[capverts++] = i;
 			verts[numverts++] = vert(vec(0.0f, 0.0f, -capsize), color, maxalpha);
-			quicksort(cap, capverts, sortcap); 
+			quicksort(cap, capverts, sortcap);
 			loopi(capverts)
 			{
 				int n = capverts-1-i;
@@ -292,29 +293,29 @@ namespace fogdome
 				capindices += 3;
 			}
 		}
-	
+
 		if(!vbuf) glGenBuffers_(1, &vbuf);
 		gle::bindvbo(vbuf);
 		glBufferData_(GL_ARRAY_BUFFER, numverts*sizeof(vert), verts, GL_STATIC_DRAW);
 		DELETEA(verts);
-	
+
 		if(!ebuf) glGenBuffers_(1, &ebuf);
 		gle::bindebo(ebuf);
 		glBufferData_(GL_ELEMENT_ARRAY_BUFFER, (numindices + capindices)*sizeof(GLushort), indices, GL_STATIC_DRAW);
 		DELETEA(indices);
 	}
-	
+
 	void cleanup()
 	{
 		numverts = numindices = 0;
 		if(vbuf) { glDeleteBuffers_(1, &vbuf); vbuf = 0; }
 		if(ebuf) { glDeleteBuffers_(1, &ebuf); ebuf = 0; }
 	}
-	
+
 	void draw()
 	{
 		float capsize = fogdomecap && fogdomeheight < 1 ? (1 + fogdomeheight) / (1 - fogdomeheight) : -1;
-		bvec color = fogdomecolor ? fogdomecolorvec : fogcolorvec;
+		bvec color = fogdomecolor ? fogdomecolor_i : fogcolor_i;
 		if(!numverts || lastcolor != color || lastminalpha != fogdomemin || lastmaxalpha != fogdomemax || lastcapsize != capsize || lastclipz != fogdomeclip)
 		{
 			init(color, min(fogdomemin, fogdomemax), fogdomemax, capsize, fogdomeclip);
@@ -324,7 +325,7 @@ namespace fogdome
 			lastcapsize = capsize;
 			lastclipz = fogdomeclip;
 		}
-	
+
 		gle::bindvbo(vbuf);
 		gle::bindebo(ebuf);
 
@@ -332,14 +333,14 @@ namespace fogdome
 		gle::colorpointer(sizeof(vert), &verts->color);
 		gle::enablevertex();
 		gle::enablecolor();
-	
+
 		glDrawRangeElements_(GL_TRIANGLES, 0, numverts-1, numindices + fogdomecap*capindices, GL_UNSIGNED_SHORT, indices);
 		xtraverts += numverts;
 		glde++;
 
 		gle::disablevertex();
 		gle::disablecolor();
-	
+
 		gle::clearvbo();
 		gle::clearebo();
 	}
@@ -347,7 +348,7 @@ namespace fogdome
 
 static void drawfogdome(int farplane)
 {
-	SETSHADER(skyfog);
+	SETVARIANT(skyfog, fogdomesquare ? 0 : -1, 0);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -467,7 +468,7 @@ static void drawatmosphere(int w, float z1clip = 0.0f, float z2clip = 1.0f, int 
 	LOCALPARAM(sundiskcolor, diskcolor);
 
 	// convert from view cosine into mu^2 for limb darkening, where mu = sqrt(1 - sin^2) and sin^2 = 1 - cos^2, thus mu^2 = 1 - (1 - cos^2*scale)
-	// convert corona offset into scale for mu^2, where sin = (1-corona) and thus mu^2 = 1 - (1-corona^2) 
+	// convert corona offset into scale for mu^2, where sin = (1-corona) and thus mu^2 = 1 - (1-corona^2)
 	float sundiskscale = sinf(0.5f*atmosundisksize*RAD);
 	float coronamu = 1 - (1-atmosundiskcorona)*(1-atmosundiskcorona);
 	if(sundiskscale > 0) LOCALPARAMF(sundiskparams, 1.0f/(sundiskscale*sundiskscale), 1.0f/max(coronamu, 1e-3f));
@@ -545,7 +546,9 @@ static void drawatmosphere(int w, float z1clip = 0.0f, float z2clip = 1.0f, int 
 }
 
 VARP(sparklyfix, 0, 0, 1);
-VAR(showsky, 0, 1, 1); 
+VAR(showsky, 0, 1, 1);
+VAR(showskyoutline, 0, 0, 1);
+HVARP(skyoutlinecolor, 0, 0x800080, 0xFFFFFF);
 VAR(clipsky, 0, 1, 1);
 
 bool drawskylimits(bool explicitonly)
@@ -570,9 +573,9 @@ void drawskyoutline()
 		enablepolygonoffset(GL_POLYGON_OFFSET_LINE);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
-	gle::colorf(0.5f, 0.0f, 0.5f);
+	gle::color(vec::hexcolor(skyoutlinecolor));
 	rendersky(true);
-	if(!wireframe) 
+	if(!wireframe)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		disablepolygonoffset(GL_POLYGON_OFFSET_LINE);
@@ -604,7 +607,7 @@ void drawskybox(int farplane, bool limited, bool force)
 		 explicitonly = false;
 	if(limited)
 	{
-		explicitonly = alwaysrender || !sparklyfix || refracting; 
+		explicitonly = alwaysrender || !sparklyfix || refracting;
 		if(!drawskylimits(explicitonly) && !alwaysrender) return;
 		extern int ati_skybox_bug;
 		if(!alwaysrender && !renderedskyfaces && !ati_skybox_bug) explicitonly = false;
@@ -622,7 +625,7 @@ void drawskybox(int farplane, bool limited, bool force)
 		}
 		if(!renderedskyfaces) return;
 	}
-	
+
 	if(alwaysrender)
 	{
 		renderedskyfaces = 0x3F;
@@ -635,9 +638,9 @@ void drawskybox(int farplane, bool limited, bool force)
 		if(refracting<0) topclip = 0.5f + 0.5f*(reflectz-camera1->o.z)/float(worldsize);
 		else if(reflectz>skyclip) skyclip = reflectz;
 	}
-	if(skyclip) skyclip = 0.5f + 0.5f*(skyclip-camera1->o.z)/float(worldsize); 
+	if(skyclip) skyclip = 0.5f + 0.5f*(skyclip-camera1->o.z)/float(worldsize);
 
-	if(limited) 
+	if(limited)
 	{
 		if(explicitonly) glDisable(GL_DEPTH_TEST);
 		else glDepthFunc(GL_GEQUAL);
@@ -747,9 +750,10 @@ void drawskybox(int farplane, bool limited, bool force)
 	{
 		if(explicitonly) glEnable(GL_DEPTH_TEST);
 		else glDepthFunc(GL_LESS);
-		if(!reflecting && !refracting && !drawtex && editmode && showsky) drawskyoutline();
 	}
 	else glDepthFunc(GL_LESS);
+
+	if(!reflecting && !refracting && !drawtex && editmode && ((showsky && limited) || showskyoutline)) drawskyoutline();
 }
 
 VARNR(skytexture, useskytexture, 0, 1, 1);
@@ -759,7 +763,7 @@ double skyarea = 0;
 
 bool limitsky()
 {
-	return (explicitsky && (useskytexture || editmode)) || (sparklyfix && skyarea / (double(worldsize)*double(worldsize)*6) < 0.9);
+	return (explicitsky && (useskytexture || (editmode && showsky))) || (sparklyfix && skyarea / (double(worldsize)*double(worldsize)*6) < 0.9);
 }
 
 bool shouldrenderskyenvmap()

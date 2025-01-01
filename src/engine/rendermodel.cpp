@@ -397,13 +397,13 @@ void preloadusedmapmodels(bool msg, bool bih)
 		loadprogress = float(i+1)/mapmodels.length();
 		int mmindex = mapmodels[i];
 		mapmodelinfo *mmi = getmminfo(mmindex);
-		if(mapmodelwarning)
+		if (mapmodelwarning)
 		{
-			if(!mmi) { if(msg) conoutf(CON_WARN, "could not find map model: %d", mmindex); }
-			else if(mmi->name[0] && !loadmodel(NULL, mmindex, msg)) { if(msg) conoutf(CON_WARN, "could not load model: %s", mmi->name); }
-			else if(mmi->m)
+			if (!mmi) { if (msg) conoutf(CON_WARN, "could not find map model: %d", mmindex); }
+			else if (mmi->name[0] && !loadmodel(NULL, mmindex, msg)) { if (msg) conoutf(CON_WARN, "could not load model: %s", mmi->name); }
+			else if (mmi->m)
 			{
-				if(bih) mmi->m->preloadBIH();
+				if (bih) mmi->m->preloadBIH();
 				mmi->m->preloadmeshes();
 			}
 		}
@@ -521,9 +521,9 @@ void renderellipse(vec &o, float xradius, float yradius, float yaw)
 	gle::colorf(0.5f, 0.5f, 0.5f);
 	gle::defvertex();
 	gle::begin(GL_LINE_LOOP);
-	loopi(15)
+	loopi(16)
 	{
-		const vec2 &sc = sincos360[i*(360/15)];
+		const vec2 &sc = sincos360[(i*360+8)/16];
 		gle::attrib(vec(xradius*sc.x, yradius*sc.y, 0).rotate_around_z((yaw+90)*RAD).add(o));
 	}
 	xtraverts += gle::end();
@@ -592,7 +592,6 @@ void renderbatchedmodel(model *m, batchedmodel &b)
 		if(b.flags&MDL_GHOST) anim |= ANIM_GHOST;
 	}
 
-	if(darkmap) anim |= ANIM_NOSKIN;
 	m->render(anim, b.basetime, b.basetime2, b.pos, b.yaw, b.pitch, b.d, a, b.color, b.dir, b.transparent);
 }
 
@@ -966,14 +965,12 @@ void rendermodel(entitylight *light, const char *mdl, int anim, const vec &o, fl
 		if(flags&MDL_GHOST) anim |= ANIM_GHOST;
 	}
 
-	if(darkmap) anim |= ANIM_NOSKIN;
-	
 	if(flags&MDL_CULL_QUERY)
 	{
 		d->query = newquery(d);
 		if(d->query) startquery(d->query);
 	}
-
+	
 	m->render(anim, basetime, basetime2, o, yaw, pitch, d, a, lightcolor, lightdir, trans);
 
 	if(flags&MDL_CULL_QUERY && d->query) endquery(d->query);
@@ -1023,7 +1020,7 @@ ICOMMAND(findanims, "s", (char *name),
 	vector<int> anims;
 	findanims(name, anims);
 	vector<char> buf;
-	cbstring num;
+	old_string num;
 	loopv(anims)
 	{
 		formatstring(num, "%d", anims[i]);
@@ -1102,13 +1099,15 @@ void renderclient(dynent *d, const char *mdlname, modelattach *attachments, int 
 		vec m;
 		vecfrommovement(d->yaw, d->pitch, d->fmove, d->fstrafe, m);
 		const bool moving = m.magnitude() > 0.01f;
+
 		if(d->inwater && d->physstate<=PHYS_FALL) anim |= (((game::allowmove(d) && moving) || d->vel.z+d->falling.z>0 ? ANIM_SWIM : ANIM_SINK) | ANIM_LOOP) << ANIM_SECONDARY;
+
 		else if(d->timeinair>100) anim |= (ANIM_JUMP|ANIM_END)<<ANIM_SECONDARY;
-		else if(game::allowmove(d) && moving)
+		else if (game::allowmove(d) && moving)
 		{
-			if(fabs(d->fstrafe) > 0.25f && d->fmove <= 0.5f)
+			if (fabs(d->fstrafe) > 0.25f && d->fmove <= 0.5f)
 				anim |= ((d->fstrafe > 0.0f ? ANIM_LEFT : ANIM_RIGHT) | ANIM_LOOP) << ANIM_SECONDARY;
-			else if(d->fmove < 0.0f)
+			else if (d->fmove < 0.0f)
 				anim |= (ANIM_BACKWARD | ANIM_LOOP) << ANIM_SECONDARY;
 			else
 				anim |= (ANIM_FORWARD | ANIM_LOOP) << ANIM_SECONDARY;
@@ -1141,7 +1140,7 @@ void setbbfrommodel(dynent *d, const char *mdl)
 	d->radius    = d->collidetype==COLLIDE_OBB ? sqrtf(d->xradius*d->xradius + d->yradius*d->yradius) : max(d->xradius, d->yradius);
 	d->eyeheight = (center.z-radius.z) + radius.z*2*m->eyeheight;
 	d->aboveeye  = radius.z*2*(1.0f-m->eyeheight);
-	if(d->aboveeye + d->eyeheight <= 0.5f)
+	if (d->aboveeye + d->eyeheight <= 0.5f)
 	{
 		float zrad = (0.5f - (d->aboveeye + d->eyeheight)) / 2;
 		d->aboveeye += zrad;

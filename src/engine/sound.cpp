@@ -165,12 +165,12 @@ bool shouldinitaudio = true;
 SVARF(audiodriver, AUDIODRIVER, { shouldinitaudio = true; initwarning("sound configuration", INIT_RESET, CHANGE_SOUND); });
 VARF(usesound, 0, 1, 1, { shouldinitaudio = true; initwarning("sound configuration", INIT_RESET, CHANGE_SOUND); });
 VARF(soundchans, 1, 32, 128, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
-VARF(soundfreq, 0, 44100, 48000, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
+VARF(soundfreq, 0, MIX_DEFAULT_FREQUENCY, 48000, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
 VARF(soundbufferlen, 128, 1024, 4096, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
 
 bool initaudio()
 {
-	static cbstring fallback = "";
+	static old_string fallback = "";
 	static bool initfallback = true;
 	static bool restorefallback = false;
 	if(initfallback)
@@ -300,6 +300,8 @@ void startmusic(char *name, char *cmd)
 }
 
 COMMANDN(music, startmusic, "ss");
+
+// TODO: completely rewrite the soundtrack system, this shit sucks so much
 SVARFP(soundtrack, "adwh", {
 	execfile("data/streset.cfg", false);
 	defformatstring(st_arch, "packages/music/%s", soundtrack);
@@ -431,26 +433,16 @@ static Mix_Chunk *loadwavscaled(const char *name)
 
 VARFP(fixwav, 0, 1, 1, initwarning("sound configuration", INIT_LOAD, CHANGE_SOUND));
 
-//SVARP(soundpack, "default");
-SVARFP(soundpack, "default", { 
-		if(strcmp(soundpack,"default")){
-			defformatstring(gamer, "packages/soundpacks/%s", soundpack);
-			if(addzip(gamer, "packages/soundpacks", NULL, true)) resetsound();
-			return;
-		}
-		resetsound(); 
-	});
-
 bool soundsample::load(bool msg)
 {
 	if(chunk) return true;
 	if(!name[0]) return false;
 
-	static const char * const exts[] = { "", ".wav", ".ogg", ".opus"};
-	cbstring filename;
+	static const char * const exts[] = { "", ".wav", ".ogg" };
+	old_string filename;
 	loopi(sizeof(exts)/sizeof(exts[0]))
 	{
-		formatstring(filename, "packages/soundpacks/%s/%s%s", soundpack, name, exts[i]);
+		formatstring(filename, "packages/sounds/%s%s", name, exts[i]);
 		if(msg && !i) renderprogress(0, filename);
 		path(filename);
 		if(fixwav)
@@ -466,25 +458,7 @@ bool soundsample::load(bool msg)
 		if(chunk) return true;
 	}
 
-	loopi(sizeof(exts)/sizeof(exts[0]))
-	{
-		formatstring(filename, "packages/soundpacks/default/%s%s", name, exts[i]);
-		if(msg && !i) renderprogress(0, filename);
-		path(filename);
-		if(fixwav)
-		{
-			size_t len = strlen(filename);
-			if(len >= 4 && !strcasecmp(filename + len - 4, ".wav"))
-			{
-				chunk = loadwavscaled(filename);
-				if(chunk) return true;
-			}
-		}
-		chunk = loadwav(filename);
-		if(chunk) return true;
-	}
-
-	conoutf(CON_ERROR, "failed to load sample: packages/soundpacks/%s/%s", soundpack, name);
+	conoutf(CON_ERROR, "failed to load sample: packages/sounds/%s", name);
 	conoutf(CON_ERROR, "SDL_mixer says: %s", Mix_GetError());
 	return false;
 }
@@ -705,10 +679,10 @@ bool updatechannel(soundchannel &chan)
 		{
 			v.rotate_around_z(-camera1->yaw*RAD);
 			panf = 0.5f - 0.5f*v.x/v.magnitude2(); // range is from 0 (left) to 1 (right)
-        }
-    }
-    int vol = clamp(int(volf*soundvol*chan.slot->volume*(MIX_MAX_VOLUME/float(255*255)) + 0.5f), 0, MIX_MAX_VOLUME);
-    int pan = clamp(int(panf*255.9f), 0, 255);
+		}
+	}
+	int vol = clamp(int(volf*soundvol*chan.slot->volume*(MIX_MAX_VOLUME/float(255*255)) + 0.5f), 0, MIX_MAX_VOLUME);
+	int pan = clamp(int(panf*255.9f), 0, 255);
 	if(vol == chan.volume && pan == chan.pan) return false;
 	chan.volume = vol;
 	chan.pan = pan;
@@ -893,7 +867,7 @@ ICOMMAND(entsoundname, "i", (int* id),
 	}
 );
 
-void writemapsounds(stream* f)
+void writemapsounds(stream *f)
 {
 	loopv(mapsounds.slots)
 	{
@@ -947,7 +921,7 @@ COMMAND(resetsound, "");
 #include <windows.h>
 #else
 #include <sys/mman.h>
-#include <fcntl.h> // For O_* constants 
+#include <fcntl.h> // For O_* constants
 #endif // _WIN32
 
 struct LinkedMem {

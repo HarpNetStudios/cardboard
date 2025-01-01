@@ -1091,7 +1091,7 @@ int classifyface(const cube &c, int orient, const ivec &co, int size)
 }
 
 // more expensive version that checks both triangles of a face independently
-int visibletris(const cube &c, int orient, const ivec &co, int size, ushort nmat, ushort matmask)
+int visibletris(const cube &c, int orient, const ivec &co, int size, ushort nmat, ushort matmask, bool showoutside)
 {
 	int vis = 3, touching = 0xF;
 	ivec v[4], e1, e2, e3, n;
@@ -1122,7 +1122,7 @@ int visibletris(const cube &c, int orient, const ivec &co, int size, ushort nmat
 	ivec no;
 	int nsize;
 	const cube &o = neighbourcube(c, orient, co, size, no, nsize);
-	if(&o==&c) return 0;
+	if(&o==&c) return showoutside ? vis : 0;
 	
 	if((c.material&matmask) == nmat) nmat = MAT_AIR;
 

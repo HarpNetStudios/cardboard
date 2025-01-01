@@ -26,7 +26,7 @@ void newfont(char *name, char *tex, int *defaultw, int *defaulth)
 void fontoffset(char *c)
 {
 	if(!fontdef) return;
-	
+
 	fontdef->charoffset = c[0];
 }
 
@@ -34,7 +34,7 @@ void fontscale(int *scale)
 {
 	if(!fontdef) return;
 
-	fontdef->scale = *scale > 0 ? *scale : fontdef->defaulth; 
+	fontdef->scale = *scale > 0 ? *scale : fontdef->defaulth;
 }
 
 void fonttex(char *s)
@@ -106,6 +106,12 @@ bool setfont(const char *name)
 	return true;
 }
 
+void setfont_(const char *name)
+{
+	if(!setfont(name)) conoutf(CON_ERROR, "no such font: %s", name);
+}
+COMMANDN(setfont, setfont_, "s");
+
 static vector<font *> fontstack;
 
 void pushfont()
@@ -137,7 +143,7 @@ void gettextres(int &w, int &h)
 	}
 }
 
-float text_widthf(const char *str) 
+float text_widthf(const char *str)
 {
 	float width, height;
 	text_boundsf(str, width, height);
@@ -160,7 +166,7 @@ void tabify(const char *str, int *numtabs)
 }
 
 COMMAND(tabify, "si");
-	
+
 void draw_textf(const char *fstr, int left, int top, ...)
 {
 	defvformatstring(str, top, fstr);
@@ -207,10 +213,10 @@ static float draw_char(Texture *&tex, int c, float x, float y, float scale)
 }
 
 //stack[sp] is current color index
-static void text_color(char c, char *stack, int size, int &sp, bvec color, int a) 
+static void text_color(char c, char *stack, int size, int &sp, bvec color, int a)
 {
 	if(c=='s') // save color
-	{   
+	{
 		c = stack[sp];
 		if(sp<size-1) stack[++sp] = c;
 	}
@@ -221,16 +227,18 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
 		else stack[sp] = c;
 		switch(c)
 		{
+			// TODO: refactor text colors
 			case 'g': case '0': color = bvec( 64, 255, 128); break; // green
 			case 'b': case '1': color = bvec( 46, 130, 255); break; // blue
 			case 'y': case '2': color = bvec(255, 192,  64); break; // yellow
 			case '3':			color = bvec(237,  43,  44); break; // red
-			case 'a': case '4': color = bvec(128, 128, 128); break; // grey
+			case 'a': case '4': color = bvec(128, 128, 128); break; // grey 50%
 			case 'm': case '5': color = bvec(192,  64, 192); break; // magenta
 			case 'o': case '6': color = bvec(255, 128,   0); break; // orange
 			case 'w': case '7': color = bvec(255, 255, 255); break; // white
-			case 'k': case '8': color = bvec(  0,   0,   0); break; // black
-			case '9':           color = bvec( 64, 255, 255); break; // cyan
+			case '8':           color = bvec( 64, 255, 255); break; // cyan
+			case '9':           color = bvec(181, 181, 181); break; // grey 70%
+			case 'k':           color = bvec(  0,   0,   0); break; // black
 			case 'v':			color = bvec(192,  96, 255); break; // violet
 			case 'p':			color = bvec(224,  64, 224); break; // purple
 			case 'n':			color = bvec(164,  72,  56); break; // brown
@@ -248,7 +256,7 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
 			// provided color: everything else
 		}
 		gle::color(color, a);
-	} 
+	}
 }
 
 #define TEXTSKELETON \
@@ -319,7 +327,7 @@ int text_visible(const char *str, float hitx, float hity, int maxwidth)
 }
 
 //inverse of text_visible
-void text_posf(const char *str, int cursor, float &cx, float &cy, int maxwidth) 
+void text_posf(const char *str, int cursor, float &cx, float &cy, int maxwidth)
 {
 	#define TEXTINDEX(idx) if(idx == cursor) { cx = x; cy = y; break; }
 	#define TEXTWHITE(idx)
@@ -358,11 +366,11 @@ void text_boundsf(const char *str, float &width, float &height, int maxwidth)
 	#undef TEXTWORD
 }
 
-void draw_text(const char *str, int left, int top, int r, int g, int b, int a, int cursor, int maxwidth) 
+void draw_text(const char *str, int left, int top, int r, int g, int b, int a, int cursor, int maxwidth)
 {
 	#define TEXTINDEX(idx) if(idx == cursor) { cx = x; cy = y; }
 	#define TEXTWHITE(idx)
-	#define TEXTLINE(idx) 
+	#define TEXTLINE(idx)
 	#define TEXTCOLOR(idx) if(usecolor) text_color(str[idx], colorstack, sizeof(colorstack), colorpos, color, a);
 	#define TEXTCHAR(idx) draw_char(tex, c, left+x, top+y, scale); x += cw;
 	#define TEXTWORD TEXTWORDSKELETON

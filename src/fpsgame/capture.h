@@ -1,4 +1,5 @@
 // capture.h: client and server state for capture gamemode
+// TODO: capture has a bunch of code that assumes multiple ammo pickup types exist, needs to be reworked
 #ifndef PARSEMESSAGES
 
 #ifdef SERVMODE
@@ -30,16 +31,17 @@ struct captureclientmode : clientmode
 	struct baseinfo
 	{
 		vec o;
-		cbstring owner, enemy;
+		old_string owner, enemy;
 #ifndef SERVMODE
 		vec ammopos;
-		cbstring name, info;
+		old_string name, info;
 		entitylight light;
 #endif
 		int ammogroup, ammotype, tag, ammo, owners, enemies, converted, capturetime;
 
 		baseinfo() { reset(); }
 
+		// TODO: is this needed?
 		bool valid() const { return ammotype==I_AMMO; }
 
 		void noenemy()
@@ -133,7 +135,7 @@ struct captureclientmode : clientmode
 
 	struct score
 	{
-		cbstring team;
+		old_string team;
 		int total;
 	};
 
@@ -178,6 +180,7 @@ struct captureclientmode : clientmode
 		return cs;
 	}
 
+	// TODO: a lot of this function doesn't make sense with a single ammo type, rework
 	void addbase(int ammotype, const vec &o)
 	{
 		if(bases.length() >= MAXBASES) return;
@@ -188,23 +191,23 @@ struct captureclientmode : clientmode
 
 		if(b.ammogroup)
 		{
-			for(int i = 0; i < int(bases.length()-1); ++i) if(b.ammogroup == bases[i].ammogroup)
+			loopi(bases.length()-1) if(b.ammogroup == bases[i].ammogroup)
 			{
 				b.ammotype = bases[i].ammotype;
 				return;
 			}
 			int uses[I_AMMO+1];
 			memset(uses, 0, sizeof(uses));
-			for(int i = 0; i < int(bases.length()-1); ++i) if(bases[i].ammogroup)
+			loopi(bases.length()-1) if(bases[i].ammogroup)
 			{
-				for(int j = 0; j < i; ++j) if(bases[j].ammogroup == bases[i].ammogroup) goto nextbase;
+				loopj(i) if(bases[j].ammogroup == bases[i].ammogroup) goto nextbase;
 				uses[bases[i].ammotype-1]++;
 				nextbase:;
 			}
 			int mintype = 0;
-			for(int i = 0; i < int(I_AMMO+1); ++i) if(uses[i] < uses[mintype]) mintype = i;
+			loopi(I_AMMO+1) if(uses[i] < uses[mintype]) mintype = i;
 			int numavail = 0, avail[I_AMMO+1];
-			for(int i = 0; i < int(I_AMMO+1); ++i) if(uses[i] == uses[mintype]) avail[numavail++] = i+1;
+			loopi(I_AMMO+1) if(uses[i] == uses[mintype]) avail[numavail++] = i+1;
 			b.ammotype = avail[rnd(numavail)];
 		}
 	}
@@ -261,7 +264,7 @@ struct captureclientmode : clientmode
 	void receiveammo(fpsent *d, int type)
 	{
 		type += I_AMMO-1;
-		if(type!=I_AMMO) return;
+		if (type != I_AMMO) return;
 		entities::repammo(d, d==player1);
 		int icon = itemstats[type].icon;
 		if(icon >= 0) particle_icon(d->abovehead(), icon%4, icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
@@ -342,9 +345,6 @@ struct captureclientmode : clientmode
 			rendermodel(&b.light, basename, ANIM_MAPMODEL|ANIM_LOOP, b.o, 0, 0, MDL_SHADOW | MDL_CULL_VFC | MDL_CULL_OCCLUDED);
 			float fradius = 1.0f, fheight = 0.5f;
 			regular_particle_flame(PART_FLAME, vec(b.ammopos.x, b.ammopos.y, b.ammopos.z - 4.5f), fradius, fheight, b.owner[0] ? (strcmp(b.owner, player1->team) ? 0x802020 : 0x2020FF) : 0x208020, 3, 2.0f);
-			//regular_particle_flame(PART_SMOKE, vec(b.ammopos.x, b.ammopos.y, b.ammopos.z - 4.5f + 4.0f*min(fradius, fheight)), fradius, fheight, 0x303020, 1, 4.0f, 100.0f, 2000.0f, -20);
-
-//            particle_fireball(b.ammopos, 4.8f, PART_EXPLOSION, 0, b.owner[0] ? (strcmp(b.owner, player1->team) ? 0x802020 : 0x2020FF) : 0x208020, 4.8f);
 
 			const char *ammoname = entities::entmdlname(I_AMMO+b.ammotype-1);
 			if(m_regencapture)
@@ -421,7 +421,7 @@ struct captureclientmode : clientmode
 			dir.rotate_around_z(-camera1->yaw*RAD);
 			if(basenumbers)
 			{
-				static cbstring blip;
+				static old_string blip;
 				formatstring(blip, "%d", b.tag);
 				int tw, th;
 				text_bounds(blip, tw, th);
@@ -565,8 +565,8 @@ struct captureclientmode : clientmode
 		}
 		else if(b.owner[0])
 		{
-			if(!b.name[0]) conoutf(CON_GAMEINFO, "%s lost base %d", teamcolor(b.owner, b.owner), i+1);
-			else if(basenumbers) conoutf(CON_GAMEINFO, "%s lost %s (%d)", teamcolor(b.owner, b.owner), b.name, i+1);
+			if(!b.name[0]) conoutf(CON_GAMEINFO, "%s lost base %d", teamcolor(b.owner, b.owner), b.tag);
+			else if(basenumbers) conoutf(CON_GAMEINFO, "%s lost %s (%d)", teamcolor(b.owner, b.owner), b.name, b.tag);
 			else conoutf(CON_GAMEINFO, "%s lost %s", teamcolor(b.owner, b.owner), b.name);
 			if(!strcmp(b.owner, player1->team)) playsound(S_V_BASELOST);
 		}
@@ -1002,7 +1002,8 @@ ICOMMAND(insidebases, "", (),
 			vec o;
 			loopk(3) o[k] = max(getint(p)/DMF, 0.0f);
 			if(p.overread()) break;
-			if(commit && notgotbases) addbase(ammotype>=GUN_SMG && ammotype<=GUN_GL ? ammotype : min(ammotype, 0), o);
+			// TODO: This doesn't make sense, no typed ammo pickups
+			if(commit && notgotbases) addbase(ammotype>=GUN_ARIFLE && ammotype<=GUN_GL ? ammotype : min(ammotype, 0), o);
 		}
 		if(commit && notgotbases)
 		{
@@ -1039,7 +1040,7 @@ case N_REPAMMO:
 case N_BASEINFO:
 {
 	int base = getint(p);
-	cbstring owner, enemy;
+	old_string owner, enemy;
 	getstring(text, p);
 	copystring(owner, text);
 	getstring(text, p);
@@ -1056,7 +1057,7 @@ case N_BASEREGEN:
 	if(regen && m_capture)
 	{
 		regen->health = health;
-		if(ammotype>=GUN_SMG && ammotype<=GUN_GL) regen->ammo[ammotype] = ammo;
+		if(ammotype>=GUN_ARIFLE && ammotype<=GUN_GL) regen->ammo[ammotype] = ammo;
 	}
 	break;
 }
@@ -1067,7 +1068,7 @@ case N_BASES:
 	loopi(numbases)
 	{
 		int ammotype = getint(p);
-		cbstring owner, enemy;
+		old_string owner, enemy;
 		getstring(text, p);
 		copystring(owner, text);
 		getstring(text, p);
