@@ -799,6 +799,8 @@ namespace game
 
 		clearteaminfo();
 
+		resetextinfo();
+
 		// reset perma-state
 		loopv(players)
 		{
@@ -1146,7 +1148,7 @@ namespace game
 		hudmatrix.scale(gameclockscale, gameclockscale, 1);
 		flushhudmatrix();
 
-		int color = mins < 1 ? secs < 10 ? gameclockcritcolor : gameclocklowcolor : gameclockcolor;
+		int color = mins < 3 ? mins < 1 ? gameclockcritcolor : gameclocklowcolor : gameclockcolor;
 		if (m_timed) draw_text(buf, int(offset.x), int(offset.y), (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, gameclockalpha);
 
 		pophudmatrix();
@@ -1217,11 +1219,11 @@ namespace game
 			fpsent *f = followingplayer();
 			text_bounds(f ? colorname(f) : " ", fw, fh);
 			fh = max(fh, ph);
-			draw_text("SPECTATOR", w*1800/h - tw - pw, 1650 - th - fh);
+			draw_text("SPECTATOR", w*1800/h - tw - pw, 1650 - th - fh*2);
 			if(f)
 			{
 				int color = statuscolor(f, 0xFFFFFF);
-				draw_text(teamcolorname(f), w*1800/h - fw - pw, 1650 - fh, (color>>16)&0xFF, (color>>8)&0xFF, color&0xFF);
+				draw_text(teamcolorname(f), w*1800/h - fw - pw, 1650 - fh*2, (color>>16)&0xFF, (color>>8)&0xFF, color&0xFF);
 			}
 		}
 
@@ -1265,7 +1267,7 @@ namespace game
 			formatstring(pointedname, "%s", colorname(lastpointed));
 			text_bounds(pointedname, rpw, rph);
 			text_bounds("  ", pw, ph);
-			draw_textf("%s", w * 1800 / h - rpw - pw, 1650 - rph - 16, pointedname);
+			draw_textf("%s", w * 1800 / h - rpw - pw, 1650 - rph - 32, pointedname);
 			pophudmatrix();
 		}
 	}

@@ -745,12 +745,12 @@ void pushhudtranslate(float tx, float ty, float sx, float sy)
 
 float curfov = 100, curavatarfov = 65, fovy, aspect;
 int farplane;
-VARP(zoominvel, 0, 250, 5000);
-VARP(zoomoutvel, 0, 100, 5000);
-VARP(zoomfov, 10, 35, 60);
+VARP(zoominvel, 0, 220, 5000);
+VARP(zoomoutvel, 0, 160, 5000);
+VARP(zoomfov, 10, 45, 160);
 VARP(fov, 10, 100, 160);
-VAR(avatarzoomfov, 10, 25, 60);
-VAR(avatarfov, 10, 65, 160);
+VARP(avatarzoomfov, 10, 30, 160);
+VARP(avatarfov, 10, 65, 160);
 FVAR(avatardepth, 0, 0.5f, 1);
 FVARNP(aspect, forceaspect, 0, 0, 1e3f);
 VAR(headachefov, 0, 0, 1);
@@ -773,15 +773,31 @@ void computezoom()
 		curfov = min(160.0f, (float)(atan(fov / alt) * 2 * (180.0f / PI)));
 		return;
 	}
-	if(!zoom) { zoomprogress = 0; curfov = fov; curavatarfov = avatarfov; return; }
+	
+	if (!zoom) {
+		zoomprogress = 0;
+		// automatic FOV adjustment for wide screens
+		// (horizontal FOV value is always specified for 4:3, but scaled for different aspect ratios)
+		curfov = atan(tan(fov * M_PI / 360.0f) * 0.75f * aspect) * 360.0f / M_PI;
+		curavatarfov = avatarfov;
+		return;
+	}
+
 	if(zoom > 0) zoomprogress = zoominvel ? min(zoomprogress + float(elapsedtime) / zoominvel, 1.0f) : 1;
 	else
 	{
 		zoomprogress = zoomoutvel ? max(zoomprogress - float(elapsedtime) / zoomoutvel, 0.0f) : 0;
 		if(zoomprogress <= 0) zoom = 0;
 	}
-	curfov = zoomfov*zoomprogress + fov*(1 - zoomprogress);
-	curavatarfov = avatarzoomfov*zoomprogress + avatarfov*(1 - zoomprogress);
+
+	// use in-out easing for smoother appearance
+	// https://easings.net/#easeInOutSine
+	float zoomprogresseased = -(cos(PI * zoomprogress) - 1) / 2;
+
+	// automatic FOV adjustment for wide screens
+	// (horizontal FOV value is always specified for 4:3, but scaled for different aspect ratios)
+	curfov = atan(tan((zoomfov * zoomprogresseased + fov * (1 - zoomprogresseased)) * M_PI / 360.0f) * 0.75f * aspect) * 360.0f / M_PI;
+	curavatarfov = avatarzoomfov * zoomprogresseased + avatarfov * (1 - zoomprogresseased);
 }
 
 FVARP(zoomsens, 1e-3f, 1, 1000);
@@ -2387,8 +2403,30 @@ void gl_drawhud()
 					int nextfps[3];
 					getfps(nextfps[0], nextfps[1], nextfps[2]);
 					loopi(3) if (prevfps[i] == curfps[i]) curfps[i] = nextfps[i];
-					if (showfpsrange) draw_textf("fps %d+%d-%d", conw - 7 * FONTH, conh - FONTH * 3 / 2, curfps[0], curfps[1], curfps[2]);
-					else draw_textf("fps %d", conw - 5 * FONTH, conh - FONTH * 3 / 2, curfps[0]);
+
+					const char* fpscolor;
+					if (curfps[0] < 30) {
+						fpscolor = "\f3";
+					}
+					else if (curfps[0] < 45) {
+						fpscolor = "\f6";
+					}
+					else if (curfps[0] < 65) {
+						fpscolor = "\f2";
+					}
+					else if (curfps[0] < 130) {
+						fpscolor = "\f7";
+					}
+					else if (curfps[0] < 205) {
+						fpscolor = "\f8";
+					}
+					else {
+						fpscolor = "\f0";
+					}
+
+					if (showfpsrange) draw_textf("%s%d+%d-%d FPS", conw - 7 * FONTH, conh - FONTH * 3 / 2, fpscolor, curfps[0], curfps[1], curfps[2]);
+					else draw_textf("%s%d FPS", conw - 5 * FONTH, conh - FONTH * 3 / 2, fpscolor, curfps[0]);
+
 					roffset += FONTH;
 				}
 
@@ -2414,6 +2452,7 @@ void gl_drawhud()
 				if ((showcps || showmaxcps) && !editmode)
 				{
 					float speed = game::hudplayer()->vel.magnitude();
+					if (speed > game::hudplayer()->maxcps) game::hudplayer()->maxcps = speed;
 
 					if (showcps)
 					{
@@ -2423,7 +2462,6 @@ void gl_drawhud()
 
 					if (showmaxcps)
 					{
-						if (speed > game::hudplayer()->maxcps) game::hudplayer()->maxcps = speed;
 						draw_textf("\f2%3.1f cps", conw - 5 * FONTH, conh - FONTH * 3 / 2 - roffset, game::hudplayer()->maxcps);
 						roffset += FONTH;
 					}

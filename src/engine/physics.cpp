@@ -1562,6 +1562,7 @@ void vecfromyawpitch(float yaw, float pitch, int move, int strafe, vec &m)
 FVARP(joyminthreshold, 0.0f, 0.05f, 1.0f);
 FVARP(joymaxthreshold, 0.0f, 1.0f, 1.0f);
 
+// TODO: this doesn't work for strictly up/down movement
 void vecfrommovement(float yaw, float pitch, float move, float strafe, int vertical, vec& m)
 {
 	m.x = move*-sinf(RAD*yaw)*cosf(RAD*pitch) + vertical*-sinf(RAD*pitch)*-sinf(RAD*yaw) + strafe*cosf(RAD*yaw);
@@ -1734,7 +1735,7 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 	float secs = curtime/1000.f;
 
 	// apply gravity
-	if(!floating) { pl->vertical = 0.0f; modifygravity(pl, water, curtime); }
+	if(!floating) { pl->vertical = 0; modifygravity(pl, water, curtime); }
 	// apply any player generated changes in velocity
 	modifyvelocity(pl, local, water, floating, curtime);
 

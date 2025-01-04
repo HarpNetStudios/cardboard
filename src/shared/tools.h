@@ -30,8 +30,10 @@ typedef unsigned long long int ullong;
 
 #ifdef __GNUC__
 #define UNUSED __attribute__((unused))
+#define NORETURN __attribute__((noreturn))
 #else
 #define UNUSED
+#define NORETURN
 #endif
 
 void *operator new(size_t, bool);

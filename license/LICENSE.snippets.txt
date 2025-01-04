@@ -1,0 +1,43 @@
+Cardboard Engine contains various snippets of code from forks of Sauerbraten and the Cube 2 engine,
+and their indirect contributions are very much appreciated.
+
+Everything listed here is licensed under the zlib license unless otherwise specified.
+
+p1xbraten:
+
+- HUD frag messages
+- Server browser improvements
+- listteams/clients changes
+- Decoupled framedrawning routines
+- Server logging
+- Support slim map files for servers
+- Move as spectator when game paused
+- Up/Down/Hover movement for spectators
+- fullscreenmonitor patch
+
+# https://github.com/sauerbraten/p1xbraten
+
+sauerbraten-source-port:
+Copyright (C) 2020-2022 Hugo Locurcio
+
+- Colored FPS display
+- More sane defaults
+
+# https://github.com/Calinou/sauerbraten-source-port
+
+Bube:
+# https://github.com/ACBob/Bube
+
+sauer2020:
+# https://github.com/Jed-/sauer2020
+
+Lamiae:
+Copyright (C) 2012-2022 Kevin "Hirato Kirata" Meyer
+Copyright (C) 2013 Daniel "q66" Kolesa
+
+# https://github.com/Hirato/lamiae
+
+Platinum Arts Sandbox:
+Copyright (C) 2007-2013 Mike Tomaino, Kevin Meyer, Dale Weiler, and Thomas Achtner
+
+# https://www.sandboxgamemaker.com

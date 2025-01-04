@@ -326,9 +326,9 @@ void processservinfo()
 					ec->ping = getint(p);
 					old_string strdata;
 					getstring(strdata, p);
-					strncpy(ec->name, strdata, MAXNAMELEN + 1);
+					copystring(ec->name, strdata, MAXNAMELEN + 1);
 					getstring(strdata, p);
-					strncpy(ec->team, strdata, MAXTEAMLEN + 1);
+					copystring(ec->team, strdata, MAXTEAMLEN + 1);
 					ec->frags = getint(p);
 					ec->flags = getint(p);
 					ec->deaths = getint(p);
@@ -531,7 +531,7 @@ bool sortextclients(extclient* a, extclient* b) {
 bool sortteams(tscore* a, tscore* b) {
 	if (a->score > b->score) return true;
 	if (a->score < b->score) return false;
-	if (a->team < b->team) return true;
+	if (strcmp(a->team, b->team) < 0) return true;
 	return false;
 }
 void extservclients(int i)

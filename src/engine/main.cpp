@@ -515,7 +515,7 @@ void resetfullscreen()
 }
 
 void screenres(int w, int h)
-{               
+{        
 	scr_w = clamp(w, SCR_MINW, SCR_MAXW);
 	scr_h = clamp(h, SCR_MINH, SCR_MAXH);
 	if(screen)
@@ -544,7 +544,15 @@ void screenres(int w, int h)
 	}
 }       
 
-ICOMMAND(screenres, "ii", (int *w, int *h), screenres(*w, *h));
+ICOMMAND(screenres, "ii", (int* w, int* h), {
+	// guard against accidentally setting your screen to the lowest supported resolution
+	if (!*w || !*h)
+	{
+		defformatstring(currentres, "%dx%d", scr_w, scr_h);
+		result(currentres);
+	}
+	else screenres(*w, *h);
+});
 
 static void setgamma(int val)
 {   
@@ -582,6 +590,30 @@ void restorevsync()
 
 VARFP(vsync, 0, 0, 1, restorevsync());
 VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
+
+void setfullscreenmonitor(int);
+VARF(fullscreenmonitor, 0, 0, 10, setfullscreenmonitor(fullscreenmonitor));
+
+void setfullscreenmonitor(int monitor)
+{
+    if(!screen) return;
+
+    int currentmonitor = SDL_GetWindowDisplayIndex(screen);
+    if(fullscreenmonitor >= SDL_GetNumVideoDisplays())
+    {
+        fullscreenmonitor = currentmonitor;
+        return;
+    }
+
+    if(fullscreen && monitor!=currentmonitor) resetgl();
+}
+
+ICOMMAND(getnummonitors, "", (), intret(SDL_GetNumVideoDisplays()));
+ICOMMAND(getmonitorname, "i", (int *id),
+{
+    const char *name = SDL_GetDisplayName(*id);
+    result(name ? name : "");
+});
 
 static void seticon(SDL_Window* window)
 {
@@ -624,7 +656,7 @@ void setupscreen()
 	curvsync = -1;
 
 	SDL_Rect desktop;
-	if(SDL_GetDisplayBounds(0, &desktop) < 0) fatal("failed querying desktop bounds: %s", SDL_GetError());
+	if(SDL_GetDisplayBounds(fullscreenmonitor, &desktop) < 0) fatal("failed querying desktop bounds: %s", SDL_GetError());
 	desktopw = desktop.w;
 	desktoph = desktop.h;
 
@@ -641,6 +673,8 @@ void setupscreen()
 	int winx = SDL_WINDOWPOS_UNDEFINED, winy = SDL_WINDOWPOS_UNDEFINED, winw = scr_w, winh = scr_h, flags = SDL_WINDOW_RESIZABLE;
 	if(fullscreen)
 	{
+		winx = desktop.x;
+		winy = desktop.y;
 		if(fullscreen == 2)
 		{
 			winw = desktopw;
@@ -1033,7 +1067,7 @@ void swapbuffers(bool overlay)
  
 VARP(menufps, 0, 60, 1000);
 VARP(maxfps, 0, 200, 1000);
-VARFP(maxtps, 0, 0, 1000, { if (maxtps && maxtps < 60) { conoutf("Can't set maxtps < 60"); maxtps = 60; } });
+VARFP(maxtps, 0, 0, 1000, { if (maxtps && maxtps < 60) { conoutf(CON_WARN, "Can't set maxtps < 60"); maxtps = 60; } });
 
 void ratelimit(int& millis, int lastdrawmillis, bool& draw)
 {

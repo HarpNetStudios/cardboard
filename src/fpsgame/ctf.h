@@ -548,8 +548,6 @@ struct ctfclientmode : clientmode
 
 	void drawhud(fpsent *d, int w, int h)
 	{
-		// TODO: why is this here
-		gle::colorf(1, 1, 1);
 		if(d->state == CS_ALIVE)
 		{
 			loopv(flags) if(flags[i].owner == d)
@@ -965,7 +963,8 @@ struct ctfclientmode : clientmode
 		}
 		d->flags = dflags;
 		defformatstring(scoredteam, "the %s team", ctfflagteam(team));
-		conoutf(CON_GAMEINFO, "%s scored for %s", teamcolorname(d), teamcolor(scoredteam, ctfflagteam(team)));
+		defformatstring(flagrunstr, " (%.3f s)", (totalmillis - d->laststealflag) / 1000.f);
+		conoutf(CON_GAMEINFO, "%s scored for %s%s", teamcolorname(d), teamcolor(scoredteam, ctfflagteam(team)), d == player1 && d->laststealflag ? flagrunstr : "");
 		playsound(team==ctfteamflag(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
 
 		if (score >= FLAGLIMIT) conoutf(CON_GAMEINFO, "%s captured %d flags", teamcolor(scoredteam, ctfflagteam(team)), score);
@@ -984,6 +983,12 @@ struct ctfclientmode : clientmode
 		else conoutf(CON_GAMEINFO, "%s stole %s", teamcolorname(d), teamcolorflag(f));
 		ownflag(i, d, lastmillis, m_hold ? ctfteamflag(d->team) : -1);
 		playsound(S_FLAGPICKUP);
+		if (!f.droptime) {
+			d->laststealflag = totalmillis;
+		}
+		else {
+			d->laststealflag = 0;
+		}
 	}
 
 	void invisflag(int i, int invis)
@@ -1285,10 +1290,17 @@ struct ctfclientmode : clientmode
 		}
 		return false;
 	}
+
+	bool hasflag(fpsent *d) {
+        if(!m_ctf || !d) return false;
+        loopv(flags) if(flags[i].owner == d) return true;
+        return false;
+    }
 };
 
 extern ctfclientmode ctfmode;
 ICOMMAND(dropflag, "", (), { ctfmode.trydropflag(); });
+ICOMMAND(hasflag, "i", (int* cn), intret(ctfmode.hasflag(getclient(*cn))));
 
 #endif
 
