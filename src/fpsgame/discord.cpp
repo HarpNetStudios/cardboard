@@ -106,7 +106,7 @@ namespace discord
 				if(address) {
 					if(enet_address_get_host_ip(address, serverip, sizeof(serverip)) >= 0)
 					{
-						conoutf(CON_DEBUG, "ip: %s", serverip);
+						//conoutf(CON_DEBUG, "ip: %s", serverip);
 						activity.SetState("Online");
 						defformatstring(partykey, "%s %u", serverip, address->port);
 						defformatstring(partyid, "S_%s", partykey);
@@ -115,7 +115,7 @@ namespace discord
 						activity.GetParty().GetSize().SetCurrentSize(game::players.length());
 						activity.GetParty().GetSize().SetMaxSize(game::players.length() + 1);
 						activity.GetSecrets().SetJoin(b64key);
-						conoutf(CON_DEBUG, "discord join secret: %s", b64key);
+						//conoutf(CON_DEBUG, "discord join secret: %s", b64key);
 					}
 					else {
 						conoutf("address: %u, port: %u", address->host, address->port);
