@@ -584,31 +584,44 @@ serverinfo *selectedserver = NULL;
 
 VARP(previewservers, 0, 0, 1);
 
+SVAR(filterservers, "");
+
+bool servermatches(serverinfo *si)
+{
+	return cubecasefind(si->sdesc, filterservers) ||
+		cubecasefind(si->map, filterservers) ||
+		(si->attr.length()>=2 && cubecasefind(server::modename(si->attr[1], ""), filterservers));
+}
+
 const char *showservers(g3d_gui *cgui, uint *header, int pagemin, int pagemax)
 {
 	refreshservers();
-	if(servers.empty())
-	{
-		if(header) execute(header);
-		return NULL;
-	}
+	static vector<serverinfo *> filteredservers;
+    filteredservers.shrink(0);
+    loopv(servers) if(servermatches(servers[i])) filteredservers.add(servers[i]);
+    if(filteredservers.empty())
+    {
+        if(header) execute(header);
+        cgui->title("No servers found", COL_ORANGE);
+        return NULL;
+    }
 	serverinfo *sc = NULL;
-	for(int start = 0; start < servers.length();)
+	for(int start = 0; start < filteredservers.length();)
 	{
 		if(start > 0) cgui->tab();
 		if(header) execute(header);
-		int end = servers.length();
+		int end = filteredservers.length();
 		cgui->pushlist();
 		loopi(10)
 		{
 			// filter out host information
-			if (!serverlistshowhost && (i == 6 || i == 7)) continue;
+			if (!serverlistshowhost && (i == 7 || i == 8)) continue;
 
 			if(!game::serverinfostartcolumn(cgui, i)) break;
 			for(int j = start; j < end; j++)
 			{
 				if(!i && j+1 - start >= pagemin && (j+1 - start >= pagemax || cgui->shouldtab())) { end = j; break; }
-				serverinfo &si = *servers[j];
+				serverinfo &si = *filteredservers[j];
 				const char *sdesc = si.sdesc;
 				if(si.address.host == ENET_HOST_ANY) sdesc = "[unknown host]";
 				else if(si.ping == serverinfo::WAITING) sdesc = "[waiting for response]";

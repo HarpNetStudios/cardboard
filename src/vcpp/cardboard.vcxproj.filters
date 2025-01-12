@@ -243,11 +243,39 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="..\shared\cJSON.h">
+      <Filter>shared</Filter>
+    </ClInclude>
     <ClInclude Include="..\shared\command.h">
       <Filter>shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\cube.h">
       <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\curl.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\curlver.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\easy.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\mprintf.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\multi.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\stdcheaders.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\system.h">
+      <Filter>shared\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\curl\typecheck-gcc.h">
+      <Filter>shared\curl</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\discord_game_sdk.h">
       <Filter>shared</Filter>
@@ -268,6 +296,9 @@
       <Filter>shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\igame.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\microtar.h">
       <Filter>shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\tools.h">
@@ -345,6 +376,9 @@
     <ClInclude Include="..\engine\explosion.h">
       <Filter>engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\engine\icon.h">
+      <Filter>engine</Filter>
+    </ClInclude>
     <ClInclude Include="..\engine\iqm.h">
       <Filter>engine</Filter>
     </ClInclude>
@@ -396,6 +430,9 @@
     <ClInclude Include="..\engine\texture.h">
       <Filter>engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\engine\translate.h">
+      <Filter>engine</Filter>
+    </ClInclude>
     <ClInclude Include="..\engine\vertmodel.h">
       <Filter>engine</Filter>
     </ClInclude>
@@ -414,9 +451,6 @@
     <ClInclude Include="..\fpsgame\collect.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
-    <ClInclude Include="..\fpsgame\colors.h">
-      <Filter>fpsgame</Filter>
-    </ClInclude>
     <ClInclude Include="..\fpsgame\ctf.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
@@ -424,6 +458,9 @@
       <Filter>fpsgame</Filter>
     </ClInclude>
     <ClInclude Include="..\fpsgame\extserver.h">
+      <Filter>fpsgame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fpsgame\fragmessages.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
     <ClInclude Include="..\fpsgame\game.h">
@@ -435,9 +472,6 @@
     <ClInclude Include="..\fpsgame\steam.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
-    <ClInclude Include="..\engine\translate.h">
-      <Filter>engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\fpsgame\weapon.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
@@ -447,42 +481,8 @@
     <ClInclude Include="..\fpsgame\weaponstats_type.h">
       <Filter>fpsgame</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\cJSON.h">
+    <ClInclude Include="..\shared\colors.h">
       <Filter>shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\microtar.h">
-      <Filter>shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fpsgame\fragmessages.h">
-      <Filter>fpsgame</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="..\engine\icon.h">
-      <Filter>engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\curl\curl.h">
-      <Filter>shared\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\curl\curlver.h">
-      <Filter>shared\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\curl\easy.h">
-      <Filter>shared\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\curl\mprintf.h">
-      <Filter>shared\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\curl\multi.h">
-      <Filter>shared\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\curl\stdcheaders.h">
-      <Filter>shared\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\curl\system.h">
-      <Filter>shared\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\curl\typecheck-gcc.h">
-      <Filter>shared\curl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

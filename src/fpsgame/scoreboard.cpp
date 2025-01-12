@@ -1,6 +1,5 @@
 // creation of scoreboard
 #include "game.h"
-#include "colors.h"
 #include "weaponstats.h"
 
 namespace game

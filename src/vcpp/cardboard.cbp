@@ -181,7 +181,6 @@
 		<Unit filename="../fpsgame/capture.h" />
 		<Unit filename="../fpsgame/client.cpp" />
 		<Unit filename="../fpsgame/collect.h" />
-		<Unit filename="../fpsgame/colors.h" />
 		<Unit filename="../fpsgame/ctf.h" />
 		<Unit filename="../fpsgame/discord.cpp" />
 		<Unit filename="../fpsgame/entities.cpp" />
@@ -221,6 +220,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../shared/cJSON.h" />
+		<Unit filename="../shared/colors.h" />
 		<Unit filename="../shared/command.h" />
 		<Unit filename="../shared/crypto.cpp" />
 		<Unit filename="../shared/cube.h">
