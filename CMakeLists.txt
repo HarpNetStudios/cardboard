@@ -9,7 +9,7 @@ include(GNUInstallDirs) # Default module for install paths
 
 option(BUILD_EDITOR "Include the built-in editor when building" OFF)
 if(NOT ${BUILD_EDITOR})
-	set(OPTIONAL_DEFINES "DNO_EDITOR")
+	set(OPTIONAL_DEFINES "NO_EDITOR")
 endif()
 
 ################# Flags ################
