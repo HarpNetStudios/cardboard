@@ -5,6 +5,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include(GNUInstallDirs) # Default module for install paths
 
+################ Options ###############
+
+option(BUILD_EDITOR "Include the built-in editor when building" OFF)
+if(NOT ${BUILD_EDITOR})
+	set(OPTIONAL_DEFINES "DNO_EDITOR")
+endif()
+
 ################# Flags ################
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -121,20 +128,21 @@ find_library(curl NAMES curl REQUIRED)
 
 add_executable(native_client WIN32 ${CLIENT_SOURCE_FILES})
 target_include_directories(native_client PRIVATE ${INCLUDE_DIRS})
-target_compile_definitions(native_client PUBLIC CLIENT)
+target_compile_definitions(native_client PUBLIC CLIENT ${OPTIONAL_DEFINES})
 target_link_libraries(native_client PRIVATE ${OPENGL_LIBRARIES} ${enet} ${socks} ${SDL2} ${SDL2_image} ${SDL2_mixer} ${z} ${curl})
 target_sources(native_client PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/vcpp/cardboard.rc")
 
 add_executable(native_server WIN32 ${SERVER_SOURCE_FILES})
 target_include_directories(native_server PRIVATE ${INCLUDE_DIRS})
-target_compile_definitions(native_server PUBLIC STANDALONE)
+target_compile_definitions(native_server PUBLIC STANDALONE ${OPTIONAL_DEFINES})
 target_link_libraries(native_server PRIVATE ${enet} ${socks} ${curl} ${z})
 target_sources(native_server PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/vcpp/cardboard.rc")
 
 add_executable(native_master ${MASTER_SOURCE_FILES})
 target_include_directories(native_master PRIVATE ${INCLUDE_DIRS})
-target_compile_definitions(native_master PUBLIC STANDALONE)
+target_compile_definitions(native_master PUBLIC STANDALONE ${OPTIONAL_DEFINES})
 target_link_libraries(native_master PRIVATE ${enet} ${socks} ${curl} ${z})
+target_sources(native_master PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/vcpp/cardboard.rc")
 
 ################ Install targets ################
 
