@@ -14,8 +14,8 @@ endif()
 
 ################# Flags ################
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 endif()
 
 ################ Files ################
@@ -146,5 +146,7 @@ target_sources(native_master PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/vcpp/cardb
 
 ################ Install targets ################
 
-set(cardboard_dir "${PROJECT_SOURCE_DIR}/bin_unix")
-install(TARGETS native_client native_server native_master RUNTIME DESTINATION ${cardboard_dir})
+install(
+	TARGETS native_client native_server native_master
+	RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+)
