@@ -16,7 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          lfs: true
           submodules: recursive
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
@@ -28,7 +27,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          lfs: true
           submodules: recursive
       - name: Install dependencies
         run: |
@@ -36,7 +34,7 @@ jobs:
           sudo apt-get install -y libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-ttf-dev libcurl4-openssl-dev libenet-dev
       - name: Run CMake
         working-directory: .
-        run: cmake CMakeLists.txt
+        run: cmake -S . -B build
       - name: Build for Ubuntu
-        working-directory: .
+        working-directory: ./build
         run: make

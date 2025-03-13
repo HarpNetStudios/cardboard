@@ -12,7 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          lfs: true
           submodules: recursive
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
@@ -36,7 +35,7 @@ jobs:
           Rename-Item -Path CardboardLauncher.exe -NewName launcher.exe
           Remove-Item -Path CardboardLauncher.zip
       - name: Archive Windows binaries
-        run: Compress-Archive -Path .\bin, .\bin64, .\data, .\docs, .\license, .\packages, .\res, .\launcher.exe, .\launcher.json, .\Newtonsoft.Json.dll, .\server_msvc.bat, .\config.cfg, .\init.cfg, .\server-init.cfg, .\restore.cfg -DestinationPath cardboard_windows.zip
+        run: Compress-Archive -Path .\bin, .\bin32, .\data, .\docs, .\license, .\packages, .\res, .\launcher.exe, .\launcher.json, .\Newtonsoft.Json.dll, .\server_msvc.bat, .\config.cfg, .\init.cfg, .\server-init.cfg, .\restore.cfg -DestinationPath cardboard_windows.zip
       - uses: actions/upload-artifact@v4
         with: 
           name: cardboard_windows
@@ -46,7 +45,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          lfs: true
           submodules: recursive
       - name: Install C and C++ header files
         run: |
@@ -54,15 +52,15 @@ jobs:
           sudo apt-get install -y libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-ttf-dev libcurl4-openssl-dev libenet-dev
       - name: Run CMake
         working-directory: .
-        run: cmake CMakeLists.txt
+        run: cmake -S . -B build
       - name: Build for Ubuntu
-        working-directory: .
+        working-directory: ./build
         run: make
       - name: Archive Ubuntu binaries
         run: |
           mkdir bin_unix
-          cp ./src/native_client bin_unix/linux_64_client
-          cp ./src/native_server bin_unix/linux_64_server
+          cp ./build/native_client bin_unix/linux_64_client
+          cp ./build/native_server bin_unix/linux_64_server
           zip -r cardboard_ubuntu.zip ./cardboard_unix ./bin_unix ./data ./docs ./license ./packages ./res ./config.cfg, ./init.cfg, ./server-init.cfg, ./restore.cfg
       - uses: actions/upload-artifact@v4
         with: 
