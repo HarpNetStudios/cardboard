@@ -54,8 +54,8 @@ typedef struct {
 typedef struct mtar_t mtar_t;
 
 struct mtar_t {
-  int (*read)(mtar_t *tar, void *data, unsigned size);
-  int (*write)(mtar_t *tar, const void *data, unsigned size);
+  int (*read)(mtar_t *tar, void *data, size_t size);
+  int (*write)(mtar_t *tar, const void *data, size_t size);
   int (*seek)(mtar_t *tar, unsigned pos);
   int (*close)(mtar_t *tar);
   void *stream;

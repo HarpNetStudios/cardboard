@@ -9,7 +9,12 @@ include(GNUInstallDirs) # Default module for install paths
 
 option(BUILD_EDITOR "Include the built-in editor when building" ON)
 if(NOT ${BUILD_EDITOR})
-	set(OPTIONAL_DEFINES "NO_EDITOR")
+	set(OPTIONAL_DEFINES ${OPTIONAL_DEFINES} "NO_EDITOR")
+endif()
+
+option(ENABLE_DISCORD "Enable Discord integrations" OFF)
+if(${ENABLE_DISCORD})
+	set(OPTIONAL_DEFINES ${OPTIONAL_DEFINES} "DISCORD")
 endif()
 
 ################# Flags ################
@@ -152,8 +157,13 @@ target_sources(native_master PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/vcpp/cardb
 ################ Install targets ################
 
 if(NOT WIN32)
-	install(
-		TARGETS native_client native_server native_master
-		RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-	)
+	set(cardboard_dir "${PROJECT_SOURCE_DIR}/bin_unix")
+	install(TARGETS native_client native_server native_master RUNTIME DESTINATION ${cardboard_dir})
+
+	# use this when we get around to proper unix install
+
+	#install(
+	#	TARGETS native_client native_server native_master
+	#	RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+	#)
 endif()

@@ -56,7 +56,8 @@ git checkout $(git describe --tags)
 
 - Start the build process
 ```
-cmake CMakeLists.txt
+cmake -S . -B build
+cd build
 make
 make install
 ```
