@@ -7,7 +7,7 @@ include(GNUInstallDirs) # Default module for install paths
 
 ################ Options ###############
 
-option(BUILD_EDITOR "Include the built-in editor when building" OFF)
+option(BUILD_EDITOR "Include the built-in editor when building" ON)
 if(NOT ${BUILD_EDITOR})
 	set(OPTIONAL_DEFINES "NO_EDITOR")
 endif()
@@ -110,6 +110,11 @@ set(MASTER_SOURCE_FILES
 
 ############# Dependencies #############
 
+if(WIN32)
+	# windows has no concept of a library store
+	set(CMAKE_LIBRARY_PATH "src/lib/")
+endif()
+
 find_package(OpenGL REQUIRED)
 find_library(enet NAMES enet REQUIRED)
 if(WIN32)
@@ -121,7 +126,7 @@ find_library(SDL2 NAMES SDL2 REQUIRED)
 find_library(SDL2_image NAMES SDL2_image REQUIRED)
 find_library(SDL2_mixer NAMES SDL2_mixer REQUIRED)
 #find_library(SDL2_ttf NAMES SDL2_ttf REQUIRED)
-find_library(z NAMES z zlib REQUIRED)
+find_library(z NAMES z zlib zdll REQUIRED)
 find_library(curl NAMES curl REQUIRED)
 
 ############# Build targets ############
@@ -146,7 +151,9 @@ target_sources(native_master PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/vcpp/cardb
 
 ################ Install targets ################
 
-install(
-	TARGETS native_client native_server native_master
-	RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-)
+if(NOT WIN32)
+	install(
+		TARGETS native_client native_server native_master
+		RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+	)
+endif()
