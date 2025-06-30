@@ -91,7 +91,8 @@ namespace entities
 				case TELEPORT:
 					if(e.attr2 > 0) preloadmodel(mapmodelname(e.attr2));
 				case JUMPPAD:
-					if(e.attr4 > 0) preloadmapsound(e.attr4);
+					// TODO: SDL3_mixer
+					//if(e.attr4 > 0) preloadmapsound(e.attr4);
 					break;
 			}
 		}
@@ -158,7 +159,8 @@ namespace entities
 			//particle_icon(d->abovehead(), is.icon%4, is.icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
 		}
 		// TODO: make pickup sound based on item type
-		playsound(S_ITEMPUP, d!=h ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
+		// TODO: SDL3_mixer
+		//playsound(S_ITEMPUP, d!=h ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
 		d->pickup(type);
 		// TODO: might be useful
 		/*
@@ -192,8 +194,9 @@ namespace entities
 				int snd = S_TELEPORT, flags = 0;
 				if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
 				fpsent *h = followingplayer(player1);
-				playsound(snd, d==h ? NULL : &e.o, NULL, flags);
-				if(d!=h && ents.inrange(td) && ents[td]->type == TELEDEST) playsound(snd, &ents[td]->o, NULL, flags);
+				// TODO: SDL3_mixer
+				//playsound(snd, d==h ? NULL : &e.o, NULL, flags);
+				//if(d!=h && ents.inrange(td) && ents[td]->type == TELEDEST) playsound(snd, &ents[td]->o, NULL, flags);
 			}
 		}
 		if(local && d->clientnum >= 0)
@@ -218,7 +221,8 @@ namespace entities
 			{
 				int snd = S_JUMPPAD, flags = 0;
 				if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
-				playsound(snd, d == followingplayer(player1) ? NULL : &e.o, NULL, flags);
+				// TODO: SDL3_mixer
+				//playsound(snd, d == followingplayer(player1) ? NULL : &e.o, NULL, flags);
 			}
 		}
 		if(local && d->clientnum >= 0)
@@ -497,7 +501,8 @@ namespace entities
 				if(newstate == TRIGGER_RESETTING && checktriggertype(e.attr3, TRIG_COLLIDE) && overlapsdynent(e.o, 20)) continue;
 				e.triggerstate = newstate;
 				e.lasttrigger = lastmillis;
-				if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
+				// TODO: SDL3_mixer
+				//if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
 			}
 		}
 	}
@@ -563,7 +568,8 @@ namespace entities
 					e.triggerstate = TRIGGERING;
 					e.lasttrigger = lastmillis;
 					setuptriggerflags(e);
-					if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
+					// TODO: SDL3_mixer
+					//if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
 					if(e.attr4) doleveltrigger(e.attr4, 1);
 					break;
 				case TRIGGERED:
@@ -585,7 +591,8 @@ namespace entities
 					e.triggerstate = TRIGGER_RESETTING;
 					e.lasttrigger = lastmillis;
 					setuptriggerflags(e);
-					if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
+					// TODO: SDL3_mixer
+					//if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
 					if(e.attr4) doleveltrigger(e.attr4, 0);
 					break;
 			}

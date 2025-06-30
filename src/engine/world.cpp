@@ -1236,7 +1236,8 @@ void splitocta(cube *c, int size)
 void resetmap()
 {
 	clearoverrides();
-	clearmapsounds();
+	// TODO: SDL3_mixer
+	//clearmapsounds();
 	cleanreflections();
 	resetblendmap();
 	resetlightmaps();

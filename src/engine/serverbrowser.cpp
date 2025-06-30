@@ -18,8 +18,8 @@ struct resolverresult
 vector<resolverthread> resolverthreads;
 vector<const char *> resolverqueries;
 vector<resolverresult> resolverresults;
-SDL_mutex *resolvermutex;
-SDL_cond *querycond, *resultcond;
+SDL_Mutex *resolvermutex;
+SDL_Condition *querycond, *resultcond;
 
 #define RESOLVERTHREADS 2
 #define RESOLVERLIMIT 3000
@@ -35,7 +35,7 @@ int resolverloop(void * data)
 	while(thread == rt->thread)
 	{
 		SDL_LockMutex(resolvermutex);
-		while(resolverqueries.empty()) SDL_CondWait(querycond, resolvermutex);
+		while(resolverqueries.empty()) SDL_WaitCondition(querycond, resolvermutex);
 		rt->query = resolverqueries.pop();
 		rt->starttime = totalmillis;
 		SDL_UnlockMutex(resolvermutex);
@@ -51,7 +51,7 @@ int resolverloop(void * data)
 			rr.address = address;
 			rt->query = NULL;
 			rt->starttime = 0;
-			SDL_CondSignal(resultcond);
+			SDL_SignalCondition(resultcond);
 		}
 		SDL_UnlockMutex(resolvermutex);
 	}
@@ -61,8 +61,8 @@ int resolverloop(void * data)
 void resolverinit()
 {
 	resolvermutex = SDL_CreateMutex();
-	querycond = SDL_CreateCond();
-	resultcond = SDL_CreateCond();
+	querycond = SDL_CreateCondition();
+	resultcond = SDL_CreateCondition();
 
 	SDL_LockMutex(resolvermutex);
 	loopi(RESOLVERTHREADS)
@@ -80,9 +80,7 @@ void resolverstop(resolverthread &rt)
 	SDL_LockMutex(resolvermutex);
 	if(rt.query)
 	{
-#if SDL_VERSION_ATLEAST(2, 0, 2)
 		SDL_DetachThread(rt.thread);
-#endif
 		rt.thread = SDL_CreateThread(resolverloop, "resolver", &rt);
 	}
 	rt.query = NULL;
@@ -111,7 +109,7 @@ void resolverquery(const char *name)
 
 	SDL_LockMutex(resolvermutex);
 	resolverqueries.add(name);
-	SDL_CondSignal(querycond);
+	SDL_SignalCondition(querycond);
 	SDL_UnlockMutex(resolvermutex);
 }
 
@@ -149,12 +147,12 @@ bool resolverwait(const char *name, ENetAddress *address)
 
 	SDL_LockMutex(resolvermutex);
 	resolverqueries.add(name);
-	SDL_CondSignal(querycond);
-	int starttime = SDL_GetTicks(), timeout = 0;
+	SDL_SignalCondition(querycond);
+	Uint64 starttime = SDL_GetTicks(), timeout = 0;
 	bool resolved = false;
 	for(;;) 
 	{
-		SDL_CondWaitTimeout(resultcond, resolvermutex, 250);
+		SDL_WaitConditionTimeout(resultcond, resolvermutex, 250);
 		loopv(resolverresults) if(resolverresults[i].query == name) 
 		{
 			address->host = resolverresults[i].address.host;
@@ -189,7 +187,7 @@ int connectwithtimeout(ENetSocket sock, const char *hostname, const ENetAddress 
 	renderprogress(0, text);
 
 	ENetSocketSet readset, writeset;
-	if(!enet_socket_connect(sock, &address)) for(int starttime = SDL_GetTicks(), timeout = 0; timeout <= CONNLIMIT;)
+	if(!enet_socket_connect(sock, &address)) for(Uint64 starttime = SDL_GetTicks(), timeout = 0; timeout <= CONNLIMIT;)
 	{
 		ENET_SOCKETSET_EMPTY(readset);
 		ENET_SOCKETSET_EMPTY(writeset);
@@ -540,7 +538,7 @@ void checkpings()
 			si = newserver(NULL, server::serverport(addr.port), addr.host); 
 			millis = lanpings.decodeping(millis);
 		}
-		int rtt = clamp(totalmillis - millis, 0, min(servpingdecay, totalmillis));
+		int rtt = clamp(totalmillis - (Uint64)millis, (Uint64)0, min((Uint64)servpingdecay, totalmillis));
 		if(millis >= lastreset && rtt < servpingdecay) si->addping(rtt, millis);
 		si->numplayers = getint(p);
 		int numattr = getint(p);
@@ -675,7 +673,7 @@ void retrieveservers(vector<char> &data)
 	defformatstring(text, "retrieving servers from %s... (esc to abort)", mastername);
 	renderprogress(0, text);
 
-	int starttime = SDL_GetTicks(), timeout = 0;
+	Uint64 starttime = SDL_GetTicks(), timeout = 0;
 	const char *req = "list\n";
 	int reqlen = strlen(req);
 	ENetBuffer buf;

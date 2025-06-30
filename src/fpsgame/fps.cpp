@@ -16,7 +16,8 @@ namespace game
 	});
 
 	bool intermission = false;
-	int maptime = 0, maprealtime = 0, maplimit = -1;
+	Uint64 maptime = 0, maprealtime = 0;
+	int maplimit = -1;
 	int respawnent = -1;
 	int lasthit = 0, lastspawnattempt = 0;
 
@@ -41,7 +42,8 @@ namespace game
 		addmsg(N_TAUNT, "rc", player1);
 
 		// TODO: taunt sounds
-		playsound(S_ITEMSPAWN, &game::hudplayer()->o);
+		// TODO: SDL3_mixer
+		//playsound(S_ITEMSPAWN, &game::hudplayer()->o);
 	}
 	COMMAND(taunt, "");
 
@@ -453,7 +455,8 @@ namespace game
 		fpsent *h = hudplayer();
 		if(h!=player1 && actor==h && d!=actor)
 		{
-			if ((hitsound && lasthit != lastmillis && !m_parkour) || (m_parkour && parkourhitmarker)) playsound(S_HIT);
+			// TODO: SDL3_mixer
+			//if ((hitsound && lasthit != lastmillis && !m_parkour) || (m_parkour && parkourhitmarker)) playsound(S_HIT);
 			if (!m_parkour) lasthit = lastmillis;
 		}
 		if (!m_parkour)
@@ -471,8 +474,9 @@ namespace game
 			if (d->health <= 0) { if (local) killed(d, actor, gun); }
 
 			// TODO: switch sound system to text keys, see Bube
-			if (d == h) playsound(S_PAIN_SARAH_6 + (6 * d->playermodel));
-			else playsound(S_PAIN_SARAH_1 + rnd(5) + (6 * d->playermodel), &d->o);
+			// TODO: SDL3_mixer
+			//if (d == h) playsound(S_PAIN_SARAH_6 + (6 * d->playermodel));
+			//else playsound(S_PAIN_SARAH_1 + rnd(5) + (6 * d->playermodel), &d->o);
 		}
 	}
 
@@ -495,7 +499,8 @@ namespace game
 			d->attacking = false;
 			//d->pitch = 0;
 			d->roll = 0;
-			playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel));
+			// TODO: SDL3_mixer
+			//playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel));
 		}
 		else
 		{
@@ -503,7 +508,8 @@ namespace game
 			d->vertical = 0;
 			d->resetinterp();
 			d->smoothmillis = 0;
-			playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel), &d->o);
+			// TODO: SDL3_mixer
+			//playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel), &d->o);
 		}
 	}
 
@@ -578,7 +584,8 @@ namespace game
 		}
 
 		// play local killsound if enabled
-		if (d != actor && actor == player1 && killsound) playsound(S_KILL);
+		// TODO: SDL3_mixer
+		//if (d != actor && actor == player1 && killsound) playsound(S_KILL);
 
 		// run `ondeath` on local death
 		if (d == player1) execident("ondeath");
@@ -674,7 +681,8 @@ namespace game
 		fpsent *d = clients[cn];
 		if(!d) return;
 		if(notify && d->name[0]) conoutf("\f4leave:\f7 %s", colorname(d));
-		playsound(S_SRV_DISCONNECT);
+		// TODO: SDL3_mixer
+		//playsound(S_SRV_DISCONNECT);
 		removeweapons(d);
 		removetrackedparticles(d);
 		removetrackeddynlights(d);
@@ -873,8 +881,9 @@ namespace game
 
 	void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material)
 	{
-		if     (waterlevel>0) { if(material!=MAT_LAVA) playsound(S_SPLASH1, d==player1 ? NULL : &d->o); }
-		else if(waterlevel<0) playsound(material==MAT_LAVA ? S_BURN : S_SPLASH2, d==player1 ? NULL : &d->o);
+		// TODO: SDL3_mixer
+		//if     (waterlevel>0) { if(material!=MAT_LAVA) playsound(S_SPLASH1, d==player1 ? NULL : &d->o); }
+		//else if(waterlevel<0) playsound(material==MAT_LAVA ? S_BURN : S_SPLASH2, d==player1 ? NULL : &d->o);
 		if     (floorlevel>0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_JUMP, d); }
 		else if(floorlevel<0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_LAND, d); }
 	}
@@ -889,13 +898,15 @@ namespace game
 		if(!d || d==player1)
 		{
 			addmsg(N_SOUND, "ci", d, n);
-			playsound(n);
+			// TODO: SDL3_mixer
+			//playsound(n);
 		}
 		else
 		{
 			if(d->type==ENT_PLAYER && ((fpsent *)d)->ai)
 				addmsg(N_SOUND, "ci", d, n);
-			playsound(n, &d->o);
+			// TODO: SDL3_mixer
+			//playsound(n, &d->o);
 		}
 	}
 
@@ -974,7 +985,8 @@ namespace game
 
 	void teamsound(bool sameteam, int n, const vec *loc)
 	{
-		playsound(n, loc, NULL, teamsounds ? (m_teammode && sameteam ? SND_USE_ALT : SND_NO_ALT) : 0);
+		// TODO: SDL3_mixer
+		//playsound(n, loc, NULL, teamsounds ? (m_teammode && sameteam ? SND_USE_ALT : SND_NO_ALT) : 0);
 	}
 
 	void teamsound(fpsent *d, int n, const vec *loc)
@@ -1132,7 +1144,7 @@ namespace game
 
 	void drawgameclock(int w, int h)
 	{
-		int secs = max(maplimit-lastmillis + 999, 0)/1000, mins = secs/60;
+		int secs = max(maplimit-lastmillis + 999, (Uint64)0)/1000, mins = secs/60;
 		secs %= 60;
 
 		defformatstring(buf, "%d:%02d", mins, secs);

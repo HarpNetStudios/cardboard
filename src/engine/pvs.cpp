@@ -257,11 +257,11 @@ static inline bool htcmp(const pvsdata &x, const pvsdata &y)
 	return x.len==y.len && !memcmp(&pvsbuf[x.offset], &pvsbuf[y.offset], x.len);
 }
 
-static SDL_mutex *pvsmutex = NULL;
+static SDL_Mutex *pvsmutex = NULL;
 static hashtable<pvsdata, int> pvscompress;
 static vector<pvsdata> pvs;
 
-static SDL_mutex *viewcellmutex = NULL;
+static SDL_Mutex *viewcellmutex = NULL;
 struct viewcellrequest
 {
 	int *result;
@@ -837,7 +837,7 @@ static vector<pvsworker *> pvsworkers;
 
 static volatile bool check_genpvs_progress = false;
 
-static Uint32 genpvs_timer(Uint32 interval, void *param)
+static Uint32 SDLCALL genpvs_timer(void* userdata, SDL_TimerID timerID, Uint32 interval)
 {
 	check_genpvs_progress = true;
 	return interval;
@@ -1106,7 +1106,7 @@ void genpvs(int *viewcellsize)
 
 	renderbackground("generating PVS (esc to abort)");
 	genpvs_canceled = false;
-	Uint32 start = SDL_GetTicks();
+	Uint64 start = SDL_GetTicks();
 
 	renderprogress(0, "finding view cells");
 
@@ -1167,7 +1167,7 @@ void genpvs(int *viewcellsize)
 	origpvsnodes.setsize(0);
 	pvscompress.clear();
 
-	Uint32 end = SDL_GetTicks();
+	Uint64 end = SDL_GetTicks();
 	if(genpvs_canceled) 
 	{
 		clearpvs();

@@ -394,7 +394,7 @@ struct fpsstate
 {
 	int health, maxhealth;
 	int gunselect;
-	int gunwait[NUMGUNS];
+	Uint64 gunwait[NUMGUNS];
 	int ammo[NUMGUNS];
 	int aitype, skill;
 
@@ -582,16 +582,18 @@ struct fpsent : dynent, fpsstate
 	int clientnum, privilege, lastupdate, plag, ping;
 	int lifesequence;                   // sequence id for each respawn, used in damage test
 	int respawned, suicided;
-	int lastpain;
+	Uint64 lastpain;
 	int lastgun;
-	int lastaction[NUMGUNS];
+	Uint64 lastaction[NUMGUNS];
 	int lastattackgun;
 	int lasthitpushgun;
 	int ammotype; // TODO: what is this? poorly named
 	bool attacking;
 	int attacksound, attackchan, idlesound, idlechan;
-	int lasttaunt;
-	int lastpickup, lastpickupindex, lastpickupmillis, lastbase, lastrepammo, flagpickup, tokens;
+	Uint64 lasttaunt;
+	int lastpickup, lastpickupindex;
+	Uint64 lastpickupmillis;
+	int lastbase, lastrepammo, flagpickup, tokens;
 	vec lastcollect;
 	int frags, flags, deaths, totaldamage, totalshots;
 	int suicides;
@@ -626,8 +628,9 @@ struct fpsent : dynent, fpsstate
 	~fpsent()
 	{
 		freeeditinfo(edit);
-		if(attackchan >= 0) stopsound(attacksound, attackchan);
-		if(idlechan >= 0) stopsound(idlesound, idlechan);
+		// TODO: SDL3_mixer
+		//if(attackchan >= 0) stopsound(attacksound, attackchan);
+		//if(idlechan >= 0) stopsound(idlesound, idlechan);
 		if(ai) delete ai;
 	}
 
@@ -646,13 +649,15 @@ struct fpsent : dynent, fpsstate
 
 	void stopattacksound()
 	{
-		if(attackchan >= 0) stopsound(attacksound, attackchan, 250);
+		// TODO: SDL3_mixer
+		//if(attackchan >= 0) stopsound(attacksound, attackchan, 250);
 		attacksound = attackchan = -1;
 	}
 
 	void stopidlesound()
 	{
-		if(idlechan >= 0) stopsound(idlesound, idlechan, 100);
+		// TODO: SDL3_mixer
+		//if(idlechan >= 0) stopsound(idlesound, idlechan, 100);
 		idlesound = idlechan = -1;
 	}
 
@@ -687,7 +692,7 @@ struct fpsent : dynent, fpsstate
 
 	int respawnwait(int secs, int delay = 0)
 	{
-		return max(0, secs - (::lastmillis - lastpain - delay)/1000);
+		return max((Uint64)0, secs - (::lastmillis - lastpain - delay)/1000);
 	}
 };
 
@@ -813,7 +818,8 @@ namespace game
 	extern int gamemode, nextmode;
 	extern old_string clientmap;
 	extern bool intermission;
-	extern int maptime, maprealtime, maplimit;
+	extern Uint64 maptime, maprealtime;
+	extern int maplimit;
 	extern fpsent *player1;
 	extern vector<fpsent *> players, clients;
 	extern int lastspawnattempt;

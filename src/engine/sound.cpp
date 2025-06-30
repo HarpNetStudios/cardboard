@@ -1,7 +1,9 @@
 // sound.cpp: basic positional sound using sdl_mixer
 
 #include "engine.h"
-#include "SDL_mixer.h"
+// TODO: SDL3_mixer
+/*
+#include <SDL3_mixer/SDL_mixer.h>
 
 bool nosound = true;
 
@@ -132,7 +134,7 @@ VARFP(musicvol, 0, 128, 255, setmusicvol(soundvol ? musicvol : 0));
 char *musicfile = NULL, *musicdonecmd = NULL;
 
 Mix_Music *music = NULL;
-SDL_RWops *musicrw = NULL;
+SDL_IOStream *musicrw = NULL;
 stream *musicstream = NULL;
 
 void setmusicvol(int musicvol)
@@ -152,7 +154,7 @@ void stopmusic()
 		Mix_FreeMusic(music);
 		music = NULL;
 	}
-	if(musicrw) { SDL_FreeRW(musicrw); musicrw = NULL; }
+	if(musicrw) { SDL_CloseIO(musicrw); musicrw = NULL; }
 	DELETEP(musicstream);
 }
 
@@ -176,7 +178,7 @@ bool initaudio()
 	if(initfallback)
 	{
 		initfallback = false;
-		if(char *env = SDL_getenv("SDL_AUDIODRIVER")) copystring(fallback, env);
+		if(const char *env = SDL_getenv("SDL_AUDIODRIVER")) copystring(fallback, env);
 	}
 	if(!fallback[0] && audiodriver[0])
 	{
@@ -185,7 +187,7 @@ bool initaudio()
 		loopv(drivers)
 		{
 			restorefallback = true;
-			SDL_setenv("SDL_AUDIODRIVER", drivers[i], 1);
+			SDL_setenv_unsafe("SDL_AUDIODRIVER", drivers[i], 1);
 			if(SDL_InitSubSystem(SDL_INIT_AUDIO) >= 0)
 			{
 				drivers.deletearrays();
@@ -198,7 +200,7 @@ bool initaudio()
 	{
 		restorefallback = false;
 	#ifdef WIN32
-		SDL_setenv("SDL_AUDIODRIVER", fallback, 1);
+		SDL_setenv_unsafe("SDL_AUDIODRIVER", fallback, 1);
 	#else
 		unsetenv("SDL_AUDIODRIVER");
 	#endif
@@ -210,15 +212,6 @@ bool initaudio()
 
 void initsound()
 {
-	SDL_version version;
-	SDL_GetVersion(&version);
-	if(version.major == 2 && version.minor == 0 && version.patch == 6)
-	{
-		nosound = true;
-		if(usesound) conoutf(CON_ERROR, "audio is broken in SDL 2.0.6");
-		return;
-	}
-
 	if(shouldinitaudio)
 	{
 		shouldinitaudio = false;
@@ -262,11 +255,11 @@ Mix_Music *loadmusic(const char *name)
 		if(!musicrw) musicrw = musicstream->rwops();
 		if(!musicrw) DELETEP(musicstream);
 	}
-	if(musicrw) music = Mix_LoadMUSType_RW(musicrw, MUS_NONE, 0);
+	if(musicrw) music = Mix_LoadMUSType_IO(musicrw, MUS_NONE, 0);
 	else music = Mix_LoadMUS(findfile(name, "rb")); 
 	if(!music)
 	{
-		if(musicrw) { SDL_FreeRW(musicrw); musicrw = NULL; }
+		if(musicrw) { SDL_CloseIO(musicrw); musicrw = NULL; }
 		DELETEP(musicstream);
 	}
 	return music;
@@ -321,11 +314,11 @@ static Mix_Chunk *loadwav(const char *name)
 	stream *z = openzipfile(name, "rb");
 	if(z)
 	{
-		SDL_RWops *rw = z->rwops();
+		SDL_IOStream *rw = z->rwops();
 		if(rw)
 		{
-			c = Mix_LoadWAV_RW(rw, 0);
-			SDL_FreeRW(rw);
+			c = Mix_LoadWAV_IO(rw, 0);
+			SDL_CloseIO(rw);
 		}
 		delete z;
 	}
@@ -371,11 +364,11 @@ static Mix_Chunk *loadwavscaled(const char *name)
 	stream *z = openzipfile(name, "rb");
 	if(z)
 	{
-		SDL_RWops *rw = z->rwops();
+		SDL_IOStream *rw = z->rwops();
 		if(rw)
 		{
-			SDL_LoadWAV_RW(rw, 0, &spec, &audiobuf, &audiolen);
-			SDL_FreeRW(rw);
+			SDL_LoadWAV_IO(rw, 0, &spec, &audiobuf, &audiolen);
+			SDL_CloseIO(rw);
 		}
 		delete z;
 	}
@@ -1078,6 +1071,8 @@ void updatemumble() {
 	mumbleinfo->context_len = 16;
 }
 */
+// TODO: SDL3_mixer
+/*
 
 #ifdef WIN32
 
@@ -1185,3 +1180,4 @@ void updatemumble()
 	mumbleinfo->top = mumblevec(vec(RAD*player->yaw, RAD*(player->pitch+90)));
 #endif
 }
+*/

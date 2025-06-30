@@ -152,7 +152,8 @@ namespace ai
 		{
 			if(aidebug) conoutf(CON_DEBUG, "%s assigned to %s at skill %d", colorname(d, name), o ? colorname(o) : "?", sk);
 			else conoutf("\f0join:\f7 %s", colorname(d, name));
-			playsound(S_SRV_CONNECT);
+			// TODO: SDL3_mixer
+			//playsound(S_SRV_CONNECT);
 			resetthisguy = true;
 		}
 		else

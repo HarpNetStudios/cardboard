@@ -515,7 +515,7 @@ void moveragdoll(dynent *d)
 		int lastmove = d->ragdoll->lastmove;
 		while(d->ragdoll->lastmove + (lastmove == d->ragdoll->lastmove ? ragdolltimestepmin : ragdolltimestepmax) <= lastmillis)
 		{
-			int timestep = min(ragdolltimestepmax, lastmillis - d->ragdoll->lastmove);
+			int timestep = min(ragdolltimestepmax, int(lastmillis - d->ragdoll->lastmove));
 			d->ragdoll->move(d, timestep/1000.0f);
 			d->ragdoll->lastmove += timestep;
 		}

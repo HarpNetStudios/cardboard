@@ -1324,7 +1324,7 @@ struct stream
 	template<class T> T getbig() { return bigswap(get<T>()); }
 
 #ifndef STANDALONE
-	SDL_RWops *rwops();
+	SDL_IOStream *rwops();
 #endif
 };
 

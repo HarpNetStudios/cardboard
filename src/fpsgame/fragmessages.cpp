@@ -51,7 +51,7 @@ namespace game {
                 break;
             }
 
-            int alpha = 255 - max(0, lastmillis-m.fragtime-showmillis);
+            int alpha = 255 - max((Uint64)0, lastmillis - m.fragtime - showmillis);
 
             vec2 drawposcenter = vec2(0, (fragmessages.length()-1-i)*stackdir*stepsize).add(origin);
 

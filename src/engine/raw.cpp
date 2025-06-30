@@ -39,7 +39,7 @@ namespace rawinput
 	};
 	static vector<rawevent> buffer_a, buffer_b;
 	static vector<rawevent> *frontbuffer = &buffer_a, *backbuffer = &buffer_b;
-	static SDL_mutex *bufferlock = NULL;
+	static SDL_Mutex *bufferlock = NULL;
 	void os_release(); // should be idempotent
 	// free resources, idempotent
 	void release()
@@ -163,7 +163,6 @@ namespace rawinput
 ////////////////////////////////////////////////////////////////////////////////
 // Windows raw input handling (WM_INPUT)
 ////////////////////////////////////////////////////////////////////////////////
-#include"SDL_syswm.h"
 	struct windev
 	{
 		HANDLE device;
@@ -339,11 +338,10 @@ namespace rawinput
 
 	HWND gethwnd()
 	{
-		SDL_SysWMinfo info;
-		SDL_VERSION(&info.version);
-		if(SDL_GetWindowWMInfo(screen, &info))
+		HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(screen), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+		if (hwnd)
 		{
-			return info.info.win.window;
+			return hwnd;
 		}
 		else
 		{
@@ -413,7 +411,7 @@ namespace rawinput
 	{
 		static const short readflags = POLLIN|POLLPRI;
 		static SDL_Thread *thread = NULL;
-		static SDL_mutex *reins = NULL;
+		static SDL_Mutex *reins = NULL;
 		// must have reins to safely read/write cease
 		static bool cease = false;
 		// must stop thread to safely read/write fds

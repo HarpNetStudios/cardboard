@@ -823,7 +823,8 @@ void writemapcfg(const char* a)
 
 	f->printf("\n// Map sounds\n\nmapsoundreset\n\n");
 
-	writemapsounds(f);
+	// TODO: SDL3_mixer
+	//writemapsounds(f);
 
 	f->printf("\n// Map models\n\nmapmodelreset\n\n");
 	extern vector<mapmodelinfo> mapmodels;
@@ -1131,7 +1132,7 @@ void clearmapcrc() { mapcrc = 0; }
 
 bool load_world(const char *mname, const char *cname)        // still supports all map formats that have existed since the earliest cube betas!
 {
-	int loadingstart = SDL_GetTicks();
+	Uint64 loadingstart = SDL_GetTicks();
 	setmapfilenames(mname, cname);
 	stream *f = opengzfile(cmrname, "rb");
 	if(!f) { conoutf(CON_ERROR, "could not read map %s", cmrname); return false; }
@@ -1393,7 +1394,8 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 	game::preload();
 	flushpreloadedmodels();
 
-	preloadmapsounds();
+	// TODO: SDL3_mixer
+	//preloadmapsounds();
 
 	entitiesinoctanodes();
 	attachentities();

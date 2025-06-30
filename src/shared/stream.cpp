@@ -590,39 +590,50 @@ int listfiles(const char *dir, const char *ext, vector<char *> &files)
 }
 
 #ifndef STANDALONE
-static Sint64 rwopsseek(SDL_RWops *rw, Sint64 pos, int whence)
+typedef struct IOStreamShim
 {
-    stream *f = (stream *)rw->hidden.unknown.data1;
+    stream* stream;
+} IOStreamShim;
+
+static Sint64 SDLCALL rwopsseek(void *userdata, Sint64 pos, SDL_IOWhence whence)
+{
+    stream *f = ((IOStreamShim *) userdata)->stream;
     if((!pos && whence==SEEK_CUR) || f->seek(pos, whence)) return (int)f->tell();
     return -1;
 }
 
-static size_t rwopsread(SDL_RWops *rw, void *buf, size_t size, size_t nmemb)
+static size_t SDLCALL rwopsread(void* userdata, void *buf, size_t size, SDL_IOStatus* status)
 {
-    stream *f = (stream *)rw->hidden.unknown.data1;
-    return f->read(buf, size*nmemb)/size;
+    stream *f = ((IOStreamShim*) userdata)->stream;
+    return f->read(buf, size);
 }
 
-static size_t rwopswrite(SDL_RWops *rw, const void *buf, size_t size, size_t nmemb)
+static size_t SDLCALL rwopswrite(void* userdata, const void *buf, size_t size, SDL_IOStatus* status)
 {
-    stream *f = (stream *)rw->hidden.unknown.data1;
-    return f->write(buf, size*nmemb)/size;
+    stream *f = ((IOStreamShim*) userdata)->stream;
+    return f->write(buf, size);
 }
 
-static int rwopsclose(SDL_RWops *rw)
+static bool SDLCALL rwopsclose(void* userdata)
 {
-    return 0;
+    return true;
 }
 
-SDL_RWops *stream::rwops()
+SDL_IOStream *stream::rwops()
 {
-    SDL_RWops *rw = SDL_AllocRW();
+    SDL_IOStreamInterface iface;
+    SDL_IOStream* rwops;
+
+    SDL_INIT_INTERFACE(&iface);
+
+    iface.seek = rwopsseek;
+    iface.read = rwopsread;
+    iface.write = rwopswrite;
+    iface.close = rwopsclose;
+
+    SDL_IOStream *rw = SDL_OpenIO(&iface, this);
     if(!rw) return NULL;
-    rw->hidden.unknown.data1 = this;
-    rw->seek = rwopsseek;
-    rw->read = rwopsread;
-    rw->write = rwopswrite;
-    rw->close = rwopsclose;
+
     return rw;
 }
 #endif

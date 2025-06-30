@@ -837,8 +837,8 @@ void mousemove(int dx, int dy)
 {
 	if (!game::allowmouselook()) return;
 
-	if (SDL_SetRelativeMouseMode(SDL_TRUE) >= 0) SDL_SetWindowGrab(screen, SDL_TRUE);
-	else SDL_SetWindowGrab(screen, SDL_FALSE);
+	if (SDL_SetWindowRelativeMouseMode(screen, true)) SDL_SetWindowMouseGrab(screen, true);
+	else SDL_SetWindowMouseGrab(screen, false);
 
 	float cursens = sensitivity, curaccel = mouseaccel;
 	if (zoom)
@@ -2173,8 +2173,10 @@ void cleardamagescreen()
 VAR(hidestats, 0, 0, 1);
 VAR(hidehud, 0, 0, 2);
 
-VARP(crosshairsize, -1, 30, 50);
 VARP(cursorsize, 0, 20, 50);
+VARP(hwcursor, 0, 1, 1);
+
+VARP(crosshairsize, -1, 30, 50);
 VARP(crosshairfx, 0, 1, 1);
 bvec crosshaircolor_i(1.0f, 1.0f, 1.0f);
 HVARFP(crosshaircolor, 0, 0xFFFFFF, 0xFFFFFF, {
@@ -2240,6 +2242,9 @@ void drawcrosshair(int w, int h)
 	Texture *crosshair;
 	if(windowhit)
 	{
+		hwcursor ? SDL_ShowCursor() : SDL_HideCursor();
+		if(hwcursor) return;
+
 		static Texture *cursor = NULL;
 		if(!cursor) cursor = textureload("data/guicursor.png", 3, true);
 		crosshair = cursor;

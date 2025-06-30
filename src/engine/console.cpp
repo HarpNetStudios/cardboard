@@ -465,11 +465,11 @@ bool consolekey(int code, bool isdown)
 	if(commandmillis < 0) return false;
 
 	#ifdef __APPLE__
-		#define MOD_KEYS (KMOD_LGUI|KMOD_RGUI)
-		#define SKIP_KEYS (KMOD_LALT|KMOD_RALT)
+		#define MOD_KEYS (SDL_KMOD_LGUI|SDL_KMOD_RGUI)
+		#define SKIP_KEYS (SDL_KMOD_LALT|SDL_KMOD_RALT)
 	#else
-		#define MOD_KEYS (KMOD_LCTRL|KMOD_RCTRL)
-		#define SKIP_KEYS (KMOD_LCTRL|KMOD_RCTRL)
+		#define MOD_KEYS (SDL_KMOD_LCTRL|SDL_KMOD_RCTRL)
+		#define SKIP_KEYS (SDL_KMOD_LCTRL|SDL_KMOD_RCTRL)
 	#endif
 
 	if(isdown)
@@ -555,7 +555,7 @@ bool consolekey(int code, bool isdown)
 				}
 				break;
 
-			case SDLK_v:
+			case SDLK_V:
 				if(SDL_GetModState()&MOD_KEYS) pasteconsole();
 				break;
 		}
@@ -611,7 +611,7 @@ void processkey(int code, bool isdown, int modstate)
 	{
 		if(!consolekey(code, isdown))
 		{
-			if(modstate&KMOD_GUI) return;
+			if(modstate&SDL_KMOD_GUI) return;
 			if(haskey) execbind(*haskey, isdown);
 		}
 	}

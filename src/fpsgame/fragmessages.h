@@ -7,7 +7,7 @@ namespace game {
 	struct fragmessage {
 		old_string attackername, victimname;
 		int weapon;
-		int fragtime;
+		Uint64 fragtime;
 		bool headshot;
 
 		fragmessage(const char *aname, const char *vname, int fragweapon, bool fragheadshot)

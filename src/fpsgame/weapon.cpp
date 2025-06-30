@@ -60,7 +60,8 @@ namespace game
 		{
 			d->lastgun = d->gunselect;
 			addmsg(N_GUNSELECT, "rci", d, gun);
-			playsound(S_WEAPLOAD, d == player1 ? NULL : &d->o);
+			// TODO: SDL3_mixer
+			//playsound(S_WEAPLOAD, d == player1 ? NULL : &d->o);
 			d->candouble = (gun == GUN_FIST);
 
 			// prevent misfires when switching weapons
@@ -84,7 +85,8 @@ namespace game
 			if(force || player1->ammo[gun]) break;
 		}
 		if(gun != player1->gunselect) gunselect(gun, player1);
-		else playsound(S_NOAMMO);
+		// TODO: SDL3_mixer
+		//else playsound(S_NOAMMO);
 	}
 	ICOMMAND(nextweapon, "ii", (int *dir, int *force), nextweapon(*dir, *force!=0));
 
@@ -107,7 +109,8 @@ namespace game
 		int gun = getweapon(name);
 		if(player1->state!=CS_ALIVE || gun<GUN_FIST || gun>GUN_GL) return;
 		if(force || player1->ammo[gun]) gunselect(gun, player1);
-		else playsound(S_NOAMMO);
+		// TODO: SDL3_mixer
+		//else playsound(S_NOAMMO);
 	}
 	ICOMMAND(setweapon, "si", (char *name, int *force), setweapon(name, *force!=0));
 
@@ -125,7 +128,8 @@ namespace game
 				return;
 			}
 		}
-		playsound(S_NOAMMO);
+		// TODO: SDL3_mixer
+		//playsound(S_NOAMMO);
 	}
 	ICOMMAND(cycleweapon, "V", (tagval *args, int numargs),
 	{
@@ -183,7 +187,8 @@ namespace game
 				return;
 			}
 		}
-		playsound(S_NOAMMO);
+		// TODO: SDL3_mixer
+		//playsound(S_NOAMMO);
 	});
 
 	void offsetray(const vec &from, const vec &to, int spread, float range, vec &dest)
@@ -443,7 +448,8 @@ namespace game
 			extern int hitsound, parkourhitmarker;
 			if ((hitsound && lasthit != lastmillis && !m_parkour) || (parkourhitmarker && m_parkour))
 			{
-				playsound(S_HIT);
+				// TODO: SDL3_mixer
+				//playsound(S_HIT);
 			}
 			lasthit = lastmillis;
 		}
@@ -513,7 +519,8 @@ namespace game
 	void explode(bool local, fpsent *owner, const vec &v, dynent *safe, int damage, int gun)
 	{
 		particle_splash(PART_SPARK, 200, 300, v, 0xB49B4B, 0.24f);
-		playsound(gun!=GUN_GL ? S_RLHIT : S_FEXPLODE, &v);
+		// TODO: SDL3_mixer
+		//playsound(gun!=GUN_GL ? S_RLHIT : S_FEXPLODE, &v);
 		int color = gun!=GUN_GL ? 0xFF8080 : (m_teammode ? (!strcmp(owner->team, "red") ? 0xFF4040 : 0x4040FF) : 0xDD40FF);
 		if ((gun == GUN_RL || gun == GUN_GL) && explodebright < 1)
 		{
@@ -587,7 +594,8 @@ namespace game
 		if(guns[p.gun].part)
 		{
 			particle_splash(PART_SPARK, 100, 200, v, 0xB49B4B, 0.24f);
-			playsound(S_FEXPLODE, &v);
+			// TODO: SDL3_mixer
+			//playsound(S_FEXPLODE, &v);
 			// no push?
 		}
 		else
@@ -819,10 +827,12 @@ namespace game
 			case S_CHAINSAW_ATTACK:
 				if(d->attacksound >= 0) looped = true;
 				d->attacksound = sound;
-				d->attackchan = playsound(sound, d==h ? NULL : &d->o, NULL, 0, -1, 100, d->attackchan);
+				// TODO: SDL3_mixer
+				//d->attackchan = playsound(sound, d==h ? NULL : &d->o, NULL, 0, -1, 100, d->attackchan);
 				break;
 			default:
-				playsound(sound, d==h ? NULL : &d->o);
+				// TODO: SDL3_mixer
+				//playsound(sound, d==h ? NULL : &d->o);
 				break;
 		}
 	}
@@ -1103,7 +1113,8 @@ namespace game
 		   d->clientnum >= 0 && d->state == CS_ALIVE &&
 		   d->lastattackgun == gun && lastmillis - d->lastaction[d->gunselect] < guns[gun].attackdelay + 50)
 		{
-			d->attackchan = playsound(d->attacksound, local ? NULL : &d->o, NULL, 0, -1, -1, d->attackchan);
+			// TODO: SDL3_mixer
+			//d->attackchan = playsound(d->attacksound, local ? NULL : &d->o, NULL, 0, -1, -1, d->attackchan);
 			if(d->attackchan < 0) d->attacksound = -1;
 		}
 		else d->stopattacksound();
@@ -1127,13 +1138,15 @@ namespace game
 			if(d->idlesound >= 0) d->stopidlesound();
 			if(sound >= 0)
 			{
-				d->idlechan = playsound(sound, local ? NULL : &d->o, NULL, 0, -1, 100, d->idlechan, radius);
+				// TODO: SDL3_mixer
+				//d->idlechan = playsound(sound, local ? NULL : &d->o, NULL, 0, -1, 100, d->idlechan, radius);
 				if(d->idlechan >= 0) d->idlesound = sound;
 			}
 		}
 		else if(sound >= 0)
 		{
-			d->idlechan = playsound(sound, local ? NULL : &d->o, NULL, 0, -1, -1, d->idlechan, radius);
+			// TODO: SDL3_mixer
+			//d->idlechan = playsound(sound, local ? NULL : &d->o, NULL, 0, -1, -1, d->idlechan, radius);
 			if(d->idlechan < 0) d->idlesound = -1;
 		}
 	}

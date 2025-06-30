@@ -3,10 +3,6 @@
 #include "engine.h"
 #include "icon.h"
 
-#ifdef SDL_VIDEO_DRIVER_X11
-#include "SDL_syswm.h"
-#endif
-
 old_string gametoken = "OFFLINE";
 
 ICOMMAND(help, "", (), conoutf(CON_INFO, "you have been helped."));
@@ -15,8 +11,6 @@ ICOMMAND(help, "", (), conoutf(CON_INFO, "you have been helped."));
 SVARF(__hnapi, HNAPI, if (strcmp(__hnapi, HNAPI)) { offline = 1; conoutf("\f3You are using the UNOFFICIAL API server \fo\"%s\"\f3. Proceed at your own risk.", __hnapi); });
 ICOMMAND(resethnapi, "", (), __hnapi = (char *)HNAPI);
 #endif
-
-extern void cleargamma();
 
 void cleanup()
 {
@@ -29,18 +23,20 @@ void cleanup()
 	rawinput::release();
 	gamepad::release();
 	cleanupserver();
-	SDL_ShowCursor(SDL_TRUE);
-	SDL_SetRelativeMouseMode(SDL_FALSE);
-	if(screen) SDL_SetWindowGrab(screen, SDL_FALSE);
-	cleargamma();
+	SDL_ShowCursor();
+	if (screen) {
+		SDL_SetWindowRelativeMouseMode(screen, false);
+		SDL_SetWindowMouseGrab(screen, false);
+	}
 	freeocta(worldroot);
 	extern void clear_command(); clear_command();
 	extern void clear_console(); clear_console();
 	extern void clear_mdls();    clear_mdls();
-	extern void clear_sound();   clear_sound();
+	// TODO: SDL3_mixer
+	//extern void clear_sound();   clear_sound();
 	closelogfile();
 	#ifdef __APPLE__
-		if(screen) SDL_SetWindowFullscreen(screen, 0);
+		if(screen) SDL_SetWindowFullscreen(screen, false);
 	#endif
 	SDL_Quit();
 }
@@ -74,12 +70,13 @@ void fatal(const char *s, ...)    // failure exit
 		{
 			if(SDL_WasInit(SDL_INIT_VIDEO))
 			{
-				SDL_ShowCursor(SDL_TRUE);
-				SDL_SetRelativeMouseMode(SDL_FALSE);
-				if(screen) SDL_SetWindowGrab(screen, SDL_FALSE);
-				cleargamma();
+				SDL_ShowCursor();
+				if (screen) {
+					SDL_SetWindowRelativeMouseMode(screen, false);
+					SDL_SetWindowMouseGrab(screen, false);
+				}
 				#ifdef __APPLE__
-					if(screen) SDL_SetWindowFullscreen(screen, 0);
+					if(screen) SDL_SetWindowFullscreen(screen, false);
 				#endif
 			}
 			SDL_Quit();
@@ -90,7 +87,7 @@ void fatal(const char *s, ...)    // failure exit
 	exit(EXIT_FAILURE);
 }
 
-int curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1, starttime = time(0), curframetime = 0;
+Uint64 curtime = 0, lastmillis = 1, elapsedtime = 0, totalmillis = 1, starttime = time(0), curframetime = 0;
 
 dynent *player = NULL;
 
@@ -134,13 +131,16 @@ void writeinitcfg()
 	f->printf("scr_h %d\n", scr_h);
 	f->printf("depthbits %d\n", depthbits);
 	f->printf("fsaa %d\n", fsaa);
+	// TODO: SDL3_mixer
+	/*
 	extern int usesound, soundchans, soundfreq, soundbufferlen;
-	extern char *audiodriver;
+    extern char *audiodriver;
 	f->printf("usesound %d\n", usesound);
 	f->printf("soundchans %d\n", soundchans);
 	f->printf("soundfreq %d\n", soundfreq);
 	f->printf("soundbufferlen %d\n", soundbufferlen);
 	if(audiodriver[0]) f->printf("audiodriver %s\n", escapestring(audiodriver));
+	*/
 	delete f;
 }
 
@@ -198,7 +198,8 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 {
 	if(!inbetweenframes && !force) return;
 
-	if(!restore || force || !splash) stopsounds(); // stop sounds while loading
+	// TODO: SDL3_mixer
+	//if(!restore || force || !splash) stopsounds(); // stop sounds while loading
  
 	int w = screenw, h = screenh;
 	if(forceaspect) w = int(ceil(h*forceaspect));
@@ -343,8 +344,8 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 	}
 
 	if(!restore) setbackgroundinfo(caption, mapshot, mapname, mapinfo);
-
-	if (splash) playsound(S_LOGO);  // sound for splash screen
+	// TODO: SDL3_mixer
+	//if (splash) playsound(S_LOGO);  // sound for splash screen
 }
 
 VAR(progressbackground, 0, 0, 1);
@@ -359,8 +360,8 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
 	int fps = menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
 	if(fps)
 	{
-		static int lastprogress = 0;
-		int ticks = SDL_GetTicks(), diff = ticks - lastprogress;
+		static Uint64 lastprogress = 0;
+		Uint64 ticks = SDL_GetTicks(), diff = ticks - lastprogress;
 		if(bar > 0 && diff >= 0 && diff < (1000 + fps-1)/fps) return;
 		lastprogress = ticks;
 	}
@@ -458,7 +459,7 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
 }
 
 int keyrepeatmask = 0, textinputmask = 0;
-Uint32 textinputtime = 0;
+Uint64 textinputtime = 0;
 VAR(textinputfilter, 0, 5, 1000);
 
 void keyrepeat(bool on, int mask)
@@ -473,7 +474,7 @@ void textinput(bool on, int mask)
 	{
 		if(!textinputmask)
 		{
-			SDL_StartTextInput();
+			SDL_StartTextInput(screen);
 			textinputtime = SDL_GetTicks();
 		}
 		textinputmask |= mask;
@@ -481,27 +482,38 @@ void textinput(bool on, int mask)
 	else if(textinputmask)
 	{
 		textinputmask &= ~mask;
-		if(!textinputmask) SDL_StopTextInput();
+		if(!textinputmask) SDL_StopTextInput(screen);
 	}
 }
 
 bool minimized = false, initwindowpos = false;
 
-void setfullscreen(int mode)
+// 0 windowed, 1 exclusive, 2 borderless
+void setfullscreen(int type)
 {
 	if(!screen) return;
 
-	int fullscreen_mode = (mode == 2 ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_FULLSCREEN);
-
-	SDL_SetWindowFullscreen(screen, mode ? fullscreen_mode : 0);
-	if(!mode) // if windowed
+	if(!type) // if windowed
 	{
+		SDL_SetWindowFullscreen(screen, false);
 		SDL_SetWindowSize(screen, scr_w, scr_h);
 		if(initwindowpos)
 		{
-			int winx = SDL_WINDOWPOS_CENTERED, winy = SDL_WINDOWPOS_CENTERED;
-			SDL_SetWindowPosition(screen, winx, winy);
+			SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 			initwindowpos = false;
+		}
+	}
+	else {
+		SDL_SetWindowFullscreen(screen, true);
+		if (type == 1) {
+			SDL_SyncWindow(screen);
+			SDL_DisplayID disp = SDL_GetDisplayForWindow(screen);
+			SDL_DisplayMode* closest_mode = NULL;
+			if (!SDL_GetClosestFullscreenDisplayMode(disp, scr_w, scr_h, 0.0f, true, closest_mode)) {
+				conoutf(CON_WARN, "Could not find a suitable display mode, falling back to desktop resolution");
+				closest_mode = (SDL_DisplayMode*)SDL_GetDesktopDisplayMode(disp);
+			}
+			SDL_SetWindowFullscreenMode(screen, closest_mode);
 		}
 	}
 }
@@ -511,7 +523,7 @@ VARF(fullscreen, 0, 0, 2, setfullscreen(fullscreen));
 void resetfullscreen()
 {
 	setfullscreen(0);
-	setfullscreen(1);
+	setfullscreen(fullscreen);
 }
 
 void screenres(int w, int h)
@@ -554,31 +566,6 @@ ICOMMAND(screenres, "ii", (int* w, int* h), {
 	else screenres(*w, *h);
 });
 
-static void setgamma(int val)
-{   
-	if(screen && SDL_SetWindowBrightness(screen, val/100.0f) < 0) conoutf(CON_ERROR, "Could not set gamma: %s", SDL_GetError());
-}   
-
-static int curgamma = 100;
-VARFNP(gamma, reqgamma, 30, 100, 300,
-{
-	if(initing || reqgamma == curgamma) return;
-	curgamma = reqgamma;
-	setgamma(curgamma);
-});
-
-void restoregamma()
-{       
-	if(initing || reqgamma == 100) return;
-	curgamma = reqgamma;
-	setgamma(curgamma);
-}
-
-void cleargamma()
-{
-	if(curgamma != 100 && screen) SDL_SetWindowBrightness(screen, 1.0f);
-}
-
 int curvsync = -1;
 void restorevsync()
 {
@@ -591,29 +578,42 @@ void restorevsync()
 VARFP(vsync, 0, 0, 1, restorevsync());
 VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
 
-void setfullscreenmonitor(int);
-VARF(fullscreenmonitor, 0, 0, 10, setfullscreenmonitor(fullscreenmonitor));
+int countdisplays() {
+	int num = 0;
+	SDL_free(SDL_GetDisplays(&num));
+	return num;
+}
 
-void setfullscreenmonitor(int monitor)
+ICOMMAND(getnumdisplays, "", (), intret(countdisplays()));
+
+ICOMMAND(getdisplayname, "i", (int* id),
+{
+	const char* name = SDL_GetDisplayName(*id);
+	result(name ? name : "");
+});
+
+void setfullscreendisplay(int);
+VARF(fullscreendisplay, 0, 0, countdisplays(), setfullscreendisplay(fullscreendisplay));
+
+void setfullscreendisplay(int display)
 {
     if(!screen) return;
 
-    int currentmonitor = SDL_GetWindowDisplayIndex(screen);
-    if(fullscreenmonitor >= SDL_GetNumVideoDisplays())
-    {
-        fullscreenmonitor = currentmonitor;
-        return;
-    }
+    SDL_DisplayID current_display = SDL_GetDisplayForWindow(screen);
 
-    if(fullscreen && monitor!=currentmonitor) resetgl();
+	int i, num_displays = 0;
+	SDL_DisplayID* displays = SDL_GetDisplays(&num_displays);
+	if (displays) {
+		if (fullscreendisplay >= num_displays) {
+			fullscreendisplay = current_display;
+			SDL_free(displays);
+			return;
+		}
+
+		if (fullscreen && current_display != displays[display]) resetgl();
+		SDL_free(displays);
+	}
 }
-
-ICOMMAND(getnummonitors, "", (), intret(SDL_GetNumVideoDisplays()));
-ICOMMAND(getmonitorname, "i", (int *id),
-{
-    const char *name = SDL_GetDisplayName(*id);
-    result(name ? name : "");
-});
 
 static void seticon(SDL_Window* window)
 {
@@ -632,20 +632,24 @@ static void seticon(SDL_Window* window)
 		bmask = 0x00ff0000;
 		amask = (cardboard_icon.bytes_per_pixel == 3) ? 0 : 0xff000000;
 	#endif
-	SDL_Surface* icon = SDL_CreateRGBSurfaceFrom((void*)cardboard_icon.pixel_data,
-		cardboard_icon.width, cardboard_icon.height, cardboard_icon.bytes_per_pixel * 8,
-		cardboard_icon.bytes_per_pixel * cardboard_icon.width, rmask, gmask, bmask, amask);
+
+	SDL_Surface* icon = SDL_CreateSurfaceFrom(
+		cardboard_icon.width, cardboard_icon.height,
+		SDL_GetPixelFormatForMasks(cardboard_icon.bytes_per_pixel * 8, rmask, gmask, bmask, amask),
+		(void*)cardboard_icon.pixel_data,
+		cardboard_icon.bytes_per_pixel * cardboard_icon.width
+	);
 
 	SDL_SetWindowIcon(window, icon);
 
-	SDL_FreeSurface(icon);
+	SDL_DestroySurface(icon);
 }
 
 void setupscreen()
 {
 	if(glcontext)
 	{
-		SDL_GL_DeleteContext(glcontext);
+		SDL_GL_DestroyContext(glcontext);
 		glcontext = NULL;
 	}
 	if(screen)
@@ -656,7 +660,8 @@ void setupscreen()
 	curvsync = -1;
 
 	SDL_Rect desktop;
-	if(SDL_GetDisplayBounds(fullscreenmonitor, &desktop) < 0) fatal("failed querying desktop bounds: %s", SDL_GetError());
+	if(!SDL_GetDisplayBounds(SDL_GetPrimaryDisplay(), &desktop)) fatal("failed querying desktop bounds: %s", SDL_GetError());
+	
 	desktopw = desktop.w;
 	desktoph = desktop.h;
 
@@ -664,13 +669,14 @@ void setupscreen()
 	if(scr_w < 0) scr_w = (scr_h*desktopw)/desktoph;
 	scr_w = clamp(scr_w, SCR_MINW, SCR_MAXW);
 	scr_h = clamp(scr_h, SCR_MINH, SCR_MAXH);
+
 	if(fullscreen == 2)
 	{
 		scr_w = min(scr_w, desktopw);
 		scr_h = min(scr_h, desktoph);
 	}
 
-	int winx = SDL_WINDOWPOS_UNDEFINED, winy = SDL_WINDOWPOS_UNDEFINED, winw = scr_w, winh = scr_h, flags = SDL_WINDOW_RESIZABLE;
+	int winx = SDL_WINDOWPOS_UNDEFINED, winy = SDL_WINDOWPOS_UNDEFINED, winw = scr_w, winh = scr_h;
 	if(fullscreen)
 	{
 		winx = desktop.x;
@@ -679,9 +685,7 @@ void setupscreen()
 		{
 			winw = desktopw;
 			winh = desktoph;
-			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
-		else flags |= SDL_WINDOW_FULLSCREEN;
 		initwindowpos = true;
 	}
 
@@ -717,8 +721,22 @@ void setupscreen()
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&2 ? fsaa : 0);
 		}
 		defformatstring(window_title, "%s %s %s (Cardboard Engine)", game::gametitle, game::gamestage, game::gameversion);
-		screen = SDL_CreateWindow(window_title, winx, winy, winw, winh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | flags);
 		
+		SDL_PropertiesID props = SDL_CreateProperties();
+
+		SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, window_title);
+		SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, winx);
+		SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, winy);
+		SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, winw);
+		SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, winh);
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_FOCUSABLE_BOOLEAN, true);
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true);
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN, fullscreen > 0);
+		
+		screen = SDL_CreateWindowWithProperties(props);
+		SDL_DestroyProperties(props);
+
 		// we couldn't create the window, something went horribly wrong
 		if(!screen) continue;
 
@@ -810,7 +828,6 @@ void resetgl()
 	reloadfonts();
 	inbetweenframes = true;
 	renderbackground("initializing...");
-	restoregamma();
 	restorevsync();
 	reloadshaders();
 	reloadtextures();
@@ -829,9 +846,10 @@ static inline bool filterevent(const SDL_Event &event)
 {
 	switch(event.type)
 	{
-		case SDL_MOUSEMOTION:
+		case SDL_EVENT_MOUSE_MOTION:
 			if(!(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
 			{
+				// TODO: relevant for SDL3?
 				if(event.motion.x == screenw / 2 && event.motion.y == screenh / 2)
 					return false;  // ignore any motion events generated by SDL_WarpMouse
 				#ifdef __APPLE__
@@ -850,7 +868,7 @@ template <int SIZE> static inline bool pumpevents(queue<SDL_Event, SIZE> &events
 	{
 		SDL_PumpEvents();
 		databuf<SDL_Event> buf = events.reserve(events.capacity());
-		int n = SDL_PeepEvents(buf.getbuf(), buf.remaining(), SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+		int n = SDL_PeepEvents(buf.getbuf(), buf.remaining(), SDL_GETEVENT, SDL_EVENT_FIRST, SDL_EVENT_LAST);
 		if(n <= 0) return false;
 		loopi(n) if(filterevent(buf.buf[i])) buf.put(buf.buf[i]);
 		events.addbuf(buf);
@@ -860,13 +878,13 @@ template <int SIZE> static inline bool pumpevents(queue<SDL_Event, SIZE> &events
 
 static int interceptkeysym = 0;
 
-static int interceptevents(void *data, SDL_Event *event)
+static bool interceptevents(void *data, SDL_Event *event)
 {
 	switch(event->type)
 	{
-		case SDL_MOUSEMOTION: return 0;
-		case SDL_KEYDOWN:
-			if(event->key.keysym.sym == interceptkeysym)
+		case SDL_EVENT_MOUSE_MOTION: return 0;
+		case SDL_EVENT_KEY_DOWN:
+			if(event->key.key == interceptkeysym)
 			{
 				interceptkeysym = -interceptkeysym;
 				return 0;
@@ -878,7 +896,7 @@ static int interceptevents(void *data, SDL_Event *event)
 
 static void clearinterceptkey()
 {
-	SDL_DelEventWatch(interceptevents, NULL);
+	SDL_RemoveEventWatch(interceptevents, NULL);
 	interceptkeysym = 0;
 }
 
@@ -911,7 +929,7 @@ bool interceptkey(int sym)
 static void ignoremousemotion()
 {
 	SDL_PumpEvents();
-	SDL_FlushEvent(SDL_MOUSEMOTION);
+	SDL_FlushEvent(SDL_EVENT_MOUSE_MOTION);
 }
 
 static void checkmousemotion(int &dx, int &dy)
@@ -919,7 +937,7 @@ static void checkmousemotion(int &dx, int &dy)
 	while(pumpevents(events))
 	{
 		SDL_Event &event = events.removing();
-		if(event.type != SDL_MOUSEMOTION) return;
+		if(event.type != SDL_EVENT_MOUSE_MOTION) return;
 		dx += event.motion.xrel;
 		dy += event.motion.yrel;
 		events.remove();
@@ -941,70 +959,27 @@ void checkinput()
 
 		switch(event.type)
 		{
-			case SDL_QUIT:
+			case SDL_EVENT_QUIT:
 				quit();
 				return;
 
-			case SDL_TEXTINPUT:
+			// TODO: fix this, text input is handled way differently now
+			case SDL_EVENT_TEXT_INPUT:
 				if(textinputmask && int(event.text.timestamp-textinputtime) >= textinputfilter)
 				{
-					uchar buf[SDL_TEXTINPUTEVENT_TEXT_SIZE+1];
+					uchar buf[1024]; // this is kinda silly, shouldn't matter?
 					size_t len = decodeutf8(buf, sizeof(buf)-1, (const uchar *)event.text.text, strlen(event.text.text));
 					if(len > 0) { buf[len] = '\0'; processtextinput((const char *)buf, len); }
 				}
 				break;
 
-			case SDL_KEYDOWN:
-			case SDL_KEYUP:
+			case SDL_EVENT_KEY_DOWN:
+			case SDL_EVENT_KEY_UP:
 				if(keyrepeatmask || !event.key.repeat)
-					processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED, event.key.keysym.mod | SDL_GetModState());
+					processkey(event.key.key, event.key.down, event.key.mod | SDL_GetModState());
 				break;
 
-			case SDL_WINDOWEVENT:
-				switch(event.window.event)
-				{
-					case SDL_WINDOWEVENT_CLOSE:
-						quit();
-						break;
-
-					case SDL_WINDOWEVENT_ENTER:
-						focused = 1;
-						break;
-
-					case SDL_WINDOWEVENT_LEAVE:
-					case SDL_WINDOWEVENT_FOCUS_LOST:
-						focused = -1;
-						break;
-
-					case SDL_WINDOWEVENT_MINIMIZED:
-						minimized = true;
-						break;
-
-					case SDL_WINDOWEVENT_MAXIMIZED:
-					case SDL_WINDOWEVENT_RESTORED:
-						minimized = false;
-						break;
-
-					case SDL_WINDOWEVENT_RESIZED:
-						break;
-
-					case SDL_WINDOWEVENT_SIZE_CHANGED:
-					{
-						SDL_GetWindowSize(screen, &screenw, &screenh);
-						// TODO: this seems weird, take a look
-						if(fullscreen != 2 || !(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
-						{
-							scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
-							scr_h = clamp(screenh, SCR_MINH, SCR_MAXH);
-						}
-						gl_resize();
-						break;
-					}
-				}
-				gamepad::handlefocus(focused);
-				break;
-
-			case SDL_MOUSEMOTION:
+			case SDL_EVENT_MOUSE_MOTION:
 				if (rawinput::debugrawmouse)
 				{
 					conoutf("%d sdl mouse motion (%d, %d) [%d, %d]",
@@ -1021,40 +996,84 @@ void checkinput()
 				}
 				break;
 
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
+			case SDL_EVENT_MOUSE_BUTTON_UP:
 				if (rawinput::enabled) break;
 
 				switch(event.button.button)
 				{
-					case SDL_BUTTON_LEFT: processkey(-1, event.button.state==SDL_PRESSED); break;
-					case SDL_BUTTON_MIDDLE: processkey(-2, event.button.state==SDL_PRESSED); break;
-					case SDL_BUTTON_RIGHT: processkey(-3, event.button.state==SDL_PRESSED); break;
-					case SDL_BUTTON_X1: processkey(-6, event.button.state==SDL_PRESSED); break;
-					case SDL_BUTTON_X2: processkey(-7, event.button.state==SDL_PRESSED); break;
-					case SDL_BUTTON_X2 + 1: processkey(-10, event.button.state==SDL_PRESSED); break;
-					case SDL_BUTTON_X2 + 2: processkey(-11, event.button.state==SDL_PRESSED); break;
-					case SDL_BUTTON_X2 + 3: processkey(-12, event.button.state==SDL_PRESSED); break;
+					case SDL_BUTTON_LEFT: processkey(-1, event.button.down); break;
+					case SDL_BUTTON_MIDDLE: processkey(-2, event.button.down); break;
+					case SDL_BUTTON_RIGHT: processkey(-3, event.button.down); break;
+					case SDL_BUTTON_X1: processkey(-6, event.button.down); break;
+					case SDL_BUTTON_X2: processkey(-7, event.button.down); break;
+					case SDL_BUTTON_X2 + 1: processkey(-10, event.button.down); break;
+					case SDL_BUTTON_X2 + 2: processkey(-11, event.button.down); break;
+					case SDL_BUTTON_X2 + 3: processkey(-12, event.button.down); break;
 				}
 				//lasttype = event.type;
 				//lastbut = event.button.button;
 				break;
 
-			case SDL_MOUSEWHEEL:
+			case SDL_EVENT_MOUSE_WHEEL:
 				if(event.wheel.y > 0) { processkey(-4, true); processkey(-4, false); }
 				else if(event.wheel.y < 0) { processkey(-5, true); processkey(-5, false); }
 				else if(event.wheel.x > 0) { processkey(-8, true); processkey(-8, false); }
 				else if(event.wheel.x < 0) { processkey(-9, true); processkey(-9, false); }
 				break;
 
-			case SDL_CONTROLLERDEVICEADDED:
-			case SDL_CONTROLLERDEVICEREMOVED:
-			case SDL_CONTROLLERDEVICEREMAPPED:
-			case SDL_CONTROLLERBUTTONUP:
-			case SDL_CONTROLLERBUTTONDOWN:
-			case SDL_CONTROLLERAXISMOTION:
+			case SDL_EVENT_GAMEPAD_ADDED:
+			case SDL_EVENT_GAMEPAD_REMOVED:
+			case SDL_EVENT_GAMEPAD_REMAPPED:
+			case SDL_EVENT_GAMEPAD_BUTTON_UP:
+			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+			case SDL_EVENT_GAMEPAD_AXIS_MOTION:
 				gamepad::handleevent(event, focused);
 				break;
+		}
+
+		if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST) {
+			switch (event.type)
+			{
+				case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+					quit();
+					break;
+
+				case SDL_EVENT_WINDOW_MOUSE_ENTER:
+					focused = 1;
+					break;
+
+				case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+				case SDL_EVENT_WINDOW_FOCUS_LOST:
+					focused = -1;
+					break;
+
+				case SDL_EVENT_WINDOW_MINIMIZED:
+					minimized = true;
+					break;
+
+				case SDL_EVENT_WINDOW_MAXIMIZED:
+				case SDL_EVENT_WINDOW_RESTORED:
+					minimized = false;
+					break;
+
+				case SDL_EVENT_WINDOW_RESIZED:
+					break;
+
+				case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+				{
+					SDL_GetWindowSize(screen, &screenw, &screenh);
+					// TODO: this seems weird, take a look
+					if (fullscreen != 2 || !(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN))
+					{
+						scr_w = clamp(screenw, SCR_MINW, SCR_MAXW);
+						scr_h = clamp(screenh, SCR_MINH, SCR_MAXH);
+					}
+					gl_resize();
+					break;
+				}
+			}
+			gamepad::handlefocus(focused);
 		}
 	}
 }
@@ -1076,7 +1095,7 @@ void ratelimit(int& millis, int lastdrawmillis, bool& draw)
 	int tpslimit = minimized ? 100 : (maxtps ? max(maxtps, fpslimit) : 0);
 	if (!fpslimit && !tpslimit) return;
 	int delay = 1;
-	if (tpslimit) delay = max(1000 / tpslimit - (millis - totalmillis), 0);
+	if (tpslimit) delay = max(int(1000 / tpslimit - (millis - totalmillis)), 0);
 	// should we draw?
 	int fpsdelay = INT_MAX;
 	if (!minimized && fpslimit)
@@ -1199,14 +1218,14 @@ static bool findarg(int argc, char **argv, const char *str)
 	return false;
 }
 
-static int clockrealbase = 0, clockvirtbase = 0;
+static Uint64 clockrealbase = 0, clockvirtbase = 0;
 static void clockreset() { clockrealbase = SDL_GetTicks(); clockvirtbase = totalmillis; }
 VARFP(clockerror, 990000, 1000000, 1010000, clockreset());
 VARFP(clockfix, 0, 0, 1, clockreset());
 
 int getclockmillis()
 {
-	int millis = SDL_GetTicks() - clockrealbase;
+	Uint64 millis = SDL_GetTicks() - clockrealbase;
 	if(clockfix) millis = int(millis*(double(clockerror)/1000000));
 	millis += clockvirtbase;
 	return max(millis, totalmillis);
@@ -1372,20 +1391,13 @@ int main(int argc, char **argv)
 	}
 	initing = NOT_INITING;
 
-	numcpus = clamp(SDL_GetCPUCount(), 1, 128);
+	numcpus = clamp(SDL_GetNumLogicalCPUCores(), 1, 128);
 
 	if(dedicated <= 1)
 	{
 		logoutf("init: sdl");
 
-		if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
-
-#ifdef SDL_VIDEO_DRIVER_X11
-		SDL_version version;
-		SDL_GetVersion(&version);
-		if (SDL_VERSIONNUM(version.major, version.minor, version.patch) <= SDL_VERSIONNUM(2, 0, 12))
-			sdl_xgrab_bug = 1;
-#endif
+		if(!SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)) fatal("Unable to initialize SDL: %s", SDL_GetError());
 	}
 	
 	logoutf("init: net");
@@ -1407,13 +1419,12 @@ int main(int argc, char **argv)
 	#endif
 
 	logoutf("init: video");
-	SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "0");
 	#if !defined(WIN32) && !defined(__APPLE__)
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
 	#endif
 	setupscreen();
-	SDL_ShowCursor(SDL_FALSE);
-	SDL_StopTextInput(); // workaround for spurious text-input events getting sent on first text input toggle?
+	SDL_ShowCursor();
+	SDL_StopTextInput(screen); // workaround for spurious text-input events getting sent on first text input toggle?
 
 	logoutf("init: gl");
 	gl_checkextensions();
@@ -1429,7 +1440,8 @@ int main(int argc, char **argv)
 
 	logoutf("init: sound");
 	execfile("data/sounds.cfg"); // load sounds early
-	initsound();
+	// TODO: SDL3_mixer
+	//initsound();
 
 	inbetweenframes = true;
 	renderbackground(NULL, NULL, NULL, NULL, false, false, true); // render splash
@@ -1474,7 +1486,6 @@ int main(int argc, char **argv)
 	else renderprogress(1.0f, "connected to auth server");
 
 	logoutf("init: render");
-	restoregamma();
 	restorevsync();
 	loadshaders();
 	initparticles();
@@ -1511,7 +1522,8 @@ int main(int argc, char **argv)
 
 	if(initscript) execute(initscript);
 
-	initmumble();
+	// TODO: SDL3_mixer
+	//initmumble();
 	resetfpshistory();
 
 	// TODO: is this still needed?
@@ -1566,7 +1578,8 @@ int main(int argc, char **argv)
 		// miscellaneous general game effects
 		recomputecamera();
 		if(draw) updateparticles();
-		updatesounds();
+		// TODO: SDL3_mixer
+		//updatesounds();
 
 		if(minimized) continue;
 

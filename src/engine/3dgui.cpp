@@ -1291,9 +1291,9 @@ bool g3d_key(int code, bool isdown)
 	}
 
 	#ifdef __APPLE__
-		#define MOD_KEYS (KMOD_LGUI|KMOD_RGUI)
+		#define MOD_KEYS (SDL_KMOD_LGUI|SDL_KMOD_RGUI)
 	#else
-		#define MOD_KEYS (KMOD_LCTRL|KMOD_RCTRL)
+		#define MOD_KEYS (SDL_KMOD_LCTRL|SDL_KMOD_RCTRL)
 	#endif
 
 	switch(code)
@@ -1327,11 +1327,14 @@ void g3d_resetcursor()
 bool g3d_movecursor(int x, int y)
 {
 	if (!guis2d.length() || !hascursor) return false;
-	SDL_SetWindowGrab(screen, SDL_FALSE);
-	SDL_SetRelativeMouseMode(SDL_FALSE);
+	
+	SDL_SetWindowMouseGrab(screen, false);
+	if (SDL_GetWindowRelativeMouseMode(screen)) SDL_WarpMouseInWindow(screen, x, y);
+	SDL_SetWindowRelativeMouseMode(screen, false);
+
 	cursorx = max(0.0f, min(1.0f, x / (float)screenw));
 	cursory = max(0.0f, min(1.0f, y / (float)screenh));
-
+	
 	return true;
 }
 

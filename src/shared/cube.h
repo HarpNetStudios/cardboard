@@ -43,16 +43,15 @@
 #endif
 
 #ifndef STANDALONE
+	#include <SDL3/SDL.h>
 	#ifdef __APPLE__
-		#include "SDL.h"
 		#define GL_GLEXT_LEGACY
 		#define __glext_h_
 		#include <OpenGL/gl.h>
 	#else
-		#include <SDL.h>
-		#include <SDL_opengl.h>
+		#include <SDL3/SDL_opengl.h>
 	#endif
-	#include <SDL_gamecontroller.h>
+	#include <SDL3/SDL_gamepad.h>
 #endif
 
 #ifdef DISCORD

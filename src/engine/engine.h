@@ -582,11 +582,14 @@ extern void clearmainmenu();
 extern void g3d_mainmenu();
 
 // sound
+// TODO: SDL3_mixer
+/*
 extern void writemapsounds(stream* f);
 extern void clearmapsounds();
 extern void checkmapsounds();
 extern void updatesounds();
 extern void preloadmapsounds();
+*/
 
 extern void initmumble();
 extern void closemumble();

@@ -1,7 +1,7 @@
 // texture.cpp: texture slot management
 
 #include "engine.h"
-#include "SDL_image.h"
+#include <SDL3_image/SDL_image.h>
 
 #ifndef SDL_IMAGE_VERSION_ATLEAST
 #define SDL_IMAGE_VERSION_ATLEAST(X, Y, Z) \
@@ -1123,67 +1123,82 @@ static Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clam
 
 SDL_Surface *wrapsurface(void *data, int width, int height, int bpp)
 {
+	/*
+	SDL_CreateSurfaceFrom(
+		cardboard_icon.width, cardboard_icon.height,
+		SDL_GetPixelFormatForMasks(cardboard_icon.bytes_per_pixel * 8, rmask, gmask, bmask, amask),
+		(void*)cardboard_icon.pixel_data,
+		cardboard_icon.bytes_per_pixel * cardboard_icon.width
+	);
+	*/
+
 	switch(bpp)
 	{
-		case 3: return SDL_CreateRGBSurfaceFrom(data, width, height, 8*bpp, bpp*width, RGBMASKS);
-		case 4: return SDL_CreateRGBSurfaceFrom(data, width, height, 8*bpp, bpp*width, RGBAMASKS);
+		case 3: return SDL_CreateSurfaceFrom(width, height, SDL_GetPixelFormatForMasks(8*bpp, RGBMASKS), data, bpp*width);
+		case 4: return SDL_CreateSurfaceFrom(width, height, SDL_GetPixelFormatForMasks(8*bpp, RGBAMASKS), data, bpp*width);
 	}
 	return NULL;
 }
 
 SDL_Surface *creatergbsurface(SDL_Surface *os)
 {
-	SDL_Surface *ns = SDL_CreateRGBSurface(SDL_SWSURFACE, os->w, os->h, 24, RGBMASKS);
+	SDL_Surface *ns = SDL_CreateSurface(os->w, os->h, SDL_GetPixelFormatForMasks(24, RGBMASKS));
 	if(ns) SDL_BlitSurface(os, NULL, ns, NULL);
-	SDL_FreeSurface(os);
+	SDL_DestroySurface(os);
 	return ns;
 }
 
 SDL_Surface *creatergbasurface(SDL_Surface *os)
 {
-	SDL_Surface *ns = SDL_CreateRGBSurface(SDL_SWSURFACE, os->w, os->h, 32, RGBAMASKS);
+	SDL_Surface *ns = SDL_CreateSurface(os->w, os->h, SDL_GetPixelFormatForMasks(32, RGBAMASKS));
 	if(ns) 
 	{
 		SDL_SetSurfaceBlendMode(os, SDL_BLENDMODE_NONE);
 		SDL_BlitSurface(os, NULL, ns, NULL);
 	}
-	SDL_FreeSurface(os);
+	SDL_DestroySurface(os);
 	return ns;
 }
 
 bool checkgrayscale(SDL_Surface *s)
 {
 	// gray scale images have 256 levels, no colorkey, and the palette is a ramp
-	if(s->format->palette)
+	SDL_Palette *palette = SDL_GetSurfacePalette(s);
+
+	if(palette)
 	{
-		if(s->format->palette->ncolors != 256 || SDL_GetColorKey(s, NULL) >= 0) return false;
-		const SDL_Color *colors = s->format->palette->colors;
+		if(palette->ncolors != 256 || SDL_GetSurfaceColorKey(s, NULL)) return false;
+		const SDL_Color *colors = palette->colors;
 		loopi(256) if(colors[i].r != i || colors[i].g != i || colors[i].b != i) return false;
 	}
 	return true;
 }
 
+// TODO: check if still needed with SDL3?
 SDL_Surface *fixsurfaceformat(SDL_Surface *s)
 {
 	if(!s) return NULL;
-	if(!s->pixels || min(s->w, s->h) <= 0 || s->format->BytesPerPixel <= 0)
+
+	const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(s->format);
+
+	if(!s->pixels || min(s->w, s->h) <= 0 || format->bytes_per_pixel <= 0)
 	{ 
-		SDL_FreeSurface(s); 
+		SDL_DestroySurface(s); 
 		return NULL; 
 	}
 	static const uint rgbmasks[] = { RGBMASKS }, rgbamasks[] = { RGBAMASKS };
-	switch(s->format->BytesPerPixel)
+	switch(format->bytes_per_pixel)
 	{
 		case 1:
-			if(!checkgrayscale(s)) return SDL_GetColorKey(s, NULL) >= 0 ? creatergbasurface(s) : creatergbsurface(s);
+			if(!checkgrayscale(s)) return SDL_GetSurfaceColorKey(s, NULL) ? creatergbasurface(s) : creatergbsurface(s);
 			break;
 		case 3:
-			if(s->format->Rmask != rgbmasks[0] || s->format->Gmask != rgbmasks[1] || s->format->Bmask != rgbmasks[2]) 
+			if(format->Rmask != rgbmasks[0] || format->Gmask != rgbmasks[1] || format->Bmask != rgbmasks[2]) 
 				return creatergbsurface(s);
 			break;
 		case 4:
-			if(s->format->Rmask != rgbamasks[0] || s->format->Gmask != rgbamasks[1] || s->format->Bmask != rgbamasks[2] || s->format->Amask != rgbamasks[3])
-				return s->format->Amask ? creatergbasurface(s) : creatergbsurface(s);
+			if(format->Rmask != rgbamasks[0] || format->Gmask != rgbamasks[1] || format->Bmask != rgbamasks[2] || format->Amask != rgbamasks[3])
+				return format->Amask ? creatergbasurface(s) : creatergbsurface(s);
 			break;
 	}
 	return s;
@@ -1349,13 +1364,13 @@ SDL_Surface *loadsurface(const char *name)
 	stream *z = openzipfile(name, "rb");
 	if(z)
 	{
-		SDL_RWops *rw = z->rwops();
+		SDL_IOStream *rw = z->rwops();
 		if(rw) 
 		{
 			char *ext = (char *)strrchr(name, '.');
 			if(ext) ++ext;
-			s = IMG_LoadTyped_RW(rw, 0, ext);
-			SDL_FreeRW(rw);
+			s = IMG_LoadTyped_IO(rw, 0, ext);
+			SDL_CloseIO(rw);
 		}
 		delete z;
 	}
@@ -1467,9 +1482,10 @@ static bool texturedata(ImageData &d, const char *tname, Slot::Tex *tex = NULL, 
 		}
 		else s = loadsurface(file);
 		if(!s) { if(msg) conoutf(CON_ERROR, "could not load texture %s", file); return false; }
-		int bpp = s->format->BitsPerPixel;
-		if(bpp%8 || !texformat(bpp/8)) { SDL_FreeSurface(s); conoutf(CON_ERROR, "texture must be 8, 16, 24, or 32 bpp: %s", file); return false; }
-		if(max(s->w, s->h) > (1<<12)) { SDL_FreeSurface(s); conoutf(CON_ERROR, "texture size exceeded %dx%d pixels: %s", 1<<12, 1<<12, file); return false; }
+		
+		int bpp = SDL_GetPixelFormatDetails(s->format)->bits_per_pixel;
+		if(bpp%8 || !texformat(bpp/8)) { SDL_DestroySurface(s); conoutf(CON_ERROR, "texture must be 8, 16, 24, or 32 bpp: %s", file); return false; }
+		if(max(s->w, s->h) > (1<<12)) { SDL_DestroySurface(s); conoutf(CON_ERROR, "texture size exceeded %dx%d pixels: %s", 1<<12, 1<<12, file); return false; }
 		d.wrap(s);
 	}
 
@@ -2808,13 +2824,13 @@ void genenvmaps()
 {
 	if(envmaps.empty()) return;
 	renderprogress(0, "generating environment maps...");
-	int lastprogress = SDL_GetTicks();
+	Uint64 lastprogress = SDL_GetTicks();
 	loopv(envmaps)
 	{
 		envmap &em = envmaps[i];
 		em.tex = genenvmap(em.o, em.size ? min(em.size, envmapsize) : envmapsize, em.blur, em.radius < 0);
 		if(renderedframe) continue;
-		int millis = SDL_GetTicks();
+		Uint64 millis = SDL_GetTicks();
 		if(millis - lastprogress >= 250)
 		{
 			renderprogress(float(i+1)/envmaps.length(), "generating environment maps...", 0, true);
@@ -3573,18 +3589,12 @@ void saveimage(const char *filename, int format, ImageData &image, bool flip = f
 			if(f)
 			{
 				switch(format) {
-					case IMG_JPG:
-#if SDL_IMAGE_VERSION_ATLEAST(2, 0, 2)
-						IMG_SaveJPG_RW(s, f->rwops(), 1, screenshotquality);
-#else
-						conoutf(CON_ERROR, "JPG screenshot support requires SDL_image 2.0.2");
-#endif
-						break;
-					default: SDL_SaveBMP_RW(s, f->rwops(), 1); break;
+					case IMG_JPG: IMG_SaveJPG_IO(s, f->rwops(), 1, screenshotquality); break;
+					default: SDL_SaveBMP_IO(s, f->rwops(), 1); break;
 				}
 				delete f;
 			}
-			SDL_FreeSurface(s);
+			SDL_DestroySurface(s);
 			break;
 		}
 	}

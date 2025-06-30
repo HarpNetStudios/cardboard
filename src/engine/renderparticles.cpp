@@ -33,7 +33,8 @@ struct particleemitter
 	vec center;
 	float radius;
 	ivec cullmin, cullmax;
-	int maxfade, lastemit, lastcull;
+	int maxfade;
+	Uint64 lastemit, lastcull;
 
 	particleemitter(extentity *ent)
 		: ent(ent), bbmin(ent->o), bbmax(ent->o), maxfade(-1), lastemit(0), lastcull(0)
@@ -122,7 +123,8 @@ const char *partnames[] = { "part", "tape", "trail", "text", "texticon", "meter"
 struct particle
 {
 	vec o, d;
-	int gravity, fade, millis;
+	int gravity, fade;
+	Uint64 millis;
 	bvec color;
 	uchar flags;
 	float size;
@@ -1532,7 +1534,7 @@ void updateparticles()
 			emitted++;
 			if(replayparticles && pe.maxfade > 5 && pe.lastcull > pe.lastemit)
 			{
-				for(emitoffset = max(pe.lastemit + emitmillis - lastmillis, -pe.maxfade); emitoffset < 0; emitoffset += emitmillis)
+				for(emitoffset = max(int(pe.lastemit + emitmillis - lastmillis), -pe.maxfade); emitoffset < 0; emitoffset += emitmillis)
 				{
 					makeparticles(e);
 					replayed++;

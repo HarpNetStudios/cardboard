@@ -526,10 +526,10 @@ struct ImageData
 
 	void wrap(SDL_Surface *s)
 	{
-		setdata((uchar *)s->pixels, s->w, s->h, s->format->BytesPerPixel);
+		setdata((uchar *)s->pixels, s->w, s->h, SDL_GetPixelFormatDetails(s->format)->bytes_per_pixel);
 		pitch = s->pitch;
 		owner = s;
-		freefunc = (void (*)(void *))SDL_FreeSurface;
+		freefunc = (void (*)(void *))SDL_DestroySurface;
 	}
 };
 

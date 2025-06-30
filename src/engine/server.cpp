@@ -966,6 +966,8 @@ void localconnect()
 		return buf;
 	}
 				
+	#define SDL_MAIN_HANDLED
+	#include <SDL3/SDL_main.h>
 
 	int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
 	{
@@ -977,8 +979,8 @@ void localconnect()
 		int status = standalonemain(args.length()-1, args.getbuf());
 		#define main standalonemain
 	#else
-		SDL_SetMainReady();
-		int status = SDL_main(args.length()-1, args.getbuf());
+		extern int main(int, char**);
+		int status = SDL_RunApp(args.length() - 1, args.getbuf(), main, NULL);
 	#endif
 		delete[] buf;
 		exit(status);

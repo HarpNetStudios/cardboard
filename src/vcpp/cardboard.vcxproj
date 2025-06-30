@@ -356,7 +356,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:X64 /SAFESEH:NO %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>steam_api64.lib;discord_game_sdk.dll.lib;libcurl.lib;enet.lib;zdll.lib;opengl32.lib;SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;ws2_32.lib;winmm.lib;dbghelp.lib;kernel32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>steam_api64.lib;discord_game_sdk.dll.lib;libcurl.lib;enet.lib;zdll.lib;opengl32.lib;SDL3.lib;SDL3_image.lib;ws2_32.lib;winmm.lib;dbghelp.lib;kernel32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>

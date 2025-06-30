@@ -24,7 +24,7 @@ struct lightmapworker
 	ShadowRayCache *shadowraycache;
 	BlendMapCache *blendmapcache;
 	bool needspace, doneworking;
-	SDL_cond *spacecond;
+	SDL_Condition *spacecond;
 	SDL_Thread *thread;
 
 	lightmapworker();
@@ -67,8 +67,8 @@ static vector<lightmapworker *> lightmapworkers;
 static vector<lightmaptask> lightmaptasks[2];
 static vector<lightmapext> lightmapexts;
 static int packidx = 0, allocidx = 0;
-static SDL_mutex *lightlock = NULL, *tasklock = NULL;
-static SDL_cond *fullcond = NULL, *emptycond = NULL;
+static SDL_Mutex *lightlock = NULL, *tasklock = NULL;
+static SDL_Condition *fullcond = NULL, *emptycond = NULL;
 
 int lightmapping = 0;
 
@@ -1222,7 +1222,7 @@ static int packlightmaps(lightmapworker *w = NULL)
 				w->bufstart = w->bufused = 0;
 			}
 		}
-		if(t.worker->needspace) SDL_CondSignal(t.worker->spacecond);
+		if(t.worker->needspace) SDL_SignalCondition(t.worker->spacecond);
 	}
 	return numpacked;
 }
@@ -1261,7 +1261,7 @@ static lightmapinfo *alloclightmap(lightmapworker *w)
 			if(packlightmaps(w)) continue;
 			if(!w->spacecond || !tasklock) break;
 			w->needspace = true;
-			SDL_CondWait(w->spacecond, tasklock);
+			SDL_WaitCondition(w->spacecond, tasklock);
 			w->needspace = false;
 		}
 		if(tasklock) SDL_UnlockMutex(tasklock);
@@ -1704,8 +1704,8 @@ int lightmapworker::work(void *data)
 		}
 		else 
 		{
-			if(packidx >= lightmaptasks[0].length()) SDL_CondSignal(emptycond);   
-			SDL_CondWait(fullcond, tasklock);
+			if(packidx >= lightmaptasks[0].length()) SDL_SignalCondition(emptycond);   
+			SDL_WaitCondition(fullcond, tasklock);
 		}
 	}
 	SDL_UnlockMutex(tasklock);
@@ -1723,11 +1723,11 @@ static bool processtasks(bool finish = false)
 			lightmaptasks[0].setsize(0);
 			lightmaptasks[0].move(lightmaptasks[1]);
 			packidx = allocidx = 0;
-			if(fullcond) SDL_CondBroadcast(fullcond);
+			if(fullcond) SDL_BroadcastCondition(fullcond);
 		}
 		else if(lightmapping > 1)
 		{
-			SDL_CondWaitTimeout(emptycond, tasklock, 250);
+			SDL_WaitConditionTimeout(emptycond, tasklock, 250);
 			CHECK_PROGRESS_LOCKED({ SDL_UnlockMutex(tasklock); return false; }, SDL_UnlockMutex(tasklock), SDL_LockMutex(tasklock));
 		}
 		else 
@@ -2030,7 +2030,7 @@ lightmapworker::~lightmapworker()
 
 void lightmapworker::cleanupthread()
 {
-	if(spacecond) { SDL_DestroyCond(spacecond); spacecond = NULL; }
+	if(spacecond) { SDL_DestroyCondition(spacecond); spacecond = NULL; }
 	thread = NULL;
 }
 
@@ -2044,13 +2044,13 @@ void lightmapworker::reset()
 
 bool lightmapworker::setupthread()
 {
-	if(!spacecond) spacecond = SDL_CreateCond();
+	if(!spacecond) spacecond = SDL_CreateCondition();
 	if(!spacecond) return false;
 	thread = SDL_CreateThread(work, "lightmap worker", this);
 	return thread!=NULL;
 }
 
-static Uint32 calclighttimer(Uint32 interval, void *param)
+static Uint32 SDLCALL calclighttimer(void *userdata, SDL_TimerID timerID, Uint32 interval)
 {
 	check_calclight_progress = true;
 	return interval;
@@ -2077,8 +2077,8 @@ static void cleanuplocks()
 {
 	FREELOCK(lightlock, SDL_DestroyMutex);
 	FREELOCK(tasklock, SDL_DestroyMutex);
-	FREELOCK(fullcond, SDL_DestroyCond);
-	FREELOCK(emptycond, SDL_DestroyCond);
+	FREELOCK(fullcond, SDL_DestroyCondition);
+	FREELOCK(emptycond, SDL_DestroyCondition);
 }
 
 static void setupthreads(int numthreads)
@@ -2091,8 +2091,8 @@ static void setupthreads(int numthreads)
 	{
 		ALLOCLOCK(lightlock, SDL_CreateMutex);
 		ALLOCLOCK(tasklock, SDL_CreateMutex);
-		ALLOCLOCK(fullcond, SDL_CreateCond);
-		ALLOCLOCK(emptycond, SDL_CreateCond);
+		ALLOCLOCK(fullcond, SDL_CreateCondition);
+		ALLOCLOCK(emptycond, SDL_CreateCondition);
 	}
 	while(lightmapworkers.length() < lightmapping) lightmapworkers.add(new lightmapworker);
 	loopi(lightmapping)
@@ -2114,11 +2114,11 @@ static void cleanupthreads()
 	{
 		SDL_LockMutex(tasklock);
 		loopv(lightmapworkers) lightmapworkers[i]->doneworking = true;
-		SDL_CondBroadcast(fullcond);
+		SDL_BroadcastCondition(fullcond);
 		loopv(lightmapworkers)
 		{
 			lightmapworker *w = lightmapworkers[i];
-			if(w->needspace && w->spacecond) SDL_CondSignal(w->spacecond);
+			if(w->needspace && w->spacecond) SDL_SignalCondition(w->spacecond);
 		}
 		SDL_UnlockMutex(tasklock);
 		loopv(lightmapworkers) 
@@ -2159,14 +2159,14 @@ void calclight(int *quality)
 	calclight_canceled = false;
 	check_calclight_progress = false;
 	SDL_TimerID timer = SDL_AddTimer(250, calclighttimer, NULL);
-	Uint32 start = SDL_GetTicks();
+	Uint64 start = SDL_GetTicks();
 	calcnormals(lerptjoints > 0);
 	show_calclight_progress();
 	setupthreads(numthreads);
 	generatelightmaps(worldroot, ivec(0, 0, 0), worldsize >> 1);
 	cleanupthreads();
 	clearnormals();
-	Uint32 end = SDL_GetTicks();
+	Uint64 end = SDL_GetTicks();
 	if(timer) SDL_RemoveTimer(timer);
 	uint total = 0, lumels = 0;
 	loopv(lightmaps)
@@ -2221,14 +2221,14 @@ void patchlight(int *quality)
 	check_calclight_progress = false;
 	SDL_TimerID timer = SDL_AddTimer(250, calclighttimer, NULL);
 	if(patchnormals) renderprogress(0, "computing normals...");
-	Uint32 start = SDL_GetTicks();
+	Uint64 start = SDL_GetTicks();
 	if(patchnormals) calcnormals(lerptjoints > 0);
 	show_calclight_progress();
 	setupthreads(numthreads);
 	generatelightmaps(worldroot, ivec(0, 0, 0), worldsize >> 1);
 	cleanupthreads();
 	if(patchnormals) clearnormals();
-	Uint32 end = SDL_GetTicks();
+	Uint64 end = SDL_GetTicks();
 	if(timer) SDL_RemoveTimer(timer);
 	loopv(lightmaps)
 	{
