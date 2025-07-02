@@ -3,11 +3,6 @@
 #include "engine.h"
 #include <SDL3_image/SDL_image.h>
 
-#ifndef SDL_IMAGE_VERSION_ATLEAST
-#define SDL_IMAGE_VERSION_ATLEAST(X, Y, Z) \
-	(SDL_VERSIONNUM(SDL_IMAGE_MAJOR_VERSION, SDL_IMAGE_MINOR_VERSION, SDL_IMAGE_PATCHLEVEL) >= SDL_VERSIONNUM(X, Y, Z))
-#endif
-
 template<int BPP> static void halvetexture(uchar * RESTRICT src, uint sw, uint sh, uint stride, uchar * RESTRICT dst)
 {
 	for(uchar *yend = &src[sh*stride]; src < yend;)
@@ -1123,15 +1118,6 @@ static Texture *newtexture(Texture *t, const char *rname, ImageData &s, int clam
 
 SDL_Surface *wrapsurface(void *data, int width, int height, int bpp)
 {
-	/*
-	SDL_CreateSurfaceFrom(
-		cardboard_icon.width, cardboard_icon.height,
-		SDL_GetPixelFormatForMasks(cardboard_icon.bytes_per_pixel * 8, rmask, gmask, bmask, amask),
-		(void*)cardboard_icon.pixel_data,
-		cardboard_icon.bytes_per_pixel * cardboard_icon.width
-	);
-	*/
-
 	switch(bpp)
 	{
 		case 3: return SDL_CreateSurfaceFrom(width, height, SDL_GetPixelFormatForMasks(8*bpp, RGBMASKS), data, bpp*width);
@@ -1142,6 +1128,7 @@ SDL_Surface *wrapsurface(void *data, int width, int height, int bpp)
 
 SDL_Surface *creatergbsurface(SDL_Surface *os)
 {
+
 	SDL_Surface *ns = SDL_CreateSurface(os->w, os->h, SDL_GetPixelFormatForMasks(24, RGBMASKS));
 	if(ns) SDL_BlitSurface(os, NULL, ns, NULL);
 	SDL_DestroySurface(os);
@@ -1190,7 +1177,10 @@ SDL_Surface *fixsurfaceformat(SDL_Surface *s)
 	switch(format->bytes_per_pixel)
 	{
 		case 1:
-			if(!checkgrayscale(s)) return SDL_GetSurfaceColorKey(s, NULL) ? creatergbasurface(s) : creatergbsurface(s);
+			if (!checkgrayscale(s))
+				// seems wasteful but it's 2025 and it doesn't really matter bro -Y
+				return creatergbasurface(s);
+				//return SDL_GetSurfaceColorKey(s, NULL) ? creatergbasurface(s) : creatergbsurface(s);
 			break;
 		case 3:
 			if(format->Rmask != rgbmasks[0] || format->Gmask != rgbmasks[1] || format->Bmask != rgbmasks[2]) 

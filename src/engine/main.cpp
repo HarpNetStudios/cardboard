@@ -38,6 +38,9 @@ void cleanup()
 	#ifdef __APPLE__
 		if(screen) SDL_SetWindowFullscreen(screen, false);
 	#endif
+
+	if(SDL_WasInit(SDL_INIT_GAMEPAD)) SDL_QuitSubSystem(SDL_INIT_GAMEPAD);
+	SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	SDL_Quit();
 }
 
@@ -125,10 +128,15 @@ void writeinitcfg()
 	stream *f = openutf8file("init.cfg", "w");
 	if(!f) return;
 	f->printf("// automatically written on exit, DO NOT MODIFY\n// modify settings in game\n");
-	extern int fullscreen;
-	f->printf("fullscreen %d\n", fullscreen);
 	f->printf("scr_w %d\n", scr_w);
 	f->printf("scr_h %d\n", scr_h);
+
+	extern int maximized;
+	f->printf("maximized %d\n", maximized);
+	
+	extern int fullscreen;
+	f->printf("fullscreen %d\n", fullscreen);
+	
 	f->printf("depthbits %d\n", depthbits);
 	f->printf("fsaa %d\n", fsaa);
 	// TODO: SDL3_mixer
@@ -475,7 +483,7 @@ void textinput(bool on, int mask)
 		if(!textinputmask)
 		{
 			SDL_StartTextInput(screen);
-			textinputtime = SDL_GetTicks();
+			textinputtime = SDL_GetTicksNS();
 		}
 		textinputmask |= mask;
 	}
@@ -488,66 +496,118 @@ void textinput(bool on, int mask)
 
 bool minimized = false, initwindowpos = false;
 
+void setmaximized(int max) {
+	max ? SDL_MaximizeWindow(screen) : SDL_RestoreWindow(screen);
+}
+
+VARF(maximized, 0, 0, 1, setmaximized(maximized));
+
 // 0 windowed, 1 exclusive, 2 borderless
 void setfullscreen(int type)
 {
 	if(!screen) return;
 
-	if(!type) // if windowed
-	{
-		SDL_SetWindowFullscreen(screen, false);
-		SDL_SetWindowSize(screen, scr_w, scr_h);
-		if(initwindowpos)
-		{
-			SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-			initwindowpos = false;
-		}
-	}
-	else {
-		SDL_SetWindowFullscreen(screen, true);
-		if (type == 1) {
-			SDL_SyncWindow(screen);
-			SDL_DisplayID disp = SDL_GetDisplayForWindow(screen);
-			SDL_DisplayMode* closest_mode = NULL;
-			if (!SDL_GetClosestFullscreenDisplayMode(disp, scr_w, scr_h, 0.0f, true, closest_mode)) {
-				conoutf(CON_WARN, "Could not find a suitable display mode, falling back to desktop resolution");
-				closest_mode = (SDL_DisplayMode*)SDL_GetDesktopDisplayMode(disp);
+	SDL_DisplayID disp = SDL_GetDisplayForWindow(screen);
+
+	SDL_SetWindowFullscreen(screen, type > 0);
+	SDL_SyncWindow(screen);
+
+	if(type == 0) {
+		const SDL_DisplayMode* disp_mode = SDL_GetDesktopDisplayMode(disp);
+		if(disp_mode->w == scr_w && disp_mode->h == scr_h) SDL_MaximizeWindow(screen);
+		else {
+			SDL_SetWindowSize(screen, scr_w, scr_h);
+
+			if(initwindowpos)
+			{
+				SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+				initwindowpos = false;
 			}
-			SDL_SetWindowFullscreenMode(screen, closest_mode);
 		}
+		return;
 	}
+
+	const SDL_DisplayMode* current_mode;
+	SDL_DisplayMode* desired_mode = NULL;
+
+	if (type == 1) {
+		desired_mode = (SDL_DisplayMode*)SDL_malloc(sizeof(SDL_DisplayMode));
+
+		if (!SDL_GetClosestFullscreenDisplayMode(disp, scr_w, scr_h, 0, true, desired_mode)) {
+			conoutf(CON_WARN, "\f2Could not find a suitable display mode, falling back to desktop resolution: %s", SDL_GetError());
+			desired_mode = (SDL_DisplayMode*)SDL_GetDesktopDisplayMode(disp);
+		}
+		/*
+		conoutf(CON_DEBUG, "Wanted: Display %" SDL_PRIu32 ": %dx%d@%gx %gHz",
+			disp, desired_mode->w, desired_mode->h, desired_mode->pixel_density, desired_mode->refresh_rate);
+		*/
+	}
+
+	if(SDL_SetWindowFullscreenMode(screen, desired_mode)) {
+		SDL_SyncWindow(screen);
+
+		current_mode = (SDL_DisplayMode*)SDL_GetCurrentDisplayMode(disp);
+		/*
+		conoutf(CON_DEBUG, "Acquired: Display %" SDL_PRIu32 ": %dx%d@%gx %gHz",
+			disp, current_mode->w, current_mode->h, current_mode->pixel_density, current_mode->refresh_rate);
+		*/
+		scr_w = current_mode->w;
+		scr_h = current_mode->h;
+	}
+	else conoutf(CON_ERROR, "\f3Could not set fullscreen mode! (%s)", SDL_GetError());
 }
 
 VARF(fullscreen, 0, 0, 2, setfullscreen(fullscreen));
 
-void resetfullscreen()
-{
-	setfullscreen(0);
-	setfullscreen(fullscreen);
-}
-
+// TODO: rewrite this entire thing
 void screenres(int w, int h)
-{        
-	scr_w = clamp(w, SCR_MINW, SCR_MAXW);
-	scr_h = clamp(h, SCR_MINH, SCR_MAXH);
+{   
 	if(screen)
-	{           
-		if(fullscreen == 2) // fullscreen desktop
-		{
-			scr_w = min(scr_w, desktopw);
-			scr_h = min(scr_h, desktoph);
-		}
-		if(SDL_GetWindowFlags(screen) & SDL_WINDOW_FULLSCREEN)
-		{
-			if(fullscreen == 2) gl_resize();
-			else resetfullscreen();
-			initwindowpos = true;
-		} 
-		else
-		{
-			SDL_SetWindowSize(screen, scr_w, scr_h);
-			SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-			initwindowpos = false;
+	{   
+		SDL_DisplayID disp = SDL_GetDisplayForWindow(screen);
+		const SDL_DisplayMode* desktop_mode = SDL_GetDesktopDisplayMode(disp);
+		SDL_DisplayMode* closest_mode = (SDL_DisplayMode*)SDL_malloc(sizeof(SDL_DisplayMode));
+
+		SDL_DisplayMode* current_mode;
+
+		switch (fullscreen) {
+			case 0:
+				if (desktop_mode->w == scr_w && desktop_mode->h == scr_h) SDL_MaximizeWindow(screen);
+				else {
+					if (SDL_GetWindowFlags(screen) & SDL_WINDOW_MAXIMIZED) SDL_RestoreWindow(screen);
+					SDL_SetWindowSize(screen, scr_w, scr_h);
+					SDL_SetWindowPosition(screen, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+				}
+				SDL_SyncWindow(screen);
+				initwindowpos = false;
+				break;
+			case 1:
+				if(!SDL_GetClosestFullscreenDisplayMode(disp, scr_w, scr_h, 0, true, closest_mode)) {
+					conoutf(CON_WARN, "\f2Could not find a suitable display mode, falling back to desktop resolution! (%s)", SDL_GetError());
+					closest_mode = (SDL_DisplayMode*)desktop_mode;
+				}
+				/*
+				conoutf(CON_DEBUG, "Wanted: Display %" SDL_PRIu32 ": %dx%d@%gx %gHz",
+					disp, closest_mode->w, closest_mode->h, closest_mode->pixel_density, closest_mode->refresh_rate);
+				*/
+				if(SDL_SetWindowFullscreenMode(screen, closest_mode)) {
+					SDL_SyncWindow(screen);
+
+					current_mode = (SDL_DisplayMode*)SDL_GetCurrentDisplayMode(disp);
+
+					/*
+					conoutf(CON_DEBUG, "Acquired: Display %" SDL_PRIu32 ": %dx%d@%gx %gHz",
+						disp, current_mode->w, current_mode->h, current_mode->pixel_density, current_mode->refresh_rate);
+					*/
+					scr_w = current_mode->w;
+					scr_h = current_mode->h;
+				}
+				else conoutf(CON_ERROR, "\f3Could not set fullscreen mode! (%s)", SDL_GetError());
+				initwindowpos = true;
+				break;
+			case 2:
+				// does nothing
+				break;
 		}
 	}
 	else
@@ -577,43 +637,6 @@ void restorevsync()
 
 VARFP(vsync, 0, 0, 1, restorevsync());
 VARFP(vsynctear, 0, 0, 1, { if(vsync) restorevsync(); });
-
-int countdisplays() {
-	int num = 0;
-	SDL_free(SDL_GetDisplays(&num));
-	return num;
-}
-
-ICOMMAND(getnumdisplays, "", (), intret(countdisplays()));
-
-ICOMMAND(getdisplayname, "i", (int* id),
-{
-	const char* name = SDL_GetDisplayName(*id);
-	result(name ? name : "");
-});
-
-void setfullscreendisplay(int);
-VARF(fullscreendisplay, 0, 0, countdisplays(), setfullscreendisplay(fullscreendisplay));
-
-void setfullscreendisplay(int display)
-{
-    if(!screen) return;
-
-    SDL_DisplayID current_display = SDL_GetDisplayForWindow(screen);
-
-	int i, num_displays = 0;
-	SDL_DisplayID* displays = SDL_GetDisplays(&num_displays);
-	if (displays) {
-		if (fullscreendisplay >= num_displays) {
-			fullscreendisplay = current_display;
-			SDL_free(displays);
-			return;
-		}
-
-		if (fullscreen && current_display != displays[display]) resetgl();
-		SDL_free(displays);
-	}
-}
 
 static void seticon(SDL_Window* window)
 {
@@ -654,6 +677,7 @@ void setupscreen()
 	}
 	if(screen)
 	{
+		maximized = SDL_GetWindowFlags(screen)& SDL_WINDOW_MAXIMIZED;
 		SDL_DestroyWindow(screen);
 		screen = NULL;
 	}
@@ -733,6 +757,7 @@ void setupscreen()
 		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_FOCUSABLE_BOOLEAN, true);
 		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true);
 		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN, fullscreen > 0);
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_MAXIMIZED_BOOLEAN, maximized);
 		
 		screen = SDL_CreateWindowWithProperties(props);
 		SDL_DestroyProperties(props);
@@ -965,7 +990,7 @@ void checkinput()
 
 			// TODO: fix this, text input is handled way differently now
 			case SDL_EVENT_TEXT_INPUT:
-				if(textinputmask && int(event.text.timestamp-textinputtime) >= textinputfilter)
+				if(textinputmask && event.text.timestamp-textinputtime >= textinputfilter)
 				{
 					uchar buf[1024]; // this is kinda silly, shouldn't matter?
 					size_t len = decodeutf8(buf, sizeof(buf)-1, (const uchar *)event.text.text, strlen(event.text.text));
@@ -1051,9 +1076,11 @@ void checkinput()
 				case SDL_EVENT_WINDOW_MINIMIZED:
 					minimized = true;
 					break;
-
 				case SDL_EVENT_WINDOW_MAXIMIZED:
+					maximized = 1;
+					break;
 				case SDL_EVENT_WINDOW_RESTORED:
+					maximized = 0;
 					minimized = false;
 					break;
 

@@ -30,7 +30,7 @@ int resolverloop(void * data)
 	SDL_LockMutex(resolvermutex);
 	SDL_Thread *thread = rt->thread;
 	SDL_UnlockMutex(resolvermutex);
-	if(!thread || SDL_GetThreadID(thread) != SDL_ThreadID())
+	if(!thread || SDL_GetThreadID(thread) != SDL_GetCurrentThreadID())
 		return 0;
 	while(thread == rt->thread)
 	{
@@ -538,7 +538,7 @@ void checkpings()
 			si = newserver(NULL, server::serverport(addr.port), addr.host); 
 			millis = lanpings.decodeping(millis);
 		}
-		int rtt = clamp(totalmillis - (Uint64)millis, (Uint64)0, min((Uint64)servpingdecay, totalmillis));
+		int rtt = clamp(int(totalmillis - millis), 0, int(min((Uint64)servpingdecay, totalmillis)));
 		if(millis >= lastreset && rtt < servpingdecay) si->addping(rtt, millis);
 		si->numplayers = getint(p);
 		int numattr = getint(p);
@@ -724,7 +724,7 @@ void updatefrommaster()
 {
 	vector<char> data;
 	retrieveservers(data);
-	if(data.empty()) conoutf(CON_ERROR, "master server not replying");
+	if(data.empty()) conoutf(CON_ERROR, "Master server did not reply!");
 	else
 	{
 		clearservers();

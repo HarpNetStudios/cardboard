@@ -1322,6 +1322,8 @@ void g3d_cursorpos(float &x, float &y)
 void g3d_resetcursor()
 {
 	cursorx = cursory = 0.5f;
+	SDL_WarpMouseInWindow(screen, cursorx * (int)screenw, cursory * (int)screenh);
+	SDL_ShowCursor();
 }
 
 bool g3d_movecursor(int x, int y)
@@ -1329,7 +1331,6 @@ bool g3d_movecursor(int x, int y)
 	if (!guis2d.length() || !hascursor) return false;
 	
 	SDL_SetWindowMouseGrab(screen, false);
-	if (SDL_GetWindowRelativeMouseMode(screen)) SDL_WarpMouseInWindow(screen, x, y);
 	SDL_SetWindowRelativeMouseMode(screen, false);
 
 	cursorx = max(0.0f, min(1.0f, x / (float)screenw));

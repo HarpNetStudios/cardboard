@@ -1372,25 +1372,16 @@ namespace game
 		}
 	}
 
-	#define justified(elem, right) \
-        { \
-            /* pushlist to go horizontal, spring to push right, pushlist again to get vertical list dir back, so mergehits works */ \
-            if((right)) { g->pushlist(); g->spring(); g->pushlist(); } \
-            elem; \
-            if((right)) { g->poplist(); g->poplist(); } \
-        }
-
 	bool serverinfostartcolumn(g3d_gui *g, int i)
 	{
 		static const char * const names[] = {    "", "ping", "players", "mode", "map", "time", "master", "host", "port", "description" };
-		static const float struts[]       = {     0,      0,         0,  12.5f,     8,      0,        0,      0,      0,             0 };
-		static const bool right[]         = { false,   true,      true,  false, false,  false,    false,  false,   true,         false };		
+		static const float struts[]       = {     0,      0,         0,  12.5f,     8,      0,        0,      0,      0,         25.0f };
 		
-		if (size_t(i) >= sizeof(names)/sizeof(names[0])) return false;
+		if(size_t(i) >= sizeof(names)/sizeof(names[0])) return false;
 
-		if (i) g->space(2);
+		if(i>1) g->space(2);
 		g->pushlist();
-		justified(g->text(names[i], COL_GRAY, NULL), right[i]);
+		g->text(names[i], COL_GRAY, NULL);
 		if(struts[i]) g->strut(struts[i]);
 		g->mergehits(true);
 		return true;
@@ -1415,9 +1406,7 @@ namespace game
 
 	bool serverinfoentry(g3d_gui *g, int i, const char *name, int port, const char *sdesc, const char *map, int ping, const vector<int> &attr, int np)
 	{
-		#define handlemouse(elem)    int hit = elem; if(hit&G3D_UP) return true
-		#define leftjustified(elem)  justified(handlemouse(elem), false)
-		#define rightjustified(elem) justified(handlemouse(elem), true)
+		#define handlemouse(elem) { int hit = elem; if(hit&G3D_UP) return true; }
 
 		const char* pingcolor;
 		if (attr.length() >= 4) {
@@ -1439,12 +1428,12 @@ namespace game
 		}
 
 		// if server is invalid or incorrect protocol version
-		if(ping < 0 || attr.empty()) //  || attr[0]!=PROTOCOL_VERSION
+		if(ping < 0 || attr.empty() || attr[0]!=PROTOCOL_VERSION)
 		{
 			switch(i)
 			{
 				case 0: // icon
-					rightjustified(g->button("", COL_WHITE, "serverunk"));
+					handlemouse(g->button("", COL_WHITE, "serverunk"));
 					break;
 				case 1: // ping
 				case 2: // players
@@ -1452,20 +1441,20 @@ namespace game
 				case 4: // map
 				case 5: // time
 				case 6: // master mode
-					leftjustified(g->button(" ", COL_WHITE));
+					handlemouse(g->button(" ", COL_WHITE));
 					break;
 				case 7: // host
-					leftjustified(g->buttonf("%s", COL_WHITE, NULL, name));
+					handlemouse(g->buttonf("%s", COL_WHITE, NULL, name));
 					break;
 				case 8: // port
-					leftjustified(g->buttonf("%d", COL_WHITE, NULL, port));
+					handlemouse(g->buttonf("%d", COL_WHITE, NULL, port));
 					break;
 				case 9: // description
 					if(ping < 0)
 					{
-						leftjustified(g->button(sdesc, COL_WHITE));
+						handlemouse(g->button(sdesc, COL_WHITE));
 					}
-					else leftjustified(g->buttonf("[%s version, %d]", COL_WHITE, NULL, attr.empty() ? "unknown" : (attr[0] < PROTOCOL_VERSION ? "older" : "newer"), attr.empty() ? 0 : attr[0]));
+					else handlemouse(g->buttonf("[%s version, %d]", COL_WHITE, NULL, attr.empty() ? "unknown" : (attr[0] < PROTOCOL_VERSION ? "older" : "newer"), attr.empty() ? 0 : attr[0]));
 					break;
 			}
 			return false;
@@ -1486,30 +1475,30 @@ namespace game
 				{
 					icon = mastermodeicon(attr[4], "serverunk");
 				}
-				rightjustified(g->button("", COL_WHITE, icon));
+				handlemouse(g->button("", COL_WHITE, icon));
 				break;
 			}
 				
 			case 1: // ping
 			{
-				rightjustified(g->buttonf("%s%d", COL_WHITE, NULL, pingcolor, ping));
+				handlemouse(g->buttonf("%s%d", COL_WHITE, NULL, pingcolor, ping));
 				break;
 			}
 
 			case 2: // players
 				if(attr.length()>=4)
 				{
-					rightjustified(g->buttonf(np >= attr[3] ? "\f3%d/%d" : "%d/%d", COL_WHITE, NULL, np, attr[3]));
+					handlemouse(g->buttonf(np >= attr[3] ? "\f3%d/%d" : "%d/%d", COL_WHITE, NULL, np, attr[3]));
 				}
-				else rightjustified(g->buttonf("%d", COL_WHITE, NULL, np));
+				else handlemouse(g->buttonf("%d", COL_WHITE, NULL, np));
 				break;
 
 			case 3: // mode
-				leftjustified(g->buttonf("%s", COL_WHITE, NULL, attr.length() >= 2 ? server::modename(attr[1], "") : ""));
+				handlemouse(g->buttonf("%s", COL_WHITE, NULL, attr.length() >= 2 ? server::modename(attr[1], "") : ""));
 				break;
 
 			case 4: // map
-				leftjustified(g->buttonf("%.25s", COL_WHITE, NULL, map));
+				handlemouse(g->buttonf("%.25s", COL_WHITE, NULL, map));
 				break;
 
 			case 5: // time
@@ -1518,34 +1507,31 @@ namespace game
 					int secs = clamp(attr[2], 0, 59*60+59),
 						mins = secs/60;
 					secs %= 60;
-					leftjustified(g->buttonf("%d:%02d", COL_WHITE, NULL, mins, secs));
+					handlemouse(g->buttonf("%d:%02d", COL_WHITE, NULL, mins, secs));
 				}
-				else leftjustified(g->button(" ", COL_WHITE));
+				else handlemouse(g->button(" ", COL_WHITE));
 				break;
 
 			case 6: // master mode
-				leftjustified(g->buttonf("%s%s", COL_WHITE, NULL, attr.length() >= 5 ? mastermodecolor(attr[4], "") : "", attr.length() >= 5 ? server::mastermodename(attr[4], "") : ""));
+				handlemouse(g->buttonf("%s%s", COL_WHITE, NULL, attr.length() >= 5 ? mastermodecolor(attr[4], "") : "", attr.length() >= 5 ? server::mastermodename(attr[4], "") : ""));
 				break;
 
 			case 7: // host
-				leftjustified(g->buttonf("%s", COL_WHITE, NULL, name));
+				handlemouse(g->buttonf("%s", COL_WHITE, NULL, name));
 				break;
 
 			case 8: // port
-				rightjustified(g->buttonf("%d", COL_WHITE, NULL, port));
+				handlemouse(g->buttonf("%d", COL_WHITE, NULL, port));
 				break;
 
 			case 9: // description
-				leftjustified(g->buttonf("%s", COL_WHITE, NULL, sdesc));
+				handlemouse(g->buttonf("%s", COL_WHITE, NULL, sdesc));
 				break;
 		}
 		return false;
 	}
 
 	#undef handlemouse
-    #undef leftjustified
-    #undef rightjustified
-    #undef justified
 
 	// any data written into this vector will get saved with the map data. Must take care to do own versioning, and endianess if applicable. Will not get called when loading maps from other games, so provide defaults.
 	void writegamedata(vector<char> &extras) {}

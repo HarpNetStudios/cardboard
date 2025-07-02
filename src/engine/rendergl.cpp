@@ -2242,8 +2242,9 @@ void drawcrosshair(int w, int h)
 	Texture *crosshair;
 	if(windowhit)
 	{
-		hwcursor ? SDL_ShowCursor() : SDL_HideCursor();
-		if(hwcursor) return;
+		extern int usegui2d;
+		hwcursor && usegui2d ? SDL_ShowCursor() : SDL_HideCursor();
+		if(hwcursor && usegui2d) return;
 
 		static Texture *cursor = NULL;
 		if(!cursor) cursor = textureload("data/guicursor.png", 3, true);
@@ -2253,6 +2254,7 @@ void drawcrosshair(int w, int h)
 	}
 	else
 	{
+		SDL_HideCursor();
 		color = crosshaircolor_i.tocolor();
 		int index = game::selectcrosshair(color);
 		if(index < 0) return;
