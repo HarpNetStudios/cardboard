@@ -277,7 +277,8 @@ VARP(reflectdist, 0, 2000, 10000);
     HVARFR(name##fallcolor, 0, 0, 0xFFFFFF, \
     { \
         name##fallcolor_i = bvec((name##fallcolor>>16)&0xFF, (name##fallcolor>>8)&0xFF, name##fallcolor&0xFF); \
-    });
+    }); \
+    FVARR(name##boost, 0.1f, 1.0f, 10.0f);
 
 WATERVARS(water)
 WATERVARS(water2)
@@ -290,6 +291,7 @@ GETMATIDXVAR(water, fallcolor, int)
 GETMATIDXVAR(water, fallcolor_i, const bvec &)
 GETMATIDXVAR(water, fog, int)
 GETMATIDXVAR(water, spec, int)
+GETMATIDXVAR(water, boost, float)
 
 #define LAVAVARS(name) \
     bvec name##color_i(0xFF, 0x40, 0x00); \

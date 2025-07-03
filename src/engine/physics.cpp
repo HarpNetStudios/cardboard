@@ -1603,7 +1603,7 @@ FVAR(straferoll, 0, 0.033f, 90);
 FVAR(faderoll, 0, 0.95f, 1);
 VAR(floatspeed, 1, 100, 10000);
 
-void applyfriction(physent* pl, bool local, bool water, bool floating, int curtime, vec d)
+void applyfriction(physent* pl, bool local, int water, bool floating, int curtime, vec d)
 {
 	float fric = water && !floating ? 20.0f : (pl->physstate >= PHYS_SLOPE || floating ? 6.0f : 30.0f);
 	pl->vel.lerp(d, pl->vel, pow(1 - 1 / fric, curtime / 20.0f)); // DISABLE WHEN SLICK MATERIAL
@@ -1611,9 +1611,10 @@ void applyfriction(physent* pl, bool local, bool water, bool floating, int curti
 
 float waterdamp = 1.5f;
 
-void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curtime)
+void modifyvelocity(physent *pl, bool local, int water, bool floating, int curtime)
 {
 	bool allowmove = game::allowmove(pl);
+	float waterboost = getwaterboost(water - 1);
 
 	if (pl->physstate == PHYS_FALL && pl->candouble && pl->jumpstate < 2 && !water)
 	{
@@ -1639,7 +1640,7 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 		{
 			pl->jumping = false;
 
-			pl->vel.z = max(pl->vel.z, JUMPVEL); // physics impulse upwards
+			pl->vel.z = max(pl->vel.z, (water ? waterboost : 1) * JUMPVEL); // physics impulse upwards
 			if (water) { pl->vel.x /= waterdamp; pl->vel.y /= waterdamp; } // dampen velocity change even harder, gives correct water feel
 
 			pl->jumpstate = 1;
@@ -1693,15 +1694,16 @@ void modifyvelocity(physent *pl, bool local, bool water, bool floating, int curt
 	{
 		if (floating)
 		{
-			if (pl==player) d.mul(floatspeed/100.0f);
+			if (pl == player) d.mul(floatspeed / 100.0f);
 		}
 		else if (!water && allowmove) d.mul((pl->fmove && !pl->fstrafe ? 1.3f : 1.0f) * (pl->physstate < PHYS_SLOPE ? 1.3f : 1.0f));
+		else if (water && allowmove) d.mul(waterboost);
 	}
 	
 	applyfriction(pl, local, water, floating, curtime, d);
 }
 
-void modifygravity(physent *pl, bool water, int curtime)
+void modifygravity(physent *pl, int water, int curtime)
 {
 	float secs = curtime / 1000.0f;
 	vec g(0, 0, 0);
@@ -1730,7 +1732,8 @@ void modifygravity(physent *pl, bool water, int curtime)
 bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 {
 	int material = lookupmaterial(vec(pl->o.x, pl->o.y, pl->o.z + (3*pl->aboveeye - pl->eyeheight)/4));
-	bool water = isliquid(material&MATF_VOLUME);
+	//bool water = isliquid(material&MATF_VOLUME);
+	int water = liquididx(material);
 	bool floating = pl->type==ENT_PLAYER && (pl->state==CS_EDITING || pl->state==CS_SPECTATOR);
 	float secs = curtime/1000.f;
 

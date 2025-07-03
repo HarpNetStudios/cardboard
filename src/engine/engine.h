@@ -349,6 +349,7 @@ extern int reflectdist, vertwater, waterrefract, waterreflect, waterfade, causti
 extern const bvec &getwatercolor_i(int mat);
 extern const bvec &getwaterfallcolor_i(int mat);
 extern int getwaterfog(int mat);
+extern float getwaterboost(int mat);
 extern const bvec &getlavacolor_i(int mat);
 extern int getlavafog(int mat);
 extern const bvec &getglasscolor_i(int mat);
