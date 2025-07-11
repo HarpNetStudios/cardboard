@@ -1115,7 +1115,7 @@ VARP(menufps, 0, 60, 1000);
 VARP(maxfps, 0, 200, 1000);
 VARFP(maxtps, 0, 0, 1000, { if (maxtps && maxtps < 60) { conoutf(CON_WARN, "Can't set maxtps < 60"); maxtps = 60; } });
 
-void ratelimit(int& millis, int lastdrawmillis, bool& draw)
+void ratelimit(Uint64& millis, Uint64 lastdrawmillis, bool& draw)
 {
 	int fpslimit = (mainmenu || minimized) && menufps ? (maxfps ? min(maxfps, menufps) : menufps) : maxfps;
 	if (!fpslimit) draw = true;
@@ -1250,10 +1250,10 @@ static void clockreset() { clockrealbase = SDL_GetTicks(); clockvirtbase = total
 VARFP(clockerror, 990000, 1000000, 1010000, clockreset());
 VARFP(clockfix, 0, 0, 1, clockreset());
 
-int getclockmillis()
+Uint64 getclockmillis()
 {
 	Uint64 millis = SDL_GetTicks() - clockrealbase;
-	if(clockfix) millis = int(millis*(double(clockerror)/1000000));
+	if(clockfix) millis = Uint64(millis*(double(clockerror)/1000000));
 	millis += clockvirtbase;
 	return max(millis, totalmillis);
 }
@@ -1563,20 +1563,20 @@ int main(int argc, char **argv)
 
 	for(;;)
 	{
-		static int frames = 0, lastdrawmillis = 0;
-		int millis = getclockmillis();
+		static Uint64 frames = 0, lastdrawmillis = 0;
+		Uint64 millis = getclockmillis();
 		bool draw = false;
 		ratelimit(millis, lastdrawmillis, draw);
 		if (draw)
 		{
 			static int frametimeerr = 0;
-			int scaledframetime = game::scaletime(millis - lastdrawmillis) + frametimeerr;
+			Uint64 scaledframetime = game::scaletime(millis - lastdrawmillis) + frametimeerr;
 			curframetime = scaledframetime / 100;
 			frametimeerr = scaledframetime % 100;
 		}
 		elapsedtime = millis - totalmillis;
 		static int timeerr = 0;
-		int scaledtime = game::scaletime(elapsedtime) + timeerr;
+		Uint64 scaledtime = game::scaletime(elapsedtime) + timeerr;
 		curtime = scaledtime/100;
 		timeerr = scaledtime%100;
 		if(!multiplayer(false) && curtime>200) curtime = 200;

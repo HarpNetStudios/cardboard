@@ -467,7 +467,7 @@ extern bool interceptkey(int sym);
 
 extern void getfps(int &fps, int &bestdiff, int &worstdiff);
 extern void swapbuffers(bool overlay = true);
-extern int getclockmillis();
+extern Uint64 getclockmillis();
 
 enum { KR_CONSOLE = 1<<0, KR_GUI = 1<<1, KR_EDITMODE = 1<<2 };
 

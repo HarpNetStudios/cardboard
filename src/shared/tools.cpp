@@ -149,6 +149,23 @@ int getuint(ucharbuf &p)
     return n;
 }
 
+// horrible hack to send uint64 as 2 ints :)
+template<class T>
+static inline void putu64_(T& p, Uint64 n) {
+	putint_(p, static_cast<int>(n & 0xFFFFFFFF));
+	putint_(p, static_cast<int>((n >> 32) & 0xFFFFFFFF));
+}
+
+void putu64(ucharbuf& p, Uint64 n) { putu64_(p, n); }
+void putu64(packetbuf& p, Uint64 n) { putu64_(p, n); }
+void putu64(vector<uchar>& p, Uint64 n) { putu64_(p, n); }
+
+Uint64 getu64(ucharbuf& p) {
+	Uint32 lo = static_cast<Uint32>(getint(p));
+	Uint32 hi = static_cast<Uint32>(getint(p));
+	return (static_cast<Uint64>(hi) << 32) | lo;
+}
+
 template<class T>
 static inline void putfloat_(T &p, float f)
 {

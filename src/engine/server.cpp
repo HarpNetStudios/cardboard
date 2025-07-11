@@ -117,7 +117,7 @@ struct client                   // server side version of "dynent" type
 vector<client *> clients;
 
 ENetHost *serverhost = NULL;
-int laststatus = 0; 
+Uint64 laststatus = 0; 
 ENetSocket pongsock = ENET_SOCKET_NULL, lansock = ENET_SOCKET_NULL;
 
 int localclients = 0, nonlocalclients = 0;
@@ -239,6 +239,12 @@ ENetPacket *sendf(int cn, int chan, const char *format, ...)
 		{
 			int n = isdigit(*format) ? *format++-'0' : 1;
 			loopi(n) putint(p, va_arg(args, int));
+			break;
+		}
+		case 'U':
+		{
+			int n = isdigit(*format) ? *format++ - '0' : 1;
+			loopi(n) putu64(p, va_arg(args, Uint64));
 			break;
 		}
 		case 'f':
@@ -606,11 +612,11 @@ void updatemasterserver()
 	lastupdatemaster = totalmillis ? totalmillis : 1;
 }
 
-uint totalsecs = 0;
+Uint64 totalsecs = 0;
 
 void updatetime()
 {
-	static int lastsec = 0;
+	static Uint64 lastsec = 0;
 	if(totalmillis - lastsec >= 1000) 
 	{
 		int cursecs = (totalmillis - lastsec) / 1000;
@@ -632,10 +638,10 @@ void serverslice(bool dedicated, uint timeout)   // main server update, called f
 
 	if(dedicated) 
 	{
-		int millis = (int)enet_time_get();
+		Uint64 millis = enet_time_get();
 		elapsedtime = millis - totalmillis;
 		static int timeerr = 0;
-		int scaledtime = server::scaletime(elapsedtime) + timeerr;
+		Uint64 scaledtime = server::scaletime(elapsedtime) + timeerr;
 		curtime = scaledtime/100;
 		timeerr = scaledtime%100;
 		if(!server::ispaused()) lastmillis += curtime;

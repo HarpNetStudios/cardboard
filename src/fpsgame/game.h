@@ -311,7 +311,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
 #define CARDBOARD_SERVER_PORT 35000
 #define CARDBOARD_SERVINFO_PORT 35001
 #define CARDBOARD_MASTER_PORT 35002
-#define PROTOCOL_VERSION 1012           // bump when protocol changes
+#define PROTOCOL_VERSION 1013           // bump when protocol changes
 #define DEMO_VERSION 2                  // bump when demo format changes
 #define DEMO_MAGIC "CARDBOARD_DEMO"
 
@@ -399,7 +399,7 @@ struct fpsstate
 	int aitype, skill;
 
 	// race
-	int racetime;
+	Uint64 racetime;
 	int racelaps;
 	int racecheckpoint;
 	int racerank;
@@ -579,7 +579,10 @@ struct userinfo
 struct fpsent : dynent, fpsstate
 {
 	int weight;                         // affects the effectiveness of hitpush
-	int clientnum, privilege, lastupdate, plag, ping;
+	int clientnum, privilege;
+	Uint64 lastupdate;
+	int plag;
+	Uint64 ping;
 	int lifesequence;                   // sequence id for each respawn, used in damage test
 	int respawned, suicided;
 	Uint64 lastpain;
@@ -601,7 +604,7 @@ struct fpsent : dynent, fpsstate
 
 	editinfo *edit;
 	float deltayaw, deltapitch, deltaroll, newyaw, newpitch, newroll;
-	int smoothmillis;
+	int64_t smoothmillis;
 	userinfo* user;
 
 	old_string name, team, info, pubtoken;
@@ -621,7 +624,7 @@ struct fpsent : dynent, fpsstate
 
 	fpsent() : weight(100), clientnum(-1), privilege(PRIV_NONE), lastupdate(0), plag(0), ping(0), lifesequence(0), respawned(-1), suicided(-1), lastpain(0), attacksound(-1), attackchan(-1), idlesound(-1), idlechan(-1), frags(0), flags(0), deaths(0), totaldamage(0), totalshots(0), suicides(0), edit(NULL), smoothmillis(-1), playermodel(-1), ai(NULL), ownernum(-1), muzzle(-1, -1, -1), hasflag(false), laststealflag(0), maxcps(0.0f)
 	{
-		name[0] = team[0] = info[0] = 0;
+		name[0] = team[0] = info[0] = pubtoken[0] = 0;
 		user = new userinfo;
 		respawn();
 	}
@@ -819,12 +822,12 @@ namespace game
 	extern old_string clientmap;
 	extern bool intermission;
 	extern Uint64 maptime, maprealtime;
-	extern int maplimit;
+	extern int64_t maplimit;
 	extern fpsent *player1;
 	extern vector<fpsent *> players, clients;
-	extern int lastspawnattempt;
-	extern int lasthit;
-	extern int respawnent;
+	extern Uint64 lastspawnattempt;
+	extern Uint64 lasthit;
+	extern int64_t respawnent;
 	extern int following;
 	extern int smoothmove, smoothdist;
 

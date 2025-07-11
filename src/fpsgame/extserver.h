@@ -274,7 +274,7 @@ void processservinfo()
 				if (v != EXT_VERSION) {
 					return;
 				}
-				es->uptime = getint(p);
+				es->uptime = getu64(p);
 			}
 			else if (cmd == EXT_PLAYERSTATS) {
 				getint(p); // (cn = -1)

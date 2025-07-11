@@ -6,7 +6,7 @@ extern Uint64 elapsedtime;      // wall clock duration since last step
 extern Uint64 totalmillis;      // total elapsed wall clock duration since engine start
 extern Uint64 curframetime;     // scaled duration since last frame
 extern Uint64 starttime;        // time from start
-extern uint totalsecs;
+extern Uint64 totalsecs;		// total seconds elapsed
 extern int gamespeed, paused;
 extern time_t walltime;      // wall time at engine startup (add totalmillis/1000 for current wall time)
 extern int globalgamestate;  // game state, set by and for discord

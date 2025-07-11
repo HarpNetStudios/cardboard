@@ -7,7 +7,8 @@ namespace ai
 	using namespace game;
 
 	avoidset obstacles;
-	int updatemillis = 0, iteration = 0, itermillis = 0, forcegun = -1;
+	Uint64 updatemillis = 0, itermillis = 0;
+	int iteration = 0, forcegun = -1;
 	vec aitarget(0, 0, 0);
 
 	VAR(aidebug, 0, 0, 6);

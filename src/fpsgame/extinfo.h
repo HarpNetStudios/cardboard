@@ -65,7 +65,7 @@
 	{
 		putint(p, m_teammode ? 0 : 1);
 		putint(p, gamemode);
-		putint(p, max((gamelimit - gamemillis)/1000, 0));
+		putint(p, gamelimit >= gamemillis ? (int(gamelimit - gamemillis) / 1000) : 0);
 		if(!m_teammode) return;
 
 		vector<teamscore> scores;
@@ -94,7 +94,7 @@
 		{
 			case EXT_UPTIME:
 			{
-				putint(p, totalsecs); //in seconds
+				putu64(p, totalsecs); //in seconds
 				break;
 			}
 

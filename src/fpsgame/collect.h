@@ -46,7 +46,8 @@ struct collectclientmode : clientmode
 
 	struct token
 	{
-		int id, team, droptime;
+		int id, team;
+		Uint64 droptime;
 		vec o;
 #ifdef SERVMODE
 		int yaw, dropper;

@@ -216,7 +216,8 @@ struct pingattempts
 {
 	enum { MAXATTEMPTS = 2 };
 
-	int offset, attempts[MAXATTEMPTS];
+	int offset;
+	Uint64 attempts[MAXATTEMPTS];
 
 	pingattempts() : offset(0) { clearattempts(); }
 
@@ -224,26 +225,26 @@ struct pingattempts
 
 	void setoffset() { offset = 1 + rnd(0xFFFFFF); } 
 
-	int encodeping(int millis)
+	Uint64 encodeping(Uint64 millis)
 	{
 		millis += offset;
 		return millis ? millis : 1;
 	}
 
-	int decodeping(int val)
+	Uint64 decodeping(Uint64 val)
 	{
 		return val - offset;
 	}
 
-	int addattempt(int millis)
+	Uint64 addattempt(Uint64 millis)
 	{
-		int val = encodeping(millis);
+		Uint64 val = encodeping(millis);
 		loopk(MAXATTEMPTS-1) attempts[k+1] = attempts[k];
 		attempts[0] = val;
 		return val;
 	}
 
-	bool checkattempt(int val, bool del = true)
+	bool checkattempt(Uint64 val, bool del = true)
 	{
 		if(val) loopk(MAXATTEMPTS) if(attempts[k] == val)
 		{
@@ -352,7 +353,7 @@ struct serverinfo : pingattempts
 
 vector<serverinfo *> servers;
 ENetSocket pingsock = ENET_SOCKET_NULL;
-int lastinfo = 0;
+Uint64 lastinfo = 0;
 
 int numservers() {
 	return servers.length();
@@ -427,7 +428,7 @@ pingattempts lanpings;
 template<size_t N> static inline void buildping(ENetBuffer &buf, uchar (&ping)[N], pingattempts &a)
 {
 	ucharbuf p(ping, N);
-	putint(p, a.addattempt(totalmillis));
+	putu64(p, a.addattempt(totalmillis));
 	buf.data = ping;
 	buf.dataLength = p.length();
 }
@@ -524,7 +525,7 @@ void checkpings()
 		int len = enet_socket_receive(pingsock, &addr, &buf, 1);
 		if(len <= 0) return;  
 		ucharbuf p(ping, len);
-		int millis = getint(p);
+		int millis = getu64(p);
 		serverinfo *si = NULL;
 		loopv(servers) if(addr.host == servers[i]->address.host && addr.port == servers[i]->address.port) { si = servers[i]; break; }
 		if(si)

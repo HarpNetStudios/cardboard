@@ -164,10 +164,12 @@ namespace ai
 
 	struct aistate
 	{
-		int type, millis, targtype, target, idle;
+		int type;
+		Uint64 millis;
+		int targtype, target, idle;
 		bool override;
 
-		aistate(int m, int t, int r = -1, int v = -1) : type(t), millis(m), targtype(r), target(v)
+		aistate(Uint64 m, int t, int r = -1, int v = -1) : type(t), millis(m), targtype(r), target(v)
 		{
 			reset();
 		}
@@ -187,8 +189,9 @@ namespace ai
 		vector<aistate> state;
 		vector<int> route;
 		vec target, spot;
-		int enemy, enemyseen, enemymillis, weappref, prevnodes[NUMPREVNODES], targnode, targlast, targtime, targseq,
-			lastrun, lasthunt, lastaction, lastcheck, jumpseed, jumprand, blocktime, huntseq, blockseq, lastaimrnd;
+		int enemy;
+		Uint64 enemyseen, enemymillis, blocktime, targtime, lastrun, lasthunt, lastaction, lastcheck, jumpseed, jumprand;
+		int weappref, prevnodes[NUMPREVNODES], targnode, targlast, targseq, huntseq, blockseq, lastaimrnd;
 		float targyaw, targpitch, views[3], aimrnd[3];
 		bool dontmove, becareful, tryreset, trywipe;
 

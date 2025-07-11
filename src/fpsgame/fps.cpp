@@ -17,9 +17,9 @@ namespace game
 
 	bool intermission = false;
 	Uint64 maptime = 0, maprealtime = 0;
-	int maplimit = -1;
-	int respawnent = -1;
-	int lasthit = 0, lastspawnattempt = 0;
+	int64_t maplimit = -1; // not ideal, but good enough
+	int64_t respawnent = -1; // not ideal, but good enough
+	Uint64 lasthit = 0, lastspawnattempt = 0;
 
 	int following = -1, followdir = 0;
 
@@ -1144,7 +1144,7 @@ namespace game
 
 	void drawgameclock(int w, int h)
 	{
-		int secs = max(maplimit-lastmillis + 999, (Uint64)0)/1000, mins = secs/60;
+		int secs = maplimit >= lastmillis ? (maplimit - lastmillis + 999)/1000 : 0, mins = secs/60;
 		secs %= 60;
 
 		defformatstring(buf, "%d:%02d", mins, secs);

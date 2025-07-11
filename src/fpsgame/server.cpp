@@ -39,7 +39,7 @@ namespace server
 	{
 		virtual ~gameevent() {}
 
-		virtual bool flush(clientinfo *ci, int fmillis);
+		virtual bool flush(clientinfo *ci, Uint64 fmillis);
 		virtual void process(clientinfo *ci) {}
 
 		virtual bool keepable() const { return false; }
@@ -47,9 +47,9 @@ namespace server
 
 	struct timedevent : gameevent
 	{
-		int millis;
+		Uint64 millis;
 
-		bool flush(clientinfo *ci, int fmillis);
+		bool flush(clientinfo *ci, Uint64 fmillis);
 	};
 
 	struct hitinfo
@@ -64,7 +64,8 @@ namespace server
 
 	struct shotevent : timedevent
 	{
-		int id, gun;
+		Uint64 id;
+		int gun;
 		vec from, to;
 		vector<hitinfo> hits;
 
@@ -73,7 +74,8 @@ namespace server
 
 	struct explodeevent : timedevent
 	{
-		int id, gun;
+		Uint64 id;
+		int gun;
 		bool headshot;
 		vector<hitinfo> hits;
 
@@ -125,21 +127,24 @@ namespace server
 	{
 		vec o;
 		int state, editstate;
-		int lastdeath, deadflush, lastspawn, lifesequence;
-		int lastshot[NUMGUNS];
+		Uint64 lastdeath;
+		int deadflush;
+		Uint64 lastspawn;
+		int lifesequence;
+		Uint64 lastshot[NUMGUNS];
 		projectilestate<8> rockets, grenades;
 		int frags, flags, deaths, shotdamage, damage, tokens;
-		int lasttimeplayed, timeplayed;
+		Uint64 lasttimeplayed, timeplayed;
 		float effectiveness;
 
 		gamestate() : state(CS_DEAD), editstate(CS_DEAD), lifesequence(0) {}
 
-		bool isalive(int gamemillis)
+		bool isalive(Uint64 gamemillis)
 		{
 			return state==CS_ALIVE || (state==CS_DEAD && gamemillis - lastdeath <= DEATHMILLIS);
 		}
 
-		bool waitexpired(int gamemillis)
+		bool waitexpired(Uint64 gamemillis)
 		{
 			return gamemillis - lastshot[gunselect] >= gunwait[gunselect];
 		}
@@ -165,7 +170,7 @@ namespace server
 			fpsstate::respawn();
 			o = vec(-1e10f, -1e10f, -1e10f);
 			deadflush = 0;
-			lastspawn = -1;
+			lastspawn = 0;
 			loopi(NUMGUNS) lastshot[i] = 0;
 			tokens = 0;
 		}
@@ -220,18 +225,20 @@ namespace server
 		}
 	};
 
-	extern int gamemillis, nextexceeded;
+	extern Uint64 gamemillis, nextexceeded;
 
 	struct clientinfo
 	{
-		int clientnum, ownernum, connectmillis, sessionid, overflow;
+		int clientnum, ownernum;
+		Uint64 connectmillis;
+		int sessionid, overflow;
 		old_string name, team, mapvote;
 		userinfo user;
 		int playermodel;
 		int modevote;
 		int privilege;
 		bool connected, local, timesync;
-		int gameoffset, lastevent, pushed, exceeded;
+		Uint64 gameoffset, lastevent, pushed, exceeded;
 		gamestate state;
 		vector<gameevent *> events;
 		vector<uchar> position, messages;
@@ -243,7 +250,8 @@ namespace server
 		int mapcrc;
 		bool warned, gameclip;
 		ENetPacket *getdemo, *getmap, *clipboard;
-		int lastclipboard, needclipboard;
+		Uint64 lastclipboard;
+		int needclipboard;
 		int connectauth;
 		uint authreq;
 		old_string authname, authdesc;
@@ -271,7 +279,7 @@ namespace server
 			return PUSHMILLIS + (peer ? peer->roundTripTime + peer->roundTripTimeVariance : ENET_PEER_DEFAULT_ROUND_TRIP_TIME);
 		}
 
-		bool checkpushed(int millis, int range)
+		bool checkpushed(Uint64 millis, int range)
 		{
 			return millis >= pushed - range && millis <= pushed + range;
 		}
@@ -361,7 +369,7 @@ namespace server
 			mapchange();
 		}
 
-		int geteventmillis(int servmillis, int clientmillis)
+		Uint64 geteventmillis(Uint64 servmillis, Uint64 clientmillis)
 		{
 			if(!timesync || (events.empty() && state.waitexpired(servmillis)))
 			{
@@ -401,7 +409,8 @@ namespace server
 
 	bool notgotitems = true;        // true when map has changed and waiting for clients to send item
 	int gamemode = 0;
-	int gamemillis = 0, gamelimit = 0, nextexceeded = 0, gamespeed = 100;
+	Uint64 gamemillis = 0, gamelimit = 0, nextexceeded = 0;
+	int gamespeed = 100;
 	bool gamepaused = false, shouldstep = true;
 
 	old_string smapname = "";
@@ -617,7 +626,7 @@ namespace server
 
 	bool demonextmatch = false;
 	stream *demotmp = NULL, *demorecord = NULL, *demoplayback = NULL;
-	int nextplayback = 0;
+	Uint64 nextplayback = 0;
 
 	VAR(maxdemos, 0, 5, 25);
 	VAR(maxdemosize, 0, 16, 31);
@@ -869,7 +878,7 @@ namespace server
 		{
 			clientinfo *ci = clients[i];
 			if(ci->state.timeplayed<0) continue;
-			float rank = ci->state.state!=CS_SPECTATOR ? ci->state.effectiveness/max(ci->state.timeplayed, 1) : -1;
+			float rank = ci->state.state!=CS_SPECTATOR ? ci->state.effectiveness/max(ci->state.timeplayed, (Uint64)1) : -1;
 			if(!best || rank > bestrank) { best = ci; bestrank = rank; }
 		}
 		return best;
@@ -942,7 +951,7 @@ namespace server
 			loopj(numteams) if(!strcmp(ci->team, teamranks[j].name))
 			{
 				teamrank &ts = teamranks[j];
-				ts.rank += ci->state.effectiveness/max(ci->state.timeplayed, 1);
+				ts.rank += ci->state.effectiveness/max(ci->state.timeplayed, (Uint64)1);
 				ts.clients++;
 				break;
 			}
@@ -1231,7 +1240,7 @@ namespace server
 		}
 		if(gamemillis > prevmillis)
 		{
-			if(!interm) sendf(-1, 1, "ri2", N_TIMEUP, max((gamelimit - gamemillis)/1000, 1));
+			if(!interm) sendf(-1, 1, "ri2", N_TIMEUP, max(int((gamelimit - gamemillis)/1000), 1));
 #ifndef STANDALONE
 			cleardamagescreen();
 #endif
@@ -1818,7 +1827,7 @@ namespace server
 		if(!ci || (m_timed && smapname[0]))
 		{
 			putint(p, N_TIMEUP);
-			putint(p, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis)/1000, 1) : 0);
+			putint(p, gamemillis < gamelimit && !interm ? max(int((gamelimit - gamemillis)/1000), 1) : 0);
 		}
 		if(!notgotitems)
 		{
@@ -2006,7 +2015,7 @@ namespace server
 		clearteaminfo();
 		if(m_teammode) autoteam();
 
-		if(m_timed && smapname[0]) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max((gamelimit - gamemillis)/1000, 1) : 0);
+		if(m_timed && smapname[0]) sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit && !interm ? max(int((gamelimit - gamemillis)/1000), 1) : 0);
 		loopv(clients)
 		{
 			clientinfo *ci = clients[i];
@@ -2182,7 +2191,7 @@ namespace server
 		if(!tied) return false;
 		sendservmsg("the game is tied with overtime");
 		gamelimit = max(gamemillis, gamelimit) + overtimeadd * 60000;
-		sendf(-1, 1, "ri2", N_TIMEUP, max((gamelimit - gamemillis) / 1000, 1));
+		sendf(-1, 1, "ri2", N_TIMEUP, gamemillis < gamelimit ? max(int((gamelimit - gamemillis) / 1000), 1) : 0);
 		return true;
 	}
 
@@ -2370,13 +2379,13 @@ namespace server
 		pickup(ent, ci->clientnum);
 	}
 
-	bool gameevent::flush(clientinfo *ci, int fmillis)
+	bool gameevent::flush(clientinfo *ci, Uint64 fmillis)
 	{
 		process(ci);
 		return true;
 	}
 
-	bool timedevent::flush(clientinfo *ci, int fmillis)
+	bool timedevent::flush(clientinfo *ci, Uint64 fmillis)
 	{
 		if(millis > fmillis) return false;
 		else if(millis >= ci->lastevent)
@@ -2478,7 +2487,7 @@ namespace server
 			{
 				clientinfo &c = *clients[i];
 				if(c.state.aitype != AI_NONE) continue;
-				if(c.checkexceeded()) disconnect_client(c.clientnum, DISC_MSGERR);
+				if (c.checkexceeded()) disconnect_client(c.clientnum, DISC_MSGERR);
 				else c.scheduleexceeded();
 			}
 		}
@@ -2735,11 +2744,13 @@ namespace server
 		}
 	}
 
+	VARF(verifynames, 0, 1, 1, if(!verifynames) logoutf("==========\n name verification has been disabled!\n\n if you didn't mean to do this, set `verifynames` to 1 in your server config.\n=========="));
+
 	int allowconnect(clientinfo* ci, const char* pubtoken, const char* pwd = "")
 	{
 		if(ci->local) return DISC_NONE;
 		if(!m_mp(gamemode)) return DISC_LOCAL;
-		if(!checkpubtoken(ci, pubtoken)) return DISC_PUBTOKEN;
+		if(verifynames && !checkpubtoken(ci, pubtoken)) return DISC_PUBTOKEN;
 		if(serverpass[0])
 		{
 			if(!checkpassword(ci, serverpass, pwd)) return DISC_PASSWORD;
@@ -2971,13 +2982,13 @@ namespace server
 				disconnect_client(sender, DISC_MSGERR);
 				return;
 			}
-			else while(p.length() < p.maxlen) switch(checktype(getint(p), ci))
+			else while (p.length() < p.maxlen) switch (checktype(getint(p), ci))
 			{
 				case N_CONNECT:
 				{
 					getstring(text, p);
 					filtertext(text, text, false, false, MAXNAMELEN);
-					if(!text[0]) copystring(text, "CardboardPlayer");
+					if (!text[0]) copystring(text, "CardboardPlayer");
 					copystring(ci->name, text, MAXNAMELEN + 1);
 					old_string pubtoken;
 					getstring(pubtoken, p, sizeof(pubtoken));
@@ -2988,9 +2999,9 @@ namespace server
 					getstring(authdesc, p, sizeof(authdesc));
 					getstring(authname, p, sizeof(authname));
 					int disc = allowconnect(ci, pubtoken, password);
-					if(disc)
+					if (disc)
 					{
-						if(disc == DISC_LOCAL || !serverauth[0] || strcmp(serverauth, authdesc) || !tryauth(ci, authname, authdesc))
+						if (disc == DISC_LOCAL || !serverauth[0] || strcmp(serverauth, authdesc) || !tryauth(ci, authname, authdesc))
 						{
 							disconnect_client(sender, disc);
 							return;
@@ -3007,7 +3018,7 @@ namespace server
 					getstring(desc, p, sizeof(desc));
 					uint id = (uint)getint(p);
 					getstring(ans, p, sizeof(ans));
-					if(!answerchallenge(ci, id, ans, desc)) 
+					if (!answerchallenge(ci, id, ans, desc))
 					{
 						disconnect_client(sender, ci->connectauth);
 						return;
@@ -3016,7 +3027,7 @@ namespace server
 				}
 
 				case N_PING:
-					getint(p);
+					getu64(p);
 					break;
 
 				default:
@@ -3178,7 +3189,7 @@ namespace server
 				break;
 
 			case N_TRYSPAWN:
-				if(!ci || !cq || cq->state.state!=CS_DEAD || cq->state.lastspawn>=0 || (smode && !smode->canspawn(cq))) break;
+				if(!ci || !cq || cq->state.state!=CS_DEAD || cq->state.lastspawn > 0 || (smode && !smode->canspawn(cq))) break;
 				if(!ci->clientmap[0] && !ci->mapcrc)
 				{
 					ci->mapcrc = -1;
@@ -3209,7 +3220,7 @@ namespace server
 			{
 				int ls = getint(p), gunselect = getint(p);
 				if(!cq || (cq->state.state!=CS_ALIVE && cq->state.state!=CS_DEAD && cq->state.state!=CS_EDITING) || ls!=cq->state.lifesequence || cq->state.lastspawn<0) break;
-				cq->state.lastspawn = -1;
+				cq->state.lastspawn = 0;
 				cq->state.state = CS_ALIVE;
 				cq->state.gunselect = gunselect >= GUN_FIST && gunselect <= GUN_GL ? gunselect : GUN_FIST;
 				cq->exceeded = 0;
@@ -3231,7 +3242,7 @@ namespace server
 			case N_SHOOT:
 			{
 				shotevent *shot = new shotevent;
-				shot->id = getint(p);
+				shot->id = getu64(p);
 				shot->millis = cq ? cq->geteventmillis(gamemillis, shot->id) : 0;
 				shot->gun = getint(p);
 				loopk(3) shot->from[k] = getint(p)/DMF;
@@ -3260,10 +3271,10 @@ namespace server
 			case N_EXPLODE:
 			{
 				explodeevent *exp = new explodeevent;
-				int cmillis = getint(p);
+				Uint64 cmillis = getu64(p);
 				exp->millis = cq ? cq->geteventmillis(gamemillis, cmillis) : 0;
 				exp->gun = getint(p);
-				exp->id = getint(p);
+				exp->id = getu64(p);
 				int hits = getint(p);
 				loopk(hits)
 				{
@@ -3425,12 +3436,12 @@ namespace server
 			}
 
 			case N_PING:
-				sendf(sender, 1, "i2", N_PONG, getint(p));
+				sendf(sender, 1, "iU", N_PONG, getu64(p));
 				break;
 
 			case N_CLIENTPING:
 			{
-				int ping = getint(p);
+				int ping = getu64(p);
 				if(ci)
 				{
 					ci->ping = ping;
@@ -3770,7 +3781,7 @@ namespace server
 			#undef PARSEMESSAGES
 
 			case -1:
-				conoutf(CON_ERROR, "\f0Bad packet ID, report to Yellowberry.");
+				conoutf(CON_ERROR, "\f0Bad packet ID, report to Yellowberry. [%d]", type);
 				disconnect_client(sender, DISC_MSGERR);
 				return;
 
@@ -3783,7 +3794,7 @@ namespace server
 				int size = server::msgsizelookup(type);
 				if(size<=0)
 				{
-					conoutf(CON_ERROR, "\f0Default size 0, report to Yellowberry.");
+					conoutf(CON_ERROR, "\f0Default size 0, report to Yellowberry. [%d -> %d]", type, size);
 					disconnect_client(sender, DISC_MSGERR);
 					return;
 				}
@@ -3832,7 +3843,7 @@ namespace server
 		putint(p, gamepaused || gamespeed != 100 ? 7 : 5);                   // number of attrs following
 		putint(p, PROTOCOL_VERSION);    // generic attributes, passed back below
 		putint(p, gamemode);
-		putint(p, m_timed ? max((gamelimit - gamemillis)/1000, 0) : 0);
+		putint(p, m_timed ? (gamelimit >= gamemillis ? int((gamelimit - gamemillis) / 1000) : 0) : 0);
 		putint(p, maxclients);
 		putint(p, serverpass[0] ? MM_PASSWORD : (!m_mp(gamemode) ? MM_PRIVATE : (mastermode || mastermask&MM_AUTOAPPROVE ? mastermode : MM_AUTH)));
 		if(gamepaused || gamespeed != 100)

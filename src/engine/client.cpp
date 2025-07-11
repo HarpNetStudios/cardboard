@@ -4,7 +4,8 @@
 
 ENetHost *clienthost = NULL;
 ENetPeer *curpeer = NULL, *connpeer = NULL;
-int connmillis = 0, connattempts = 0, discmillis = 0;
+Uint64 connmillis = 0, discmillis = 0;
+int connattempts = 0;
 
 bool multiplayer(bool msg)
 {
@@ -77,8 +78,6 @@ void connectserv(const char *servername, int serverport, const char *serverpassw
 {   
 	// TODO: this needs to change to allow LAN play without network connection.
 	getuserinfo_(false);
-	if (offline == 1) { conoutf(CON_ERROR, "\f3cannot connect to servers in offline mode!"); return; }
-
 	globalgamestate = -1;
 
 	if(connpeer)
@@ -274,7 +273,8 @@ void gets2c()           // get updates from the server
 				if(!discmillis || event.data)
 				{
 					const char *msg = disconnectreason(event.data);
-					if(msg) conoutf(CON_ERROR, "\f3server network error, disconnecting (%s) ...", msg);
+					if (event.data == DISC_PUBTOKEN) conoutf(CON_ERROR, "\f3server authentication error, disconnecting...");
+					else if(msg) conoutf(CON_ERROR, "\f3server network error, disconnecting (%s)...", msg);
 					else conoutf(CON_ERROR, "\f3server network error, disconnecting...");
 				}
 				disconnect();

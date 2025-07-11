@@ -38,7 +38,7 @@ namespace game
 	extern void changemap(const char *name);
 	extern void forceedit(const char *name);
 	extern bool ispaused();
-	extern int scaletime(int t);
+	extern Uint64 scaletime(Uint64 t);
 	extern bool allowmouselook();
 
 	extern const char *gameident();

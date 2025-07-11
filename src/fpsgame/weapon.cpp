@@ -223,7 +223,7 @@ namespace game
 		vec offset;
 		int offsetmillis;
 		float offsetheight;
-		int id;
+		Uint64 id;
 		entitylight light;
 
 		bouncer() : bounces(0), roll(0), variant(0)
@@ -341,7 +341,7 @@ namespace game
 					explode(bnc.local, bnc.owner, bnc.o, NULL, guns[GUN_GL].damage, GUN_GL);
 					adddecal(DECAL_SCORCH, bnc.o, vec(0, 0, 1), guns[GUN_GL].exprad/2);
 					if(bnc.local)
-						addmsg(N_EXPLODE, "rci3iv", bnc.owner, lastmillis-maptime, GUN_GL, bnc.id-maptime,
+						addmsg(N_EXPLODE, "rcUiUiv", bnc.owner, lastmillis-maptime, GUN_GL, bnc.id-maptime,
 								hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
 				}
 				delete bouncers.remove(i--);
@@ -370,14 +370,14 @@ namespace game
 		int gun;
 		bool local;
 		int offsetmillis;
-		int id;
+		Uint64 id;
 		entitylight light;
 	};
 	vector<projectile> projs;
 
 	void clearprojectiles() { projs.shrink(0); }
 
-	void newprojectile(const vec &from, const vec &to, float speed, bool local, int id, fpsent *owner, int gun)
+	void newprojectile(const vec &from, const vec &to, float speed, bool local, Uint64 id, fpsent *owner, int gun)
 	{
 		projectile &p = projs.add();
 		p.dir = vec(to).sub(from).safenormalize();
@@ -715,7 +715,7 @@ namespace game
 			if(exploded)
 			{
 				if(p.local)
-					addmsg(N_EXPLODE, "rci3iv", p.owner, lastmillis-maptime, p.gun, p.id-maptime,
+					addmsg(N_EXPLODE, "rcUiUiv", p.owner, lastmillis-maptime, p.gun, p.id-maptime,
 							hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());
 				projs.remove(i--);
 			}
@@ -980,7 +980,7 @@ namespace game
 
 		if(d==player1 || d->ai)
 		{
-			addmsg(N_SHOOT, "rci2i6iv", d, lastmillis-maptime, d->gunselect,
+			addmsg(N_SHOOT, "rcUii6iv", d, lastmillis-maptime, d->gunselect,
 				   (int)(from.x*DMF), (int)(from.y*DMF), (int)(from.z*DMF),
 				   (int)(to.x*DMF), (int)(to.y*DMF), (int)(to.z*DMF),
 				   hits.length(), hits.length()*sizeof(hitmsg)/sizeof(int), hits.getbuf());

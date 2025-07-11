@@ -204,7 +204,7 @@ namespace game
 			if(intermission) g.text("intermission", COL_WHITE);
 			else
 			{
-				int secs = max(maplimit - lastmillis + 999, (Uint64)0) / 1000, mins = secs / 60;
+				int secs = maplimit >= lastmillis ? (maplimit - lastmillis + 999)/1000 : 0, mins = secs/60;
 				secs %= 60;
 				g.pushlist();
 				g.strut(mins >= 10 ? 4.5f : 3.5f);
@@ -491,7 +491,7 @@ namespace game
 					loopscoregroup(o, {
 						if (o->racestate >= 1)
 						{
-							int ms = max(o->racetime, 0);
+							Uint64 ms = max(o->racetime, (Uint64)0);
 							int secs = ms / 1000;
 							int mins = secs / 60;
 							ms %= 1000;

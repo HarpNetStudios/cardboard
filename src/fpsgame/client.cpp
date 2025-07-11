@@ -133,7 +133,7 @@ namespace game
 	}
 
 	bool senditemstoserver = false, sendcrc = false; // after a map change, since server doesn't have map data
-	int lastping = 0;
+	Uint64 lastping = 0;
 
 	bool connected = false, remote = false, demoplayback = false, gamepaused = false;
 	int sessionid = 0, mastermode = MM_OPEN, gamespeed = 100;
@@ -193,7 +193,7 @@ namespace game
 	struct authkey
 	{
 		char *name, *key, *desc;
-		int lastauth;
+		Uint64 lastauth;
 
 		authkey(const char *name, const char *key, const char *desc)
 			: name(newstring(name)), key(newstring(key)), desc(newstring(desc)),
@@ -413,7 +413,7 @@ namespace game
 		enet_socket_set_option(extinfosock, ENET_SOCKOPT_BROADCAST, 1);
 		return extinfosock;
 	}
-	int lastextinforeq = 0;
+	Uint64 lastextinforeq = 0;
 	void requestextinfo()
 	{
 		const ENetAddress* paddress = connectedpeer();
@@ -1029,6 +1029,13 @@ namespace game
 					numi += n;
 					break;
 				}
+				case 'U':
+				{
+					int n = isdigit(*fmt) ? *fmt++ - '0' : 1;
+					loopi(n) putu64(p, va_arg(args, Uint64));
+					numi += n;
+					break;
+				}
 				case 'f':
 				{
 					int n = isdigit(*fmt) ? *fmt++-'0' : 1;
@@ -1239,7 +1246,7 @@ namespace game
 		if(totalmillis-lastping>250)
 		{
 			putint(p, N_PING);
-			putint(p, totalmillis);
+			putu64(p, totalmillis);
 			lastping = totalmillis;
 		}
 		sendclientpacket(p.finalize(), 1);
@@ -1523,6 +1530,7 @@ namespace game
 				if(!d) return;
 				// TODO: SDL3_mixer
 				//playsound(getint(p), &d->o);
+				getint(p); // TODO: remove this when fixing SDL3_mixer
 				break;
 
 			case N_TEXT:
@@ -1975,12 +1983,12 @@ namespace game
 			}
 
 			case N_PONG:
-				addmsg(N_CLIENTPING, "i", player1->ping = (player1->ping*5+totalmillis-getint(p))/6);
+				addmsg(N_CLIENTPING, "U", player1->ping = (player1->ping*5+totalmillis-getu64(p))/6);
 				break;
 
 			case N_CLIENTPING:
 				if(!d) return;
-				d->ping = getint(p);
+				d->ping = getu64(p);
 				break;
 
 			case N_TIMEUP:

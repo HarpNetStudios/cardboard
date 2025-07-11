@@ -26,10 +26,10 @@ struct raceclientmode : clientmode
 #ifdef SERVMODE
     struct raceinfo {
         int cn;
-        int timefinished;
+        Uint64 timefinished;
         int gotcheckpoints;
-        int timepenalties;
-        raceinfo(int cn_, int timefinished_, int gotcheckpoints_, int timepenalties_): cn(cn_), timefinished(timefinished_), gotcheckpoints(gotcheckpoints_), timepenalties(timepenalties_) {}
+        Uint64 timepenalties;
+        raceinfo(int cn_, Uint64 timefinished_, int gotcheckpoints_, Uint64 timepenalties_): cn(cn_), timefinished(timefinished_), gotcheckpoints(gotcheckpoints_), timepenalties(timepenalties_) {}
     };
 #endif
 
@@ -214,14 +214,16 @@ struct raceclientmode : clientmode
 
     bool notgotspawnlocations;
     vector<spawnloc*> spawnlocs;
-    int sequence, timecounter, countdown;
+    int sequence;
+    Uint64 timecounter;
+    int countdown;
     int maxcheckpoint;
-    int timestarted;
+    Uint64 timestarted;
     int lastupdatecheck;
     vector<raceinfo*> raceinfos;
-    // int timefinished[];
+    // Uint64 timefinished[];
     // int gotcheckpoints[];
-    // int timepenalties[];
+    // Uint64 timepenalties[];
 
 #define COUNTDOWNSECONDS 5
 
@@ -340,7 +342,7 @@ struct raceclientmode : clientmode
             loopv(clients) {
                 clientinfo *ci = clients[i];
                 ci->state.racerank = getrank(ci->clientnum);
-                sendf(-1, 1, "ri7", N_RACEINFO, ci->clientnum, ci->state.racestate, ci->state.racelaps, ci->state.racecheckpoint, getracetime(ci), ci->state.racerank);
+                sendf(-1, 1, "ri5Ui", N_RACEINFO, ci->clientnum, ci->state.racestate, ci->state.racelaps, ci->state.racecheckpoint, getracetime(ci), ci->state.racerank);
             }
         }
     }
@@ -356,9 +358,9 @@ struct raceclientmode : clientmode
 
     int getrank(int cn) {
         int rank = 1;
-        int timefinished = -1;
+        Uint64 timefinished = 0;
         int gotcheckpoints = 0;
-        int timepenalties = 0;
+        Uint64 timepenalties = 0;
         loopv(raceinfos) if(raceinfos[i]->cn == cn) {
             timefinished = raceinfos[i]->timefinished;
             gotcheckpoints = raceinfos[i]->gotcheckpoints;
@@ -371,7 +373,7 @@ struct raceclientmode : clientmode
         return rank;
     }
 
-    int getracetime(clientinfo *ci) {
+    Uint64 getracetime(clientinfo *ci) {
         loopv(raceinfos) if(raceinfos[i]->cn == ci->clientnum) {
             // if(raceinfos[i]->timefinished > 0) {
             if (ci->state.racestate == 2) {
@@ -401,7 +403,7 @@ struct raceclientmode : clientmode
         ci->state.racerank = -1;
         ci->state.racestate = 0;
         raceinfos.add(new raceinfo(ci->clientnum, (ci->state.state==CS_SPECTATOR ? -2 : -1), 0, 0));
-        sendf(-1, 1, "ri7", N_RACEINFO, ci->clientnum, 0, 0, 0, 0, -1);
+        sendf(-1, 1, "ri5Ui", N_RACEINFO, ci->clientnum, 0, 0, 0, 0, -1);
     }
 
     void leavegame(clientinfo *ci, bool disconnecting) {
@@ -492,7 +494,7 @@ case N_RACEFINISH:
           cq->state.racecheckpoint = 0;
           cq->state.racelaps++;
           cq->state.racerank = racemode.getrank(cq->clientnum);
-          sendf(-1, 1, "ri7", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
+          sendf(-1, 1, "ri5Ui", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
           conoutf("laps:%d RACELAPS:%d timefinished:%d cn:%d", cq->state.racelaps, RACELAPS, racemode.raceinfos[i]->timefinished, racemode.raceinfos[i]->cn);
           if (cq->state.racelaps == RACELAPS) {
               cq->state.racestate = 2;
