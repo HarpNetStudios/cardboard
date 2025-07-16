@@ -8,7 +8,9 @@ struct dynlight
     vec o, hud;
     float radius, initradius, curradius, dist;
     vec color, initcolor, curcolor;
-    int fade, peak, expire, flags;
+    int fade, peak;
+    Uint64 expire;
+    int flags;
     physent *owner;
 
     void calcradius()
@@ -57,7 +59,8 @@ void adddynlight(const vec &o, float radius, const vec &color, int fade, int pea
     if(!maxdynlights) return;
     if(o.dist(camera1->o) > dynlightdist || radius <= 0) return;
 
-    int insert = 0, expire = fade + peak + lastmillis;
+    int insert = 0;
+    Uint64 expire = fade + peak + lastmillis;
     loopvrev(dynlights) if(expire>=dynlights[i].expire) { insert = i+1; break; }
     dynlight d;
     d.o = d.hud = o;

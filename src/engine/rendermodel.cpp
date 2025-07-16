@@ -1059,13 +1059,13 @@ VAR(animoverride, -1, 0, NUMANIMS-1);
 VAR(testanims, 0, 0, 1);
 VAR(testpitch, -90, 0, 90);
 
-void renderclient(dynent *d, const char *mdlname, modelattach *attachments, int hold, int attack, int attackdelay, int lastaction, int lastpain, float fade, bool ragdoll)
+void renderclient(dynent *d, const char *mdlname, modelattach *attachments, int hold, int attack, int attackdelay, Uint64 lastaction, Uint64 lastpain, float fade, bool ragdoll)
 {
 	int anim = hold ? hold : ANIM_IDLE|ANIM_LOOP;
 	float yaw = testanims && d==player ? 0 : d->yaw+90,
 		  pitch = testpitch && d==player ? testpitch : d->pitch;
 	vec o = d->feetpos();
-	int basetime = 0;
+	Uint64 basetime = 0;
 	if(animoverride) anim = (animoverride<0 ? ANIM_ALL : animoverride)|ANIM_LOOP;
 	else if(d->state==CS_DEAD)
 	{

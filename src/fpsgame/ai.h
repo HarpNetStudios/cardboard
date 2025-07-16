@@ -190,8 +190,8 @@ namespace ai
 		vector<int> route;
 		vec target, spot;
 		int enemy;
-		Uint64 enemyseen, enemymillis, blocktime, targtime, lastrun, lasthunt, lastaction, lastcheck, jumpseed, jumprand;
-		int weappref, prevnodes[NUMPREVNODES], targnode, targlast, targseq, huntseq, blockseq, lastaimrnd;
+		Uint64 enemyseen, enemymillis, blocktime, targtime, lastrun, lasthunt, lastaction, lastcheck, jumpseed, jumprand, lastaimrnd;
+		int weappref, prevnodes[NUMPREVNODES], targnode, targlast, targseq, huntseq, blockseq;
 		float targyaw, targpitch, views[3], aimrnd[3];
 		bool dontmove, becareful, tryreset, trywipe;
 

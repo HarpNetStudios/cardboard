@@ -118,7 +118,7 @@ struct skelmodel : animmodel
     {
         animstate as[MAXANIMPARTS];
         float pitch;
-        int millis;
+        Uint64 millis;
         uchar *partmask;
         ragdolldata *ragdoll;
 

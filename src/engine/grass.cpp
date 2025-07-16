@@ -58,7 +58,7 @@ static vector<grassgroup> grassgroups;
 #define NUMGRASSOFFSETS 32
 
 static float grassoffsets[NUMGRASSOFFSETS] = { -1 }, grassanimoffsets[NUMGRASSOFFSETS];
-static int lastgrassanim = -1;
+static Uint64 lastgrassanim = 0;
 
 VARR(grassanimmillis, 0, 3000, 60000);
 FVARR(grassanimscale, 0, 0.03f, 1);

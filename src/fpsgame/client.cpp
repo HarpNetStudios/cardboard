@@ -1254,7 +1254,8 @@ namespace game
 
 	void c2sinfo(bool force) // send update to the server
 	{
-		static int lastupdate = -1000;
+		// FIXME: using int64 for millis
+		static int64_t lastupdate = -1000;
 		if(totalmillis - lastupdate < 10 && !force) return; // don't update faster than 100fps
 		lastupdate = totalmillis;
 		sendpositions();
@@ -2256,7 +2257,7 @@ namespace game
 				if(!m_edit) return;
 				old_string oldname;
 				copystring(oldname, getclientmap());
-				defformatstring(mname, "getmap_%d", lastmillis);
+				defformatstring(mname, "getmap_%u", lastmillis);
 				defformatstring(fname, "packages/maps/%s.cmr", mname);
 				stream *map = openrawfile(path(fname), "wb");
 				if(!map) return;
@@ -2354,7 +2355,7 @@ namespace game
 	{
 		if(!m_edit || (spectating(player1) && remote && !player1->privilege)) { conoutf(CON_ERROR, "\"sendmap\" only works in Cooperative Edit mode"); return; }
 		conoutf("sending map...");
-		defformatstring(mname, "sendmap_%d", lastmillis);
+		defformatstring(mname, "sendmap_%u", lastmillis);
 		save_world(mname, true);
 		defformatstring(fname, "packages/maps/%s.cmr", mname);
 		stream *map = openrawfile(path(fname), "rb");

@@ -408,7 +408,7 @@ extern int identflags;
 extern void clearoverrides();
 extern void writecfg(const char *name = NULL);
 
-extern void checksleep(int millis);
+extern void checksleep(Uint64 millis);
 extern void clearsleep(bool clearoverrides = true);
 
 // console

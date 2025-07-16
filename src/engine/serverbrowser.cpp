@@ -508,7 +508,7 @@ void checkresolver()
 	}
 }
 
-static int lastreset = 0;
+static Uint64 lastreset = 0;
 
 void checkpings()
 {
@@ -564,7 +564,7 @@ VARP(serverlistshowhost, 0, 0, 1);
 
 void refreshservers()
 {
-	static int lastrefresh = 0;
+	static Uint64 lastrefresh = 0;
 	if(lastrefresh==totalmillis) return;
 	if(totalmillis - lastrefresh > 1000) 
 	{

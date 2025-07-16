@@ -131,7 +131,10 @@ struct ragdolldata
 	};
 
 	ragdollskel *skel;
-	int millis, collidemillis, collisions, floating, lastmove, unsticks;
+	Uint64 millis, collidemillis;
+	int collisions, floating;
+	Uint64 lastmove;
+	int unsticks;
 	vec offset, center;
 	float radius, timestep, scale;
 	vert *verts;
@@ -506,13 +509,14 @@ void ragdolldata::move(dynent *pl, float ts)
 FVAR(ragdolleyesmooth, 0, 0.5f, 1);
 VAR(ragdolleyesmoothmillis, 1, 250, 10000);
 
+// look here to fix #61 maybe? -Y
 void moveragdoll(dynent *d)
 {
 	if(!curtime || game::ispaused() || !d->ragdoll) return;
 
 	if(!d->ragdoll->collidemillis || lastmillis < d->ragdoll->collidemillis)
 	{
-		int lastmove = d->ragdoll->lastmove;
+		Uint64 lastmove = d->ragdoll->lastmove;
 		while(d->ragdoll->lastmove + (lastmove == d->ragdoll->lastmove ? ragdolltimestepmin : ragdolltimestepmax) <= lastmillis)
 		{
 			int timestep = min(ragdolltimestepmax, int(lastmillis - d->ragdoll->lastmove));

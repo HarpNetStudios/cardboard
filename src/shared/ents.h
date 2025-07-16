@@ -16,7 +16,7 @@ struct entity                                   // persistent map entity
 struct entitylight
 {
 	vec color, dir;
-	int millis;
+	int64_t millis;
 
 	entitylight() : color(1, 1, 1), dir(0, 0, 1), millis(-1) {}
 };
@@ -215,12 +215,12 @@ struct animinfo // description of a character's animation
 struct animinterpinfo // used for animation blending of animated characters
 {
 	animinfo prev, cur;
-	int lastswitch;
+	Uint64 lastswitch;
 	void *lastmodel;
 
-	animinterpinfo() : lastswitch(-1), lastmodel(NULL) {}
+	animinterpinfo() : lastswitch(0), lastmodel(NULL) {}
 
-	void reset() { lastswitch = -1; }
+	void reset() { lastswitch = 0; }
 };
 
 #define MAXANIMPARTS 3
@@ -236,7 +236,7 @@ struct dynent : physent                         // animated characters, or chara
 	animinterpinfo animinterp[MAXANIMPARTS];
 	ragdolldata *ragdoll;
 	occludequery *query;
-	int lastrendered;
+	Uint64 lastrendered;
 	uchar occluded;
 
 	dynent() : ragdoll(NULL), query(NULL), lastrendered(0), occluded(0)

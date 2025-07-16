@@ -173,7 +173,7 @@ void requestallserv() {
 		teamstatqueue.add(address);
 	}
 }
-int lastextinfo = totalmillis;
+Uint64 lastextinfo = totalmillis;
 VARP(extservdelay, 1, 1, 100);
 void checkinfoqueue() {
 	if ((totalmillis - lastextinfo) < extservdelay) return;

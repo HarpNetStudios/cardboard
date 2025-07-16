@@ -1891,7 +1891,8 @@ void drawtextures()
 }
 
 GLuint motiontex = 0;
-int motionw = 0, motionh = 0, lastmotion = 0;
+int motionw = 0, motionh = 0;
+Uint64 lastmotion = 0;
 
 void cleanupmotionblur()
 {
@@ -2129,7 +2130,7 @@ void drawdamagecompass(int w, int h)
 	if(dirs) gle::end();
 }
 
-int damageblendmillis = 0;
+Uint64 damageblendmillis = 0;
 
 VARFP(damagescreen, 0, 1, 1, { if(!damagescreen) damageblendmillis = 0; });
 VARP(damagescreenfactor, 1, 7, 100);

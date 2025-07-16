@@ -1,7 +1,8 @@
 #define MAXLIGHTNINGSTEPS 64
 #define LIGHTNINGSTEP 8
 int lnjitterx[2][MAXLIGHTNINGSTEPS], lnjittery[2][MAXLIGHTNINGSTEPS];
-int lnjitterframe = 0, lastlnjitter = 0;
+int lnjitterframe = 0;
+Uint64 lastlnjitter = 0;
 
 VAR(lnjittermillis, 0, 100, 1000);
 VAR(lnjitterradius, 0, 4, 100);

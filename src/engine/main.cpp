@@ -214,7 +214,8 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 	getbackgroundres(w, h);
 	gettextres(w, h);
 
-	static int lastupdate = -1, lastw = -1, lasth = -1;
+	static Uint64 lastupdate = 0;
+	static int lastw = -1, lasth = -1;
 	static float backgroundu = 0, backgroundv = 0;
 	if((renderedframe && !mainmenu && lastupdate != lastmillis) || lastw != w || lasth != h)
 	{
@@ -977,7 +978,6 @@ static void checkmousemotion(int &dx, int &dy)
 void checkinput()
 {
 	if(interceptkeysym) clearinterceptkey();
-	//int lasttype = 0, lastbut = 0;
 	bool mousemoved = false;
 	int focused = 0;
 
@@ -1012,7 +1012,7 @@ void checkinput()
 			case SDL_EVENT_MOUSE_MOTION:
 				if (rawinput::debugrawmouse)
 				{
-					conoutf("%d sdl mouse motion (%d, %d) [%d, %d]",
+					conoutf("%u sdl mouse motion (%d, %d) [%d, %d]",
 						lastmillis, event.motion.xrel, event.motion.yrel, event.motion.x, event.motion.y);
 				}
 				if (!rawinput::enabled)
@@ -1041,8 +1041,6 @@ void checkinput()
 					case SDL_BUTTON_X2 + 2: processkey(-11, event.button.down); break;
 					case SDL_BUTTON_X2 + 3: processkey(-12, event.button.down); break;
 				}
-				//lasttype = event.type;
-				//lastbut = event.button.button;
 				break;
 
 			case SDL_EVENT_MOUSE_WHEEL:

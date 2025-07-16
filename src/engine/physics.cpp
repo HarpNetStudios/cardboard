@@ -1806,11 +1806,12 @@ bool moveplayer(physent *pl, int moveres, bool local, int curtime)
 	return true;
 }
 
-int physsteps = 0, physframetime = PHYSFRAMETIME, lastphysframe = 0;
+int physsteps = 0, physframetime = PHYSFRAMETIME;
+Uint64 lastphysframe = 0;
 
 void physicsframe()          // optimally schedule physics frames inside the graphics frames
 {
-	int diff = lastmillis - lastphysframe;
+	Uint64 diff = lastmillis - lastphysframe;
 	if(diff <= 0) physsteps = 0;
 	else
 	{
@@ -1823,8 +1824,8 @@ void physicsframe()          // optimally schedule physics frames inside the gra
 
 void fakephysicsframe()      // induces fake physsteps for moving camera while paused
 {
-	static int lastfakephysframe = 0;
-	int diff = totalmillis - lastfakephysframe;
+	static Uint64 lastfakephysframe = 0;
+	Uint64 diff = totalmillis - lastfakephysframe;
 	if (diff > curtime) { diff = curtime; lastfakephysframe = totalmillis; }
 	if (diff <= 0) physsteps = 0;
 	else

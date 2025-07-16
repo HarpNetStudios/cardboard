@@ -26,7 +26,7 @@ struct collectclientmode : clientmode
 	{
 		int id, team;
 		vec o;
-		int laststeal;
+		Uint64 laststeal;
 #ifdef SERVMODE
 #else
 		vec tokenpos;
@@ -109,9 +109,9 @@ struct collectclientmode : clientmode
 	}
 
 #ifdef SERVMODE
-	token &droptoken(const vec &o, int yaw, int team, int droptime, int dropper)
+	token &droptoken(const vec &o, int yaw, int team, Uint64 droptime, int dropper)
 #else
-	token &droptoken(int id, const vec &o, int team, int droptime)
+	token &droptoken(int id, const vec &o, int team, Uint64 droptime)
 #endif
 	{
 		token &t = tokens.add();

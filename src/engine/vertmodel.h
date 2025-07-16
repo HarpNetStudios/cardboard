@@ -12,7 +12,7 @@ struct vertmodel : animmodel
     {
         GLuint vbuf;
         animstate as;
-        int millis;
+        Uint64 millis;
  
         vbocacheentry() : vbuf(0) { as.cur.fr1 = as.prev.fr1 = -1; }
     };

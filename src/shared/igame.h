@@ -132,5 +132,5 @@ namespace server
 	extern void masterconnected();
 	extern void masterdisconnected();
 	extern bool ispaused();
-	extern int scaletime(int t);
+	extern Uint64 scaletime(Uint64 t);
 }

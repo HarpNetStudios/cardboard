@@ -126,7 +126,8 @@ namespace game
 
 	void renderplayer(fpsent *d, const playermodelinfo &mdl, int team, float fade, bool mainpass)
 	{
-		int lastaction = d->lastaction[d->gunselect], hold = mdl.vwep || d->gunselect==GUN_ARIFLE ? 0 : (ANIM_HOLD1+d->gunselect)|ANIM_LOOP, attack = ANIM_ATTACK1+d->gunselect, delay = mdl.vwep ? 300 : guns[d->gunselect].attackdelay+50;
+		Uint64 lastaction = d->lastaction[d->gunselect];
+		int hold = mdl.vwep || d->gunselect==GUN_ARIFLE ? 0 : (ANIM_HOLD1+d->gunselect)|ANIM_LOOP, attack = ANIM_ATTACK1+d->gunselect, delay = mdl.vwep ? 300 : guns[d->gunselect].attackdelay+50;
 		if(intermission && d->state!=CS_DEAD)
 		{
 			lastaction = 0;
@@ -145,7 +146,8 @@ namespace game
 		int ai = 0;
 		if((!mdl.vwep || d->gunselect!=GUN_FIST) && d->gunselect<=GUN_GL)
 		{
-			int vanim = ANIM_VWEP_IDLE|ANIM_LOOP, vtime = 0;
+			int vanim = ANIM_VWEP_IDLE|ANIM_LOOP;
+			Uint64 vtime = 0;
 			if(lastaction && d->lastattackgun==d->gunselect && lastmillis < lastaction + delay)
 			{
 				vanim = ANIM_VWEP_SHOOT;
@@ -280,7 +282,7 @@ namespace game
 			if (teamskins || m_teammode) team = strcmp(d->team, "red") ? 1 : 2;
 			float fade = 1.0f;
 			if(ragdollmillis && ragdollfade) 
-				fade -= clamp(float(lastmillis - (d->lastupdate + max(ragdollmillis - ragdollfade, 0)))/min(ragdollmillis, ragdollfade), 0.0f, 1.0f);
+				fade -= clamp(float((int64_t)lastmillis - (int64_t)(d->lastupdate + max(ragdollmillis - ragdollfade, 0)))/min(ragdollmillis, ragdollfade), 0.0f, 1.0f);
 			renderplayer(d, getplayermodelinfo(d), team, fade, mainpass);
 		}
 

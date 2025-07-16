@@ -373,7 +373,7 @@ int connectwithtimeout(ENetSocket sock, const char *hostname, const ENetAddress 
 
 ENetSocket mastersock = ENET_SOCKET_NULL;
 ENetAddress masteraddress = { ENET_HOST_ANY, ENET_PORT_ANY }, serveraddress = { ENET_HOST_ANY, ENET_PORT_ANY };
-int lastupdatemaster = 0, lastconnectmaster = 0, masterconnecting = 0, masterconnected = 0;
+Uint64 lastupdatemaster = 0, lastconnectmaster = 0, masterconnecting = 0, masterconnected = 0;
 vector<char> masterout, masterin;
 int masteroutpos = 0, masterinpos = 0;
 VARN(updatemaster, allowupdatemaster, 0, 1, 1);
@@ -602,7 +602,7 @@ SVAR(serverip, "");
 VARF(serverport, 0, server::serverport(), 0xFFFF-1, { if(!serverport) serverport = server::serverport(); });
 
 #ifdef STANDALONE
-int curtime = 0, lastmillis = 0, elapsedtime = 0, totalmillis = 0;
+Uint64 curtime = 0, lastmillis = 0, elapsedtime = 0, totalmillis = 0;
 #endif
 
 void updatemasterserver()

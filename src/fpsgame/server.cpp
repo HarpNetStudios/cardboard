@@ -188,9 +188,10 @@ namespace server
 		uint ip;
 		old_string name;
 		int frags, flags, deaths, shotdamage, damage;
-		int timeplayed;
+		Uint64 timeplayed;
 		float effectiveness;
-		int racetime, racelaps, racecheckpoint, racerank, racestate;
+		Uint64 racetime;
+		int racelaps, racecheckpoint, racerank, racestate;
 
 		void save(gamestate &gs)
 		{
@@ -1300,7 +1301,7 @@ namespace server
 		changegamespeed(speed);
 	}
 
-	int scaletime(int t) { return t*gamespeed; }
+	Uint64 scaletime(Uint64 t) { return t*gamespeed; }
 
 	SVAR(serverauth, "");
 

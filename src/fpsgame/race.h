@@ -219,7 +219,7 @@ struct raceclientmode : clientmode
     int countdown;
     int maxcheckpoint;
     Uint64 timestarted;
-    int lastupdatecheck;
+    Uint64 lastupdatecheck;
     vector<raceinfo*> raceinfos;
     // Uint64 timefinished[];
     // int gotcheckpoints[];
@@ -521,7 +521,7 @@ case N_RACESTART:
           cq->state.racerank = racemode.getrank(cq->clientnum);
           cq->state.racestate = 1;
           sendf(-1, 1, "ri", N_RACESTART, cq->clientnum);
-          sendf(-1, 1, "ri7", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, 0, cq->state.racerank);
+          sendf(-1, 1, "ri5Ui", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, 0, cq->state.racerank);
       }
   }
   break;
@@ -534,7 +534,7 @@ case N_RACECHECKPOINT:
       loopv(racemode.raceinfos) if(racemode.raceinfos[i]->cn == cq->clientnum) racemode.raceinfos[i]->gotcheckpoints++;
       cq->state.racecheckpoint++;
       cq->state.racerank = racemode.getrank(cq->clientnum);
-      sendf(-1, 1, "ri7", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
+      sendf(-1, 1, "ri5Ui", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
       defformatstring(msg, "CHECKPOINT %d", cq->state.racecheckpoint);
       sendservmsg(msg);
   }
@@ -557,7 +557,7 @@ case N_RACEINFO:
   int state = getint(p);
   int lap = getint(p);
   int checkpoint = getint(p);
-  int time = getint(p);
+  int time = getu64(p);
   int rank = getint(p);
   //conoutf("N_RACEINFO state:%d cn:%d lap:%d checkpoint:%d", state, rcn, lap, checkpoint, time);
   fpsent *d = rcn==player1->clientnum ? player1 : getclient(rcn);

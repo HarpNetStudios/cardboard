@@ -2834,7 +2834,7 @@ VARP(texguitime, 0, 15, 1000);
 VARP(texguiname, 0, 1, 1);
 VARP(texguiloadall, 0, 0, 1);
 
-static int lastthumbnail = 0;
+static Uint64 lastthumbnail = 0;
 
 VARP(texgui2d, 0, 1, 1);
 VAR(texguinum, 1, -1, 0);

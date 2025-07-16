@@ -3574,11 +3574,14 @@ void strsplice(const char *s, const char *vals, int *skip, int *count)
 COMMAND(strsplice, "ssii");
 
 #ifndef STANDALONE
+// FIXME: return Uint64?
 ICOMMAND(getmillis, "i", (int *total), intret(*total ? totalmillis : lastmillis));
 
 struct sleepcmd
 {
-	int delay, millis, flags;
+	int delay;
+	Uint64 millis;
+	int flags;
 	char *command;
 };
 vector<sleepcmd> sleepcmds;
@@ -3594,7 +3597,7 @@ void addsleep(int *msec, char *cmd)
 
 COMMANDN(sleep, addsleep, "is");
 
-void checksleep(int millis)
+void checksleep(Uint64 millis)
 {
 	loopv(sleepcmds)
 	{

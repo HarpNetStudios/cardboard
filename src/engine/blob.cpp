@@ -519,7 +519,7 @@ struct blobrenderer
         disablepolygonoffset(GL_POLYGON_OFFSET_FILL);
     }
 
-    static int lastreset;
+    static Uint64 lastreset;
 
     static void reset()
     {
@@ -683,7 +683,7 @@ struct blobrenderer
     }
 };
 
-int blobrenderer::lastreset = 0;
+Uint64 blobrenderer::lastreset = 0;
 blobrenderer *blobrenderer::lastrender = NULL;
 
 VARFP(blobstattris, 128, 4096, 16384, initblobs(BLOB_STATIC));

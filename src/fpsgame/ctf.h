@@ -30,14 +30,15 @@ struct ctfclientmode : clientmode
 		Uint64 droptime, owntime, holdtime;
 #ifdef SERVMODE
 		int owner, dropcount, dropper;
-		Uint64 invistime;
+		int64_t invistime;
 #else
 		fpsent *owner;
 		float dropangle, spawnangle;
 		entitylight light;
 		vec interploc;
 		float interpangle;
-		Uint64 interptime, vistime;
+		Uint64 interptime;
+		int64_t vistime;
 #endif
 
 		flag() : id(-1) { reset(); }
@@ -109,9 +110,9 @@ struct ctfclientmode : clientmode
 	}
 
 #ifdef SERVMODE
-	bool addflag(int i, const vec &o, int team, int invistime = 0)
+	bool addflag(int i, const vec &o, int team, int64_t invistime = 0)
 #else
-	bool addflag(int i, const vec &o, int team, int vistime = -1000)
+	bool addflag(int i, const vec &o, int team, int64_t vistime = -1000)
 #endif
 	{
 		if(i<0 || i>=MAXFLAGS) return false;

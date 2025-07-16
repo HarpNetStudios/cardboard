@@ -34,7 +34,7 @@ VARP(guiclicktab, 0, 1, 1);
 VARP(guifadein, 0, 1, 1);
 VARP(guipreviewtime, 0, 15, 1000);
 
-static int lastpreview = 0;
+static Uint64 lastpreview = 0;
 
 static inline bool throttlepreview(bool loaded)
 {

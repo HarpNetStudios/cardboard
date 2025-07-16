@@ -35,7 +35,7 @@ VARP(flaresize, 20, 100, 500);
 struct flarerenderer : partrenderer
 {
     int maxflares, numflares;
-    unsigned int shinetime;
+    Uint64 shinetime;
     flare *flares;
 
     flarerenderer(const char *texname, int maxflares)

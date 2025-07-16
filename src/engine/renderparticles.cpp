@@ -10,7 +10,8 @@ VARP(particlesize, 20, 100, 500);
 // Check canemitparticles() to limit the rate that paricles can be emitted for models/sparklies
 // Automatically stops particles being emitted when paused or in reflective drawing
 VARP(emitmillis, 1, 17, 1000);
-static int lastemitframe = 0, emitoffset = 0;
+static Uint64 lastemitframe = 0;
+static int emitoffset = 0;
 static bool canemit = false, regenemitters = false, canstep = false;
 
 static bool canemitparticles()
@@ -655,12 +656,14 @@ struct varenderer : partrenderer
 {
 	partvert *verts;
 	particle *parts;
-	int maxparts, numparts, lastupdate, rndmask;
+	int maxparts, numparts;
+	Uint64 lastupdate; // TODO: verify type change, used to be default -1
+	int rndmask;
 	GLuint vbo;
 
 	varenderer(const char *texname, int type, int collide = 0)
 		: partrenderer(texname, 3, type, collide),
-		  verts(NULL), parts(NULL), maxparts(0), numparts(0), lastupdate(-1), rndmask(0), vbo(0)
+		  verts(NULL), parts(NULL), maxparts(0), numparts(0), lastupdate(0), rndmask(0), vbo(0)
 	{
 		if(type & PT_HFLIP) rndmask |= 0x01;
 		if(type & PT_VFLIP) rndmask |= 0x02;
@@ -681,13 +684,13 @@ struct varenderer : partrenderer
 		verts = new partvert[n*4];
 		maxparts = n;
 		numparts = 0;
-		lastupdate = -1;
+		lastupdate = 0;
 	}
 
 	void reset()
 	{
 		numparts = 0;
-		lastupdate = -1;
+		lastupdate = 0;
 	}
 
 	void resettracked(physent *owner)
@@ -698,7 +701,7 @@ struct varenderer : partrenderer
 			particle *p = parts+i;
 			if(!owner || (p->owner == owner)) p->fade = -1;
 		}
-		lastupdate = -1;
+		lastupdate = 0;
 	}
 
 	int count()
@@ -723,7 +726,7 @@ struct varenderer : partrenderer
 		p->size = size;
 		p->owner = NULL;
 		p->flags = 0x80 | (rndmask ? rnd(0x80) & rndmask : 0);
-		lastupdate = -1;
+		lastupdate = 0;
 		return p;
 	}
 

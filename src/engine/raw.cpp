@@ -98,7 +98,7 @@ namespace rawinput
 	{
 		if(debugrawmouse)
 		{
-			const char *fmt = "%d rawevent: %s (%d, %d)";
+			const char *fmt = "%u rawevent: %s (%d, %d)";
 			switch(ev.type)
 			{
 			case REV_MOTION:
