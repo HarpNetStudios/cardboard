@@ -2161,9 +2161,7 @@ void autograss(char *name)
 	if(slots.empty()) return;
 	Slot &s = *slots.last();
 	DELETEA(s.autograss);
-	s.autograss = newstring(name);
-	// removed due to weird grass bug -Y
-	//s.autograss = name[0] ? newstring(makerelpath("packages", name, NULL, "<premul>")) : NULL;
+	s.autograss = name[0] ? newstring(makerelpath("packages", name, NULL, "<premul>")) : NULL;
 }
 COMMAND(autograss, "s");
 
