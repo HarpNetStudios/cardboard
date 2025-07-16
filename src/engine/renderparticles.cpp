@@ -1546,7 +1546,9 @@ void updateparticles()
 		if(dbgpcull && (canemit || replayed) && addedparticles) conoutf(CON_DEBUG, "%d emitters, %d particles", emitted, addedparticles);
 	}
 #ifndef NO_EDITOR
-	if(editmode) // show sparkly thingies for map entities in edit mode
+
+	extern int entediting, hideents;
+	if(editmode && (entediting || !hideents)) // show sparkly thingies for map entities in edit mode
 	{
 		const vector<extentity *> &ents = entities::getents();
 		// note: order matters in this case as particles of the same type are drawn in the reverse order that they are added

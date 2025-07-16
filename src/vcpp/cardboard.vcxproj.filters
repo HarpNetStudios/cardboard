@@ -627,7 +627,34 @@
     <None Include="..\..\data\menus_utility.cfg">
       <Filter>config</Filter>
     </None>
-    <None Include="..\..\data\edithud.cfg">
+    <None Include="..\..\data\hud_edit.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\hud.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\hud_game.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\menus_edit_adjustments.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\menus_edit_browsers.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\menus_edit_context.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\menus_edit_managers.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\menus_edit_newent.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\menus_edit_vslot.cfg">
+      <Filter>config</Filter>
+    </None>
+    <None Include="..\..\data\menus_options_hud.cfg">
       <Filter>config</Filter>
     </None>
   </ItemGroup>

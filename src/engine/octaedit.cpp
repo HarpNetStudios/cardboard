@@ -2282,14 +2282,14 @@ void vscroll(float *s, float *t)
 	if(noedit()) return;
 	VSlot ds;
 	ds.changed = 1<<VSLOT_SCROLL;
-	ds.scroll = vec2(*s, *t).div(1000);
+	ds.scroll = vec2(*s, *t).div(1000.0f);
 	mpeditvslot(usevdelta, ds, allfaces, sel, true);
 }
 COMMAND(vscroll, "ff");
 ICOMMAND(getvscroll, "i", (int *tex),
 {
 	VSlot &vslot = lookupvslot(*tex, false);
-	defformatstring(str, "%s %s", floatstr(vslot.scroll.x), floatstr(vslot.scroll.y));
+	defformatstring(str, "%s %s", floatstr(vslot.scroll.x*1000.0f), floatstr(vslot.scroll.y*1000.0f));
 	result(str);
 });
 

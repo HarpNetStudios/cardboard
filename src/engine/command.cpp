@@ -1755,7 +1755,7 @@ static inline void callcommand(ident *id, tagval *args, int numargs, bool lookup
 			{
 				if(rep) break;
 				static uint buf[2] = { CODE_START + 0x100, CODE_EXIT };
-				args[i].setcode(buf);
+				args[i].setcode(buf+1);
 				fakeargs++;
 			}
 			else

@@ -248,8 +248,10 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 			else bgquad(0, 0, w, h, 0, 0, bu, bv);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
-			float lh = 0.5f * min(w, h), lw = lh * 2,
-				lx = 0.5f * (w - lw), ly = 0.5f * (h * 0.5f - lh);
+			float lh = 0.44f * min(w, h);
+			float lw = lh * 2;
+			float lx = 0.5f * (w - lw);
+			float ly = 0.2f * (h * 0.5f - lh);
 			if (!splash)
 			{
 				settexture((maxtexsize ? min(maxtexsize, hwtexsize) : hwtexsize) >= 1024 && (screenw > 1280 || screenh > 800) ? "data/logo_1024.png" : "data/logo.png", 3);
@@ -453,13 +455,16 @@ void renderprogress(float bar, const char *text, GLuint tex, bool background)   
 	if(tex)
 	{
 		glBindTexture(GL_TEXTURE_2D, tex);
-		float sz = 0.35f*min(w, h), x = 0.5f*(w-sz), y = 0.5f*min(w, h) - sz/15;
+		float lh = 0.44f * min(w, h);
+		float sz = 0.35f * min(w, h);
+		float x = 0.5f * (w - sz);
+		float y = 0.2f * (h * 0.5f - lh) + lh;
 		bgquad(x, y, sz, sz);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		settexture("data/mapshot_frame.png", 3);
-		bgquad(x, y, sz, sz);
+		bgquad(x-sz*0.083f, y-sz*0.083f, sz*1.166f, sz*1.166f);
 		glDisable(GL_BLEND);
 	}
 
