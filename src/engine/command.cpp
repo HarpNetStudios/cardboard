@@ -821,6 +821,7 @@ int unescapestring(char *dst, const char *src, const char *end)
 			{
 				case 'n': *dst++ = '\n'; break;
 				case 't': *dst++ = '\t'; break;
+				case 'v': *dst++ = '\v'; break;
 				case 'f': *dst++ = '\f'; break;
 				default: *dst++ = e; break;
 			}
@@ -2443,6 +2444,7 @@ const char *escapestring(const char *s)
 	{
 		case '\n': buf.put("^n", 2); break;
 		case '\t': buf.put("^t", 2); break;
+		case '\v': buf.put("^v", 2); break;
 		case '\f': buf.put("^f", 2); break;
 		case '"': buf.put("^\"", 2); break;
 		case '^': buf.put("^^", 2); break;
@@ -2464,6 +2466,7 @@ void writeescapedstring(stream* f, const char* s)
 	{
 	case '\n': f->write("^n", 2); break;
 	case '\t': f->write("^t", 2); break;
+	case '\v': f->write("^v", 2); break;
 	case '\f': f->write("^f", 2); break;
 	case '"': f->write("^\"", 2); break;
 	case '^': f->write("^^", 2); break;
@@ -2483,7 +2486,7 @@ ICOMMAND(unescape, "s", (char *s),
 
 const char *escapeid(const char *s)
 {
-	const char *end = s + strcspn(s, "\"/;()[]@ \f\t\r\n\0");
+	const char *end = s + strcspn(s, "\"/;()[]@ \f\v\t\r\n\0");
 	return *end ? escapestring(s) : s;
 }
 
@@ -2499,7 +2502,7 @@ bool validateblock(const char *s)
 		case ')': if(brakdepth <= 0 || brakstack[--brakdepth] != '(') return false; break;
 		case '"': s = parsestring(s + 1); if(*s != '"') return false; break;
 		case '/': if(s[1] == '/') return false; break;
-		case '@': case '\f': return false;
+		case '@': case '\f': case '\v': return false;
 	}
 	return brakdepth == 0;
 }

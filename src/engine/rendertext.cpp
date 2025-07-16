@@ -213,7 +213,7 @@ static float draw_char(Texture *&tex, int c, float x, float y, float scale)
 }
 
 //stack[sp] is current color index
-static void text_color(char c, char *stack, int size, int &sp, bvec color, int a)
+static void text_color(char c, char *stack, int size, int &sp, bvec color, int alpha)
 {
 	if(c=='s') // save color
 	{
@@ -255,8 +255,29 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
 			case 'l':			color = bvec(  0, 148, 255); break; // celeb blue
 			// provided color: everything else
 		}
-		gle::color(color, a);
+		gle::color(color, alpha);
 	}
+}
+
+static uint8_t nibblecolor(char c)
+{
+	if (c >= '0' && c <= '9') {
+		return (c - '0') + ((c - '0') << 4);
+	}
+	else if (c >= 'a' && c <= 'f') {
+		return (10 + c - 'a') + ((10 + c - 'a') << 4);
+	}
+	else if (c >= 'A' && c <= 'F') {
+		return (10 + c - 'A') + ((10 + c - 'A') << 4);
+	}
+	return 0;
+}
+
+static void text_color_rgb(const char* str, int idx, bvec color, int alpha)
+{
+	xtraverts += gle::end();
+	color = bvec(nibblecolor(str[idx]), nibblecolor(str[idx + 1]), nibblecolor(str[idx + 2]));
+	gle::color(color, alpha);
 }
 
 #define TEXTSKELETON \
@@ -270,6 +291,7 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
 		else if(c==' ')  { x += scale*curfont->defaultw; TEXTWHITE(i) }\
 		else if(c=='\n') { TEXTLINE(i) x = 0; y += FONTH; }\
 		else if(c=='\f') { if(str[i+1]) { i++; TEXTCOLOR(i) }}\
+		else if(c=='\v') { if(str[i+1] && str[i+2] && str[i+3]) { i++; TEXTCOLORRGB(i); i+=2; }}\
 		else if(curfont->chars.inrange(c-curfont->charoffset))\
 		{\
 			float cw = scale*curfont->chars[c-curfont->charoffset].advance;\
@@ -303,6 +325,7 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
 					TEXTINDEX(j)\
 					int c = uchar(str[j]);\
 					if(c=='\f') { if(str[j+1]) { j++; TEXTCOLOR(j) }}\
+					if(c=='\v') { if(str[j+1] && str[j+2] && str[j+3]) { j++; TEXTCOLORRGB(j) j+=2; }}\
 					else { float cw = scale*curfont->chars[c-curfont->charoffset].advance; TEXTCHAR(j) }\
 				}
 
@@ -314,6 +337,7 @@ int text_visible(const char *str, float hitx, float hity, int maxwidth)
 	#define TEXTWHITE(idx) if(y+FONTH > hity && x >= hitx) return idx;
 	#define TEXTLINE(idx) if(y+FONTH > hity) return idx;
 	#define TEXTCOLOR(idx)
+	#define TEXTCOLORRGB(idx)
 	#define TEXTCHAR(idx) x += cw; TEXTWHITE(idx)
 	#define TEXTWORD TEXTWORDSKELETON
 	TEXTSKELETON
@@ -321,6 +345,7 @@ int text_visible(const char *str, float hitx, float hity, int maxwidth)
 	#undef TEXTWHITE
 	#undef TEXTLINE
 	#undef TEXTCOLOR
+	#undef TEXTCOLORRGB
 	#undef TEXTCHAR
 	#undef TEXTWORD
 	return i;
@@ -333,6 +358,7 @@ void text_posf(const char *str, int cursor, float &cx, float &cy, int maxwidth)
 	#define TEXTWHITE(idx)
 	#define TEXTLINE(idx)
 	#define TEXTCOLOR(idx)
+	#define TEXTCOLORRGB(idx)
 	#define TEXTCHAR(idx) x += cw;
 	#define TEXTWORD TEXTWORDSKELETON if(i >= cursor) break;
 	cx = cy = 0;
@@ -342,6 +368,7 @@ void text_posf(const char *str, int cursor, float &cx, float &cy, int maxwidth)
 	#undef TEXTWHITE
 	#undef TEXTLINE
 	#undef TEXTCOLOR
+	#undef TEXTCOLORRGB
 	#undef TEXTCHAR
 	#undef TEXTWORD
 }
@@ -352,6 +379,7 @@ void text_boundsf(const char *str, float &width, float &height, int maxwidth)
 	#define TEXTWHITE(idx)
 	#define TEXTLINE(idx) if(x > width) width = x;
 	#define TEXTCOLOR(idx)
+	#define TEXTCOLORRGB(idx)
 	#define TEXTCHAR(idx) x += cw;
 	#define TEXTWORD x += w;
 	width = 0;
@@ -362,6 +390,7 @@ void text_boundsf(const char *str, float &width, float &height, int maxwidth)
 	#undef TEXTWHITE
 	#undef TEXTLINE
 	#undef TEXTCOLOR
+	#undef TEXTCOLORRGB
 	#undef TEXTCHAR
 	#undef TEXTWORD
 }
@@ -372,6 +401,7 @@ void draw_text(const char *str, int left, int top, int r, int g, int b, int a, i
 	#define TEXTWHITE(idx)
 	#define TEXTLINE(idx)
 	#define TEXTCOLOR(idx) if(usecolor) text_color(str[idx], colorstack, sizeof(colorstack), colorpos, color, a);
+	#define TEXTCOLORRGB(idx) if(usecolor) text_color_rgb(str, idx, color, a);
 	#define TEXTCHAR(idx) draw_char(tex, c, left+x, top+y, scale); x += cw;
 	#define TEXTWORD TEXTWORDSKELETON
 	char colorstack[10];
@@ -402,6 +432,7 @@ void draw_text(const char *str, int left, int top, int r, int g, int b, int a, i
 	#undef TEXTWHITE
 	#undef TEXTLINE
 	#undef TEXTCOLOR
+	#undef TEXTCOLORRGB
 	#undef TEXTCHAR
 	#undef TEXTWORD
 }
