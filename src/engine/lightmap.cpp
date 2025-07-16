@@ -2745,3 +2745,27 @@ void dumplms()
 
 COMMAND(dumplms, "");
 
+extern void texflip(ImageData& s);
+
+void importlms(int* quality)
+{
+	loopv(lightmaps)
+	{
+		const char* map = game::getclientmap(), * name = strrchr(map, '/');
+		defformatstring(buf, "lightmap_%s_%d.png", name ? name + 1 : map, i);
+		ImageData img;
+		if (!loadimage(buf, img)) break;
+		if (img.w != LM_PACKW || img.h != LM_PACKH || img.bpp != lightmaps[i].bpp)
+		{
+			conoutf(CON_ERROR, "lightmap %s has mismatched dimensions/bpp (Img: %d x %d | bpp: %d) (Lms: %d x %d bpp: %d)",
+				buf, img.w, img.h, img.bpp, LM_PACKW, LM_PACKH, lightmaps[i].bpp);
+			continue;
+		}
+		texflip(img);
+		memcpy(lightmaps[i].data, img.data, img.bpp * LM_PACKW * LM_PACKH);
+	}
+
+	patchlight(quality);
+}
+
+COMMAND(importlms, "i");

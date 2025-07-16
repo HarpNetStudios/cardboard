@@ -41,3 +41,9 @@ Platinum Arts Sandbox:
 Copyright (C) 2007-2013 Mike Tomaino, Kevin Meyer, Dale Weiler, and Thomas Achtner
 
 # https://www.sandboxgamemaker.com
+
+SauerWebUI:
+
+- Lightmap importer
+
+# https://github.com/SalatielSauer/SauerWebUI
