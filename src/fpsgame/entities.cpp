@@ -91,8 +91,7 @@ namespace entities
 				case TELEPORT:
 					if(e.attr2 > 0) preloadmodel(mapmodelname(e.attr2));
 				case JUMPPAD:
-					// TODO: SDL3_mixer
-					//if(e.attr4 > 0) preloadmapsound(e.attr4);
+					if(e.attr4 > 0) preloadmapsound(e.attr4);
 					break;
 			}
 		}
@@ -159,8 +158,7 @@ namespace entities
 			//particle_icon(d->abovehead(), is.icon%4, is.icon/4, PART_HUD_ICON_GREY, 2000, 0xFFFFFF, 2.0f, -8);
 		}
 		// TODO: make pickup sound based on item type
-		// TODO: SDL3_mixer
-		//playsound(S_ITEMPUP, d!=h ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
+		playsound(S_ITEMPUP, d!=h ? &d->o : NULL, NULL, 0, 0, 0, -1, 0, 1500);
 		d->pickup(type);
 		// TODO: might be useful
 		/*
@@ -194,9 +192,8 @@ namespace entities
 				int snd = S_TELEPORT, flags = 0;
 				if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
 				fpsent *h = followingplayer(player1);
-				// TODO: SDL3_mixer
-				//playsound(snd, d==h ? NULL : &e.o, NULL, flags);
-				//if(d!=h && ents.inrange(td) && ents[td]->type == TELEDEST) playsound(snd, &ents[td]->o, NULL, flags);
+				playsound(snd, d==h ? NULL : &e.o, NULL, flags);
+				if(d!=h && ents.inrange(td) && ents[td]->type == TELEDEST) playsound(snd, &ents[td]->o, NULL, flags);
 			}
 		}
 		if(local && d->clientnum >= 0)
@@ -221,8 +218,7 @@ namespace entities
 			{
 				int snd = S_JUMPPAD, flags = 0;
 				if(e.attr4 > 0) { snd = e.attr4; flags = SND_MAP; }
-				// TODO: SDL3_mixer
-				//playsound(snd, d == followingplayer(player1) ? NULL : &e.o, NULL, flags);
+				playsound(snd, d == followingplayer(player1) ? NULL : &e.o, NULL, flags);
 			}
 		}
 		if(local && d->clientnum >= 0)
@@ -501,8 +497,7 @@ namespace entities
 				if(newstate == TRIGGER_RESETTING && checktriggertype(e.attr3, TRIG_COLLIDE) && overlapsdynent(e.o, 20)) continue;
 				e.triggerstate = newstate;
 				e.lasttrigger = lastmillis;
-				// TODO: SDL3_mixer
-				//if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
+				if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
 			}
 		}
 	}
@@ -568,8 +563,7 @@ namespace entities
 					e.triggerstate = TRIGGERING;
 					e.lasttrigger = lastmillis;
 					setuptriggerflags(e);
-					// TODO: SDL3_mixer
-					//if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
+					if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
 					if(e.attr4) doleveltrigger(e.attr4, 1);
 					break;
 				case TRIGGERED:
@@ -591,8 +585,7 @@ namespace entities
 					e.triggerstate = TRIGGER_RESETTING;
 					e.lasttrigger = lastmillis;
 					setuptriggerflags(e);
-					// TODO: SDL3_mixer
-					//if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
+					if(checktriggertype(e.attr3, TRIG_RUMBLE)) playsound(S_RUMBLE, &e.o);
 					if(e.attr4) doleveltrigger(e.attr4, 0);
 					break;
 			}
@@ -640,7 +633,7 @@ namespace entities
 
 	void entradius(extentity &e, bool color)
 	{
-		int maxcheckpoints = 0;
+		int maxcheckpoints = -1;
 
 		switch(e.type)
 		{
@@ -660,7 +653,7 @@ namespace entities
 				gle::colorf(1, 0, 0);
 				loopv(ents) {
 					// successor
-					if (ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == 1) {
+					if (ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == 0) {
 						renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
 					}
 					// precessor
@@ -684,7 +677,8 @@ namespace entities
 					if (ents[i]->type == RACE_CHECKPOINT && (e.attr2 - 1) == ents[i]->attr2) {
 						renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
 					}
-					else if (ents[i]->type == RACE_START && e.attr2 == 1) {
+					// start
+					else if (ents[i]->type == RACE_START && e.attr2 == 0) {
 						renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
 					}
 				}
@@ -702,7 +696,7 @@ namespace entities
 					renderentarrow(e, vec(ents[i]->o).sub(e.o).normalize(), e.o.dist(ents[i]->o));
 				}
 				*/
-				// precessor
+				// finish
 				loopv(ents) if (ents[i]->type == RACE_CHECKPOINT && ents[i]->attr2 == maxcheckpoints) {
 					renderentarrow(*ents[i], vec(e.o).sub(ents[i]->o).normalize(), ents[i]->o.dist(e.o));
 				}

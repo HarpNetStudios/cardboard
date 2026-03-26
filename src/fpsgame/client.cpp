@@ -986,7 +986,15 @@ namespace game
 		else printvar(id, gamespeed);
 	});
 
-	int scaletime(int t) { return t*gamespeed; }
+	// silly
+	VAR(verywarm, 0, 0, 1);
+
+	Uint64 scaletime(Uint64 t) {
+		if (verywarm && !multiplayer(false)) {
+			return t * int((min(fabs(player1->fmove) + fabs(player1->fstrafe), 1.f) * 90) + 10);
+		}
+		return t * gamespeed;
+	}
 
 	// collect c2s messages conveniently
 	vector<uchar> messages;
@@ -1529,9 +1537,7 @@ namespace game
 
 			case N_SOUND:
 				if(!d) return;
-				// TODO: SDL3_mixer
-				//playsound(getint(p), &d->o);
-				getint(p); // TODO: remove this when fixing SDL3_mixer
+				playsound(getint(p), &d->o);
 				break;
 
 			case N_TEXT:
@@ -1543,8 +1549,7 @@ namespace game
 				if(d->state!=CS_DEAD && d->state!=CS_SPECTATOR)
 					particle_textcopy(d->abovehead(), text, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
 				conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(d, true), text);
-				// TODO: SDL3_mixer
-				//if (chatsounds) playsound(S_ALLCHAT);
+				if (chatsounds) playsound(S_ALLCHAT);
 				break;
 			}
 
@@ -1558,8 +1563,7 @@ namespace game
 				if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
 					particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
 				conoutf(CON_TEAMCHAT, "\fs\f8[%s]\fr %s: \f8%s", t->state==CS_SPECTATOR ? "spec" : "team", chatcolorname(t, false), text);
-				// TODO: SDL3_mixer
-				//if (chatsounds) playsound(S_TEAMCHAT);
+				if (chatsounds) playsound(S_TEAMCHAT);
 				break;
 			}
 
@@ -1622,8 +1626,7 @@ namespace game
 				else                    // new client
 				{
 					conoutf("\f0join:\f7 %s", colorname(d, text));
-					// TODO: SDL3_mixer
-					//playsound(S_SRV_CONNECT);
+					playsound(S_SRV_CONNECT);
 					if(needclipboard >= 0) needclipboard++;
 				}
 				copystring(d->name, text, MAXNAMELEN+1);
@@ -1795,8 +1798,7 @@ namespace game
 				if(!d) return;
 				int gun = getint(p);
 				d->gunselect = clamp(gun, int(GUN_FIST), int(GUN_GL));
-				// TODO: SDL3_mixer
-				//playsound(S_WEAPLOAD, &d->o);
+				playsound(S_WEAPLOAD, &d->o);
 				break;
 			}
 
@@ -1804,8 +1806,7 @@ namespace game
 			{
 				if(!d) return;
 				d->lasttaunt = lastmillis;
-				// TODO: SDL3_mixer
-				//playsound(S_ITEMSPAWN, &d->o);
+				playsound(S_ITEMSPAWN, &d->o);
 				break;
 			}
 
@@ -1827,8 +1828,7 @@ namespace game
 				if(!entities::ents.inrange(i)) break;
 				entities::setspawn(i, true);
 				ai::itemspawned(i);
-				// TODO: SDL3_mixer
-				//playsound(S_ITEMSPAWN, &entities::ents[i]->o, NULL, 0, 0, 0, -1, 0, 1500);
+				playsound(S_ITEMSPAWN, &entities::ents[i]->o, NULL, 0, 0, 0, -1, 0, 1500);
 				#if 0
 				const char *name = entities::itemname(i);
 				if(name) particle_text(entities::ents[i]->o, name, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);

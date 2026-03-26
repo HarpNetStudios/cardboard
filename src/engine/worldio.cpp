@@ -823,8 +823,7 @@ void writemapcfg(const char* a)
 
 	f->printf("\n// Map sounds\n\nmapsoundreset\n\n");
 
-	// TODO: SDL3_mixer
-	//writemapsounds(f);
+	writemapsounds(f);
 
 	f->printf("\n// Map models\n\nmapmodelreset\n\n");
 	extern vector<mapmodelinfo> mapmodels;
@@ -1394,8 +1393,7 @@ bool load_world(const char *mname, const char *cname)        // still supports a
 	game::preload();
 	flushpreloadedmodels();
 
-	// TODO: SDL3_mixer
-	//preloadmapsounds();
+	preloadmapsounds();
 
 	entitiesinoctanodes();
 	attachentities();

@@ -257,6 +257,23 @@ int lookupmaterial(const vec &v)
 	return c->material;
 }
 
+int lookuptexture(const vec& v, int orient)
+{
+	
+	ivec o(v);
+	if (!insideworld(o)) return MAT_AIR;
+	int scale = worldscale - 1;
+	cube* c = &worldroot[octastep(o.x, o.y, o.z, scale)];
+	while (c->children)
+	{
+		scale--;
+		c = &c->children[octastep(o.x, o.y, o.z, scale)];
+	}
+
+	orient = clamp((int)O_LEFT, orient, (int)O_TOP);
+	return c->texture[orient];
+}
+
 const cube *neighbourstack[32];
 int neighbourdepth = -1;
 

@@ -1,8 +1,6 @@
 // sound.cpp: basic positional sound using sdl_mixer
 
 #include "engine.h"
-// TODO: SDL3_mixer
-/*
 #include <SDL3_mixer/SDL_mixer.h>
 
 bool nosound = true;
@@ -10,12 +8,12 @@ bool nosound = true;
 struct soundsample
 {
 	char *name;
-	Mix_Chunk *chunk;
+	MIX_Audio *audio;
 
-	soundsample() : name(NULL), chunk(NULL) {}
+	soundsample() : name(NULL), audio(NULL) {}
 	~soundsample() { DELETEA(name); }
 
-	void cleanup() { if(chunk) { Mix_FreeChunk(chunk); chunk = NULL; } }
+	void cleanup() { if(audio) { MIX_DestroyAudio(audio); audio = NULL; } }
 	bool load(bool msg = false);
 };
 
@@ -50,22 +48,30 @@ struct soundchannel
 	vec loc; 
 	soundslot *slot;
 	extentity *ent; 
-	int radius, volume, pan, flags;
+	int radius;
+	float volume, pan;
+	int flags;
 	bool dirty;
+	MIX_Track* track = NULL;
+	MIX_Mixer* mixer = NULL;
 
-	soundchannel(int id) : id(id) { reset(); }
+	soundchannel(MIX_Mixer* mixer, int id) : id(id), mixer(mixer) { reset(); }
 
 	bool hasloc() const { return loc.x >= -1e15f; }
 	void clearloc() { loc = vec(-1e16f, -1e16f, -1e16f); }
 
 	void reset()
 	{
+		if (!track) {
+			track = MIX_CreateTrack(mixer);
+		}
+
 		inuse = false;
 		clearloc();
 		slot = NULL;
 		ent = NULL;
 		radius = 0;
-		volume = -1;
+		volume = 0.0f;
 		pan = -1;
 		flags = 0;
 		dirty = false;
@@ -74,14 +80,14 @@ struct soundchannel
 vector<soundchannel> channels;
 int maxchannels = 0;
 
-soundchannel &newchannel(int n, soundslot *slot, const vec *loc = NULL, extentity *ent = NULL, int flags = 0, int radius = 0)
+soundchannel &newchannel(int n, MIX_Mixer* mixer, soundslot *slot, const vec *loc = NULL, extentity *ent = NULL, int flags = 0, int radius = 0)
 {
 	if(ent)
 	{
 		loc = &ent->o;
 		ent->flags |= EF_SOUND;
 	}
-	while(!channels.inrange(n)) channels.add(channels.length());
+	while(!channels.inrange(n)) channels.add(soundchannel(mixer, channels.length()));
 	soundchannel &chan = channels[n];
 	chan.reset();
 	chan.inuse = true;
@@ -104,8 +110,9 @@ void freechannel(int n)
 void syncchannel(soundchannel &chan)
 {
 	if(!chan.dirty) return;
-	if(!Mix_FadingChannel(chan.id)) Mix_Volume(chan.id, chan.volume);
-	Mix_SetPanning(chan.id, 255-chan.pan, chan.pan);
+	MIX_SetTrackGain(chan.track, chan.volume);
+	MIX_StereoGains gains = { (255 - chan.pan) / 255.0f, chan.pan / 255.0f };
+	MIX_SetTrackStereo(chan.track, &gains);
 	chan.dirty = false;
 }
 
@@ -115,7 +122,7 @@ void stopchannels()
 	{
 		soundchannel &chan = channels[i];
 		if(!chan.inuse) continue;
-		Mix_HaltChannel(i);
+		MIX_StopTrack(chan.track, 0);
 		freechannel(i);
 	}
 }
@@ -133,14 +140,18 @@ VARFP(musicvol, 0, 128, 255, setmusicvol(soundvol ? musicvol : 0));
 
 char *musicfile = NULL, *musicdonecmd = NULL;
 
-Mix_Music *music = NULL;
+MIX_Audio* music = NULL;
+MIX_Track* musictrack = NULL;
+
 SDL_IOStream *musicrw = NULL;
 stream *musicstream = NULL;
+
+MIX_Mixer* mixer = NULL;
 
 void setmusicvol(int musicvol)
 {
 	if(nosound) return;
-	if(music) Mix_VolumeMusic((musicvol*MIX_MAX_VOLUME)/255);
+	if(musictrack) MIX_SetTrackGain(musictrack, (musicvol * 1.0f) / 255);
 }
 
 void stopmusic()
@@ -148,64 +159,24 @@ void stopmusic()
 	if(nosound) return;
 	DELETEA(musicfile);
 	DELETEA(musicdonecmd);
-	if(music)
+	if(musictrack)
 	{
-		Mix_HaltMusic();
-		Mix_FreeMusic(music);
-		music = NULL;
+		MIX_StopTrack(musictrack, 0);
+		if(music) MIX_DestroyAudio(music);
 	}
 	if(musicrw) { SDL_CloseIO(musicrw); musicrw = NULL; }
 	DELETEP(musicstream);
 }
 
-#ifdef WIN32
-	#define AUDIODRIVER "directsound winmm"
-#else
-	#define AUDIODRIVER ""
-#endif
 bool shouldinitaudio = true;
-SVARF(audiodriver, AUDIODRIVER, { shouldinitaudio = true; initwarning("sound configuration", INIT_RESET, CHANGE_SOUND); });
 VARF(usesound, 0, 1, 1, { shouldinitaudio = true; initwarning("sound configuration", INIT_RESET, CHANGE_SOUND); });
 VARF(soundchans, 1, 32, 128, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
-VARF(soundfreq, 0, MIX_DEFAULT_FREQUENCY, 48000, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
+VARF(soundfreq, 0, 44100, 48000, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
 VARF(soundbufferlen, 128, 1024, 4096, initwarning("sound configuration", INIT_RESET, CHANGE_SOUND));
 
 bool initaudio()
 {
-	static old_string fallback = "";
-	static bool initfallback = true;
-	static bool restorefallback = false;
-	if(initfallback)
-	{
-		initfallback = false;
-		if(const char *env = SDL_getenv("SDL_AUDIODRIVER")) copystring(fallback, env);
-	}
-	if(!fallback[0] && audiodriver[0])
-	{
-		vector<char*> drivers;
-		explodelist(audiodriver, drivers);
-		loopv(drivers)
-		{
-			restorefallback = true;
-			SDL_setenv_unsafe("SDL_AUDIODRIVER", drivers[i], 1);
-			if(SDL_InitSubSystem(SDL_INIT_AUDIO) >= 0)
-			{
-				drivers.deletearrays();
-				return true;
-			}
-		}
-		drivers.deletearrays();
-	}
-	if(restorefallback)
-	{
-		restorefallback = false;
-	#ifdef WIN32
-		SDL_setenv_unsafe("SDL_AUDIODRIVER", fallback, 1);
-	#else
-		unsetenv("SDL_AUDIODRIVER");
-	#endif
-	}
-	if(SDL_InitSubSystem(SDL_INIT_AUDIO) >= 0) return true;
+	if(SDL_Init(SDL_INIT_AUDIO)) return true;
 	conoutf(CON_ERROR, "sound init failed: %s", SDL_GetError());
 	return false;
 }
@@ -223,21 +194,36 @@ void initsound()
 		}
 	}
 
-	if(Mix_OpenAudio(soundfreq, MIX_DEFAULT_FORMAT, 2, soundbufferlen)<0)
+	if (!MIX_Init())
 	{
 		nosound = true;
-		conoutf(CON_ERROR, "sound init failed (SDL_mixer): %s", Mix_GetError());
+		conoutf(CON_ERROR, "sound init failed (SDL_mixer): %s", SDL_GetError());
 		return;
 	}
-	Mix_AllocateChannels(soundchans);	
+
+	const SDL_AudioSpec spec = { SDL_AUDIO_S16, 2, soundfreq };
+	mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
+
+	if(mixer == NULL)
+	{
+		nosound = true;
+		conoutf(CON_ERROR, "sound init failed (SDL_mixer): %s", SDL_GetError());
+		return;
+	}
+
+	// TODO: what
+	for (size_t i = 0; i < soundchans; i++)
+	{
+		channels.add(soundchannel(mixer, i));
+	}
 	maxchannels = soundchans;
 	nosound = false;
 }
 
 void musicdone()
 {
-	if(music) { Mix_HaltMusic(); Mix_FreeMusic(music); music = NULL; }
-	if(musicrw) { SDL_FreeRW(musicrw); musicrw = NULL; }
+	if(musictrack) { MIX_StopTrack(musictrack, 0); MIX_DestroyAudio(music); music = NULL; }
+	if(musicrw) { SDL_CloseIO(musicrw); musicrw = NULL; }
 	DELETEP(musicstream);
 	DELETEA(musicfile);
 	if(!musicdonecmd) return;
@@ -247,7 +233,7 @@ void musicdone()
 	delete[] cmd;
 }
 
-Mix_Music *loadmusic(const char *name)
+MIX_Audio *loadmusic(const char *name)
 {
 	if(!musicstream) musicstream = openzipfile(name, "rb");
 	if(musicstream)
@@ -255,8 +241,8 @@ Mix_Music *loadmusic(const char *name)
 		if(!musicrw) musicrw = musicstream->rwops();
 		if(!musicrw) DELETEP(musicstream);
 	}
-	if(musicrw) music = Mix_LoadMUSType_IO(musicrw, MUS_NONE, 0);
-	else music = Mix_LoadMUS(findfile(name, "rb")); 
+	if(musicrw) music = MIX_LoadAudio_IO(mixer, musicrw, false, false);
+	else music = MIX_LoadAudio(mixer, findfile(name, "rb"), false); 
 	if(!music)
 	{
 		if(musicrw) { SDL_CloseIO(musicrw); musicrw = NULL; }
@@ -264,7 +250,7 @@ Mix_Music *loadmusic(const char *name)
 	}
 	return music;
 }
- 
+
 void startmusic(char *name, char *cmd)
 {
 	if(nosound) return;
@@ -279,14 +265,17 @@ void startmusic(char *name, char *cmd)
 			DELETEA(musicdonecmd);
 			musicfile = newstring(file);
 			if(cmd[0]) musicdonecmd = newstring(cmd);
-			Mix_PlayMusic(music, cmd[0] ? 0 : -1);
-			Mix_VolumeMusic((musicvol*MIX_MAX_VOLUME)/255);
+			SDL_PropertiesID props = SDL_CreateProperties();
+			SDL_SetNumberProperty(props, "MIX_PROP_PLAY_LOOPS_NUMBER", cmd[0] ? 0 : -1);
+			MIX_SetTrackAudio(musictrack, music);
+			MIX_PlayTrack(musictrack, props);
+			MIX_SetTrackGain(musictrack, (musicvol * 1.0f) / 255.0f);
 			intret(1);
 		}
 		else
 		{
 			conoutf(CON_ERROR, "could not play music: %s", file);
-			conoutf(CON_ERROR, "SDL_mixer says: %s", Mix_GetError());
+			conoutf(CON_ERROR, "SDL_mixer says: %s", SDL_GetError());
 			intret(0); 
 		}
 	}
@@ -308,127 +297,26 @@ SVARP(_soundtrack_title, "");
 SVARP(_soundtrack_author, "");
 SVARP(_soundtrack_url, "");
 
-static Mix_Chunk *loadwav(const char *name)
+static MIX_Audio *loadwav(const char *name)
 {
-	Mix_Chunk *c = NULL;
+	MIX_Audio *c = NULL;
 	stream *z = openzipfile(name, "rb");
 	if(z)
 	{
 		SDL_IOStream *rw = z->rwops();
 		if(rw)
 		{
-			c = Mix_LoadWAV_IO(rw, 0);
-			SDL_CloseIO(rw);
+			c = MIX_LoadAudio_IO(mixer, rw, true, true);
 		}
 		delete z;
 	}
-	if(!c) c = Mix_LoadWAV(findfile(name, "rb"));
+	if(!c) c = MIX_LoadAudio(mixer, findfile(name, "rb"), true);
 	return c;
 }
-
-template<class T> static void scalewav(T* dst, T* src, size_t len, int scale)
-{
-	len /= sizeof(T);
-	const T* end = src + len;
-	if(scale==2) for(; src < end; src++, dst += scale)
-	{
-		T s = src[0];
-		dst[0] = s;
-		dst[1] = s;
-	}
-	else if(scale==4) for(; src < end; src++, dst += scale)
-	{
-		T s = src[0];
-		dst[0] = s;
-		dst[1] = s;
-		dst[2] = s;
-		dst[3] = s;
-	}
-	else for(; src < end; src++)
-	{
-		T s = src[0];
-		loopi(scale) *dst++ = s;
-	}
-}
-
-static Mix_Chunk *loadwavscaled(const char *name)
-{
-	int mixerfreq = 0;
-	Uint16 mixerformat = 0;
-	int mixerchannels = 0;
-	if(!Mix_QuerySpec(&mixerfreq, &mixerformat, &mixerchannels)) return NULL;
-
-	SDL_AudioSpec spec;
-	Uint8 *audiobuf = NULL;
-	Uint32 audiolen = 0;
-	stream *z = openzipfile(name, "rb");
-	if(z)
-	{
-		SDL_IOStream *rw = z->rwops();
-		if(rw)
-		{
-			SDL_LoadWAV_IO(rw, 0, &spec, &audiobuf, &audiolen);
-			SDL_CloseIO(rw);
-		}
-		delete z;
-	}
-	if(!audiobuf) SDL_LoadWAV(findfile(name, "rb"), &spec, &audiobuf, &audiolen);
-	if(!audiobuf) return NULL;
-	int samplesize = ((spec.format&0xFF)/8) * spec.channels;
-	int scale = mixerfreq / spec.freq;
-	if(scale >= 2)
-	{
-		Uint8 *scalebuf = (Uint8*)SDL_malloc(audiolen * scale);
-		if(scalebuf)
-		{
-			switch(samplesize)
-			{
-				case 1: scalewav((uchar*)scalebuf, (uchar*)audiobuf, audiolen, scale); break;
-				case 2: scalewav((ushort*)scalebuf, (ushort*)audiobuf, audiolen, scale); break;
-				case 4: scalewav((uint*)scalebuf, (uint*)audiobuf, audiolen, scale); break;
-				case 8: scalewav((ullong*)scalebuf, (ullong*)audiobuf, audiolen, scale); break;
-				default: SDL_free(scalebuf); scalebuf = NULL; break;
-			}
-			if(scalebuf)
-			{
-				SDL_free(audiobuf);
-				audiobuf = scalebuf;
-				audiolen *= scale;
-				spec.freq *= scale;
-			}
-		}
-	}
-	if(spec.freq != mixerfreq || spec.format != mixerformat || spec.channels != mixerchannels)
-	{
-		SDL_AudioCVT cvt;
-		if(SDL_BuildAudioCVT(&cvt, spec.format, spec.channels, spec.freq, mixerformat, mixerchannels, mixerfreq) < 0)
-		{
-			SDL_free(audiobuf);
-			return NULL;
-		}
-		if(cvt.filters[0])
-		{
-			cvt.len = audiolen & ~(samplesize-1);
-			cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult);
-			if(!cvt.buf) { SDL_free(audiobuf); return NULL; }
-			SDL_memcpy(cvt.buf, audiobuf, cvt.len);
-			SDL_free(audiobuf);
-			if(SDL_ConvertAudio(&cvt) < 0) { SDL_free(cvt.buf); return NULL; }
-			audiobuf = cvt.buf;
-			audiolen = cvt.len_cvt;
-		}
-	}
-	Mix_Chunk *c = Mix_QuickLoad_RAW(audiobuf, audiolen);
-	if(!c) { SDL_free(audiobuf); return NULL; }
-	c->allocated = 1;
-	return c;
-}
-
-VARFP(fixwav, 0, 1, 1, initwarning("sound configuration", INIT_LOAD, CHANGE_SOUND));
 
 bool soundsample::load(bool msg)
 {
-	if(chunk) return true;
+	if(audio) return true;
 	if(!name[0]) return false;
 
 	static const char * const exts[] = { "", ".wav", ".ogg" };
@@ -438,21 +326,12 @@ bool soundsample::load(bool msg)
 		formatstring(filename, "packages/sounds/%s%s", name, exts[i]);
 		if(msg && !i) renderprogress(0, filename);
 		path(filename);
-		if(fixwav)
-		{
-			size_t len = strlen(filename);
-			if(len >= 4 && !strcasecmp(filename + len - 4, ".wav"))
-			{
-				chunk = loadwavscaled(filename);
-				if(chunk) return true;
-			}
-		}
-		chunk = loadwav(filename);
-		if(chunk) return true;
+		audio = loadwav(filename);
+		if(audio) return true;
 	}
 
 	conoutf(CON_ERROR, "failed to load sample: packages/sounds/%s", name);
-	conoutf(CON_ERROR, "SDL_mixer says: %s", Mix_GetError());
+	conoutf(CON_ERROR, "SDL_mixer says: %s", SDL_GetError());
 	return false;
 }
 
@@ -490,7 +369,7 @@ static struct soundtype
 			char *n = newstring(name);
 			s = &samples[n];
 			s->name = n;
-			s->chunk = NULL;
+			s->audio = NULL;
 		}
 		soundslot *oldslots = slots.getbuf();
 		int oldlen = slots.length();
@@ -536,7 +415,7 @@ static struct soundtype
 			soundchannel &chan = channels[i];
 			if(chan.inuse && slots.inbuf(chan.slot))
 			{
-				Mix_HaltChannel(i);
+				MIX_StopTrack(chan.track, 0);
 				freechannel(i);
 			}
 		}
@@ -585,7 +464,9 @@ COMMAND(mapsoundreset, "");
 
 void resetchannels()
 {
-	loopv(channels) if(channels[i].inuse) freechannel(i);
+	loopv(channels) {
+		if (channels[i].inuse) freechannel(i);
+	}
 	channels.shrink(0);
 }
 
@@ -599,16 +480,20 @@ void clear_sound()
 	gamesounds.clear();
 	mapsounds.clear();
 	samples.clear();
-	Mix_CloseAudio();
+	MIX_DestroyMixer(mixer);
 	resetchannels();
 }
 
 void stopmapsounds()
 {
-	loopv(channels) if(channels[i].inuse && channels[i].ent)
+	loopv(channels)
 	{
-		Mix_HaltChannel(i);
-		freechannel(i);
+		soundchannel& chan = channels[i];
+		if (chan.inuse && chan.ent)
+		{
+			MIX_StopTrack(chan.track, 0);
+			freechannel(i);
+		}
 	}
 }
 
@@ -618,14 +503,14 @@ void clearmapsounds()
 	mapsounds.clear();
 }
 
-void stopmapsound(extentity *e)
+void stopmapsound(extentity* e)
 {
 	loopv(channels)
 	{
-		soundchannel &chan = channels[i];
+		soundchannel& chan = channels[i];
 		if(chan.inuse && chan.ent == e)
 		{
-			Mix_HaltChannel(i);
+			MIX_StopTrack(chan.track, 0);
 			freechannel(i);
 		}
 	}
@@ -633,7 +518,7 @@ void stopmapsound(extentity *e)
 
 void checkmapsounds()
 {
-	const vector<extentity *> &ents = entities::getents();
+	const vector<extentity*>& ents = entities::getents();
 	loopv(ents)
 	{
 		extentity &e = *ents[i];
@@ -674,7 +559,7 @@ bool updatechannel(soundchannel &chan)
 			panf = 0.5f - 0.5f*v.x/v.magnitude2(); // range is from 0 (left) to 1 (right)
 		}
 	}
-	int vol = clamp(int(volf*soundvol*chan.slot->volume*(MIX_MAX_VOLUME/float(255*255)) + 0.5f), 0, MIX_MAX_VOLUME);
+	int vol = clamp(int(volf*soundvol*chan.slot->volume*(1.0f/float(255*255)) + 0.5f), 0, 1);
 	int pan = clamp(int(panf*255.9f), 0, 255);
 	if(vol == chan.volume && pan == chan.pan) return false;
 	chan.volume = vol;
@@ -688,7 +573,7 @@ void reclaimchannels()
 	loopv(channels)
 	{
 		soundchannel &chan = channels[i];
-		if(chan.inuse && !Mix_Playing(i)) freechannel(i);
+		if(chan.inuse && !MIX_TrackPlaying(chan.track)) freechannel(i);
 	}
 }
 
@@ -713,12 +598,12 @@ void updatesounds()
 		reclaimchannels();
 		if(mainmenu) stopmapsounds();
 		else checkmapsounds();
-		syncchannels();
+		//syncchannels();
 	}
 	if(music)
 	{
-		if(!Mix_PlayingMusic()) musicdone();
-		else if(Mix_PausedMusic()) Mix_ResumeMusic();
+		if(!MIX_TrackPlaying(musictrack)) musicdone();
+		else if(MIX_TrackPaused(musictrack)) MIX_ResumeTrack(musictrack);
 	}
 }
 
@@ -763,7 +648,7 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
 		{
 			if(channels.inrange(chanid) && sounds.playing(channels[chanid], config))
 			{
-				Mix_HaltChannel(chanid);
+				MIX_StopTrack(channels[chanid].track, 0);
 				freechannel(chanid);
 			}
 			return -1;    
@@ -798,7 +683,7 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
 	if(fade < 0) return -1;
 
 	soundslot &slot = sounds.slots[config.chooseslot(flags)];
-	if(!slot.sample->chunk && !slot.sample->load()) return -1;
+	if(!slot.sample->audio && !slot.sample->load()) return -1;
 
 	if(dbgsound) conoutf(CON_DEBUG, "sound: %s", slot.sample->name);
  
@@ -808,15 +693,19 @@ int playsound(int n, const vec *loc, extentity *ent, int flags, int loops, int f
 	if(chanid < 0) loopv(channels) if(!channels[i].volume) { chanid = i; break; }
 	if(chanid < 0) return -1;
 
-	soundchannel &chan = newchannel(chanid, &slot, loc, ent, flags, radius);
+	soundchannel &chan = newchannel(chanid, mixer, &slot, loc, ent, flags, radius);
 	updatechannel(chan);
 	int playing = -1;
-	if(fade) 
-	{
-		Mix_Volume(chanid, chan.volume);
-		playing = expire >= 0 ? Mix_FadeInChannelTimed(chanid, slot.sample->chunk, loops, fade, expire) : Mix_FadeInChannel(chanid, slot.sample->chunk, loops, fade);
-	}
-	else playing = expire >= 0 ? Mix_PlayChannelTimed(chanid, slot.sample->chunk, loops, expire) : Mix_PlayChannel(chanid, slot.sample->chunk, loops);
+
+	SDL_PropertiesID props = SDL_CreateProperties();
+	SDL_SetNumberProperty(props, "MIX_PROP_PLAY_LOOPS_NUMBER", loops);
+	if(expire >= 0) SDL_SetNumberProperty(props, "MIX_PROP_PLAY_MAX_MILLISECONDS_NUMBER", expire);
+	if(fade) SDL_SetNumberProperty(props, "MIX_PROP_PLAY_MAX_MILLISECONDS_NUMBER", fade);
+	 
+	MIX_SetTrackGain(chan.track, chan.volume / 255.0f);
+	MIX_SetTrackAudio(chan.track, slot.sample->audio);
+	if(MIX_PlayTrack(chan.track, props)) playing = chanid;
+
 	if(playing >= 0) syncchannel(chan); 
 	else freechannel(chanid);
 	return playing;
@@ -826,7 +715,7 @@ void stopsounds()
 {
 	loopv(channels) if(channels[i].inuse)
 	{
-		Mix_HaltChannel(i);
+		MIX_StopTrack(channels[i].track, 0);
 		freechannel(i);
 	}
 }
@@ -835,9 +724,9 @@ bool stopsound(int n, int chanid, int fade)
 {
 	if(!gamesounds.configs.inrange(n) || !channels.inrange(chanid) || !channels[chanid].inuse || !gamesounds.playing(channels[chanid], gamesounds.configs[n])) return false;
 	if(dbgsound) conoutf(CON_DEBUG, "stopsound: %s", channels[chanid].slot->sample->name);
-	if(!fade || !Mix_FadeOutChannel(chanid, fade))
+	if(!fade || !MIX_StopTrack(channels[chanid].track, MIX_TrackMSToFrames(channels[chanid].track, fade)))
 	{
-		Mix_HaltChannel(chanid);
+		MIX_StopTrack(channels[chanid].track, 0);
 		freechannel(chanid);
 	}
 	return true;
@@ -876,11 +765,11 @@ void resetsound()
 		cleanupsamples();
 		if(music)
 		{
-			Mix_HaltMusic();
-			Mix_FreeMusic(music);
+			MIX_StopTrack(musictrack, 0);
+			MIX_DestroyAudio(music);
 		}
 		if(musicstream) musicstream->seek(0, SEEK_SET);
-		Mix_CloseAudio();
+		MIX_DestroyMixer(mixer);
 	}
 	initsound();
 	resetchannels();
@@ -894,8 +783,11 @@ void resetsound()
 	}
 	if(music && loadmusic(musicfile))
 	{
-		Mix_PlayMusic(music, musicdonecmd ? 0 : -1);
-		Mix_VolumeMusic((musicvol*MIX_MAX_VOLUME)/255);
+		SDL_PropertiesID props = SDL_CreateProperties();
+		SDL_SetNumberProperty(props, "MIX_PROP_PLAY_LOOPS_NUMBER", musicdonecmd ? 0 : -1);
+		MIX_SetTrackAudio(musictrack, music);
+		MIX_PlayTrack(musictrack, props);
+		MIX_SetTrackGain(musictrack, (musicvol * 1.0f) / 255);
 	}
 	else
 	{
@@ -1071,8 +963,6 @@ void updatemumble() {
 	mumbleinfo->context_len = 16;
 }
 */
-// TODO: SDL3_mixer
-/*
 
 #ifdef WIN32
 
@@ -1180,4 +1070,3 @@ void updatemumble()
 	mumbleinfo->top = mumblevec(vec(RAD*player->yaw, RAD*(player->pitch+90)));
 #endif
 }
-*/

@@ -42,8 +42,7 @@ namespace game
 		addmsg(N_TAUNT, "rc", player1);
 
 		// TODO: taunt sounds
-		// TODO: SDL3_mixer
-		//playsound(S_ITEMSPAWN, &game::hudplayer()->o);
+		playsound(S_ITEMSPAWN, &game::hudplayer()->o);
 	}
 	COMMAND(taunt, "");
 
@@ -455,8 +454,7 @@ namespace game
 		fpsent *h = hudplayer();
 		if(h!=player1 && actor==h && d!=actor)
 		{
-			// TODO: SDL3_mixer
-			//if ((hitsound && lasthit != lastmillis && !m_parkour) || (m_parkour && parkourhitmarker)) playsound(S_HIT);
+			if ((hitsound && lasthit != lastmillis && !m_parkour) || (m_parkour && parkourhitmarker)) playsound(S_HIT);
 			if (!m_parkour) lasthit = lastmillis;
 		}
 		if (!m_parkour)
@@ -474,9 +472,8 @@ namespace game
 			if (d->health <= 0) { if (local) killed(d, actor, gun); }
 
 			// TODO: switch sound system to text keys, see Bube
-			// TODO: SDL3_mixer
-			//if (d == h) playsound(S_PAIN_SARAH_6 + (6 * d->playermodel));
-			//else playsound(S_PAIN_SARAH_1 + rnd(5) + (6 * d->playermodel), &d->o);
+			if (d == h) playsound(S_PAIN_SARAH_6 + (6 * d->playermodel));
+			else playsound(S_PAIN_SARAH_1 + rnd(5) + (6 * d->playermodel), &d->o);
 		}
 	}
 
@@ -499,8 +496,7 @@ namespace game
 			d->attacking = false;
 			//d->pitch = 0;
 			d->roll = 0;
-			// TODO: SDL3_mixer
-			//playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel));
+			playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel));
 		}
 		else
 		{
@@ -508,8 +504,7 @@ namespace game
 			d->vertical = 0;
 			d->resetinterp();
 			d->smoothmillis = 0;
-			// TODO: SDL3_mixer
-			//playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel), &d->o);
+			playsound(S_DIE_SARAH_1 + rnd(1) + (2 * d->playermodel), &d->o);
 		}
 	}
 
@@ -584,8 +579,7 @@ namespace game
 		}
 
 		// play local killsound if enabled
-		// TODO: SDL3_mixer
-		//if (d != actor && actor == player1 && killsound) playsound(S_KILL);
+		if (d != actor && actor == player1 && killsound) playsound(S_KILL);
 
 		// run `ondeath` on local death
 		if (d == player1) execident("ondeath");
@@ -681,8 +675,7 @@ namespace game
 		fpsent *d = clients[cn];
 		if(!d) return;
 		if(notify && d->name[0]) conoutf("\f4leave:\f7 %s", colorname(d));
-		// TODO: SDL3_mixer
-		//playsound(S_SRV_DISCONNECT);
+		playsound(S_SRV_DISCONNECT);
 		removeweapons(d);
 		removetrackedparticles(d);
 		removetrackeddynlights(d);
@@ -881,9 +874,8 @@ namespace game
 
 	void physicstrigger(physent *d, bool local, int floorlevel, int waterlevel, int material)
 	{
-		// TODO: SDL3_mixer
-		//if     (waterlevel>0) { if(material!=MAT_LAVA) playsound(S_SPLASH1, d==player1 ? NULL : &d->o); }
-		//else if(waterlevel<0) playsound(material==MAT_LAVA ? S_BURN : S_SPLASH2, d==player1 ? NULL : &d->o);
+		if     (waterlevel>0) { if(material!=MAT_LAVA) playsound(S_SPLASH1, d==player1 ? NULL : &d->o); }
+		else if(waterlevel<0) playsound(material==MAT_LAVA ? S_BURN : S_SPLASH2, d==player1 ? NULL : &d->o);
 		if     (floorlevel>0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_JUMP, d); }
 		else if(floorlevel<0) { if(d==player1 || d->type!=ENT_PLAYER || ((fpsent *)d)->ai) msgsound(S_LAND, d); }
 	}
@@ -898,15 +890,13 @@ namespace game
 		if(!d || d==player1)
 		{
 			addmsg(N_SOUND, "ci", d, n);
-			// TODO: SDL3_mixer
-			//playsound(n);
+			playsound(n);
 		}
 		else
 		{
 			if(d->type==ENT_PLAYER && ((fpsent *)d)->ai)
 				addmsg(N_SOUND, "ci", d, n);
-			// TODO: SDL3_mixer
-			//playsound(n, &d->o);
+			playsound(n, &d->o);
 		}
 	}
 
@@ -985,8 +975,7 @@ namespace game
 
 	void teamsound(bool sameteam, int n, const vec *loc)
 	{
-		// TODO: SDL3_mixer
-		//playsound(n, loc, NULL, teamsounds ? (m_teammode && sameteam ? SND_USE_ALT : SND_NO_ALT) : 0);
+		playsound(n, loc, NULL, teamsounds ? (m_teammode && sameteam ? SND_USE_ALT : SND_NO_ALT) : 0);
 	}
 
 	void teamsound(fpsent *d, int n, const vec *loc)

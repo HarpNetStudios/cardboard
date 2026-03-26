@@ -13,7 +13,41 @@ namespace gamepad {
 	extern int dbgjoy;
 }
 
+VARF(timelinemode, 1, 3, 4, steam::setTimelineMode((ETimelineGameMode)timelinemode));
+
 namespace steam {
+
+	struct CSteamTimelines
+	{
+	private:
+		ETimelineGameMode curr_mode;
+
+	public:
+		CSteamTimelines();
+		void AddEvent(const char* title, const char* desc, const char* icon, uint32 priority, float offset);
+		void SetMode(ETimelineGameMode mode);
+		void SetTooltip(const char* desc);
+	};
+
+	CSteamTimelines::CSteamTimelines()
+	{
+		CSteamTimelines::SetMode(k_ETimelineGameMode_Menus);
+	}
+
+	void CSteamTimelines::AddEvent(const char* title, const char* desc, const char* icon = "", uint32 priority = 2, float offset = 0.0f)
+	{
+		SteamTimeline()->AddInstantaneousTimelineEvent(title, desc, icon, 0, 0.0f, k_ETimelineEventClipPriority_Featured);
+	}
+
+	void CSteamTimelines::SetMode(ETimelineGameMode mode) {
+		curr_mode = mode;
+		SteamTimeline()->SetTimelineGameMode(curr_mode);
+	}
+
+	void CSteamTimelines::SetTooltip(const char* desc) {
+		if(!desc[0]) SteamTimeline()->ClearTimelineTooltip(0.0f);
+		else SteamTimeline()->SetTimelineTooltip(desc, 0.0f);
+	}
 
 	struct CSteamScreenshots
 	{
@@ -108,8 +142,9 @@ namespace steam {
 			_ACH_ID(ACH_PLAY_BOTS, "Who needs friends?"),
 	};
 
-	// Global access to Achievements object
+	// Global access to objects
 	CSteamAchievements* g_SteamAchievements = NULL;
+	CSteamTimelines* g_SteamTimelines = NULL;
 
 	InputHandle_t *inputHandles = new InputHandle_t[STEAM_INPUT_MAX_COUNT];
 
@@ -126,6 +161,8 @@ namespace steam {
 	InputAnalogActionHandle_t cameraMouseHandle;
 	InputAnalogActionHandle_t cameraGamepadHandle;
 
+	VARP(filterchat, 0, 1, 1);
+
 	int initSteam()
 	{
 		if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) // Replace with your App ID
@@ -139,6 +176,13 @@ namespace steam {
 			return 1;
 		}
 
+		// text filtering
+		if(filterchat) SteamUtils()->InitFilterText();
+
+		// steam overlay toasts
+		SteamUtils()->SetOverlayNotificationPosition(k_EPositionTopRight);
+		
+		// steam input
 		SteamInput()->Init(true);
 
 		playSetHandle = SteamInput()->GetActionSetHandle("InGameControls");
@@ -160,6 +204,7 @@ namespace steam {
 		SteamInput()->ActivateActionSet(inputHandles[0], playSetHandle);
 
 		g_SteamAchievements = new CSteamAchievements(g_Achievements, 8);
+		g_SteamTimelines = new CSteamTimelines();
 
 		return 0;
 	}
@@ -169,13 +214,24 @@ namespace steam {
 		SteamInput()->Shutdown();
 		// Shutdown Steam
 		SteamAPI_Shutdown();
-		// Delete the SteamAchievements object
+		// Clean up objects
 		if (g_SteamAchievements) delete g_SteamAchievements;
+		if (g_SteamTimelines) delete g_SteamTimelines;
 	}
 
 	void steamCallbacks() {
 		SteamAPI_RunCallbacks();
 	}
+
+	void addTimelineEvent(const char* title, const char* desc, const char* icon) {
+		if(g_SteamTimelines) g_SteamTimelines->AddEvent(title, desc, icon);
+	}
+
+	void setTimelineMode(int mode) {
+		if(g_SteamTimelines) g_SteamTimelines->SetMode((ETimelineGameMode)mode);
+	}
+
+	ICOMMAND(timelinetooltip, "s", (const char* tip), if(g_SteamTimelines) g_SteamTimelines->SetTooltip(tip));
 
 	void setAchievement(const char* achievement) {
 		if(g_SteamAchievements) g_SteamAchievements->SetAchievement(achievement);

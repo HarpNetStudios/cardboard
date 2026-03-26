@@ -1562,7 +1562,6 @@ void vecfromyawpitch(float yaw, float pitch, int move, int strafe, vec &m)
 FVARP(joyminthreshold, 0.0f, 0.05f, 1.0f);
 FVARP(joymaxthreshold, 0.0f, 1.0f, 1.0f);
 
-// TODO: this doesn't work for strictly up/down movement
 void vecfrommovement(float yaw, float pitch, float move, float strafe, int vertical, vec& m)
 {
 	m.x = move*-sinf(RAD*yaw)*cosf(RAD*pitch) + vertical*-sinf(RAD*pitch)*-sinf(RAD*yaw) + strafe*cosf(RAD*yaw);
@@ -1686,7 +1685,7 @@ void modifyvelocity(physent *pl, bool local, int water, bool floating, int curti
 	}
 
 	vec d(m);
-	d.mul(pl->maxspeed * min(vec2(pl->fmove, pl->fstrafe).magnitude(), 1.0f));
+	d.mul(pl->maxspeed * min(vec(pl->fmove, pl->fstrafe, (float)pl->vertical).magnitude(), 1.0f));
 	int meleespeed = 10; // percentage multiplier of melee weapon movement speed
 	if (pl->candouble) d.mul(1 + (meleespeed / 100.0f));
 

@@ -485,12 +485,13 @@ struct fpsstate
 			health = 1;
 		}
 
-		if (m_race)
+		// TODO: not needed?
+		/*if (m_race)
 		{
 			racetime = 0;
 			racelaps = 0;
-			racecheckpoint = 0;
-		}
+			racecheckpoint = -1;
+		}*/
 
 		if (m_demo)
 		{
@@ -632,9 +633,8 @@ struct fpsent : dynent, fpsstate
 	~fpsent()
 	{
 		freeeditinfo(edit);
-		// TODO: SDL3_mixer
-		//if(attackchan >= 0) stopsound(attacksound, attackchan);
-		//if(idlechan >= 0) stopsound(idlesound, idlechan);
+		if(attackchan >= 0) stopsound(attacksound, attackchan);
+		if(idlechan >= 0) stopsound(idlesound, idlechan);
 		if(ai) delete ai;
 	}
 
@@ -653,15 +653,13 @@ struct fpsent : dynent, fpsstate
 
 	void stopattacksound()
 	{
-		// TODO: SDL3_mixer
-		//if(attackchan >= 0) stopsound(attacksound, attackchan, 250);
+		if(attackchan >= 0) stopsound(attacksound, attackchan, 250);
 		attacksound = attackchan = -1;
 	}
 
 	void stopidlesound()
 	{
-		// TODO: SDL3_mixer
-		//if(idlechan >= 0) stopsound(idlesound, idlechan, 100);
+		if(idlechan >= 0) stopsound(idlesound, idlechan, 100);
 		idlesound = idlechan = -1;
 	}
 

@@ -414,12 +414,14 @@ namespace game
 					rightjustified(g.text("rank", COL_GRAY))
 					loopscoregroup(o, {
 						switch (o->racestate) {
-						case 0:
-							rightjustified(g.textf("%s", 0xFFFFDD, NULL, " "));
-							break;
+						
 						case 1:
 						case 2:
 							rightjustified(g.textf("%d%s", 0xFFFFDD, NULL, o->racerank, getordinal(o->racerank)));
+							break;
+						case 0:
+						default:
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, " "));
 							break;
 						}
 					});
@@ -466,6 +468,9 @@ namespace game
 							break;
 						case 2:
 							rightjustified(g.textf("%s", 0xFFFFDD, NULL, "finished"));
+							break;
+						default:
+							rightjustified(g.textf("%s", 0xFFFFDD, NULL, " "));
 							break;
 						}
 					});

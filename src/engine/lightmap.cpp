@@ -549,8 +549,35 @@ static void updatelightmap(const layoutinfo &surface)
  
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 }
- 
-		
+
+VARR(lightfilter, 0, 0, 1);
+
+static vec computetranslucentfilter(const vec& start, const vec& end)
+{
+	vec dir(end);
+	dir.sub(start);
+	float dist = dir.magnitude();
+	if (dist <= 0) return vec(0, 0, 0);
+	dir.div(dist);
+	vec cur(start);
+	float remain = dist;
+	vec mix(0, 0, 0);
+	const float step = 0.1f;
+	while(remain > step)
+	{
+		vec hit;
+		float d = raycubepos(cur, dir, hit, remain, RAY_CLIPMAT | RAY_ALPHAPOLY);
+		if(d < 0 || d >= remain) break;
+		int mat = lookupmaterial(hit);
+		if((mat & MATF_VOLUME) == MAT_GLASS) mix.add(getglasscolor_i(mat).tocolor());
+		else break;
+		cur = vec(hit).add(vec(dir).mul(step));
+		remain -= d + step;
+	}
+	mix.min(vec(1.0f, 1.0f, 1.0f));
+	return mix;
+}
+
 static uint generatelumel(lightmapworker *w, const float tolerance, uint lightmask, const vector<const extentity *> &lights, const vec &target, const vec &normal, vec &sample, int x, int y)
 {
 	vec avgray(0, 0, 0);
@@ -597,9 +624,22 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
 				intensity = angle * attenuation;
 				break;
 		}
-		r += intensity * float(light.attr2);
-		g += intensity * float(light.attr3);
-		b += intensity * float(light.attr4);
+
+		if(lightfilter)
+		{
+			vec filter = computetranslucentfilter(light.o, target).mul(255.0f);
+			r += intensity * (float(light.attr2) + filter.x);
+			g += intensity * (float(light.attr3) + filter.y);
+			b += intensity * (float(light.attr4) + filter.z);
+		}
+		else
+		{
+			r += intensity * float(light.attr2);
+			g += intensity * float(light.attr3);
+			b += intensity * float(light.attr4);
+		}
+		
+		
 	}
 	if(sunlight)
 	{
@@ -619,9 +659,20 @@ static uint generatelumel(lightmapworker *w, const float tolerance, uint lightma
 					intensity = angle;
 					break;
 			}
-			r += intensity * (sunlightcolor.x*sunlightscale);
-			g += intensity * (sunlightcolor.y*sunlightscale);
-			b += intensity * (sunlightcolor.z*sunlightscale);
+			if(lightfilter)
+			{
+				vec sunend = vec(sunlightdir).mul(getworldsize() * 2).add(target);
+				vec sunfilter = computetranslucentfilter(target, sunend).mul(255.0f);
+				r += intensity * ((sunlightcolor.x + sunfilter.x) * sunlightscale);
+				g += intensity * ((sunlightcolor.y + sunfilter.y) * sunlightscale);
+				b += intensity * ((sunlightcolor.z + sunfilter.z) * sunlightscale);
+			}
+			else
+			{
+				r += intensity * (sunlightcolor.x * sunlightscale);
+				g += intensity * (sunlightcolor.y * sunlightscale);
+				b += intensity * (sunlightcolor.z * sunlightscale);
+			}
 		}
 	}
 	switch(w->type&LM_TYPE)
@@ -2668,12 +2719,25 @@ void lightreaching(const vec &target, vec &color, vec &dir, bool fast, extentity
 		//}
  
 		vec lightcol = vec(e.attr2, e.attr3, e.attr4).mul(1.0f/255);
+
+		if(lightfilter)
+		{
+			vec filter = computetranslucentfilter(e.o, target);
+			lightcol.add(filter).min(vec(1.f, 1.f, 1.f));
+		}
+
 		color.add(vec(lightcol).mul(intensity));
 		dir.add(vec(ray).mul(-intensity*(lightcol.x+lightcol.y+lightcol.z)*(1.0f/3)));
 	}
-	if(sunlight && shadowray(target, sunlightdir, 1e16f, RAY_SHADOW | RAY_POLY | (skytexturelight ? RAY_SKIPSKY | (useskytexture ? RAY_SKYTEX : 0) : 0), t) > 1e15f) 
+	if(sunlight && shadowray(target, sunlightdir, 1e16f, RAY_SHADOW | RAY_POLY | (skytexturelight ? RAY_SKIPSKY | (useskytexture ? RAY_SKYTEX : 0) : 0), t) > 1e15f)
 	{
 		vec lightcol = vec(sunlightcolor.x, sunlightcolor.y, sunlightcolor.z).mul(sunlightscale/255);
+		if(lightfilter)
+		{
+			vec sunend = vec(sunlightdir).mul(getworldsize() * 2).add(target);
+			vec sunfilter = computetranslucentfilter(target, sunend);
+			lightcol.add(sunfilter).min(vec(1.0f, 1.0f, 1.0f));
+		}
 		color.add(lightcol);
 		dir.add(vec(sunlightdir).mul((lightcol.x+lightcol.y+lightcol.z)*(1.0f/3)));
 	}

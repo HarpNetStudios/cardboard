@@ -418,8 +418,7 @@ struct collectclientmode : clientmode
 		preloadmodel("skull/red");
 		preloadmodel("skull/blue");
 		static const int sounds[] = { S_FLAGDROP, S_FLAGSCORE, S_FLAGFAIL };
-		// TODO: SDL3_mixer
-		//loopi(sizeof(sounds)/sizeof(sounds[0])) preloadsound(sounds[i]);
+		loopi(sizeof(sounds)/sizeof(sounds[0])) preloadsound(sounds[i]);
 	}
 
 	void drawblip(fpsent *d, float x, float y, float s, const vec &pos, float size = 0.05f)
@@ -658,8 +657,7 @@ struct collectclientmode : clientmode
 	{
 		token *t = findtoken(id);
 		if(!t) return;
-		// TODO: SDL3_mixer
-		//playsound(S_ITEMAMMO, &t->o);
+		playsound(S_ITEMAMMO, &t->o);
 		removetoken(id);
 	}
 
@@ -670,8 +668,7 @@ struct collectclientmode : clientmode
 		if(t) 
 		{
 			// TODO: I don't know if this logic makes sense, revisit -Y
-			// TODO: SDL3_mixer
-			//playsound(t->team == team ? S_ITEMAMMO : S_ITEMHEALTH, d != player1 ? &d->o : NULL);
+			playsound(t->team == team ? S_ITEMAMMO : S_ITEMHEALTH, d != player1 ? &d->o : NULL);
 			removetoken(id);
 		}
 		d->tokens = total;
@@ -683,8 +680,7 @@ struct collectclientmode : clientmode
 		if(pos.z < 0) return NULL;
 		token &t = droptoken(id, pos, team, lastmillis);
 		lightreaching(vec(t.o).add(vec(0, 0, TOKENHEIGHT)), t.light.color, t.light.dir, true); 
-		// TODO: SDL3_mixer
-		//if(!n) playsound(S_ITEMSPAWN, d ? &d->o : &pos);
+		if(!n) playsound(S_ITEMSPAWN, d ? &d->o : &pos);
 		if(d) 
 		{
 			if(!n)
@@ -709,8 +705,7 @@ struct collectclientmode : clientmode
 				b.laststeal = lastmillis;
 				defformatstring(stoleteam, "the %s team", collectbaseteam(enemyteam));
 				conoutf(CON_GAMEINFO, "%s stole a skull from %s", teamcolorname(d), teamcolor(stoleteam, collectbaseteam(enemyteam)));
-				// TODO: SDL3_mixer
-				//teamsound(d, S_FLAGDROP, &b.tokenpos);
+				teamsound(d, S_FLAGDROP, &b.tokenpos);
 			}
 			if(t) particle_flare(b.tokenpos, vec(t->o.x, t->o.y, t->o.z + 0.5f*(TOKENHEIGHT + 1)), 500, PART_LIGHTNING, team==collectteambase(player1->team) ? 0x2222FF : 0xFF2222, 1.0f);
 		}
@@ -736,8 +731,7 @@ struct collectclientmode : clientmode
 		
 		defformatstring(depositteam, "the %s team", collectbaseteam(team));
 		conoutf(CON_GAMEINFO, "%s collected %d %s for %s", teamcolorname(d), deposited, deposited == 1 ? "skull" : "skulls", teamcolor(depositteam, collectbaseteam(team)));
-		// TODO: SDL3_mixer
-		//playsound(team==collectteambase(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
+		playsound(team==collectteambase(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
 
 		if (score >= SCORELIMIT) conoutf(CON_GAMEINFO, "%s collected %d skulls", teamcolor(depositteam, collectbaseteam(team)), score);
 	}

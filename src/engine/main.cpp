@@ -32,8 +32,7 @@ void cleanup()
 	extern void clear_command(); clear_command();
 	extern void clear_console(); clear_console();
 	extern void clear_mdls();    clear_mdls();
-	// TODO: SDL3_mixer
-	//extern void clear_sound();   clear_sound();
+	extern void clear_sound();   clear_sound();
 	closelogfile();
 	#ifdef __APPLE__
 		if(screen) SDL_SetWindowFullscreen(screen, false);
@@ -139,16 +138,13 @@ void writeinitcfg()
 	
 	f->printf("depthbits %d\n", depthbits);
 	f->printf("fsaa %d\n", fsaa);
-	// TODO: SDL3_mixer
-	/*
+
 	extern int usesound, soundchans, soundfreq, soundbufferlen;
-    extern char *audiodriver;
 	f->printf("usesound %d\n", usesound);
 	f->printf("soundchans %d\n", soundchans);
 	f->printf("soundfreq %d\n", soundfreq);
 	f->printf("soundbufferlen %d\n", soundbufferlen);
-	if(audiodriver[0]) f->printf("audiodriver %s\n", escapestring(audiodriver));
-	*/
+	
 	delete f;
 }
 
@@ -206,8 +202,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 {
 	if(!inbetweenframes && !force) return;
 
-	// TODO: SDL3_mixer
-	//if(!restore || force || !splash) stopsounds(); // stop sounds while loading
+	if(!restore || force || !splash) stopsounds(); // stop sounds while loading
  
 	int w = screenw, h = screenh;
 	if(forceaspect) w = int(ceil(h*forceaspect));
@@ -355,8 +350,7 @@ void renderbackground(const char *caption, Texture *mapshot, const char *mapname
 	}
 
 	if(!restore) setbackgroundinfo(caption, mapshot, mapname, mapinfo);
-	// TODO: SDL3_mixer
-	//if (splash) playsound(S_LOGO);  // sound for splash screen
+	if (splash) playsound(S_LOGO);  // sound for splash screen
 }
 
 VAR(progressbackground, 0, 0, 1);
@@ -1347,6 +1341,10 @@ void setgametoken(const char* token) {
 	VARN(ext_steam, ext_steam_enabled, 1, 0, 0);
 #endif
 
+#ifdef STEAM
+	ICOMMAND(addevent, "sss", (const char* title, const char* desc, const char* icon), steam::addTimelineEvent(title, desc, icon))
+#endif
+
 int main(int argc, char **argv)
 {
 	#ifdef WIN32
@@ -1470,8 +1468,7 @@ int main(int argc, char **argv)
 
 	logoutf("init: sound");
 	execfile("data/sounds.cfg"); // load sounds early
-	// TODO: SDL3_mixer
-	//initsound();
+	initsound();
 
 	inbetweenframes = true;
 	renderbackground(NULL, NULL, NULL, NULL, false, false, true); // render splash
@@ -1552,8 +1549,7 @@ int main(int argc, char **argv)
 
 	if(initscript) execute(initscript);
 
-	// TODO: SDL3_mixer
-	//initmumble();
+	initmumble();
 	resetfpshistory();
 
 	// TODO: is this still needed?
@@ -1608,8 +1604,7 @@ int main(int argc, char **argv)
 		// miscellaneous general game effects
 		recomputecamera();
 		if(draw) updateparticles();
-		// TODO: SDL3_mixer
-		//updatesounds();
+		updatesounds();
 
 		if(minimized) continue;
 

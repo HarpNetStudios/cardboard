@@ -515,8 +515,7 @@ struct ctfclientmode : clientmode
 			preloadmodel("flags/blue");
 		}
 		static const int sounds[] = { S_FLAGPICKUP, S_FLAGDROP, S_FLAGRETURN, S_FLAGSCORE, S_FLAGRESET, S_FLAGFAIL };
-		// TODO: SDL3_mixer
-		//loopi(sizeof(sounds)/sizeof(sounds[0])) preloadsound(sounds[i]);
+		loopi(sizeof(sounds)/sizeof(sounds[0])) preloadsound(sounds[i]);
 	}
 
 	void drawblip(fpsent *d, float x, float y, float s, const vec &pos, bool flagblip)
@@ -969,8 +968,7 @@ struct ctfclientmode : clientmode
 		defformatstring(scoredteam, "the %s team", ctfflagteam(team));
 		defformatstring(flagrunstr, " (%.3f s)", (totalmillis - d->laststealflag) / 1000.f);
 		conoutf(CON_GAMEINFO, "%s scored for %s%s", teamcolorname(d), teamcolor(scoredteam, ctfflagteam(team)), d == player1 && d->laststealflag ? flagrunstr : "");
-		// TODO: SDL3_mixer
-		//playsound(team==ctfteamflag(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
+		playsound(team==ctfteamflag(player1->team) ? S_FLAGSCORE : S_FLAGFAIL);
 
 		if (score >= FLAGLIMIT) conoutf(CON_GAMEINFO, "%s captured %d flags", teamcolor(scoredteam, ctfflagteam(team)), score);
 	}
@@ -987,8 +985,7 @@ struct ctfclientmode : clientmode
 		else if (m_protect || f.droptime) conoutf(CON_GAMEINFO, "%s picked up %s", teamcolorname(d), teamcolorflag(f));
 		else conoutf(CON_GAMEINFO, "%s stole %s", teamcolorname(d), teamcolorflag(f));
 		ownflag(i, d, lastmillis, m_hold ? ctfteamflag(d->team) : -1);
-		// TODO: SDL3_mixer
-		//playsound(S_FLAGPICKUP);
+		playsound(S_FLAGPICKUP);
 		if (!f.droptime) {
 			d->laststealflag = totalmillis;
 		}

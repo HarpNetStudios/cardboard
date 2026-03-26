@@ -46,7 +46,7 @@ struct raceclientmode : clientmode
         loopv(players) {
             fpsent *d = players[i];
             d->racelaps = 0;
-            d->racecheckpoint = 0;
+            d->racecheckpoint = -1;
             d->racetime = 0;
             d->racerank = -1;
             d->racestate = 0;
@@ -56,7 +56,7 @@ struct raceclientmode : clientmode
 
     void removeplayer(fpsent *d) {
         d->racelaps = 0;
-        d->racecheckpoint = 0;
+        d->racecheckpoint = -1;
         d->racetime = 0;
         d->racerank = -1;
         d->racestate = 0;
@@ -121,7 +121,6 @@ struct raceclientmode : clientmode
           else settexture("packages/hud/blip_blue.png", 3);
           drawblip(d, x, y, s, p->o, 2.0f);
       }
-
     }
 
     void rendergame() {
@@ -141,15 +140,7 @@ struct raceclientmode : clientmode
         return ANIM_LOSE|ANIM_LOOP;
     }
 
-    void killed(fpsent *d, fpsent *actor) {
-        conoutf("killed");
-        d->racetime = 0;
-    }
-
     void respawned(fpsent *d) {
-        conoutf("respawned");
-        d->racetime = lastmillis;
-        conoutf("racetime: %d lastmillis: %d", d->racetime, lastmillis);
     }
 
     void pickspawn(fpsent *d) {
@@ -171,9 +162,9 @@ struct raceclientmode : clientmode
                 pickspawnbyenttype(d, PLAYERSTART);
             }
         }
-      /* if(d->racelaps > 0 || d->racecheckpoint > 0) {
-          if(d->racecheckpoint == 0) pickspawnbyenttype(d, PLAYERSTART);
-          else if (d->racecheckpoint > 0) pickspawnbyenttype(d, RACE_CHECKPOINT);
+      /* if(d->racelaps > 0 || d->racecheckpoint >= 0) {
+          if(d->racecheckpoint == -1) pickspawnbyenttype(d, PLAYERSTART);
+          else if (d->racecheckpoint >= 0) pickspawnbyenttype(d, RACE_CHECKPOINT);
           return;
       } */
     }
@@ -250,7 +241,7 @@ struct raceclientmode : clientmode
     }
 
     int getmaxcheckpoint() {
-        int m = 0;
+        int m = -1;
         loopv(ments) {
             entity& e = ments[i];
             if(e.type == RACE_CHECKPOINT && e.attr2 > m) {
@@ -282,7 +273,7 @@ struct raceclientmode : clientmode
       if(notgotspawnlocations) return;
       switch(sequence){
       case 0:
-        if(totalmillis - timecounter >= 1000) {
+        if(totalmillis - timecounter >= 5000) {
             sendservmsg("Map load complete (grannies left behind).");
         } else {
           loopv(spawnlocs){
@@ -302,9 +293,9 @@ struct raceclientmode : clientmode
         int remaining = COUNTDOWNSECONDS*1000 - (totalmillis - timecounter);
         if(remaining <= 0){
           sequence = 2;
+          forcepaused(false);
           sendservmsg("\f4GO!");
           timestarted = totalmillis;
-          forcepaused(false);
         }
         else if(remaining/1000 != countdown){
             defformatstring(msg, "\f3- %d -", countdown--);
@@ -385,8 +376,6 @@ struct raceclientmode : clientmode
         return totalmillis - ci->state.racetime;
     }
 
-
-
     void sendfinishannounce(clientinfo *ci) {
         int rank = ci->state.racerank;
         defformatstring(msg, "%d%s", rank, getordinal(rank));
@@ -399,7 +388,7 @@ struct raceclientmode : clientmode
 
     void initplayer(clientinfo *ci) {
         ci->state.racelaps = 0;
-        ci->state.racecheckpoint = 0;
+        ci->state.racecheckpoint = -1;
         ci->state.racerank = -1;
         ci->state.racestate = 0;
         raceinfos.add(new raceinfo(ci->clientnum, (ci->state.state==CS_SPECTATOR ? -2 : -1), 0, 0));
@@ -491,15 +480,15 @@ case N_RACEFINISH:
 {
   if(smode==&racemode && cq) {
       loopv(racemode.raceinfos) if(racemode.raceinfos[i]->cn == cq->clientnum && cq->state.racecheckpoint == racemode.maxcheckpoint) {
-          cq->state.racecheckpoint = 0;
+          cq->state.racecheckpoint = -1;
           cq->state.racelaps++;
           cq->state.racerank = racemode.getrank(cq->clientnum);
           sendf(-1, 1, "ri5Ui", N_RACEINFO, cq->clientnum, cq->state.racestate, cq->state.racelaps, cq->state.racecheckpoint, racemode.getracetime(cq), cq->state.racerank);
-          conoutf("laps:%d RACELAPS:%d timefinished:%d cn:%d", cq->state.racelaps, RACELAPS, racemode.raceinfos[i]->timefinished, racemode.raceinfos[i]->cn);
           if (cq->state.racelaps == RACELAPS) {
               cq->state.racestate = 2;
               racemode.raceinfos[i]->timefinished = totalmillis - racemode.timestarted;
               racemode.sendfinishannounce(cq);
+              conoutf("laps:%d RACELAPS:%d timefinished:%d cn:%d", cq->state.racelaps, RACELAPS, racemode.raceinfos[i]->timefinished, racemode.raceinfos[i]->cn);
               sendf(-1, 1, "ri", N_RACEFINISH, cq->clientnum);
               // cq->state.state = CS_FINISHED;
               sendf(-1, 1, "ri4", N_DIED, cq->clientnum, cq->clientnum, cq->state.frags);
@@ -514,7 +503,7 @@ case N_RACEFINISH:
 
 case N_RACESTART:
 {
-  if(smode==&racemode && cq && cq->state.racelaps == 0 && cq->state.racecheckpoint == 0) {
+  if(smode==&racemode && cq && cq->state.racelaps == 0 && cq->state.racecheckpoint == -1) {
       loopv(racemode.raceinfos) if(racemode.raceinfos[i]->cn == cq->clientnum && racemode.raceinfos[i]->gotcheckpoints == 0) {
           racemode.raceinfos[i]->gotcheckpoints = 1;
           cq->state.racetime = totalmillis;

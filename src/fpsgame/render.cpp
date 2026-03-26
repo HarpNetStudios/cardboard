@@ -489,8 +489,7 @@ namespace game
 	void preloadsounds()
 	{
 		// preload all sounds, we aren't in 2003 anymore
-		// TODO: SDL3_mixer
-		//for (int i = S_JUMP; i <= S_SRV_DISCONNECT; i++) preloadsound(i);
+		for (int i = S_JUMP; i <= S_SRV_DISCONNECT; i++) preloadsound(i);
 	}
 
 	void preload()
